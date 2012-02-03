@@ -1,0 +1,479 @@
+<?php
+include_once 'includes.php';
+class htmlutil {
+
+    /*
+    * @method table 
+    * @param $data 
+    * @param $showValue = true { 
+    * @return mixed
+    */
+    public static function table($data, $showValue = true) {
+        
+
+        if (count($data) == 0) return "NO DATA<br>";
+
+        if (!is_array($data)) return str_replace ("\n", '<br/>', $data)."<br>";
+
+        $result = '<table border="1" >';
+        foreach ($data as $key => $value)
+        {
+            $result .= "<tr>";
+            if ($showValue) $result .= "<td>$key</td>";
+            $result .= "<td>$value</td>";
+            $result .= "</tr>"."\n";
+        }
+
+        $result .= "</table>"."\n";
+
+        return $result;
+    }
+
+
+    /*
+    * @method img 
+    * @param $data 
+    * @param $height = 100 
+    * @param $width = 100 { 
+    * @return mixed
+    */
+    public static function img($data,$height = 100, $width = 100) {
+
+
+        $result  = '<img src="';
+        $result .= $data;
+        $result .= '" height="'.$height.'" ';
+        $result .= ' width="'.$width.'" ';
+        $result .= ' />';
+
+        return $result;
+    }
+
+
+    /*
+    * @method imgArray 
+    * @param $array 
+    * @param $height = 100 
+    * @param $width = 100 { 
+    * @return mixed
+    */
+    public static function imgArray($array,$height = 100, $width = 100) {
+
+        $result = array();
+
+        foreach ($array as $key => $value) {
+            $result[$key] = htmlutil::img($value,$height, $width);
+        }
+
+        return $result;
+    }
+
+
+
+    /*
+    * @method imgClick 
+    * @param $imageFilename 
+    * @param $height = 100 
+    * @param $width = 100 
+    * @param $hrefPrefix = "" 
+    * @param $caption = "" 
+    * @return mixed
+    */
+    public static function imgClick($imageFilename,$height = 100, $width = 100,$hrefPrefix = "",$caption = "")
+    {
+
+        $href = $imageFilename;
+        if ($hrefPrefix != "") $href = $hrefPrefix.$imageFilename;
+
+        $result  = '<a href="'.$href.'" target="_new">';
+        $result .= '<img src="'.$imageFilename.'"';
+        $result .= ' height="'.$height.'" ';
+        $result .= ' width="'.$width.'" ';
+        $result .= ' title="'. basename($imageFilename) .'" ';
+        $result .= ' alt="'. basename($imageFilename) .'" ';
+        $result .= '" />';
+        $result .= '</a>';
+        if ($caption != "" ) $result .= '<br>'.$caption;
+        $result .= "\n";
+
+        return $result;
+    }
+
+
+    /*
+    * @method imgHref 
+    * @param $imageFilename 
+    * @param $height = 100 
+    * @param $width = 100 
+    * @param $href = "" 
+    * @return mixed
+    */
+    public static function imgHref($imageFilename,$height = 100, $width = 100,$href = "")
+    {
+
+        if ($href == "") $href = $imageFilename;
+
+        $result  = '<a href="'.$href.'" target="_new">';
+        $result .= '<img src="'.$imageFilename.'"';
+        $result .= ' height="'.$height.'" ';
+        $result .= ' width="'.$width.'" ';
+        $result .= ' title="'. basename($imageFilename) .'" ';
+        $result .= ' alt="'. basename($imageFilename) .'" ';
+        $result .= '" />';
+        $result .= '</a>'."\n";
+
+        return $result;
+    }
+
+ 
+
+
+    /*
+    * @method href 
+    * @param $data 
+    * @param $linkText = "" 
+    * @param $target="" { 
+    * @return mixed
+    */
+    public static function href($data, $linkText = "" , $target="") {
+
+        if ($target != "") $target = ' target="'.$target.'" ';
+
+        if ($linkText == "") $linkText = basename($data);
+
+
+        $result  = '<a href="'.$data.'" '.$target.' >';
+        $result .= $linkText;
+        $result .= '</a>';
+
+        return $result;
+    }
+
+
+    /*
+    * @method hrefArray 
+    * @param $array { 
+    * @return mixed
+    */
+    public static function hrefArray($array) {
+
+        $result = array();
+
+        foreach ($array as $key => $value) {
+            $result[$key] = htmlutil::href($value);
+        }
+
+        return $result;
+    }
+
+
+
+    /*
+    * @method div 
+    * @param $data 
+    * @param $class = "" 
+    * @param $style = "" 
+    * @param $alt = "" 
+    * @param $title = "" { 
+    * @return mixed
+    */
+    public static function div($data, $class = "",$style = "", $alt = "", $title = "") {
+
+        if ($class != "") $class = ' class="'.$class.'" ';
+        if ($style != "") $style = ' style="'.$style.'" ';
+        if ($alt   != "") $alt   = ' alt="'  .$alt  .'" ';
+        if ($title != "") $title = ' title="'.$title.'" ';
+
+
+        $result  = "\n".'<div '.$class.' '.$style.' '.$alt.' '.$title.'>';
+        $result .= $data;
+        $result .= '</div>'."\n";
+
+        return $result;
+    }
+
+
+    /*
+    * @method br 
+    * @param $class = "" 
+    * @param $style = "" { 
+    * @return mixed
+    */
+    public static function br($class = "",$style = "") {
+
+        if ($class != "") $class = ' class="'.$class.'" ';
+        if ($style != "") $style = ' style="'.$style.'" ';
+
+        $result  = '<br '.$class.' '.$style.'>'."\n";
+
+        return $result;
+    }
+
+
+    /*
+    * @method brRowBreak 
+    * @param { 
+    * @return mixed
+    */
+    public static function brRowBreak() {
+
+        return htmlutil::br("","clear: left;") ;
+        
+    }
+
+
+
+    /*
+    * @method browser_info 
+    * @param $agent=null 
+    * @return mixed
+    */
+    function browser_info($agent=null)
+    {
+        // reference: http://php.net/manual/en/function.get-browser.php
+
+      if (trim($_SERVER['HTTP_USER_AGENT']) == "") return false;
+
+      // Declare known browsers to look for
+      $known = array('chrome','msie', 'firefox', 'safari', 'webkit', 'opera', 'netscape','konqueror', 'gecko');
+
+      // Clean up agent and build regex that matches phrases for known browsers
+      // (e.g. "Firefox/2.0" or "MSIE 6.0" (This only matches the major and minor
+      // version numbers.  E.g. "2.0.0.6" is parsed as simply "2.0"
+      $agent = strtolower($agent ? $agent : $_SERVER['HTTP_USER_AGENT']);
+      $pattern = '#(?<browser>' . join('|', $known) .
+        ')[/ ]+(?<version>[0-9]+(?:\.[0-9]+)?)#';
+
+      // Find all phrases (or return empty array if none found)
+      if (!preg_match_all($pattern, $agent, $matches)) return array();
+
+      // Since some UAs have more than one phrase (e.g Firefox has a Gecko phrase,
+      // Opera 7,8 have a MSIE phrase), use the last one found (the right-most one
+      // in the UA).  That's usually the most correct.
+      $i = count($matches['browser'])-1;
+
+
+      return array($matches['browser'][$i] => $matches['version'][$i]);
+    }
+
+
+    public static function KMLPlacemarker($name,$desc ,$lat, $lon, $alt)
+    {
+
+$placeMark = <<<PLACEMARK
+<Placemark>
+    <name>$name</name>
+    <description>$desc</description>
+    <LookAt>
+            <longitude>$lon</longitude>
+            <latitude>$lat</latitude>
+            <altitude>$alt</altitude>
+            <heading>0.0</heading>
+            <tilt>0</tilt>
+            <range>100</range>
+            <altitudeMode>relativeToGround</altitudeMode>
+            <gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+    </LookAt>
+    <styleUrl>#msn_ylw-pushpin</styleUrl>
+    <Point>
+            <altitudeMode>absolute</altitudeMode>
+            <coordinates>$lon,$lat,100</coordinates>
+    </Point>
+</Placemark>
+PLACEMARK;
+
+        return $placeMark."\n";
+
+    }
+
+
+    public static function KMLHeader($documentName)
+    {
+$result=<<<KML
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+<name>$documentName</name>
+<StyleMap id="msn_ylw-pushpin">
+        <Pair>
+                <key>normal</key>
+                <styleUrl>#sn_ylw-pushpin</styleUrl>
+        </Pair>
+        <Pair>
+                <key>highlight</key>
+                <styleUrl>#sh_ylw-pushpin</styleUrl>
+        </Pair>
+</StyleMap>
+<Style id="sh_ylw-pushpin">
+        <IconStyle>
+                <scale>1.3</scale>
+                <Icon>
+                        <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+                <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+        </IconStyle>
+</Style>
+<Style id="sn_ylw-pushpin">
+        <IconStyle>
+                <scale>1.1</scale>
+                <Icon>
+                        <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+                <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+        </IconStyle>
+</Style>
+KML;
+
+    return $result;
+
+    }
+
+
+    public static function KMLFooter()
+    {
+        return "</Document></kml>";
+
+    }
+
+
+    public static function KMLPhotoHeader($name)
+    {
+
+$result = <<<STRING
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+STRING;
+
+    return $result;
+
+    }
+
+    public static function KMLPhotoSingle($filename,$lat,$lon, $alt,$href=NULL)
+    {
+
+        $name = util::rightStr($filename, '/',FALSE);
+
+$result = <<<STRING
+<PhotoOverlay>
+	<name>$name</name>
+	<Camera>
+		<longitude>$lon</longitude>
+		<latitude>$lat</latitude>
+		<altitude>$alt</altitude>
+		<heading>0.0</heading>
+		<tilt>0</tilt>
+		<roll>0</roll>
+		<altitudeMode>relativeToGround</altitudeMode>
+		<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+	</Camera>
+	<Style>
+		<IconStyle>
+			<Icon>
+				<href>:/camera_mode.png</href>
+			</Icon>
+		</IconStyle>
+		<ListStyle>
+			<listItemType>check</listItemType>
+			<ItemIcon>
+				<state>open closed error fetching0 fetching1 fetching2</state>
+				<href>http://maps.google.com/mapfiles/kml/shapes/camera-lv.png</href>
+			</ItemIcon>
+			<bgColor>00ffffff</bgColor>
+			<maxSnippetLines>2</maxSnippetLines>
+		</ListStyle>
+	</Style>
+	<Icon>
+		<href>$filename</href>
+	</Icon>
+	<ViewVolume>
+		<leftFov>-25.005</leftFov>
+		<rightFov>25.005</rightFov>
+		<bottomFov>-19.205</bottomFov>
+		<topFov>19.205</topFov>
+		<near>1.05</near>
+	</ViewVolume>
+	<Point>
+		<altitudeMode>relativeToGround</altitudeMode>
+		<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		<coordinates>$lon,$lat,$alt</coordinates>
+	</Point>
+</PhotoOverlay>
+STRING;
+
+    return $result;
+    }
+
+
+    public static function KMLPhotoFooter()
+    {
+$result = <<<STRING
+</kml>
+STRING;
+    return $result;
+
+    }
+
+    public static function locate($find,$contains = null,$drive_letter = null)
+    {
+        // need to cconvert /data/data1/  /data/data2/ and /data/data3/
+        // to /areas/
+        if (!is_null($contains ))
+        {
+            $contains = trim($contains);
+            if ($contains == "") $contains = null;
+        }
+
+        $prefix = "";
+        if (!is_null($drive_letter))
+            $prefix = "file:///$drive_letter:";
+
+        foreach (file::locate($find,$contains ) as $line)
+        {
+            $line = str_replace('/data/data1/', '/areas/', $line);
+            $line = str_replace('/data/data2/', '/areas/', $line);
+            $line = str_replace('/data/data3/', '/areas/', $line);
+
+            if (!util::contains($line, '/areas/')) continue;
+
+            $path = $line;
+            $folder = util::toLastSlash($line);
+            $file = util::fromLastSlash($line);
+
+            $folder_link = '<span><a style="text-decoration:none; color:green;" href="'.$folder.'">'.$folder.'</a></span>';
+            $file_link   = '<span><a style="text-decoration:none; color:red;"   href="'.$path.'">'.$file.'</a></span>';
+
+            $pdf_text_link = "";
+            if (util::contains($file, '.pdf',FALSE))
+            {
+                $p2t = "http://sal-cairns.jcu.edu.au/projects/code/scripts/search/pdf2text?fn=";
+                $pdf_text_link  = ' <span><a style="text-decoration:none; color:purple; font-size: 80%"   href="'.$p2t.$path.'">&nbsp;quick view</a></span>';
+            }
+
+            $result .= $folder_link.'&nbsp/&nbsp'.$file_link.$pdf_text_link.'<br>';
+        }
+
+        return $result;
+
+    }
+
+
+    public static function toFile($html,$filename)
+    {
+        if (is_array($html))
+        {
+            $html = "<html>\n".html_entity_decode(join("\n",$html))."\n</html>\n";
+            file_put_contents($filename, $html);        
+        }
+        else
+        {
+            $html = "<html>\n". html_entity_decode($html)."\n</html>\n";
+            file_put_contents($filename, $html);        
+
+        }
+            
+    }
+
+    
+    
+}
+?>
