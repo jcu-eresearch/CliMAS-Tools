@@ -1,0 +1,29 @@
+root { 
+    display: block;
+}
+
+#ToolBar
+{
+    width: 100%;
+    height: 30px;
+    float: none;
+    clear: both;
+    background-color: black;
+}
+
+.Tool
+{
+    display: block;
+    float: left;
+    width: 150px;
+    height: 20px;
+    background-color: black;
+    color:white;    
+    text-align: center;
+}
+
+.Tool:hover
+{
+    background-color: red;
+    color: yellow;
+}
