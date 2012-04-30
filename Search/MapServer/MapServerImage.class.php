@@ -1,6 +1,7 @@
 <?php
 include_once 'Mapfile.class.php';
 include_once 'MapserverGUI.class.php';
+
 /* 
  * CLASS: 
  *        
@@ -15,6 +16,9 @@ class MapServerImage extends Object {
         if (!file_exists($spatialFilename)) return null;
         $M = new MapServerImage();
         $M->AddLayer($spatialFilename,$attributeColumnName,$layerType);  
+
+        
+        
         $M->save();
         return $M->MapImageLocation();
     }
@@ -111,6 +115,8 @@ class MapServerImage extends Object {
                 $current instanceof MapServerLayerVector;
                 break;
         }
+        
+        
         
         return $current;
         

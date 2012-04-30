@@ -45,7 +45,7 @@ class MapserverGUI extends Object {
     }
     
     
-    private function spatial_extent_from_ms_rect_obj(ms_rect_obj $e)
+    private function spatial_extent_from_ms_rect_obj($e)
     {
         
         $E = new SpatialExtent();

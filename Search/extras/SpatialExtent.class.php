@@ -17,6 +17,7 @@ class SpatialExtent extends Object {
         if (!file_exists($filename)) return null;
         
         $SE = new SpatialExtent($filename);
+        
         return $SE;
     }
     

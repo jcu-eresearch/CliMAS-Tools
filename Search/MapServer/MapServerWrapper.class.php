@@ -49,6 +49,7 @@ class MapServerWrapper extends Object {
     
     public function Extent() 
     {
+        
         return $this->Layers()->Extent();
     }
     

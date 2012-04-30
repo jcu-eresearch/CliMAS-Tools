@@ -1,6 +1,4 @@
 <?php
-include_once configuration::pathToApplicationRoot()."/Search/Finders/Climate/ClimateDataFinder.class.php";
-include_once configuration::pathToApplicationRoot()."/Search/Finders/Climate/ClimateDataFinder.class.php";
 
 /* 
  * CLASS: ClimateDataFinder
@@ -257,6 +255,11 @@ class ClimateDataFinder extends Object implements DataFinder  {
     public function ParentFolder() {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
+    }
+
+    public function Filter() 
+    {
+        
     }
     
     

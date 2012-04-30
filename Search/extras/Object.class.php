@@ -15,6 +15,10 @@ class Object  {
             $this->setPropertyByName("ID",  uniqid('',true));
         else
             $this->setPropertyByName("ID",  $id);
+        
+        $tags = array();
+        $this->setPropertyByName("Tags", $tags );
+        
     }
 
     public function __destruct() {        
@@ -109,6 +113,9 @@ class Object  {
             foreach ($this->property as $key => $value)
             {
                 if (is_bool($value)) $value = ($value) ? configuration::$TRUE : configuration::$FALSE;
+                
+                if (is_array($value))  $value = join (",", $value);
+                
                 $result = str_replace("{".$key."}", $value, $result);
             }
                 
@@ -129,6 +136,41 @@ class Object  {
         foreach ($this->property as $key => $value) 
             $dest->property[$key] = $value;        
     }
+    
+    
+    
+    public function Tags($key = null,$value = null)
+    {
+        if (!is_null($value) && is_null($key)) 
+            throw new Exception("Tags called with NULL key  and some value [{$value}]");
+
+        
+        if (is_null($key) && is_null($value)) return $this->getProperty(); // return all tags
+
+        
+        $tag_array = $this->getProperty();
+        
+        if (!is_null($key) && is_null($value))   // return one of the tags
+        {
+            if (!array_key_exists($key, $tag_array)) return null;  // if the key does not exist then return null
+            return $tag_array[$key];
+        }
+            
+
+        // we have a key and we have a value so set the key value pair and update property
+        if (!is_null($key) && !is_null($value)) 
+        {
+            $tag_array[$key] = $value;
+            $this->setProperty($tag_array);
+        }
+        
+        
+        $result = array();
+        $result[$key] = $value;
+        
+        return $result; // return key value pair
+    }
+    
     
     
 }

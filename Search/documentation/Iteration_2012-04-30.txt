@@ -2,11 +2,21 @@ Iteration 2012-04-30
 ==========================================================
 
 
-New Class FieldDescription(s)
+New Class DataField(s)
 ------------------------------------
 - Used to holder descriptions of fields
 
-Class FieldDescription
+
+interface iField
+
+    VariableName
+    Name
+    DataType
+    Description
+    ExternalReference
+
+
+Class aFieldDescription implements iField
 
     VariableName      [Variable Name String]
     Name              [any text]
@@ -14,6 +24,14 @@ Class FieldDescription
     Description       [any text]
     ExternalReference [any text]
 
+
+
+
+Class DisplayField
+
+    FieldDescription  src
+
+    .
 
 
 
@@ -29,7 +47,7 @@ Class FieldDescription
 
   .FilterNames  - returns list of Names / and data type? accepted by this finder 
 
-  e.g. call to  SpeciesFinder.FilterNames() would result in a keyed array of FieldDescription
+  e.g. call to  SpeciesFinder.FilterNames() would result in a keyed array of DataField
   
   [All] = FieldDescription("All","All species","")
   [Text Filter = NNN ] list of species where contains NNN

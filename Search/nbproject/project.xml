@@ -5,5 +5,11 @@
         <data xmlns="http://www.netbeans.org/ns/php-project/1">
             <name>Search</name>
         </data>
+        <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>ClimateDataFinder</word>
+            <word>DataFinder</word>
+            <word>SpeciesSuitability</word>
+            <word>SpeciesSuitabilityFinder</word>
+        </spellchecker-wordlist>
     </configuration>
 </project>
