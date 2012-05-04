@@ -1,7 +1,7 @@
 <?php
 
 /* 
- * CLASS: ClimateDataFinder
+ * CLASS: SpeciesSuitabilityFinder
  *        
  * Look at the Species Range output folders and pull out Models, Scenarios and Years
  * 
@@ -12,7 +12,7 @@
  * maxentResults.csv - "Equate entropy of thresholded and original distributions logistic threshold"
  *   
  */
-class ClimateDataFinder extends Object implements DataFinder  {
+class FinderSpeciesSuitability extends aFinder {
     
     private $file_tree = null;
     
@@ -257,7 +257,7 @@ class ClimateDataFinder extends Object implements DataFinder  {
         return $this->setProperty(func_get_arg(0));
     }
 
-    public function Filter() 
+    public function Filter($name,$value) 
     {
         
     }

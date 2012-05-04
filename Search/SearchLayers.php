@@ -1,21 +1,23 @@
 <?php 
 include_once 'includes.php';
-include_once 'Finders/Climate/ClimateDataFinder.class.php';
 
 
 $_SESSION['LayerList'] = array_util::Value($_POST, 'LayerList', "");
 
 // Probably better here to use Factory to get the appropriate finder
-$finder = new ClimateDataFinder();
-$finder->ParentFolder('/www/eresearch/source'); // TODO:: need to set as Singleton Object
+$finder = new FinderSpeciesSuitability();
+$finder->ParentFolder('/www/eresearch/source/species'); // TODO:: need to set as Singleton Object
+$finder->Filter("SPECIES", 'GOULFINC');
 $finder->Species('GOULFINC');
 $finder->Find();
 
 // make selector
 $params = array();
-$params['page'] = 'Finders/Climate/ClimateDataDisplay.php';
+$params['page'] = 'SpeciesSuitabilityPage.php';
 $params['species'] = 'GOULFINC';
 
+
+// finder result displayed here
 $layersSelector = matrix::FromTemplate(
                                         $finder->Result(),
                                         '<input type=BUTTON onClick="selectedScenarioModel(this,\'{page}?species={species}&model={RowName}&scenario={ColumnName}\');">',
@@ -110,7 +112,7 @@ $layersSelector = matrix::FromTemplate(
         
     </head>
     <body onload="init()">
-        <h1>Layers</h1>
+        <h1>layer manager</h1>
         <FORM id="LAYERS_FORM"  onsubmit="GetLayerList()" METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
             
             <INPUT class="layer_button_unselected" ID="LB_GOULFINC~1975.asc"                               onclick="UpdateLayerList(this);" TYPE=BUTTON NAME="UserLayers[]" VALUE="GOULFINC~1975.asc" ><br>

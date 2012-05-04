@@ -9,9 +9,49 @@
  * @author jc166922
  */
 class RGB extends Object {
-    
+
+    public static function create()
+    {
+
+        if (func_num_args() == 1)
+        {
+            if (self::isRGB(func_get_arg(0))) return self::createFromRGB(func_get_arg(0));
+            if (is_string(func_get_arg(0))) return self::createFromString(func_get_arg(0));
+            if (func_get_arg(0) instanceof RGB) return self::createFromRGB(func_get_arg(0));
+            if (is_array(func_get_arg(0)))  return self::createFromArray(func_get_arg(0));
+        }
+
+
+        if (func_num_args() == 3)
+        {
+            if (is_int(func_get_arg(0)) && is_int(func_get_arg(1)) && is_int(func_get_arg(2)))
+                return self::createFromRGBValues(func_get_arg(0),func_get_arg(1),func_get_arg(2)); // Three parameters and they are all ints
+        }
+
+
+        return RGB::ColorBlack();
+
+    }
+
+
     public static function createFromString($src)
     {
+        if (util::contains($src, " "))
+        {
+            // space delimited values
+            $split = explode(" ",$src);
+            return self::createFromRGBValues(trim($split[0]),trim($split[1]),trim($split[2]));
+
+        }
+
+        if (util::contains($src, ","))
+        {
+            // comma delimited values
+            $split = explode(",",$src);
+            return self::createFromRGBValues(trim($split[0]),trim($split[1]),trim($split[2]));
+        }
+
+        
         $rgb_array = color::name($src);
         return self::createFromRGBValues($rgb_array[color::$RED],$rgb_array[color::$GREEN],$rgb_array[color::$BLUE]);
     }
@@ -19,6 +59,7 @@ class RGB extends Object {
     
     public static function createFromRGB(RGB $src)
     {
+        $result = new RGB();
         $src instanceof RGB;
         $src->copy($result);  // return a  new RGB with same Property Values
         return $result;
@@ -73,29 +114,6 @@ class RGB extends Object {
         
         return $result;
     }
-    
-    
-    public static function create()
-    {
-        
-        if (func_num_args() == 3)
-        {            
-            if (is_int(func_get_arg(0)) && is_int(func_get_arg(1)) && is_int(func_get_arg(2))) 
-                return self::createFromRGBValues(func_get_arg(0),func_get_arg(1),func_get_arg(2)); // Three parameters and they are all ints
-        }
-        
-        if (func_num_args() == 1)
-        {
-            if (is_string(func_get_arg(0))) return self::createFromString(func_get_arg(0));            
-            if (func_get_arg(0) instanceof RGB) return self::createFromRGB(func_get_arg(0));
-            if (is_array(func_get_arg(0)))  return self::createFromArray(func_get_arg(0));            
-        }
-        
-        
-        return RGB::ColorBlack();
-        
-    }
-    
     
     
     public function __construct($red = -1,$green = -1,$blue = -1) {
@@ -743,15 +761,23 @@ TEXT;
         
     }
     
-    
-    
 
     public static function GradientNames()
     {
 
+
         
         
     }
+
+
+    public static function isRGB($src)
+    {
+        if ($src instanceof RGB) return true;
+        return false;
+    }
+
+
 
     
 }

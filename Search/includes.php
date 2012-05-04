@@ -1,18 +1,14 @@
 <?php
 session_start();
+include_once 'Object.class.php';
 include_once 'configuration.class.php';
+include_once configuration::UtilityClasses();
 
 // include interfaces here
-include_once 'Finders/DataFinder.class.php';
-include_once 'Finders/DataDisplay.class.php';
-
-
-include_once configuration::UtilityClasses();
-include_once 'extras/Object.class.php';
-include_once 'extras/RGB.class.php';
-include_once 'extras/SpatialExtent.class.php';
-include_once 'datas/VisualText.class.php';
-
-include_once 'MapServer/MapServerWrapper.class.php';
+include_once 'Finder/Finder.includes.php';
+include_once 'data/data.includes.php';
+include_once 'output/Output.includes.php';
+include_once 'extras/extras.includes.php';
+include_once 'MapServer/Mapserver.includes.php';
 
 ?>

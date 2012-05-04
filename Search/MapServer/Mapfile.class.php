@@ -350,7 +350,6 @@ OUTPUT;
     }
     
     
-    
     private function style_text(MapServerLayerClassStyle $src)
     {
 

@@ -1,12 +1,12 @@
 <?php
-include_once 'Data.class.php';
+include_once 'aData.class.php';
 /* 
  * CLASS:  DataVisualText
  *        
  * 
  *   
  */
-class VisualText extends Data {
+class VisualText extends aData {
     
     
     public static function create($text = "DataVisualText",$point_size = 12,$colour = null) 
@@ -57,6 +57,13 @@ class VisualText extends Data {
         
         return RGB::cast($this->setProperty($colour));
     }
+    
+    
+    public function toString() 
+    {
+        return $this->Text();
+    }
+
     
     public static function isVisualText($src)
     {

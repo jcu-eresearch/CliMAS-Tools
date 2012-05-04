@@ -1,7 +1,7 @@
 <?php
+include_once 'anOutput.class.php';
 
-
-class ClimateDataDisplay extends Object implements DataDisplay {
+class SpeciesSuitability extends anOutput{
     
     public function __construct() {
         parent::__construct();
@@ -99,6 +99,11 @@ class ClimateDataDisplay extends Object implements DataDisplay {
     {        
         if (func_num_args() == 0) return SpatialExtent::cast($this->getProperty());
         return SpatialExtent::cast($this->setProperty(func_get_arg(0)));
+    }
+
+    public function Source() 
+    {
+        
     }
     
     

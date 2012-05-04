@@ -71,41 +71,70 @@ class MapServerLayers extends Object {
     public function AddLayer($filename,$column_name = null,$LayerType = null)
     {        
         
-        $L = MapServerLayer::create($this, $filename,$column_name,$LayerType);
-        if (is_null($L)) return null;
+        if (!is_array($filename))
+        {
+            echo "<br>Adding one filename {$filename}";
+
+            $L = MapServerLayer::create($this, $filename,$column_name,$LayerType);
+
+            if (is_null($L)) 
+            {
+                echo "<br>Failed to load layer filename [{$filename}]";
+                return null;
+            }
+
+            $this->layers[$L->LayerName()] = $L;
+            $this->Extent(true);
+
+            return $L;
+        }
+        else
+        {
+
+            $result = array();
+            foreach ($filename as $key => $single_filename) 
+            {
+
+
+                if (is_array($column_name)) 
+                    $use_column_name = $column_name;   // use same column name for each filename
+                else
+                    $use_column_name = $column_name[$key];  // macth column name to use to the filename key
+                
+                $L = $this->AddLayer($single_filename, $use_column_name, $LayerType);
+                
+                $result[$key] = $L;
+            }   
+
+            return $result;
+            
+        }
+            
+        return null;
         
-        $this->layers[$L->LayerName()] = $L;
-        
-        $this->Extent(true);
-        
-        return $L;
     }
 
     public function AddPoint($filename,$column_name = null)
     {        
         $L = $this->AddLayer($filename, $column_name, MapServerLayer::$TYPE_POINT);
-        $L instanceof MapServerLayerVector;
         return $L;
     }
 
     public function AddPolygon($filename,$column_name = null)
     {        
         $L = $this->AddLayer($filename, $column_name, MapServerLayer::$TYPE_POLYGON);
-        $L instanceof MapServerLayerVector;
         return $L;
     }
     
     public function AddPolyline($filename,$column_name = null)
     {        
         $L = $this->AddLayer($filename, $column_name, MapServerLayer::$TYPE_LINE);
-        $L instanceof MapServerLayerVector;
-        return $L;
+        return $L; 
     }
     
     public function AddRaster($filename)
     {        
         $L = $this->AddLayer($filename, null, MapServerLayer::$TYPE_RASTER);
-        $L instanceof MapServerLayerRaster;
         return $L;
     }
     

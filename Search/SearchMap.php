@@ -1,12 +1,20 @@
 <?php
 include_once 'includes.php';
-include_once 'MapServer/MapserverGUI.class.php';
-include_once 'MapServer/Mapfile.class.php';
 
 $M = new MapServerWrapper();
-$M->Caption(VisualText::create("Species suitability", 10, "Red"));
 
-$M->Layers()->AddPolyline("/www/eresearch/source/Australia_states/data/Australia_states.shp", "ISLAND_NAM");
+
+$caption = VisualText::create("Species suitability", 10, "Red");
+$M->Caption($caption);
+
+$finder = new FinderContextLayers();
+$finder->UseAction(FinderContextLayers::$SPATIAL_TYPE_POLYLINE);
+
+$finder->Filter("contains","Australia");
+$finder->Filter("contains","AustralianStates");
+$finder->Find();
+
+$context = $M->Layers()->AddLayer($finder->Result());
 
 $LayerList = array_util::Value($_SESSION, 'LayerList', null);
 
@@ -17,7 +25,7 @@ if (!is_null($LayerList))
     {        
         if ($layer_filename == "") continue;
 
-        $layer_path = "/www/eresearch/source/".str_replace("~", "/output/", $layer_filename);
+        $layer_path = "/www/eresearch/source/species/".str_replace("~", "/output/", $layer_filename);
         
         $current = $M->Layers()->AddLayer($layer_path);
         

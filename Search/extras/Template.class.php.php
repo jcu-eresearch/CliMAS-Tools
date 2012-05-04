@@ -32,7 +32,8 @@ class TemplateClass extends Object {
     public function ReadOnlyProperty() {
         return $this->getProperty();
     }
-    
+
+
     
 }
 

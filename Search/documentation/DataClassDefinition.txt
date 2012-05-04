@@ -1,0 +1,31 @@
+New Class DataField(s)
+------------------------------------
+- Used to holder descriptions of fields
+
+
+interface iField
+
+    VariableName
+    Name
+    DataType
+    Description
+    ExternalReference
+
+
+Class aFieldDescription implements iField
+
+    VariableName      [Variable Name String]
+    Name              [any text]
+    DataType          [String | Number | List | Tree | Query | File | Matrix]
+    Description       [any text]
+    ExternalReference [any text]
+
+
+
+
+Class DisplayField
+
+    FieldDescription  src
+
+    .
+

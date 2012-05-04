@@ -138,40 +138,60 @@ class Object  {
     }
     
     
-    
-    public function Tags($key = null,$value = null)
+
+    /*
+     * Overloads
+     * ()            = return Tags array
+     * ($key)        = return Value of this Tag
+     * ($key,$value) = Add new Tag ($key) and set it's value ot ($value)
+     * ($array)      = Foreach the array and add tags as per  $array's key/values
+     *
+     */
+    public function Tags()
     {
-        if (!is_null($value) && is_null($key)) 
-            throw new Exception("Tags called with NULL key  and some value [{$value}]");
 
-        
-        if (is_null($key) && is_null($value)) return $this->getProperty(); // return all tags
+        if (func_num_args() == 0) return $this->getProperty(); // return all tags
 
-        
-        $tag_array = $this->getProperty();
-        
-        if (!is_null($key) && is_null($value))   // return one of the tags
+        if (func_num_args() == 1 && !is_array(func_get_arg(0)))
         {
-            if (!array_key_exists($key, $tag_array)) return null;  // if the key does not exist then return null
-            return $tag_array[$key];
+            // single
+            $tag_array = $this->getProperty();
+            if (!array_key_exists(func_get_arg(0), $tag_array)) return null;  // if the key does not exist then return null
+            return $tag_array[func_get_arg(0)];
         }
-            
 
-        // we have a key and we have a value so set the key value pair and update property
-        if (!is_null($key) && !is_null($value)) 
+        // they sent an array as the first parameter - so assum they want to add this array as tags
+        if (func_num_args() == 1 && is_array(func_get_arg(0)))
         {
-            $tag_array[$key] = $value;
+            $tag_array = $this->getProperty();
+            foreach (func_get_arg(0) as $key => $value)
+            {
+                $tag_array[$key] = $value;
+                $this->setProperty($tag_array);
+            }
+        }
+
+
+        // two parameters - so add new tag with Key and Value
+        if (func_num_args() >= 2)
+        {
+            $tag_array = $this->getProperty();
+            $tag_array[func_get_arg(0)] = func_get_arg(1);
             $this->setProperty($tag_array);
         }
+
         
-        
-        $result = array();
-        $result[$key] = $value;
-        
-        return $result; // return key value pair
     }
+
     
-    
+
+    public function InitaliseByArray($src)
+    {
+        if (!is_array($src)) return null;
+
+        foreach ($src as $key => $value)
+            $this->setPropertyByName($key, $value);
+    }
     
 }
 
