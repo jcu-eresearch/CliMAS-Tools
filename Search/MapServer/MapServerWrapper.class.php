@@ -11,9 +11,9 @@ class MapServerWrapper extends Object {
 
         $this->setPropertyByName("MapfilePathname", $this->getMapfilePathname());
         
-        $this->setPropertyByName("OutputImageType",configuration::imageTypePNG());
-        $this->setPropertyByName("OutputImageWidth",configuration::imageWidth());
-        $this->setPropertyByName("OutputImageHeight",configuration::imageHeight());
+        $this->setPropertyByName("OutputImageType",MapServerConfiguration::imageTypePNG());
+        $this->setPropertyByName("OutputImageWidth",MapServerConfiguration::imageWidth());
+        $this->setPropertyByName("OutputImageHeight",MapServerConfiguration::imageHeight());
         $this->setPropertyByName("OutputImageBackgroundColour", new RGB() );
         $this->setPropertyByName("Shapepath", "");
         
@@ -31,9 +31,11 @@ class MapServerWrapper extends Object {
 
     private function getMapfilePathname()
     {
-        $result = configuration::pathToMapfiles().configuration::osPathDelimiter().
+
+
+        $result = MapServerConfiguration::pathToMapfiles().configuration::osPathDelimiter().
                   $this->ID().configuration::osExtensionDelimiter().
-                  configuration::mapfileExtension();
+                  MapServerConfiguration::mapfileExtension();
         
         return $result;
     }
@@ -66,7 +68,7 @@ class MapServerWrapper extends Object {
         $type = func_get_arg(0); 
         
         // if they ask for an unknown type reset it to PNG
-        if (!array_key_exists($type, configuration::imageTypes()))  $type = configuration::imageTypePNG ();        
+        if (!array_key_exists($type, MapServerConfiguration::imageTypes()))  $type = MapServerConfiguration::imageTypePNG ();
         return  $this->setProperty($type);
     }
 
@@ -83,8 +85,8 @@ class MapServerWrapper extends Object {
         
         // if width set to out of bounds chnage to default values
         $value = func_get_arg(0); 
-        if ($value < configuration::imageMinWidth()) $value = configuration::imageMinWidth();
-        if ($value > configuration::imageMaxWidth()) $value = configuration::imageMaxWidth();
+        if ($value < MapServerConfiguration::imageMinWidth()) $value = MapServerConfiguration::imageMinWidth();
+        if ($value > MapServerConfiguration::imageMaxWidth()) $value = MapServerConfiguration::imageMaxWidth();
         
         return  $this->setProperty($value);
     }
@@ -95,8 +97,8 @@ class MapServerWrapper extends Object {
         if (func_num_args() == 0) return $this->getProperty();        
         
         $value = func_get_arg(0); 
-        if ($value < configuration::imageMinHeight()) $value = configuration::imageMinHeight();
-        if ($value > configuration::imageMaxHeight()) $value = configuration::imageMaxHeight();
+        if ($value < MapServerConfiguration::imageMinHeight()) $value = MapServerConfiguration::imageMinHeight();
+        if ($value > MapServerConfiguration::imageMaxHeight()) $value = MapServerConfiguration::imageMaxHeight();
         
         return  $this->setProperty($value);
     }

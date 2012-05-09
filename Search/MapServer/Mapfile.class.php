@@ -60,7 +60,7 @@ class Mapfile extends Object{
     
     private function extent_string()
     {
-        $result = $this->Extent()->asFormattedString("{West} {South} {East} {North}");
+        $result = $this->Extent()->asFormattedString(MapServerConfiguration::CoordinatesFormat());
         return $result;
     }
     
@@ -77,27 +77,27 @@ class Mapfile extends Object{
     private function image_color() 
     {
         
-        return $this->Wrapper()->OutputImageBackgroundColour()->asFormattedString("{Red} {Green} {Blue}");
+        return $this->Wrapper()->OutputImageBackgroundColour()->asFormattedString(MapServerConfiguration::ColourFormat());
     }
 
     private function fontset() 
     {
-        return configuration::pathToMapFonts();
+        return MapServerConfiguration::pathToMapFonts();
     }
     
     private function symbolset() 
     {
-        return configuration::pathToMapSymbols();
+        return MapServerConfiguration::pathToMapSymbols();
     }
 
     private function imagePath() 
     {
-        return configuration::pathToImages();
+        return MapServerConfiguration::pathToImages();
     }
 
     private function imageURL() 
     {
-        return configuration::pathToImagesWeb();
+        return MapServerConfiguration::pathToImagesWeb();
     }
     
     
@@ -304,7 +304,7 @@ OUTPUT;
             $caption instanceof VisualText;
             $text = $caption->Text();
             $point_size = $caption->PointSize();
-            $colour = $caption->Colour()->asFormattedString("{Red} {Green} {Blue}");            
+            $colour = $caption->Colour()->asFormattedString(MapServerConfiguration::ColourFormat());
         }
         
         

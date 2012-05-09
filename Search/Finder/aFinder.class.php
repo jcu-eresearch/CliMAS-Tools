@@ -20,9 +20,19 @@ interface iFinder {
 class aFinder extends Object implements iFinder  {
     //put your code here
 
-    public function __construct() { 
-        parent::__construct();        
-        
+    /*
+     * All action methods must start with this 
+     */
+    private static $ACTION_METHOD_PREFIX = "Action";
+    private static $ACTION_DEFAULT = "Default";
+
+
+    public function __construct($child) {
+        $this->Actions(get_class($child));
+        parent::__construct();
+        $this->Name(__CLASS__);
+
+
     }
     
     public function __destruct() {
@@ -33,7 +43,19 @@ class aFinder extends Object implements iFinder  {
     
     public function Find()
     {
-        throw new Exception("{$this->Name()} Find has not been imnplemented");
+
+        if ( is_null($this->UseAction()) ) $this->UseAction(self::$ACTION_DEFAULT) ;
+
+        $action_method = self::$ACTION_METHOD_PREFIX.$this->UseAction();
+
+        if (!method_exists($this, $action_method))
+        {
+            echo "A method for [{$this->UseAction()}] defined as {$action_method}  does not exist";
+            return null;
+        }
+
+        $this->Result($this->$action_method());
+
     }
     
     
@@ -73,41 +95,52 @@ class aFinder extends Object implements iFinder  {
         
         return $result; // return key value pair
     }
-    
 
     
     /*
      * Actions is a list of available actions for this filter
-     * each filter action will be added to this list./
-     */
-    protected $actions = array();
-    
-    public function Actions()
+     */    
+    public function Actions($class_name = null)
     {
-        return $this->actions; // return key value pair
+
+        ActionFactory::Actions($this);
+
+
+//        $methods = array_flip(array_util::ElementsThatContain(get_class_methods($class_name),self::$ACTION_METHOD_PREFIX));
+//        unset($methods["Actions"]); // remove this method
+//        unset($methods["UseAction"]); // remove this method
+//
+//        return $methods; // return key value pair
+    }
+    
+    /*
+     * An action is something this finder will do with the Filters
+     */
+    public function UseAction() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
     }
 
     /*
-     * Class that extent Finder will add actions that that finder supports
-     * - wo9uld have been nice to go down another level - but too much  structure muight be an issue
+     * A default action will be done if no Action was passed to FinderFactory
+     *
+     * Override this method in your classes
+     *
+     * YOu can always return the the result of another action as the DActionDefault
+     *
+     * e.g.
+     *
+     * public function ActionDefault() 
+     * {
+     *  return $this->ActionOther();
+     * }
+     *
+     *
      */
-    protected function addAction($action_name)
-    {
-        $this->actions[$action_name] = $action_name;
+    public function ActionDefault() {
+        return null;
     }
-    
-    
-    /*
-     * An action is something this fider will do with the Filters
-     */
-    protected $useAction = null;
-    public function UseAction($action_name)
-    {
-        if (!array_key_exists( $action_name,$this->actions)) return null;
-        $this->useAction = $action_name;
-        return $this->useAction; // return key value pair
-    }
-    
     
 }
 

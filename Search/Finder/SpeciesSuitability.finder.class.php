@@ -12,12 +12,13 @@
  * maxentResults.csv - "Equate entropy of thresholded and original distributions logistic threshold"
  *   
  */
-class FinderSpeciesSuitability extends aFinder {
+class SpeciesSuitabilityFinder extends aFinder {
     
     private $file_tree = null;
     
     public function __construct() { 
-        parent::__construct();        
+        parent::__construct();
+        $this->Name(__CLASS__);
         
     }
     

@@ -3,16 +3,11 @@ include_once 'includes.php';
 
 $M = new MapServerWrapper();
 
-
 $caption = VisualText::create("Species suitability", 10, "Red");
 $M->Caption($caption);
 
-$finder = new FinderContextLayers();
-$finder->UseAction(FinderContextLayers::$SPATIAL_TYPE_POLYLINE);
+$finder = FinderFactory::Execute("ContextLayer","AustraliaStates");
 
-$finder->Filter("contains","Australia");
-$finder->Filter("contains","AustralianStates");
-$finder->Find();
 
 $context = $M->Layers()->AddLayer($finder->Result());
 

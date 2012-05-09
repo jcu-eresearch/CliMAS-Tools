@@ -21,6 +21,10 @@
     <iframe ID="GUI" src="SearchMap.php" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" >
     </iframe>
 
+    <iframe ID="Selector" src="SearchSelection.php" width="600" height="400" frameBorder="0" border="0" style="overflow:auto; float:left;" >
+    </iframe>
+
+
     <iframe ID="Layers" src="SearchLayers.php" width="600" height="600" frameBorder="0" border="0" style="overflow:auto; float:left;" >
     </iframe>
 

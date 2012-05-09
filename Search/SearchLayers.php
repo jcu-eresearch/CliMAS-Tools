@@ -13,7 +13,7 @@ $finder->Find();
 
 // make selector
 $params = array();
-$params['page'] = 'SpeciesSuitabilityPage.php';
+$params['page'] = 'SpeciesSuitability.page.php';
 $params['species'] = 'GOULFINC';
 
 

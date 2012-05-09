@@ -21,8 +21,6 @@ Class aFieldDescription implements iField
     ExternalReference [any text]
 
 
-
-
 Class DisplayField
 
     FieldDescription  src

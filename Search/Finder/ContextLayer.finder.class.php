@@ -11,32 +11,17 @@
  * 
  *   
  */
-class FinderContextLayers extends aFinder  {
+class ContextLayerFinder extends aFinder  {
     
     
     public function __construct() { 
-        parent::__construct();        
-        $this->addAction(self::$SPATIAL_TYPE_POLYLINE);
-        
+        parent::__construct($this);
+        $this->Name(__CLASS__);
+
     }
     
     public function __destruct() {
         parent::__destruct();
-        
-    }
-    
-    
-    public function Find()
-    {
-        
-        switch ($this->useAction) {
-            case self::$SPATIAL_TYPE_POLYLINE:
-                return $this->Polylines();
-                break;
-
-            default:
-                break;
-        }
         
     }
 
@@ -46,16 +31,23 @@ class FinderContextLayers extends aFinder  {
      * use filter list as Filter In
      * 
      */
-    public function Polylines()
+    public function ActionAustraliaStates()
     {
         // here we can use the filters to find more specific Polylines
 
         $result = array();
         $result[] = "/www/eresearch/source/context/Australia/AustralianStates.shp";
-        $this->Result($result);
+        return $result;
         
     }
-    
+
+    public function ActionDefault()
+    {
+        // here we can use the filters to find more specific Polylines
+        return $this->ActionAustraliaStates();
+    }
+
+
     public static $FILE_NAME = "FILENAME";
     public static $ATTRIBUTE_COLUMN_NAME = "ATTRIBUTE_COLUMN_NAME";
     

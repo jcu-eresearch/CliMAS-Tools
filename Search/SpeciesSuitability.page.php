@@ -1,14 +1,5 @@
 <?php 
-include_once '../../configuration.class.php';
-include_once '../../includes.php';
-include_once configuration::UtilityClasses();
-
-include_once '../../extras/Object.class.php';
-include_once '../DataFinder.class.php';
-include_once '../DataDisplay.class.php';
-include_once 'ClimateDataFinder.class.php';
-include_once 'ClimateDataDisplay.class.php';
-include_once '../../MapServer/MapServerImage.class.php';
+include_once 'includes.php';
 
 $F = new ClimateDataFinder();
 $F->ParentFolder('/www/eresearch/source'); // TODO:: need to set as Singleton Object

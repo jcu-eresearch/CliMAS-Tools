@@ -50,18 +50,18 @@ class MapServerLayers extends Object {
         foreach ($this->layers as $layer_name => $layer) 
         {
             $layer instanceof MapServerLayer;  // type hint
-            $extent_matrix[configuration::NORTH()][$layer_name] = $layer->North();
-            $extent_matrix[configuration::SOUTH()][$layer_name] = $layer->South();
-            $extent_matrix[configuration::EAST() ][$layer_name] = $layer->East();
-            $extent_matrix[configuration::WEST() ][$layer_name] = $layer->West();
+            $extent_matrix[MapServerConfiguration::NORTH()][$layer_name] = $layer->North();
+            $extent_matrix[MapServerConfiguration::SOUTH()][$layer_name] = $layer->South();
+            $extent_matrix[MapServerConfiguration::EAST() ][$layer_name] = $layer->East();
+            $extent_matrix[MapServerConfiguration::WEST() ][$layer_name] = $layer->West();
         }
         
         // update map extent
         $this->extent = new SpatialExtent();
-        $this->extent->North(max($extent_matrix[configuration::NORTH()]));
-        $this->extent->South(min($extent_matrix[configuration::SOUTH()]));
-        $this->extent->East (min($extent_matrix[configuration::EAST()]));
-        $this->extent->West (max($extent_matrix[configuration::WEST()]));
+        $this->extent->North(max($extent_matrix[MapServerConfiguration::NORTH()]));
+        $this->extent->South(min($extent_matrix[MapServerConfiguration::SOUTH()]));
+        $this->extent->East (min($extent_matrix[MapServerConfiguration::EAST()]));
+        $this->extent->West (max($extent_matrix[MapServerConfiguration::WEST()]));
         
         return $this->extent;
         
@@ -73,8 +73,6 @@ class MapServerLayers extends Object {
         
         if (!is_array($filename))
         {
-            echo "<br>Adding one filename {$filename}";
-
             $L = MapServerLayer::create($this, $filename,$column_name,$LayerType);
 
             if (is_null($L)) 
