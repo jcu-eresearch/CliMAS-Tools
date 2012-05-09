@@ -1,5 +1,5 @@
 <?php
-include_once 'includes.php';
+
 
 class gnuplot 
 {
@@ -21,7 +21,7 @@ class gnuplot
         $this->property['DataSeries']       = array();
         $this->property['OutputImage']      = '/tmp/php_gnuplot_image.png';
         $this->property['ImageWidth']       = 1200;
-        $this->property['ImageHeight']      = 600;
+        $this->property['ImageHeight']      = 1200;
 
         $this->property['tmargin']          = 4;
         $this->property['bmargin']          = 9;

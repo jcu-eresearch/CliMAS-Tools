@@ -1,8 +1,7 @@
 <?php
 session_start();
 
-    include_once 'util.class.php';
-    include_once 'file.class.php';
+    include_once 'includes.php';
 
     if (!array_key_exists("name", $_GET)) return;
 

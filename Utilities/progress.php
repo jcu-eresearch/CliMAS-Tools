@@ -12,7 +12,7 @@ class progress {
         $this->fields['total'] = $total;
         $this->fields['step_size']  = $step_size;
         $this->fields['current_step']  = $start;
-        $this->fields['previous_step']  = $start - $step;
+        $this->fields['previous_step']  = $start;
         $this->fields['current_percent']  = 1;
         $this->fields['previous_percent']  = 0;
         $this->fields['report']  = $report;        

@@ -1,18 +1,4 @@
-
 <?php
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-include_once 'util.class.php';
-include_once 'file.class.php';
-
-/**
- * Description of documentIt
- *
- * @author jc166922
- */
 class documentIt {
 
 

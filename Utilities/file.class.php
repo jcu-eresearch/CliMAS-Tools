@@ -1,10 +1,5 @@
 <?php
-include_once 'includes.php';
-/**
- * Description of file_class
- *
- * @author Person
- */
+
 class file {
 
 
@@ -104,7 +99,7 @@ class file {
     */
     public static function mkdir_safe($pathname)
     {
-        if (is_dir($pathnam)) return; // if it already exists then don't do it
+        if (is_dir($pathname)) return; // if it already exists then don't do it
         @mkdir($pathname,0777,true);
     }
 
@@ -375,7 +370,7 @@ class file {
     public static function find_files_with_links($path)
     {
         $result = array();
-        exec('find -L '.$path,&$result);
+        exec('find -L '.$path,$result);
         sort($result);
         return $result;
     }
@@ -385,7 +380,7 @@ class file {
         $result = array();
         
         $cmd = "find $path | grep -i '{$filter}'";
-        exec($cmd, &$result);
+        exec($cmd, $result);
         return $result;
     }
     
@@ -400,6 +395,9 @@ class file {
     */
     public static function arrayFilter($src, $mustHave)
     {
+        
+        if (is_array($mustHave)) return self::arrayFilterMustHaveArray($src, $mustHave);
+        
         $result = array();
 
         foreach ($src as $key => $value)
@@ -415,6 +413,15 @@ class file {
         return $result;
     }
 
+    
+    private static function arrayFilterMustHaveArray($src, $mustHaves)
+    {
+        $sub_result = $src;
+        foreach ($mustHaves as $mustHave) 
+            $sub_result = self::arrayFilter($sub_result, $mustHave);
+        
+    }
+    
 
     /*
     * @method arrayFilterOut 
@@ -440,7 +447,12 @@ class file {
     }
 
 
-
+    public static function ClassFiles($startPath,$path_sep = "/")
+    {
+        $file_tree = self::file_tree_filtered($startPath, $path_sep, ".class.php");
+        return $file_tree;
+    }
+    
 
     // i am filtereing out .svn  as well
 
@@ -511,7 +523,7 @@ class file {
             if(is_dir($dir) && $file != '.' && $file !='..' )
             {
                 $handle = @opendir($dir) or die("unable to open file $file");
-                self::list_dir($dir, &$result,$path_sep);
+                self::list_dir($dir, $result,$path_sep);
             }
             elseif ($file != '.' && $file !='..')
             {
@@ -523,7 +535,15 @@ class file {
         closedir($dir_handle);
 
     }
-
+    
+    public static function nthLines($filename, $start_line = 1,$num_lines = 10)
+    {
+        $result = array();
+        exec("sed -n {$start_line},{$num_lines}p '{$filename}' ",$result);
+        
+        return $result;
+    }
+    
 
     public static function nthLine($filename, $lineNumber)
     {
@@ -658,6 +678,20 @@ class file {
     {
         return exec("pwd");
     }
+
+    /*
+     * Returns the folder(directory) of the script $src
+     * Call with NO parameters will return the folder where THIS script is located
+     *
+     * best way to call this method is   file::currentScriptFolder(__FILE__)
+     * it will then return the folder of the script you are running
+     *
+     */
+    public static function currentScriptFolder($src = __FILE__)
+    {
+        return dirname($src);
+    }
+
 
     public static function matlab2ascii($input,$output)
     {
@@ -826,10 +860,10 @@ class file {
     }
 
     
-    public static function random_filename($folder = '/tmp') 
+    public static function random_filename($folder = "/tmp") 
     {
-        return tempnam($folder, "temp_php_");
-        
+        $result = $folder."/".uniqid();
+        return $result;
     }
 
     public static function copy($source, $dest,$overwrite) 
@@ -927,6 +961,20 @@ class file {
         ftp_mkdir($conn_id, $dirname);
         ftp_chmod($conn_id, 757, $dirname); // read & write for everyone
         ftp_quit($conn_id);
+    }    
+    
+    /*
+     * Retrun Filename compoent - no path no extension
+     */
+    public static function filenameOnly($pathname) 
+    {
+        $path_parts = pathinfo($pathname);
+        
+        $result = $path_parts['basename'];
+        if (array_key_exists('extension', $path_parts))
+            $result = str_replace(".".$path_parts['extension'], "", $path_parts['basename']);
+        
+        return $result;
     }    
     
     

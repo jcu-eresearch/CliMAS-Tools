@@ -1,5 +1,5 @@
 <?php
-include_once 'includes.php';
+
 class util {
 
     /*
@@ -34,8 +34,6 @@ class util {
         $result = `ifconfig '.$networkDevice.' | head -n 2 | tail -n 1 | sed 's/:/\n/g' | head -n 2 | tail -n 1 | sed 's/ /\n/g' | head -n 1 | head -n 1 | sed 's/\n//g'`;
         return $result;
     }
-
-
 
 
 
@@ -721,6 +719,8 @@ SQL;
     public static function midStr($src,$from = null,$to = null,$must_contain = false)
     {
         
+        if (is_array($src)) 
+            return self::midStrArray($src,$from,$to,$must_contain);
         
         // if it must conatin to and from then check them
         if ($must_contain)
@@ -745,6 +745,28 @@ SQL;
 
     }
 
+    /*
+    * @method midStr 
+    * @param $src 
+    * @param $from 
+    * @param $to 
+    * @return mixed
+    */
+    public static function midStrArray($src,$from = null,$to = null,$must_contain = false)
+    {
+        
+        $result = array();
+        foreach ($src as $key => $value) 
+        {
+            $v = self::midStr($value,$from,$to,$must_contain);
+            if (!is_null($v)) $result[$key] = $v;
+        }
+        
+        return $result;
+
+    }
+    
+    
 
 
     /*
@@ -778,6 +800,8 @@ SQL;
     */
     public static function leftStr($src,$toChar,$includeDelim = TRUE)
     {
+        if(is_array($src)) return self::leftStrArray($src, $toChar, $includeDelim);
+        
         $pos = strpos($src, $toChar);
 
         if ($pos === FALSE) return $src;
@@ -791,6 +815,18 @@ SQL;
 
     }
 
+    public static function leftStrArray($src,$toChar,$includeDelim = TRUE)
+    {
+        
+        $result = array();
+        foreach ($src as $key => $value) 
+            $result[$key] = self::leftStr($value,$toChar,$includeDelim);
+
+        return $result;
+
+    }
+    
+    
 
     /*
     * @method rightStr 
@@ -1032,5 +1068,16 @@ SQL;
     }
 
 
+        /*
+    * @method scriptName 
+    * @return mixed
+    */
+    public static function string($src,$default = "")
+    {
+        if (!is_null($src)) return $src;
+        return $default;
+    }
+
+    
 }
 ?>

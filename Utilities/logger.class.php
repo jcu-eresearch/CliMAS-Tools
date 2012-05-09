@@ -1,11 +1,11 @@
 <?php
-include_once 'includes.php';
 
 class logger
 {    
 
     public static $display = true;
     public static $logged_called = true;
+    public static $html = false;
     
     public static function text($text,$delim = "\n")
     {
@@ -14,7 +14,10 @@ class logger
         {
             $text = trim($text);
             $str = datetimeutil::now()."|"."{$bt[1]['class']}.{$bt[1]['function']}|".$text."\n";
-            if (self::$display) echo "$str";
+            if (self::$display) 
+                echo (self::$html) ? str_replace("\n", "<br>\n", $str) : $str;
+            
+            
             file_put_contents(self::filename(),$str , FILE_APPEND);            
         }
         else
@@ -23,7 +26,9 @@ class logger
             {
                 $single_text = trim($single_text);
                 $str = datetimeutil::now()."|"."{$bt[1]['class']}.{$bt[1]['function']}| $key => $single_text{$delim}";
-                if (self::$display) echo "$str";
+                if (self::$display) 
+                    echo (self::$html) ? str_replace("\n", "<br>\n", $str) : $str;
+                
                 file_put_contents(self::filename(),$str , FILE_APPEND);            
             }
         }
@@ -36,7 +41,10 @@ class logger
         {
             $text = trim($text);
             $str = datetimeutil::now()."|"."{$bt[1]['class']}.{$bt[1]['function']}| ERROR:: ".$text."\n";
-            if (self::$display) echo "$str";
+            if (self::$display) 
+                echo (self::$html) ? str_replace("\n", "<br>\n", $str) : $str;
+                
+            
             file_put_contents(self::filename(),$str , FILE_APPEND);
             file_put_contents(self::filename_error(),$str , FILE_APPEND);
             
@@ -47,7 +55,9 @@ class logger
             {
                 $single_text = trim($single_text);
                 $str = datetimeutil::now()."|"."{$bt[1]['class']}.{$bt[1]['function']}| ERROR:: $key => $single_text\n";
-                if (self::$display) echo "$str";
+                if (self::$display) 
+                    echo (self::$html) ? str_replace("\n", "<br>\n", $str) : $str;
+                    
                 file_put_contents(self::filename(),$str , FILE_APPEND);
                 file_put_contents(self::filename_error(),$str , FILE_APPEND);
 
@@ -61,9 +71,24 @@ class logger
         if (self::$logged_called)
         {
             $bt = debug_backtrace();
-            $str = datetimeutil::now()."|"."{$bt[1]['class']}.{$bt[1]['function']}|"."(" .join(",",$bt[1]['args']). ")\n";
+            
+            $class = "{$bt[1]['class']}";
+            $func = "{$bt[1]['function']}";
+            
+            $args = array();
+            foreach ($bt[1]['args'] as $key => $value) 
+            {
+                if (is_array($value))
+                    $args[] = "Array [".count($value)."]";
+                else
+                    $args[] = $value;
+            }
+            
+            
+            $str = datetimeutil::now()."|"."{$class}.{$func}|"."(" .join(",",$args). ")\n";
 
-            if (self::$display) echo "$str"; 
+            if (self::$display) 
+                echo (self::$html) ? str_replace("\n", "<br>\n", $str) : $str;
 
             file_put_contents(self::filename(),$str , FILE_APPEND);            
         }
@@ -81,7 +106,8 @@ class logger
                 $text.
                 "\n-------------------\n";
        
-        if (self::$display) echo "$str\n"; 
+        if (self::$display) 
+            echo (self::$html) ? str_replace("\n", "<br>\n", $str) : $str;
        
         file_put_contents(self::filename(),$str, FILE_APPEND);
     }
@@ -103,7 +129,9 @@ class logger
                 print_r($variable,true).
                 "\n-------------------\n";
         
-        if (self::$display) echo "$str"; 
+        if (self::$display) 
+            echo (self::$html) ? str_replace("\n", "<br>\n", $str) : $str;
+            
         
         file_put_contents(self::filename(),$str, FILE_APPEND);
     }

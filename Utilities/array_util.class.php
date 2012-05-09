@@ -1,10 +1,7 @@
 <?php
-include_once 'includes.php';
+
 class array_util
 {
-    
-    
-    
     
     /*
     * @method arrayAverage
@@ -503,7 +500,9 @@ class array_util
     public static function FirstElementsThatContain($array, $find)
     {        
         $vals = array_values(self::ElementsThatContain($array, $find));
-         return $vals[0];   
+        if (count($vals) == 0 ) return null;
+        
+        return $vals[0];   
     }
     
     
@@ -616,7 +615,7 @@ class array_util
     * @param $findIn
     * @return mixed
     */
-    public static function Value($array, $key,$default)
+    public static function Value($array, $key,$default = null)
     {
         if (array_key_exists($key, $array)) return $array[$key];
         return $default;
@@ -832,7 +831,7 @@ class array_util
         foreach ($array as $value)
         {
             $pair = explode($delim, $value);
-            $result[$pair[0]] = (isset($pair[1])) ? $pair[1] : null;
+            $result[trim($pair[0])] = (isset($pair[1])) ? $pair[1] : null;
         }
         
         return $result;
@@ -899,6 +898,61 @@ class array_util
         
     }
     
+    
+    public static function StripTags($src,$allowed_tags = null)
+    {
+        $result = array();
+        foreach ($src as $key => $value) 
+        {
+            $result[$key] = strip_tags($value,$allowed_tags);            
+        }
+        
+        return $result;
+        
+    }
+    
+    public static function ConvertTags($src,$tag,$to)
+    {
+        $result = array();
+        foreach ($src as $key => $value) 
+        {
+            $result[$key] = str_replace("<{$tag}>", $to, $value);
+        }
+        
+        return $result;
+        
+    }
+    
+
+    public static function html_entity_decode($src)
+    {
+        $result = array();
+        foreach ($src as $key => $value) 
+        {
+            $result[$key] = html_entity_decode($value);
+        }
+        
+        return $result;
+        
+    }
+
+    public static function urldecode($src)
+    {
+        $result = array();
+        foreach ($src as $key => $value) 
+        {
+            $result[$key] = urldecode($value);
+        }
+        
+        return $result;
+        
+    }
+    
+    
+    
+    
+    
+    // 
     
     
 }

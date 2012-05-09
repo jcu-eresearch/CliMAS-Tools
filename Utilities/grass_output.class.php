@@ -1,5 +1,5 @@
 <?php
-include_once 'includes.php';
+
 class grass_output
 {
     
@@ -121,14 +121,14 @@ class grass_output
             {
                 $to_write = (is_numeric($key)) ? $text_line : "$key: $text_line";
                 $adjusted_from_top = $from_top + ($line_count * ($point_size * 1.8));
-                $cmd = "d.text.freetype  path='/opt/openoffice.org/basis3.2/share/fonts/truetype/DejaVuSansMono.ttf' -p -s 'text={$to_write}' east_north=$from_left,{$adjusted_from_top} color=$color size={$point_size} align=ul rotation={$rotation} linespacing=1.1";
+                $cmd = "d.text.freetype  path='/opt/openoffice.org/basis3.2/share/fonts/truetype/DejaVuSansMono.ttf' -p -s 'text={$to_write}' at=$from_left,{$adjusted_from_top} color=$color size={$point_size} align=ul rotation={$rotation} linespacing=1.1";
                 $this->text_commands[] = $cmd;
                 $line_count++;
             }            
         }
         else
         {
-            $cmd = "d.text.freetype  path='/opt/openoffice.org/basis3.2/share/fonts/truetype/DejaVuSansMono.ttf' -p -s 'text={$text}' east_north=$from_left,$from_top color=$color size={$point_size} align=ul rotation={$rotation} linespacing=1.1";
+            $cmd = "d.text.freetype  path='/opt/openoffice.org/basis3.2/share/fonts/truetype/DejaVuSansMono.ttf' -p -s 'text={$text}' at=$from_left,$from_top color=$color size={$point_size} align=ul rotation={$rotation} linespacing=1.1";
             $this->text_commands[] = $cmd;
         }
         

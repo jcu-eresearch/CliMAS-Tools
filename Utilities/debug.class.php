@@ -1,5 +1,5 @@
 <?php
-include_once 'includes.php';
+
 class debug
 {
     //put your code here

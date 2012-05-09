@@ -1,6 +1,4 @@
 <?php
-include_once 'includes.php';
-
 
 class matrix
 {
@@ -142,8 +140,23 @@ class matrix
             $rowToWrite = array();
             foreach ($ucn as $ColumnName)
             {
-                $rowToWrite[$ColumnName] = $row[$ColumnName];
-
+                
+                if (array_key_exists($ColumnName, $row))
+                {
+                    if (is_array($row[$ColumnName]))
+                    {
+                        $rowToWrite[$ColumnName] = "Array [".count($row[$ColumnName])."]";
+                    }
+                    else
+                        $rowToWrite[$ColumnName] = $row[$ColumnName];        
+                    
+                }
+                else
+                {
+                        $rowToWrite[$ColumnName] = "";
+                }
+                
+                
             }
 
             $ritext = ($display_row_id) ? "<td class=\"table_td\">{$rowID}</td> " : "";
@@ -1884,6 +1897,7 @@ class matrix
         else
             $column_values = matrix::RowNames($src);
 
+        
         $valid_rowCount = 0;
         $maxStringLength = 0;
         $numberCount = 0;
@@ -1901,7 +1915,7 @@ class matrix
             $valid_rowCount++; // count rows that actually have a value
         }
 
-        if ( $numberCount >  ($rowCount * 0.8) ) return "DOUBLE"; // if 80% of values are numbers its a number column
+        if ( $numberCount > ($valid_rowCount * 0.8) ) return "DOUBLE"; // if 80% of values are numbers its a number column
 
         $maxStringLength = round($maxStringLength * 3,0);
 
@@ -2036,10 +2050,10 @@ class matrix
             foreach ($lhs_row as $lhs_column_id => $lhs_cell) 
                 $result[$lhs_row_id][$lhs_column_id] = $lhs_cell; // copy row
             
-            if (is_array($rhs_row[$lhs_row_id]))
+            if (is_array($rhs[$lhs_row_id]))
             {
                 // rhs is a matrix
-                foreach ($rhs_row[$lhs_row_id] as $rhs_column_id => $rhs_cell) 
+                foreach ($rhs[$lhs_row_id] as $rhs_column_id => $rhs_cell) 
                     $result[$lhs_row_id][$AppendPrefix.$rhs_column_id] = $rhs_cell; // copy row
             }
             else
@@ -2079,7 +2093,7 @@ class matrix
     {
         
         $lines = array();
-        exec("xlhtml -asc -xp:{$sheet_number} '{$filename}'", &$lines);
+        exec("xlhtml -asc -xp:{$sheet_number} '{$filename}'", $lines);
         
         $result = matrix::fromString(join("\n",$lines), "\t");
         
@@ -2092,7 +2106,7 @@ class matrix
         // count - sheets xlhtml -asc -dp  "caracteristique piezo.xls"
         
         $return = array();
-        exec("xlhtml -asc -dp  '{$filename}'", &$return);
+        exec("xlhtml -asc -dp  '{$filename}'", $return);
         
         // example output
         //There are 4 pages total.
@@ -2117,6 +2131,49 @@ class matrix
         return $result;
         
     }
+    
+    
+    /*
+     * Convert each cell value as per the template
+     * 
+     * @param String $cellTemplate - String with the following components
+     * 
+     * {ColumnName} = changes this the current column name
+     * {RowName}    = changes this the current row name (id)
+     * {CellValue}  = changes this the current cell value
+     * 
+     */
+    public static function FromTemplate($matrix,$cellTemplate,$replacementSet = null)
+    {
+     
+        if (is_null($replacementSet)) $replacementSet = array();
+        
+        $result = array();
+        foreach ($matrix as $matrix_rowID => $matrix_row)
+            foreach ($matrix_row as $matrix_columnid => $matrix_cell)
+            {
+                $newCellValue = $cellTemplate;
+                $newCellValue = str_replace("{ColumnName}", $matrix_columnid, $newCellValue);
+                $newCellValue = str_replace("{RowName}",    $matrix_rowID,    $newCellValue);
+
+                if (!is_array($matrix_cell))                
+                    $newCellValue = str_replace("{CellValue}",  $matrix_cell,     $newCellValue);            
+                
+                foreach ($replacementSet as $replaceKey => $replaceValue) 
+                {
+                    $newCellValue = str_replace("{{$replaceKey}}",$replaceValue,$newCellValue);
+                }
+                
+               
+                $result[$matrix_rowID][$matrix_columnid] = $newCellValue;
+                
+            }
+
+        return $result;
+    }
+
+    
+    
     
 }
 ?>

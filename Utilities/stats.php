@@ -1,5 +1,5 @@
 <?php
-include_once 'includes.php';
+
 class stats
 {
     // Function to calculate square of value - mean
@@ -226,5 +226,45 @@ class stats
 
     }
 
+    
+    public static function normal_distribution($mean, $sd, $min = null, $max = null, $count = 12.0)
+    {
+        if (is_null($min)) $min = $mean - ($sd * 3.0);
+        if (is_null($max)) $max = $mean + ($sd * 3.0);
+        
+        $max = max($min,$max);
+        $min = min($min,$max);
+        
+        $step = ($max - $min) / $count;
+        
+        $result = array();
+        
+        for ($x = $min; $x <= $max; $x += $step) 
+        {
+            $p = self::normal($x, $mean, $sd);
+            $result["{$x}"] = $p;
+        }
+
+        return $result;
+        
+    }
+    
+    private static function normal($x, $mean, $sd)
+    {        
+        
+        $pis = sqrt(2 * pi());
+        $p1 = 1 / ($sd * $pis );
+        $p2t = pow(($x - $mean),2 );
+        $p2b = 2 * (pow($sd,2)) ;
+        
+        $p2 = -1 * ( $p2t/$p2b )  ;
+
+        $f = $p1 * exp($p2);
+        
+        $result = $f;
+        return $result;
+    }
+    
+    
 }
 ?>

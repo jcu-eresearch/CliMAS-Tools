@@ -1,6 +1,4 @@
 <?php
-include_once 'includes.php';
-include_once 'color.class.php';
 
 class draw {
 

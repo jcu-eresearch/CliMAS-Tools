@@ -1,5 +1,4 @@
 <?php
-include_once 'includes.php';
 include_once 'grass_output.class.php';
 class GRASS {
     
@@ -34,7 +33,7 @@ class GRASS {
         //logger::text("$cmd");
         
         $result = array();
-        exec("$cmd",&$result);
+        exec("$cmd",$result);
         return $result;
     }
      
@@ -677,9 +676,9 @@ class GRASS {
             return null;
         }
         
-        $output = $this->GRASS_COMMAND("r.out.gdal input='{$raster}' format=AAIGrid type=Float32 output='{$filename}' createopt='FORCE_CELLSIZE=TRUE'"); 
+        $output = $this->GRASS_COMMAND("r.out.gdal input='{$raster}' nodata=-9999.00 format=AAIGrid type=Float32 output='{$filename}' createopt='FORCE_CELLSIZE=TRUE'"); 
         
-        file_put_contents($filename, str_replace('nan', $null_value, file_get_contents($filename)));
+        // file_put_contents($filename, str_replace('nan', $null_value, file_get_contents($filename)));
         
         return (file_exists($filename));
         

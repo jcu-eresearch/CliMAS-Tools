@@ -1,5 +1,4 @@
 <?php
-include_once 'image_location.class.php';
 
 $loc = image_location::LatLong($argv[1]);
 if (!$loc) return;

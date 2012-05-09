@@ -1,5 +1,5 @@
 <?php
-include_once 'includes.php';
+
 class ascii_grid
 {
     //put your code here

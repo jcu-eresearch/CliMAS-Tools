@@ -1,5 +1,5 @@
 <?php
-include_once 'includes.php';
+
 class database
 {
 
@@ -13,13 +13,11 @@ class database
     public $open_new_connection = false;
     
     private $db     = 'gw_2011';
-    private $host   = 'sal-cairns';
-    private $userID = 'php';
-    private $pwd    = 'run2fast';
+    private $host   = 'localhost';
+    private $userID = 'root';
+    private $pwd    = 'good4you';
     
-    private $insert_block_size = 20;
-    
-    
+    private $insert_block_size = 40;
     
 
     public function __construct($db = null, $host = null, $userID = null, $pwd = null)
@@ -811,13 +809,19 @@ class database
     {
          
         logger::called();
+        
+        $sql_create_db = "create database if not exists $to_db;";
+        $this->update($sql_create_db);
+        
+        if ($drop_table) $this->DropTable($to_db, $tableName);
 
-       if ($drop_table) $this->DropTable($to_db, $tableName);
        
         $column_name_lookup = array(); // store keyed array of old name to new name
        
-        $create_table_sql = $this->matrixToTable_CreateTable( $matrix,$rowID_name, $to_db,$tableName,&$column_name_lookup,$numeric_prefix, $indexes);
-        if ($this->debug_all) logger::text("matrixToTable:: $create_table_sql");
+        $create_table_sql = $this->matrixToTable_CreateTable( $matrix,$rowID_name, $to_db,$tableName,$column_name_lookup,$numeric_prefix, $indexes);
+        // if ($this->debug_all) 
+            logger::text("matrixToTable:: $create_table_sql");
+        
         
         $this->update($create_table_sql); // create table
         
@@ -903,7 +907,8 @@ class database
         
         logger::called();
 
-
+        $result = "";
+        
         $result .= "\nCREATE TABLE  `{$to_db}`.`$tableName`  (";
         $result .= "\n `ID` int(11) NOT NULL auto_increment,";
 
@@ -1262,11 +1267,21 @@ class database
         
         logger::called();
         logger::text("PivotQuery Database.........:  $to_db");
+        
+        
+        $add_db = "create database if not exists {$to_db};";
+        $add_db_result = $this->query($add_db);
+        
+        $add_db_result = print_r($add_db_result,true);
+        
+        logger::text("Add database to sytstem.....:  $to_db  {$add_db_result}");
+        
 
         $sql_result = $this->query($sql);
 
         logger::text("Result Row Count.......: ".count($sql_result));
 
+        
         if (count($sql_result) <= 0) return;
 
         // check to see if Pivot columns exists in resulkt set
@@ -1279,7 +1294,7 @@ class database
             logger::text("\n## ERROR One or more pivot fields have not been selected \n   column = $pivot_column  row = $pivot_row   value =  $pivot_value  summary by = $pivot_operation\n   selected columns: ".join(',',array_keys($first_row)));
             return null;
         }
-        
+
         
         if (!is_null($min_row_count))
         {
@@ -1288,7 +1303,7 @@ class database
 
             // unique value counts for $pivot_row
             $histogram = matrix::ColumnHistogram($sql_result, $pivot_row);  // count per unique value
-
+            
             logger::text( "histogram count = ".count($histogram));
 
             $sql_row_ids_to_remove = array();
@@ -1318,8 +1333,10 @@ class database
         }
 
         logger::text("Pivot Table............: column = $pivot_column  row = $pivot_row   value =  $pivot_value  summary by = $pivot_operation");
+
         
         $pivot = util::sqlPivot($sql_result,$pivot_column,$pivot_row,$pivot_value, $null_value, $pivot_operation,false);
+        
         
         unset($sql_result);
 
@@ -1336,9 +1353,20 @@ class database
         }
 
 
+
         logger::text("Writing to database....: $to_db.$table_name");
 
+        
+        logger::text("pivot....: {$pivot}");
+        logger::text("pivot_row....: {$pivot_row}");
+        logger::text("to_db....: {$to_db}");
+        logger::text("table_name....: {$table_name}");
+        
+        
         $row_count = $this->matrixToTable($pivot,$pivot_row,$to_db, $table_name,$field_prefix ,NULL);
+
+        
+        
         logger::text("Pivot rows.....: $row_count");
 
         unset($pivot);
@@ -1430,7 +1458,7 @@ class database
     public function InsertArrayBulk($db,$table,$array)
     {
           
-        logger::called();
+        if ($this->debug_all)  logger::called();
       
         if (count($array) == 0) return 0;
         
@@ -1469,13 +1497,12 @@ class database
 
         logger::text("GroupBy:: $sql");
 
-        $sql_result = $this->query($sql, $keyColoumn);
+        $sql_result = $this->query($sql, $key_column);
 
         $result = array();
         foreach ($sql_result as $row_id => $row)
-        {
             $result[$row[$key_column]] = $row[$value_column];
-        }
+
         unset($sql_result);
 
         return $result;
@@ -1510,7 +1537,7 @@ class database
        
         $result_array = array();
         foreach ($src as $key => $value)
-            $result_array[] =  (is_numeric($var)) ?  "`$key` = $value" :  "`$key` = '$value'";
+            $result_array[] =  (is_numeric($value)) ?  "`$key` = $value" :  "`$key` = '$value'";
         
         return join(' and ',$result_array);
     }
