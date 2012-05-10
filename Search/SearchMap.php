@@ -6,31 +6,32 @@ $M = new MapServerWrapper();
 $caption = VisualText::create("Species suitability", 10, "Red");
 $M->Caption($caption);
 
-$finder = FinderFactory::Execute("ContextLayer","AustraliaStates");
+$fr = FinderFactory::Result("ContextLayer","Fred");
+
+$context = $M->Layers()->AddLayer($fr);
 
 
-$context = $M->Layers()->AddLayer($finder->Result());
 
-$LayerList = array_util::Value($_SESSION, 'LayerList', null);
+//$LayerList = array_util::Value($_SESSION, 'LayerList', null);
 
-if (!is_null($LayerList))
-{
-    
-    foreach (explode(",", $LayerList) as $layer_filename) 
-    {        
-        if ($layer_filename == "") continue;
-
-        $layer_path = "/www/eresearch/source/species/".str_replace("~", "/output/", $layer_filename);
-        
-        $current = $M->Layers()->AddLayer($layer_path);
-        
-        $current instanceof MapServerLayerRaster;
-        $current->HistogramBuckets(20);
-        $current->ColorTableByStats(RGB::ReverseGradient(RGB::GradientGreenBeige()));  // RGB::ReverseGradient()
-        $current->ColorTableResetFirstElement();   
-    }
-    
-}
+//if (!is_null($LayerList))
+//{
+//
+//    foreach (explode(",", $LayerList) as $layer_filename)
+//    {
+//        if ($layer_filename == "") continue;
+//
+//        $layer_path = "/www/eresearch/source/species/".str_replace("~", "/output/", $layer_filename);
+//
+//        $current = $M->Layers()->AddLayer($layer_path);
+//
+//        $current instanceof MapServerLayerRaster;
+//        $current->HistogramBuckets(20);
+//        $current->ColorTableByStats(RGB::ReverseGradient(RGB::GradientGreenBeige()));  // RGB::ReverseGradient()
+//        $current->ColorTableResetFirstElement();
+//    }
+//
+//}
 
 
 $MF = Mapfile::create($M);

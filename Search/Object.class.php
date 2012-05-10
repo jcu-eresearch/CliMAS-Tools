@@ -38,14 +38,20 @@ class Object  {
         $this->property[$property_name] = $value; // set property value // if they passed value the set that value
         return $this->property[$property_name];  // return current vlaue of property
     }
-    
-    
+
     protected function getProperty() {
         $bt = debug_backtrace(); 
         $property_name = $bt[1]['function'];
         if (!array_key_exists($property_name, $this->property)) $this->property[$property_name] = null; // make the property exist if it does not
         return $this->property[$property_name];  // return current vlaue of property
     }
+
+    protected function getPropertyByName($property_name,$null_value = null)
+    {
+        if (!array_key_exists($property_name, $this->property)) return $null_value;
+        return $this->property[$property_name];  // return current vlaue of property
+    }
+
 
     protected function hasProperty($property_name) {
         
@@ -192,7 +198,22 @@ class Object  {
         foreach ($src as $key => $value)
             $this->setPropertyByName($key, $value);
     }
+ 
     
+    public static function isObject($src)
+    {
+        return ($src instanceof self);
+    }
+
+
+    public static function cast($src)
+    {
+        $src instanceof Object;
+        return $src;
+    }
+
+
+
 }
 
 ?>

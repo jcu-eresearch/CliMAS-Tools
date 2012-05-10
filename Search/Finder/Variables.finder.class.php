@@ -12,7 +12,7 @@ class VariablesFinder extends aFinder  {
     public function __construct() {
         parent::__construct($this);
         $this->Name(__CLASS__);
-
+        $this->DefaultAction("Names");
     }
 
     public function __destruct() {
@@ -20,11 +20,6 @@ class VariablesFinder extends aFinder  {
 
     }
 
-
-    public function ActionDefault()
-    {
-        return $this->ActionNames();
-    }
 
     public function ActionNames()
     {

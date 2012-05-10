@@ -1,7 +1,5 @@
 <?php
-include_once 'MapServerLayerVector.class.php';
-include_once 'MapServerLayerRaster.class.php';
-include_once 'MapServerLayerClasses.class.php';
+include_once 'Mapserver.includes.php';
 
 /**
  * Description of SpatialExtent
@@ -18,8 +16,9 @@ class MapServerLayer extends Object {
     {
         if (is_null($parent))  throw new Exception();  //TODO:Parent (MapServerLayers) is Null
         
-        if (!file_exists($filename)) return null;
-        
+        if (!file_exists($filename)) return null; // todo:: Fail messsage
+
+
         if (is_null($LayerType)) 
         {
             if (spatial_util::isRaster($filename))
@@ -32,18 +31,16 @@ class MapServerLayer extends Object {
             throw new Exception("LayerType Unknown");  
         
         
-        
-        
         $L = null;
         
         switch (strtoupper($LayerType)) {
-            case MapServerLayer::$TYPE_RASTER:
+            case MapServerConfiguration::$SPATIAL_TYPE_RASTER:
                 $L = new MapServerLayerRaster($parent,$filename);
                 break;
             
-            case MapServerLayer::$TYPE_LINE:
-            case MapServerLayer::$TYPE_POINT:
-            case MapServerLayer::$TYPE_POLYGON:
+            case MapServerConfiguration::$SPATIAL_TYPE_LINE:
+            case MapServerConfiguration::$SPATIAL_TYPE_POINT:
+            case MapServerConfiguration::$SPATIAL_TYPE_POLYGON:
                 
                 if (spatial_util::isRaster($filename))
                     throw new Exception("Layer was passed as Vector but it is really a raster : {$filename}");  
@@ -53,7 +50,7 @@ class MapServerLayer extends Object {
 
             
             default:
-                $L = new MapServerLayerVector($parent,$filename,$column_name,  MapServerLayer::$TYPE_LINE); // default shape typ[e is a line
+                $L = new MapServerLayerVector($parent,$filename,$column_name,  MapServerConfiguration::$SPATIAL_TYPE_LINE); // default shape typ[e is a line
                 break;
         }
         
@@ -208,10 +205,6 @@ class MapServerLayer extends Object {
     public static $STATUS_OFF = "OFF";
 
     
-    public static $TYPE_POLYGON = "POLYGON";
-    public static $TYPE_LINE    = "LINE";
-    public static $TYPE_POINT   = "POINT";
-    public static $TYPE_RASTER   = "RASTER";
     
 }
 

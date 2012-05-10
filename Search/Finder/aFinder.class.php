@@ -40,31 +40,24 @@ class aFinder extends Object implements iFinder  {
         
     }
 
-    
+
+    /*
+     * Find the requested action and then run it.
+     * place result into $this->Result
+     */
     public function Find()
     {
+        if ( is_null($this->UseAction()) ) $this->UseAction($this->DefaultAction()) ;
+        $action = ActionFactory::Find($this, $this->UseAction()); // get the class that is defined by this Finder / Action Combo
 
-        if ( is_null($this->UseAction()) ) $this->UseAction(self::$ACTION_DEFAULT) ;
-
-        $action_method = self::$ACTION_METHOD_PREFIX.$this->UseAction();
-
-        if (!method_exists($this, $action_method))
-        {
-            echo "A method for [{$this->UseAction()}] defined as {$action_method}  does not exist";
-            return null;
-        }
-
-        $this->Result($this->$action_method());
-
+        $this->Result($action->Execute());
     }
-    
     
     public function Result()
     {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     } 
-    
 
     
     public function Filter($name = null, $value = null)
@@ -100,17 +93,10 @@ class aFinder extends Object implements iFinder  {
     /*
      * Actions is a list of available actions for this filter
      */    
-    public function Actions($class_name = null)
+    public function Actions()
     {
 
-        ActionFactory::Actions($this);
-
-
-//        $methods = array_flip(array_util::ElementsThatContain(get_class_methods($class_name),self::$ACTION_METHOD_PREFIX));
-//        unset($methods["Actions"]); // remove this method
-//        unset($methods["UseAction"]); // remove this method
-//
-//        return $methods; // return key value pair
+        return ActionFactory::Available($this); //  a list of actions found for this finder
     }
     
     /*
@@ -125,21 +111,11 @@ class aFinder extends Object implements iFinder  {
     /*
      * A default action will be done if no Action was passed to FinderFactory
      *
-     * Override this method in your classes
-     *
-     * YOu can always return the the result of another action as the DActionDefault
-     *
-     * e.g.
-     *
-     * public function ActionDefault() 
-     * {
-     *  return $this->ActionOther();
-     * }
-     *
-     *
      */
-    public function ActionDefault() {
-        return null;
+    public function DefaultAction() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
     }
     
 }

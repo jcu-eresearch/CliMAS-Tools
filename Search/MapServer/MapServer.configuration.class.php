@@ -56,6 +56,12 @@ class MapServerConfiguration {
 
     public static function ColourFormat() { return "{Red} {Green} {Blue}";}
 
+    public static $SPATIAL_TYPE_POLYGON  = "POLYGON";
+    public static $SPATIAL_TYPE_LINE = "LINE";
+    public static $SPATIAL_TYPE_POINT    = "POINT";
+
+    public static $SPATIAL_TYPE_RASTER   = "RASTER";
+
 
 }
 

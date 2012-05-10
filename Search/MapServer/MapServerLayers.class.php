@@ -1,5 +1,5 @@
 <?php
-include_once 'MapServerLayer.class.php';
+//include_once 'Mapserver.includes.php';
 /* 
  * CLASS: MapServerLayers
  *        
@@ -43,7 +43,6 @@ class MapServerLayers extends Object {
         {
             return $this->extent;
         }
-            
         
         // get extent for all layers
         $extent_matrix = array();
@@ -67,50 +66,79 @@ class MapServerLayers extends Object {
         
     }    
     
-    
-    public function AddLayer($filename,$column_name = null,$LayerType = null)
-    {        
-        
-        if (!is_array($filename))
-        {
-            $L = MapServerLayer::create($this, $filename,$column_name,$LayerType);
+    public function AddLayer($src)
+    {
 
-            if (is_null($L)) 
+        // load mulitple objects
+        if (is_array($src))
+        {
+            $result = array();
+            foreach ($src as $key => $element)
+                $result[$key] = $this->AddLayer($element);
+
+            return $result;
+        }
+
+
+
+        if (Object::isObject($src))
+        {
+            $src instanceof Object;
+
+            $filename = $src->getPropertyByName("Filename", null);
+            $attribute = $src->getPropertyByName("Attribute", null);
+            $SpatialDatatype = $src->getPropertyByName("SpatialDatatype", null);
+
+            if (!file_exists($filename))
             {
-                echo "<br>Failed to load layer filename [{$filename}]";
+                echo "<br>File does not exist Failed to load layer filename [{$filename}] "; //TODO:: logg
+                return null;
+            }
+
+            $L = MapServerLayer::create($this, $filename,$attribute,$SpatialDatatype);
+            if (is_null($L))
+            {
+                echo "<br>Failed to load layer from Object " .$src;
                 return null;
             }
 
             $this->layers[$L->LayerName()] = $L;
+
             $this->Extent(true);
 
             return $L;
+
         }
-        else
+
+
+
+        // It's a string so most likely a Filename
+        if (is_string($src))
         {
-
-            $result = array();
-            foreach ($filename as $key => $single_filename) 
+            if (file_exists($src))
             {
+                $L = MapServerLayer::create($this, $src); // default details
 
+                if (is_null($L))
+                {
+                    echo "<br>Failed to load layer filename [{$src}]";
+                    return null;
+                }
 
-                if (is_array($column_name)) 
-                    $use_column_name = $column_name;   // use same column name for each filename
-                else
-                    $use_column_name = $column_name[$key];  // macth column name to use to the filename key
-                
-                $L = $this->AddLayer($single_filename, $use_column_name, $LayerType);
-                
-                $result[$key] = $L;
-            }   
+                $this->layers[$L->LayerName()] = $L;
+                $this->Extent(true);
 
-            return $result;
-            
+                return $L;
+            }
         }
+
+
+
             
         return null;
         
     }
+
 
     public function AddPoint($filename,$column_name = null)
     {        

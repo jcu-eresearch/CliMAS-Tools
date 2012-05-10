@@ -43,9 +43,11 @@ class aData extends Object implements iData{
     }
     
     
-    public function __construct() { 
-        
+    public function __construct($data = null) {
         parent::__construct();
+
+        $this->Data($data);
+
     }
     
     public function __destruct() {    
@@ -75,7 +77,15 @@ class aData extends Object implements iData{
         return ($src instanceof self);
     }
     
-    
+    public static function cast($src)
+    {
+        if (self::isData($src)) return $src;
+
+        $D = new aData();
+        $D->Data($src);
+        return $D;
+    }
+
     
 }
 
