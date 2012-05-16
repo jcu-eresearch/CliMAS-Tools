@@ -15,7 +15,7 @@ class ContextLayerFinder extends aFinder  {
 
     public function __construct() { 
         parent::__construct($this);
-        $this->Name(__CLASS__);
+        $this->Name("ContextLayer");
         $this->DefaultAction("AustralianStates");
     }
     
@@ -23,7 +23,13 @@ class ContextLayerFinder extends aFinder  {
         parent::__destruct();
         
     }
-    
+
+    public function Description()
+    {
+        return "Context Layers available to be added to maps";
+    }
+
+
 }
 
 ?>

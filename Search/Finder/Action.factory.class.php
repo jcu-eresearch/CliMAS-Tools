@@ -68,7 +68,7 @@ class ActionFactory {
         // turn class names into the keys and then strip out the $owner name and make it the cvalue
         $result = array();
         foreach ($action_class_names as $action_class_name)
-            $result[$finders_simple_name."-".$action_class_name] = $finders_simple_name.$action_class_name;
+            $result[$action_class_name] = $finders_simple_name.$action_class_name;
 
 
         return $result;
@@ -122,7 +122,7 @@ class ActionFactory {
             return null;   // Return Null
         }
 
-        $result = new $action_class_name;
+        $result = new $action_class_name();
         $result instanceof iAction;
 
         return $result;

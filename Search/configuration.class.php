@@ -8,7 +8,6 @@ class configuration {
     
     // public static $SEARCH_PHP = "/www/eresearch/TDH-Tools/Search/Search.php";
 
-    
 
     public static function UtilityClasses() {return "/www/eresearch/TDH-Tools/Utilities/includes.php";}
     
@@ -19,6 +18,7 @@ class configuration {
 
     public static function ContextSpatialLayersFolder() {return "/www/eresearch/source/context";}
 
+
     public static function DefaultLayerFinderName() {return "ContextLayer";}
 
     public static function DefaultLayerFinderActionName()
@@ -26,8 +26,6 @@ class configuration {
         return FinderFactory::Find(self::DefaultLayerFinderName())->DefaultAction();
 
     }
-
-
 
 
 

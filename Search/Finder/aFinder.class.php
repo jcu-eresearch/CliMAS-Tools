@@ -13,7 +13,10 @@ interface iFinder {
     
     public function Find();
     
-    public function Result(); 
+    public function Result();
+
+    public function Description();
+
     
 }
 
@@ -33,6 +36,11 @@ class aFinder extends Object implements iFinder  {
     public function __destruct() {
         parent::__destruct();
         
+    }
+
+    public function Description()
+    {
+        throw new Exception("###Finder Description has not be defined");
     }
 
 
@@ -90,7 +98,6 @@ class aFinder extends Object implements iFinder  {
      */    
     public function Actions()
     {
-
         return ActionFactory::Available($this); //  a list of actions found for this finder
     }
     

@@ -13,9 +13,10 @@ class FinderFactory {
     public static function Find($src,$action = null)
     {
 
-        if (!array_key_exists($src, self::Available()))
+        if (!array_key_exists($src.FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER, self::Available()))
         {
-            echo "[$src] is NOT  a Finder Class<br>"; // TODO:: Exception or ??
+
+            echo "[$src".FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER."] is NOT a Finder Class<br>"; // TODO:: Exception or ??
             return null;   // Return Null if we can't find a class
         }
 
@@ -62,10 +63,22 @@ class FinderFactory {
             echo "FAILED: Execute {$src->Name()}<br>";  //TODO: logg
             return null;   // Return Null
         }
-        
 
         $F->Find();
         return $F;
+    }
+
+
+    public static function Description($src,$action = null)
+    {
+        $F = self::Find($src, $action);
+        if (is_null($F))
+        {
+            echo "FAILED: Execute {$src->Name()}<br>";  //TODO: logg
+            return null;   // Return Null
+        }
+        
+        return $F->Description();
     }
 
     public static function Result($src,$action = null)
@@ -84,10 +97,16 @@ class FinderFactory {
 
     public static function Available()
     {
-
-        // look thru list of files in tis foilder and return a list of files that would be considerd to be "finders"
+   // look thru list of files in tis foilder and return a list of files that would be considerd to be "finders"
         $files = file::arrayFilter(file::folder_files(file::currentScriptFolder(__FILE__),null,true), self::$EXTENTSION);
-        return array_flip(array_util::Replace(array_keys($files), self::$EXTENTSION, ""));
+        $names = array_util::Replace(array_keys($files), self::$EXTENTSION, "");
+        
+
+        $result = array();
+        foreach ($names as $value)
+            $result[$value.FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER] = $value;
+
+        return $result;
     }
 
 }
