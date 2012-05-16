@@ -4,6 +4,7 @@ include_once 'includes.php';
 $variableNames = FinderFactory::Result("Variables");
 
 
+
 ?>
 <html>
     <head>
@@ -14,7 +15,7 @@ $variableNames = FinderFactory::Result("Variables");
         Search Selector<br>
 
         <div id="MapForEach" class="Selector">
-
+            <h2></h2>
             A single map for a subset of values in this variable  (a Subset could be ALL)<br>
 
             <br>Marker 1<br>

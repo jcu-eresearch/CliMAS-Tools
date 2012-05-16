@@ -6,32 +6,10 @@ $M = new MapServerWrapper();
 $caption = VisualText::create("Species suitability", 10, "Red");
 $M->Caption($caption);
 
-$fr = FinderFactory::Result("ContextLayer","Fred");
 
-$context = $M->Layers()->AddLayer($fr);
-
-
-
-//$LayerList = array_util::Value($_SESSION, 'LayerList', null);
-
-//if (!is_null($LayerList))
-//{
-//
-//    foreach (explode(",", $LayerList) as $layer_filename)
-//    {
-//        if ($layer_filename == "") continue;
-//
-//        $layer_path = "/www/eresearch/source/species/".str_replace("~", "/output/", $layer_filename);
-//
-//        $current = $M->Layers()->AddLayer($layer_path);
-//
-//        $current instanceof MapServerLayerRaster;
-//        $current->HistogramBuckets(20);
-//        $current->ColorTableByStats(RGB::ReverseGradient(RGB::GradientGreenBeige()));  // RGB::ReverseGradient()
-//        $current->ColorTableResetFirstElement();
-//    }
-//
-//}
+foreach (Session::LayerFinderActionResults() as $FinderResult)
+    $M->Layers()->AddLayer($FinderResult);
+    
 
 
 $MF = Mapfile::create($M);

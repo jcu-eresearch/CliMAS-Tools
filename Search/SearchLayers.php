@@ -1,28 +1,19 @@
 <?php 
+$LayerListField = "LayerList";
 include_once 'includes.php';
 
-
-$_SESSION['LayerList'] = array_util::Value($_POST, 'LayerList', "");
-
-// Probably better here to use Factory to get the appropriate finder
-$finder = new FinderSpeciesSuitability();
-$finder->ParentFolder('/www/eresearch/source/species'); // TODO:: need to set as Singleton Object
-$finder->Filter("SPECIES", 'GOULFINC');
-$finder->Species('GOULFINC');
-$finder->Find();
-
-// make selector
-$params = array();
-$params['page'] = 'SpeciesSuitability.page.php';
-$params['species'] = 'GOULFINC';
+Session::UpdateFromPostedFinderActionNames($LayerListField);
 
 
-// finder result displayed here
-$layersSelector = matrix::FromTemplate(
-                                        $finder->Result(),
-                                        '<input type=BUTTON onClick="selectedScenarioModel(this,\'{page}?species={species}&model={RowName}&scenario={ColumnName}\');">',
-                                        $params
-                                      );
+$contextLayers = ActionFactory::Available("ContextLayer");
+
+$contextLayersTemplate = <<<CT
+<INPUT class="AvailableLayerButton" ID="{#key#}" onclick="AddToLayerList('{#key#}');" TYPE=BUTTON NAME="AvailableLayers[]" VALUE="{#key#}" >
+CT;
+
+$active_layer_template = <<<TEMPLATE
+<INPUT class="layer_button_unselected" ID="{Finder}-{Action}" onclick="UpdateLayerList('{Finder}-{Action}');" TYPE=BUTTON NAME="UserLayers[]" VALUE="{Action}" ><br>
+TEMPLATE;
 
 ?>
 <html>
@@ -49,7 +40,7 @@ $layersSelector = matrix::FromTemplate(
             
         function init() 
         {
-            var layers_raw = document.getElementById('LayerList').value
+            var layers_raw = document.getElementById('<?php echo $LayerListField; ?>').value
             var layers_raw_list =  layers_raw.split(",");
             
             for ( layer_key in layers_raw_list )
@@ -60,75 +51,85 @@ $layersSelector = matrix::FromTemplate(
             parent.ReloadGUI();
             
         }
+
+
+        function AddToLayerList(toAdd)
+        {
             
-        function UpdateLayerList(caller) {
-            
-            toggleLayer(caller.value);
-            
-            var t = "";
-            for ( layer_key in layers )
-                if (layers[layer_key]) t += layer_key + ",";
-            
-            document.getElementById('LayerList').value = t;
+            UpdateLayerList(toAdd);
+        }
+
+        function updateLayerButtons()
+        {
+            for ( layer in layers )
+                if (layers[layer])
+                    document.getElementById(layer).className = 'layer_button_selected';
+
+        }
+
+
+        function UpdateLayerList(FinderAction) {
+
+            toggleLayer(FinderAction);
+
+            var tmp = "";
+            for ( layer in layers )
+                if (layers[layer]) tmp += layer + ",";
+
+            if (tmp == "")
+            {
+                toggleLayer(FinderAction); // re toggle to layer to back on
+                alert("Must have at least one Active layer");
+                return;
+            }
+
+            document.getElementById('<?php echo $LayerListField; ?>').value = tmp;
             document.getElementById('LAYERS_FORM').submit();
             
         }
         
-        
-        function updateLayerButtons()
+
+
+        function toggleLayer(FinderAction)
         {
-            for ( layer_key in layers )
-            {
-                if (layers[layer_key]) 
-                {
-                    var buttonID = "LB_" + layer_key;
-                    document.getElementById(buttonID).className = 'layer_button_selected';
-                }
-            }
-            
-        }
-        
-        function toggleLayer(layerName)
-        {
-            if (layerName != "")
-            {
-                tmp = layers[layerName];
+
+            if (FinderAction != "")
+            {                
+                tmp = layers[FinderAction];
                 if (tmp == undefined)
-                    layers[layerName] = true;
+                    layers[FinderAction] = true;
                 else
-                    layers[layerName] = !layers[layerName];
+                    layers[FinderAction] = !layers[FinderAction];
             }
             
         }
-        
-        function selectedScenarioModel(caller,url)
-        {
-            var extent = parent.GetExtentText();
-            url += "&extent=" + encodeURIComponent(extent);
-            parent.SetDataSummary(url);
-        }
+
+
+
+
+//        function selectedScenarioModel(caller,url)
+//        {
+//            var extent = parent.GetExtentText();
+//            url += "&extent=" + encodeURIComponent(extent);
+//            parent.SetDataSummary(url);
+//        }
         
         </script>
         
     </head>
     <body onload="init()">
         <h1>layer manager</h1>
-        <FORM id="LAYERS_FORM"  onsubmit="GetLayerList()" METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
+        <FORM id="LAYERS_FORM"  METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
+
+            <?php
+                echo htmlutil::table(array_util::FromTemplate(Session::LayerFinderNames(),$active_layer_template),false);
+
+                echo htmlutil::TableRowTemplate($contextLayers,$contextLayersTemplate);
+
+            ?>
             
-            <INPUT class="layer_button_unselected" ID="LB_GOULFINC~1975.asc"                               onclick="UpdateLayerList(this);" TYPE=BUTTON NAME="UserLayers[]" VALUE="GOULFINC~1975.asc" ><br>
-            <INPUT class="layer_button_unselected" ID="LB_GOULFINC~sresa1b.bccr_bcm2_0.run1.run1.1990.asc" onclick="UpdateLayerList(this);" TYPE=BUTTON NAME="UserLayers[]" VALUE="GOULFINC~sresa1b.bccr_bcm2_0.run1.run1.1990.asc" ><br>
-            <INPUT class="layer_button_unselected" ID="LB_GOULFINC~sresa1b.csiro_mk3_0.run1.run1.1990.asc" onclick="UpdateLayerList(this);" TYPE=BUTTON NAME="UserLayers[]" VALUE="GOULFINC~sresa1b.csiro_mk3_0.run1.run1.1990.asc" ><br>
-            <INPUT class="layer_button_unselected" ID="LB_GOULFINC~sresa1b.inmcm3_0.run1.run1.2080.asc"    onclick="UpdateLayerList(this);" TYPE=BUTTON NAME="UserLayers[]" VALUE="GOULFINC~sresa1b.inmcm3_0.run1.run1.2080.asc"    ><br>
-            
-            <INPUT TYPE=HIDDEN ID="LayerList" NAME="LayerList" VALUE="<?php echo $_SESSION['LayerList']; ?>" ><br>
+            <INPUT TYPE=HIDDEN ID="<?php echo $LayerListField; ?>" NAME="<?php echo $LayerListField; ?>" VALUE="<?php echo Session::PostableFinderActionNames(); ?>" ><br>
         </FORM>
-        <?php
         
-        
-        echo matrix::toHTML($layersSelector);
-        
-        // print_r($map_object);
-        echo array_util::Value($_POST, 'LayerList', "");
-        ?>
     </body>
 </html>

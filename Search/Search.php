@@ -1,4 +1,8 @@
-<?php 
+<?php
+include_once 'includes.php';
+
+Session::clear();
+
 ?>
 <html>
 <head>

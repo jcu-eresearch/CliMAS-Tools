@@ -20,11 +20,6 @@ interface iFinder {
 class aFinder extends Object implements iFinder  {
     //put your code here
 
-    /*
-     * All action methods must start with this 
-     */
-    private static $ACTION_METHOD_PREFIX = "Action";
-    private static $ACTION_DEFAULT = "Default";
 
 
     public function __construct($child) {

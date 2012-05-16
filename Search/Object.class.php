@@ -118,7 +118,7 @@ class Object  {
             $result = $format;
             foreach ($this->property as $key => $value)
             {
-                if (is_bool($value)) $value = ($value) ? configuration::$TRUE : configuration::$FALSE;
+                if (is_bool($value)) $value = ($value) ? self::$TRUE : self::$FALSE;
                 
                 if (is_array($value))  $value = join (",", $value);
                 
@@ -212,6 +212,10 @@ class Object  {
         return $src;
     }
 
+
+
+    public static $TRUE = "TRUE";
+    public static $FALSE = "FALSE";
 
 
 }

@@ -69,6 +69,8 @@ class MapServerLayers extends Object {
     public function AddLayer($src)
     {
 
+        if (is_null($src)) return null;
+
         // load mulitple objects
         if (is_array($src))
         {
@@ -80,37 +82,8 @@ class MapServerLayers extends Object {
         }
 
 
-
         if (Object::isObject($src))
-        {
-            $src instanceof Object;
-
-            $filename = $src->getPropertyByName("Filename", null);
-            $attribute = $src->getPropertyByName("Attribute", null);
-            $SpatialDatatype = $src->getPropertyByName("SpatialDatatype", null);
-
-            if (!file_exists($filename))
-            {
-                echo "<br>File does not exist Failed to load layer filename [{$filename}] "; //TODO:: logg
-                return null;
-            }
-
-            $L = MapServerLayer::create($this, $filename,$attribute,$SpatialDatatype);
-            if (is_null($L))
-            {
-                echo "<br>Failed to load layer from Object " .$src;
-                return null;
-            }
-
-            $this->layers[$L->LayerName()] = $L;
-
-            $this->Extent(true);
-
-            return $L;
-
-        }
-
-
+            $this->AddLayerFromObject($src);
 
         // It's a string so most likely a Filename
         if (is_string($src))
@@ -138,6 +111,37 @@ class MapServerLayers extends Object {
         return null;
         
     }
+
+    private function AddLayerFromObject($src)
+    {
+        $src instanceof Object;
+
+        $filename = $src->getPropertyByName("Filename", null);
+        $attribute = $src->getPropertyByName("Attribute", null);
+        $SpatialDatatype = $src->getPropertyByName("SpatialDatatype", null);
+
+        if (!file_exists($filename))
+        {
+            echo "<br>File does not exist Failed to load layer filename [{$filename}] "; //TODO:: logg
+            return null;
+        }
+
+        $L = MapServerLayer::create($this, $filename,$attribute,$SpatialDatatype);
+        if (is_null($L))
+        {
+            echo "<br>Failed to load layer from Object " .$src;
+            return null;
+        }
+
+
+        $this->layers[$L->LayerName()] = $L;
+
+        $this->Extent(true);
+
+        return $L;
+
+    }
+
 
 
     public function AddPoint($filename,$column_name = null)

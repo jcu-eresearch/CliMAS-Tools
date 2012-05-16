@@ -1,6 +1,6 @@
 <?php
 
-class ContextLayerAustralianStates extends Object implements iAction {
+class ContextLayerAustralianRiverBasins extends Object implements iAction {
 
     public function __construct() {
         parent::__construct();
@@ -14,10 +14,10 @@ class ContextLayerAustralianStates extends Object implements iAction {
 
     public function Execute()
     {
-        $this->Name("Australian States");
-        $this->Filename(configuration::ContextSpatialLayersFolder()."/Australia/States/AustralianStates.shp");
+        $this->Name("Australian River Basins");
+        $this->Filename(configuration::ContextSpatialLayersFolder()."/Australia/RiverBasins1997/rbasin_polygon.shp");
         $this->SpatialDatatype(spatial_util::$SPATIAL_TYPE_LINE);
-        $this->Attribute('ISLAND_NAM');
+        $this->Attribute('BNAME');
         return $this;
 
     }

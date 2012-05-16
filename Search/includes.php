@@ -10,5 +10,6 @@ include_once 'data/data.includes.php';
 include_once 'output/Output.includes.php';
 include_once 'extras/extras.includes.php';
 include_once 'MapServer/Mapserver.includes.php';
+include_once 'Session.class.php';
 
 ?>

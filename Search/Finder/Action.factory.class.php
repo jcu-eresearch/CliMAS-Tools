@@ -15,11 +15,34 @@
 class ActionFactory {
 
 
+
+
     // find all actions for this Finder
     // but don't load them just look at their names
     // return array[ClassName] = Simple Name
-    public static function Available(aFinder $owner)
+    public static function Available($owner)
     {
+        if ($owner instanceof aFinder ) return self::AvailableFromClass($owner);
+
+        if (is_string($owner)) return self::AvailableFromString ($owner);
+
+        return null;
+    }
+
+    private static function AvailableFromString($owner)
+    {
+        $F  = FinderFactory::Find($owner);
+
+        $actions = self::AvailableFromClass($F);
+
+        unset($F);
+
+        return $actions;
+
+    }
+
+
+    private static function AvailableFromClass(aFinder $owner) {
 
         // ??? if null return all actions for all finders
 
@@ -28,7 +51,7 @@ class ActionFactory {
 
         // something like  Finder/Species/Taxa
         $actions_folder = file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().$finders_simple_name;
-        
+
         if (!is_dir($actions_folder))
         {
             // no actions
@@ -45,17 +68,21 @@ class ActionFactory {
         // turn class names into the keys and then strip out the $owner name and make it the cvalue
         $result = array();
         foreach ($action_class_names as $action_class_name)
-            $result[$action_class_name] = $finders_simple_name.$action_class_name;
-        
+            $result[$finders_simple_name."-".$action_class_name] = $finders_simple_name.$action_class_name;
+
 
         return $result;
 
+
+
     }
+
 
 
     public static function Find(aFinder $owner, $action_name = null)
     {
         if (is_null($action_name)) $action_name = $owner->DefaultAction();
+        if (strtolower($action_name) == "default") $action_name = $owner->DefaultAction();
 
 
         // construct path to action class
@@ -72,10 +99,11 @@ class ActionFactory {
         {
             //TODO;: logg that we had to fall back to a default action
 
+            echo "Default fall back from ({$action_name})   Can't find class file {$action_class_filename} for {$finders_simple_name}/{$action_name}<br>";
+
             $action_name = $owner->DefaultAction();
-            $action_class_filename = $actions_folder.configuration::osPathDelimiter().$action_name.".action.class.php";
-            echo "Default fall back Can't find class file {$action_class_filename} for {$finders_simple_name}/{$action_name}<br>";
             // return null;
+            $action_class_filename = $actions_folder.configuration::osPathDelimiter().$action_name.".action.class.php";
         }
 
 

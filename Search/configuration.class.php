@@ -3,16 +3,12 @@
  * System configuration and default values
  */
 class configuration {
-
-    private static $PATH_ROOT = "/www/eresearch/TDH-Tools";
-
-
-    public static $TRUE  = "TRUE";
-    public static $FALSE = "FALSE";
     
     public static function ApplicationName() {return "SRD::";}
     
-    public static $SEARCH_PHP = "/www/eresearch/TDH-Tools/Search/Search.php";
+    // public static $SEARCH_PHP = "/www/eresearch/TDH-Tools/Search/Search.php";
+
+    
 
     public static function UtilityClasses() {return "/www/eresearch/TDH-Tools/Utilities/includes.php";}
     
@@ -21,9 +17,20 @@ class configuration {
     public static function osPathDelimiter()  { return "/"; }
     public static function osExtensionDelimiter() { return "."; }
 
+    public static function ContextSpatialLayersFolder() {return "/www/eresearch/source/context";}
 
- 
-    
+    public static function DefaultLayerFinderName() {return "ContextLayer";}
+
+    public static function DefaultLayerFinderActionName()
+    {
+        return FinderFactory::Find(self::DefaultLayerFinderName())->DefaultAction();
+
+    }
+
+
+
+
+
 }
 
 ?>

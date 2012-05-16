@@ -3,6 +3,7 @@
 class FinderFactory {
 
 
+
     public static $EXTENTSION = ".finder.class.php";
     
     /*
@@ -19,7 +20,7 @@ class FinderFactory {
         }
 
 
-        $requestFinderFilename = file::currentScriptFolder(__FILE__)."/{$src}.finder.class.php";
+        $requestFinderFilename = file::currentScriptFolder(__FILE__)."/{$src}".self::$EXTENTSION;
 
         if (!file_exists($requestFinderFilename))
         {
@@ -29,7 +30,7 @@ class FinderFactory {
 
         include_once $requestFinderFilename;  // INCLUDE this finder
 
-        $finderClassName = "{$src}Finder";
+        $finderClassName = "{$src}".FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER;
 
         if (!class_exists($finderClassName))  // check to see if we includes it properly
         {
