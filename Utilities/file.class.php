@@ -968,11 +968,25 @@ class file {
      */
     public static function filenameOnly($pathname) 
     {
-        $path_parts = pathinfo($pathname);
-        
-        $result = $path_parts['basename'];
-        if (array_key_exists('extension', $path_parts))
-            $result = str_replace(".".$path_parts['extension'], "", $path_parts['basename']);
+
+        if (is_array($pathname))
+        {
+            // $pathname is an Array
+            $result = array();
+            foreach ($pathname as $key => $single_pathname)
+                $result[$key] = self::filenameOnly($single_pathname);
+
+        }
+        else
+        {
+            // sinle Filename
+            $path_parts = pathinfo($pathname);
+
+            $result = $path_parts['basename'];
+            if (array_key_exists('extension', $path_parts))
+                $result = str_replace(".".$path_parts['extension'], "", $path_parts['basename']);
+
+        }
         
         return $result;
     }    

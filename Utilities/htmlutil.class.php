@@ -8,7 +8,7 @@ class htmlutil {
     * @param $showValue = true { 
     * @return mixed
     */
-    public static function table($data, $showValue = true) {
+    public static function table($data, $showKey = true) {
         
 
         if (count($data) == 0) return "NO DATA<br>";
@@ -19,7 +19,7 @@ class htmlutil {
         foreach ($data as $key => $value)
         {
             $result .= "<tr>";
-            if ($showValue) $result .= "<td>$key</td>";
+            if ($showKey) $result .= "<td>$key</td>";
             $result .= "<td>$value</td>";
             $result .= "</tr>"."\n";
         }
@@ -28,6 +28,72 @@ class htmlutil {
 
         return $result;
     }
+
+
+    /*
+     * 
+     */
+    public static function TableRowTemplate($data, $template = null)
+    {
+
+        if (count($data) == 0) return "NO DATA<br>";
+
+        if (!is_array($data)) return str_replace ("\n", "<br/>\n", $data)."<br>\n";
+
+        if (!is_null($template)) $template = trim($template);
+        
+        if (!is_null($template) && $template == "") $template = null;
+
+
+        $result = '<table border="1" >';
+        foreach ($data as $key => $row)
+        {
+            $result .= "<tr>";
+
+            if (is_array($row))
+            {
+                if (is_null($template))
+                    $sub_result = "<td>".join(" ", $row)."</td>";
+                else
+                {
+                    $sub_result = str_replace("{#row_id#}",  $key, $template);
+                    foreach ($row as $column_id => $cell_value)
+                        $sub_result = str_replace("{{$key}}",  $cell_value, $sub_result);
+
+                    $sub_result = "<td>aaa".$sub_result."</td>";
+                }
+
+            }
+            else
+            {
+                if (is_null($template))
+                {
+                    $sub_result = "<td>[".$key."] => [".$row."]</td>";
+                }
+                else
+                {
+                    $sub_result = str_replace("{#row_id#}",  $key, $template);
+                    $sub_result = str_replace("{#key#}",  $key, $sub_result);
+                    $sub_result = str_replace("{#value#}",  $row, $sub_result);
+                    $sub_result = "<td>".$sub_result."</td>";
+                }
+
+            }
+
+            $result .= $sub_result;
+
+            $result .= "</tr>"."\n";
+        }
+
+        $result .= "</table>"."\n";
+
+        return $result;
+    }
+
+
+
+
+    // htmlutil::table(array_util::FromTemplate(Session::LayerFinderNames(),$active_layer_template),false);
 
 
     /*

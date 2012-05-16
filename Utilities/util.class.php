@@ -716,7 +716,7 @@ SQL;
     * @param $to 
     * @return mixed
     */
-    public static function midStr($src,$from = null,$to = null,$must_contain = false)
+    public static function midStr($src,$from = null,$to = null,$must_contain = false, $include_delim = true)
     {
         
         if (is_array($src)) 
@@ -738,6 +738,12 @@ SQL;
         if ($posTo   === FALSE) $posTo = strlen($src); // if we can't find to set to end of string
         
         $result = substr($src, $posFrom, $posTo - $posFrom );
+
+        if (!$include_delim)
+        {
+            $result = str_replace($from, "", $result);
+            $result = str_replace($to, "", $result);
+        }
 
         //echo "midstr::    $from ($posFrom) $to ($posTo)  .....  ($result) \n";
         

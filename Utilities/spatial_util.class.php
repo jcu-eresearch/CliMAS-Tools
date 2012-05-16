@@ -228,11 +228,11 @@ class spatial_util
     public static $FIELD_TYPE_DOUBLE = "DOUBLE";
     public static $FIELD_TYPE_STRING = "STRING";
 
-    public static $POLYGON = "POLYGON";
-    public static $POLYLINE = "POLYLINE";
-    public static $POINT = "POINT";
+    public static $SPATIAL_TYPE_POLYGON  = "POLYGON";
+    public static $SPATIAL_TYPE_LINE     = "LINE";
+    public static $SPATIAL_TYPE_POINT    = "POINT";
 
-    public static $RASTER = "RASTER";
+    public static $SPATIAL_TYPE_RASTER   = "RASTER";
 
     
 }

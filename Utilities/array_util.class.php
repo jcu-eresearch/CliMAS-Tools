@@ -947,12 +947,79 @@ class array_util
         return $result;
         
     }
-    
-    
-    
-    
-    
-    // 
+
+
+    /*
+     *
+     * $src = Bidimensional Array  $src[$row_id] = array($column_id => $column_value, $column_id => $column_value, ...    )
+     *
+     * Loop thru each row in $src and process template for each row
+     *
+     * Special Templates
+     *  {#join, }  means a string = Key1,Value1 Key2,Value2 Key3,Value3
+     *  {#join|_}  means a string = Key1|Value1_Key2|Value2_Key3|Value3
+     *
+     *  {#ROW_ID#} = is the key to the row
+     *
+     * default template = {row_id}=[{#join, }]
+     *
+     *
+     */
+    public static function FromTemplate($src,$rowTemplate = '{#row_id#}=[{#join, }]')
+    {
+
+        if (is_null($src)) return array();
+
+        $result = array();
+        foreach ($src as $src_rowID => $src_row)
+        {
+
+            if (is_null($src_row)) continue;
+            if (!is_array($src_row)) continue;
+
+            $sub_result = $rowTemplate;
+            $sub_result = str_replace('{#row_id#}', $src_rowID, $sub_result);
+
+
+            if (util::contains($sub_result,'{#join',false))
+            {
+                $delims = str_split(util::midStr($sub_result, '{#join', '}', true,false));
+
+                $d1 = $delims[0];
+                $d2 = $d1;
+                if (array_key_exists(1, $delims)) $d2 = $delims[1];
+
+                $KeyValues = "";
+                foreach ($src_row as $key => $value)
+                {
+                    if (is_null($value)) $value = "NULL";
+                    $KeyValues .= "{$key}{$d1}{$value}{$d2}";
+                }
+                    
+
+                util::trim_end($KeyValues, $d2);
+
+                $to_replace = '{#join'.util::midStr($sub_result, "{#join", "}", true, true)."}";
+
+                $sub_result = str_replace($to_replace,  $KeyValues, $sub_result);
+
+            }
+
+
+            foreach ($src_row as $key => $value)
+            {
+                $sub_result = str_replace("{{$key}}",  $value, $sub_result);
+            }
+
+            $result[$src_rowID] = $sub_result;
+
+
+        }
+
+
+
+        return $result;
+    }
     
     
 }
