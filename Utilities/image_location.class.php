@@ -35,13 +35,13 @@ class image_location
         //if ($exif === FALSE) return FALSE;
 
         $fileDT = $exif['FILE']['FileDateTime'];
-        
+
         //print_r($exif);
         $dt = explode(' ',$exif['EXIF']['DateTimeOriginal']);
-      
+
         $img_date = "";
         $img_time = "";
-        if (count($dt) == 2) 
+        if (count($dt) == 2)
         {
            $img_date = $dt[0];
            $img_time = $dt[1];
@@ -71,7 +71,7 @@ class image_location
         $result['time']  = $img_time;
         $result['file_time']  = $fileDT;
         $result['direction']  = $dir;
-        
+
 
         return $result;
 
@@ -81,9 +81,9 @@ class image_location
     {
         $temp = explode('/',$GPSData);
         if (!is_array($temp)) return 0.0;
-        
+
         if ($temp[1] == 0) return 0;
-        
+
         return $temp[0] / $temp[1];
     }
 
@@ -115,7 +115,7 @@ class image_location
             $name = util::rightStr($fn, '/',false);
             $result .= htmlutil::KMLPlacemarker($name, $name, $loc['latitude'], $loc['longitude'], $loc['altitude']);
         }
-        
+
         $result .= htmlutil::KMLFooter();
         return $result;
 

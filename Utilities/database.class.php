@@ -28,7 +28,7 @@ class database
         $this->userID = (!is_null($userID)) ? $userID : $this->userID;
         $this->pwd    = (!is_null($pwd))    ? $pwd    : $this->pwd;
         
-        // $this->GrantFullAccess(); // make we have access to all db's
+        //** $this->GrantFullAccess(); //** make we have access to all db's
         
         $this->connect();
         
@@ -149,7 +149,7 @@ class database
     }
 
     
-    // the key will be unique and the value will be the last value for that key
+    //** the key will be unique and the value will be the last value for that key
     public function KeyedColumn($table,$keyColoumn,$valueColumn,$where,$limit)
     {
         logger::called();
@@ -177,7 +177,7 @@ class database
         if ($this->debug_all) logger::called();
         if ($this->debug_all) logger::text("Query length pre = ".  strlen($sql));
         
-        // clean all non typeable chars from query
+        //** clean all non typeable chars from query
         for ($index = 0; $index <= 31; $index++) $sql = str_replace(chr($index), ' ', $sql);   
         
         if ($above_128)
@@ -224,7 +224,7 @@ class database
         }
         
         $this->disconnect();
-        if (count($result) == 1) return $result[0]; // if there was only one result - i.e. one sql then return it's result - current output
+        if (count($result) == 1) return $result[0]; //** if there was only one result - i.e. one sql then return it's result - current output
         
         return $result;
         
@@ -311,7 +311,7 @@ class database
 
     }
     
-    // $array = key field name  value = column type
+    //** $array = key field name  value = column type
     public function change_types_of_columns($db,$table, $array)
     {    
         logger::called();
@@ -473,8 +473,8 @@ class database
         
         if (!util::contains($sql, ';'))
         {
-            //logger::text("Single update query:  $sql");
-            // single query - return as before
+            //**logger::text("Single update query:  $sql");
+            //** single query - return as before
             
             $sql_result = mysql_query($sql, $this->link);
             $affected = mysql_affected_rows();
@@ -483,11 +483,11 @@ class database
             return $affected;
         }
 
-        // multiple quries
+        //** multiple quries
         $result_affected_rows = array();
         foreach (explode(';',$sql) as $single_sql)
         {
-            //logger::text("multiple update querys:  $single_sql");
+            //**logger::text("multiple update querys:  $single_sql");
             $sql_result = mysql_query($single_sql.";", $this->link);
             $result_affected_rows[$sql_result] = mysql_affected_rows();
         }
@@ -518,7 +518,7 @@ class database
         return $update_rows;
     }
 
-    // $column_array = column names to index
+    //** $column_array = column names to index
     public function IndexColumns($db,$table,$column_array)
     {
         logger::called();
@@ -768,7 +768,7 @@ class database
         $result .= "\n `ID` int(11) NOT NULL auto_increment,";
 
         $colNames = array();
-        foreach ($column_name_array as $column_name => $column_type)  // expect $column_name_array to be   ['column_name'] = db_type
+        foreach ($column_name_array as $column_name => $column_type)  //** expect $column_name_array to be   ['column_name'] = db_type
         {
             $cleanName = $this->cleanColumnName($column_name,"C");
             if ($cleanName == "") continue;
@@ -793,7 +793,7 @@ class database
             foreach ($colNames as $column_name)
                 $index .= "\n KEY `$column_name` (`$column_name`),";
 
-            $result .= substr($index,0,strlen($index) - 1); // drop last comma
+            $result .= substr($index,0,strlen($index) - 1); //** drop last comma
         }
 
         $result .= "\n ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci;";
@@ -816,19 +816,19 @@ class database
         if ($drop_table) $this->DropTable($to_db, $tableName);
 
        
-        $column_name_lookup = array(); // store keyed array of old name to new name
+        $column_name_lookup = array(); //** store keyed array of old name to new name
        
         $create_table_sql = $this->matrixToTable_CreateTable( $matrix,$rowID_name, $to_db,$tableName,$column_name_lookup,$numeric_prefix, $indexes);
-        // if ($this->debug_all) 
+        //** if ($this->debug_all) 
             logger::text("matrixToTable:: $create_table_sql");
         
         
-        $this->update($create_table_sql); // create table
+        $this->update($create_table_sql); //** create table
         
         if ($this->progress) 
             $P = new progress(1, count($matrix), 1, 10);
         
-        // loop thru matrix row by row and buoild an SQL for that row.
+        //** loop thru matrix row by row and buoild an SQL for that row.
         $count = 1;
         $block_count = 1;
         $block_insert = array();
@@ -847,19 +847,19 @@ class database
 
             $row_insert =  array();
             
-            // get data from matrix under old name and write new name in to "$insert_column_values"
+            //** get data from matrix under old name and write new name in to "$insert_column_values"
             foreach ($column_name_lookup as $old_name => $name_info)
             {
-                $insert_column_names[] = $name_info['new'];  // get column name 'new cleaned name'
+                $insert_column_names[] = $name_info['new'];  //** get column name 'new cleaned name'
 
-                // if current column is the row id field then get data from row'sID'
+                //** if current column is the row id field then get data from row'sID'
                 $cell_value = ($name_info['isRowID'] ) ? $row_id : $row[$name_info['old']];
                 
                 $cell_value = (is_array($cell_value)) ?  print_r($cell_value,true) : trim($cell_value);
                 
-                $db_cell_value = 'NULL'; // default value to send to DB is NULL
+                $db_cell_value = 'NULL'; //** default value to send to DB is NULL
                 if (trim($cell_value) != "" || is_null($cell_value))
-                    $db_cell_value = ($name_info['type'] == "DOUBLE") ?  $cell_value : "'".$cell_value."'"; // data type is varchar so wrap in quotes
+                    $db_cell_value = ($name_info['type'] == "DOUBLE") ?  $cell_value : "'".$cell_value."'"; //** data type is varchar so wrap in quotes
 
                 $insert_column_values[] = $db_cell_value;
 
@@ -887,7 +887,7 @@ class database
 
         if (count($block_insert) != 0)
         {
-            $inserted_count = $this->InsertArrayBulk($to_db, $tableName, $block_insert); // write anything left in block
+            $inserted_count = $this->InsertArrayBulk($to_db, $tableName, $block_insert); //** write anything left in block
             if ($this->debug_all)  
                 logger::text("inserted last bit of block to $to_db.$tableName $inserted_count\n");   
         }
@@ -903,7 +903,7 @@ class database
     
     public function matrixToTable_CreateTable( $matrix,$rowID_name, $to_db,$tableName,&$column_name_lookup,$numeric_prefix = 'F',$indexes = NULL)
     {
-        // SQL to create Table
+        //** SQL to create Table
         
         logger::called();
 
@@ -915,7 +915,7 @@ class database
         $matrix_column_names = matrix::ColumnNames($matrix);
 
         
-        $rowID_newname = $this->cleanColumnName($rowID_name,$numeric_prefix); // add the "row_ID column"
+        $rowID_newname = $this->cleanColumnName($rowID_name,$numeric_prefix); //** add the "row_ID column"
         $rowID_Type = matrix::ColumnTypeForDB($matrix);
         
         
@@ -955,7 +955,7 @@ class database
 
         if (!is_null($indexes))
         {
-            // create index for columns
+            //** create index for columns
 
             $index = "";
             foreach ($matrix_column_names  as $rawColumnName)
@@ -966,7 +966,7 @@ class database
             }
 
             if ($index != "")
-                $result .= ",".substr($index,0,strlen($index) - 1); // add index code and drop last comma
+                $result .= ",".substr($index,0,strlen($index) - 1); //** add index code and drop last comma
 
         }
 
@@ -1079,7 +1079,7 @@ class database
         $index_count = 0;
         foreach ($split as $rawColumnName)
         {
-            if ($index_count > 30) continue; // if we have more than 30 columns only index the first 30
+            if ($index_count > 30) continue; //** if we have more than 30 columns only index the first 30
 
             $cleanName = $this->cleanColumnName($rawColumnName,$numeric_prefix);
             if ($cleanName == "") continue;
@@ -1090,7 +1090,7 @@ class database
 
         }
 
-        $result .= substr($index,0,strlen($index) - 1); // drop last comma
+        $result .= substr($index,0,strlen($index) - 1); //** drop last comma
 
         $result .= "\n ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci;";
 
@@ -1143,7 +1143,7 @@ class database
 
             $rawColumnName = str_replace("-",'_',$rawColumnName);
             $rawColumnName = str_replace(' ','_',$rawColumnName);
-            $rawColumnName = str_replace("/",'_',$rawColumnName);
+            $rawColumnName = str_replace("/**",'_',$rawColumnName);
             $rawColumnName = str_replace('\\','_',$rawColumnName);
             $rawColumnName = str_replace('.','_',$rawColumnName);
 
@@ -1164,7 +1164,7 @@ class database
                 case '7':
                 case '8':
                 case '9':
-                    $rawColumnName = $numeric_prefix.$rawColumnName; // if the name starts with a number  then we need to mak it start with a letter
+                    $rawColumnName = $numeric_prefix.$rawColumnName; //** if the name starts with a number  then we need to mak it start with a letter
                     break;
 
             }
@@ -1200,9 +1200,9 @@ class database
 
         }
 
-        if ( $numberCount >  ($rowCount * 0.8) ) return "DOUBLE"; // if 80% of values are numbers its a number column
+        if ( $numberCount >  ($rowCount * 0.8) ) return "DOUBLE"; //** if 80% of values are numbers its a number column
 
-        $maxStringLength = round($maxStringLength * 3,0); //make it 3 times the max length
+        $maxStringLength = round($maxStringLength * 3,0); //**make it 3 times the max length
 
         return "varchar($maxStringLength)";
 
@@ -1222,10 +1222,10 @@ class database
         
         $pivotFields = explode(',',$pivotFieldsStr);
 
-        if (file_exists($sql)) $sql = file_get_contents($sql); // if they passed a filename get the sql from there
+        if (file_exists($sql)) $sql = file_get_contents($sql); //** if they passed a filename get the sql from there
 
         $sqlResult = $this->quickQuery($db,$sql);
-                           //sqlPivot($array,    $columnID,      $rowID,         $cellID,         $nullValue)
+                           //**sqlPivot($array,    $columnID,      $rowID,         $cellID,         $nullValue)
         $pivotResult = util::sqlPivot($sqlResult,$pivotFields[0],$pivotFields[1],$pivotFields[2], "");
 
         util::saveMatrix($pivotResult,$outputFilename);
@@ -1248,19 +1248,19 @@ class database
     }
 
 
-    // $db              : name of database to connect to
-    // $table_name      : table name to create
-    // $field_prefix    : if column name is numeric then prefix it with this.
-    // $sql             : the SQL to select data
-    // $pivot_column    : What column of SQL result will we look at for Unique values to create
-    //                    columns of pivot table.    MUST EXIST IN SQL result
-    // $pivot_row       : What column of SQL result will we look at for Unique values to create
-    //                    rows id's of pivot table   MUST EXIST IN SQL result
-    // $pivot_value     : What column of SQL result will we look at for Unique values to retive
-    //                    value. ie the cell values  MUST EXIST IN SQL result
-    // $pivot_operation : how do we summarise the values +,-,*,/, avg may be more see   $this->sqlPivot
-    //
-    // $null_value      : default null value for table
+    //** $db              : name of database to connect to
+    //** $table_name      : table name to create
+    //** $field_prefix    : if column name is numeric then prefix it with this.
+    //** $sql             : the SQL to select data
+    //** $pivot_column    : What column of SQL result will we look at for Unique values to create
+    //**                    columns of pivot table.    MUST EXIST IN SQL result
+    //** $pivot_row       : What column of SQL result will we look at for Unique values to create
+    //**                    rows id's of pivot table   MUST EXIST IN SQL result
+    //** $pivot_value     : What column of SQL result will we look at for Unique values to retive
+    //**                    value. ie the cell values  MUST EXIST IN SQL result
+    //** $pivot_operation : how do we summarise the values +,-,*,/**, avg may be more see   $this->sqlPivot
+    //**
+    //** $null_value      : default null value for table
 
     public function PivotQuery($to_db,$table_name,$field_prefix,$sql, $pivot_column, $pivot_row, $pivot_value,$pivot_operation,$null_value = null, $get_stats = false,$min_row_count = null)
     {
@@ -1284,7 +1284,7 @@ class database
         
         if (count($sql_result) <= 0) return;
 
-        // check to see if Pivot columns exists in resulkt set
+        //** check to see if Pivot columns exists in resulkt set
         $first_row = util::first_element($sql_result);
         if (!array_key_exists($pivot_column, $first_row) ||
             !array_key_exists($pivot_row,    $first_row) ||
@@ -1298,11 +1298,11 @@ class database
         
         if (!is_null($min_row_count))
         {
-            // need to count the number of rows assign to each  $pivot_row
-            // $pivot_row is the name of the column that holds the unique values to assign to the row header
+            //** need to count the number of rows assign to each  $pivot_row
+            //** $pivot_row is the name of the column that holds the unique values to assign to the row header
 
-            // unique value counts for $pivot_row
-            $histogram = matrix::ColumnHistogram($sql_result, $pivot_row);  // count per unique value
+            //** unique value counts for $pivot_row
+            $histogram = matrix::ColumnHistogram($sql_result, $pivot_row);  //** count per unique value
             
             logger::text( "histogram count = ".count($histogram));
 
@@ -1313,11 +1313,11 @@ class database
 
                 logger::text("min_row_count = $min_row_count   $histogram_row_id  count = $count  --  get list of row ids for this histogram_row_id");
 
-                // here we need to get a list of keys from $sql_result where $row_id  the value in  result[$pivot_row] =  $histogram_row_id
+                //** here we need to get a list of keys from $sql_result where $row_id  the value in  result[$pivot_row] =  $histogram_row_id
                 foreach ($sql_result as $sql_row_id => $sql_row)
                 {
-                    // if the column from the sql result we have chosen for the pivrot row id
-                    // has the same value as the $histogram_row_id we are going to mark it for removal
+                    //** if the column from the sql result we have chosen for the pivrot row id
+                    //** has the same value as the $histogram_row_id we are going to mark it for removal
                     if ($sql_row[$pivot_row] == $histogram_row_id)
                         $sql_row_ids_to_remove[] = $sql_row_id;
 
@@ -1345,7 +1345,7 @@ class database
             logger::text("Calculating statistics.:");
             $stats = matrix::RowStatistics($pivot,$null_value);
             
-            // Add Stats to Table
+            //** Add Stats to Table
             foreach ($pivot as $row_id => $row)
                 foreach ($stats[$row_id] as $stats_column => $stats_value)
                     $pivot[$row_id][$stats_column] = $stats_value;
@@ -1452,9 +1452,9 @@ class database
 
     }
 
-    // create one (or more) large insert statements
-    // $array = two levels 
-    // [row_index] =  row (column_name => [cell],column_name => [cell],column_name => [cell],column_name => [cell])
+    //** create one (or more) large insert statements
+    //** $array = two levels 
+    //** [row_index] =  row (column_name => [cell],column_name => [cell],column_name => [cell],column_name => [cell])
     public function InsertArrayBulk($db,$table,$array)
     {
           
@@ -1558,7 +1558,7 @@ class database
         if (!is_null($replace_delim))
             $matrix = matrix::ReplaceStringValue($matrix, $delim, $replace_delim);
         
-        matrix::Save($matrix, $filename,$delim, null, null, true, false); // write the headers and the first row
+        matrix::Save($matrix, $filename,$delim, null, null, true, false); //** write the headers and the first row
          
         
         for ($row_number = 1; $row_number < $row_count; $row_number += $write_row_limit) {
@@ -1571,11 +1571,11 @@ class database
             unset($matrix);                
         }
         
-        if (!file_exists($filename)) return null; // if file does not exists then it's wrong -- failed
+        if (!file_exists($filename)) return null; //** if file does not exists then it's wrong -- failed
         
-        $file_row_count = file::lineCount($filename); // check the number of rows in the file
+        $file_row_count = file::lineCount($filename); //** check the number of rows in the file
         
-        return  (($file_row_count - 1) == $row_count); // return true if the number of rows in the file macthes the number of rows from the file.
+        return  (($file_row_count - 1) == $row_count); //** return true if the number of rows in the file macthes the number of rows from the file.
     }
     
     

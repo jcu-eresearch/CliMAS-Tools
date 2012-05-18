@@ -80,7 +80,7 @@ class grass_output
     public function AddPoints($name, $size = 4, $color = "red", $fill_color = null, $icon = null )
     {        
         if (is_null($name)) return null;                
-        if (is_null($icon)) $icon = "basic/circle";        
+        if (is_null($icon)) $icon = "basic/**circle";        
         if (is_null($fill_color)) $fill_color = $color;
         if (is_null($size)) $size = 4;
         
@@ -121,14 +121,14 @@ class grass_output
             {
                 $to_write = (is_numeric($key)) ? $text_line : "$key: $text_line";
                 $adjusted_from_top = $from_top + ($line_count * ($point_size * 1.8));
-                $cmd = "d.text.freetype  path='/opt/openoffice.org/basis3.2/share/fonts/truetype/DejaVuSansMono.ttf' -p -s 'text={$to_write}' at=$from_left,{$adjusted_from_top} color=$color size={$point_size} align=ul rotation={$rotation} linespacing=1.1";
+                $cmd = "d.text.freetype  path='//**openoffice.org//**share//**truetype/**DejaVuSansMono.ttf' -p -s 'text={$to_write}' at=$from_left,{$adjusted_from_top} color=$color size={$point_size} align=ul rotation={$rotation} linespacing=1.1";
                 $this->text_commands[] = $cmd;
                 $line_count++;
             }            
         }
         else
         {
-            $cmd = "d.text.freetype  path='/opt/openoffice.org/basis3.2/share/fonts/truetype/DejaVuSansMono.ttf' -p -s 'text={$text}' at=$from_left,$from_top color=$color size={$point_size} align=ul rotation={$rotation} linespacing=1.1";
+            $cmd = "d.text.freetype  path='//**openoffice.org//**share//**truetype/**DejaVuSansMono.ttf' -p -s 'text={$text}' at=$from_left,$from_top color=$color size={$point_size} align=ul rotation={$rotation} linespacing=1.1";
             $this->text_commands[] = $cmd;
         }
         
@@ -150,7 +150,7 @@ class grass_output
     {
         if (is_null($filename)) return null;
 
-        // clean of extension
+        //** clean of extension
         if (util::contains($filename, ".")) $filename = util::toLastChar($filename, ".");
                 
         $filename = $filename .".png";

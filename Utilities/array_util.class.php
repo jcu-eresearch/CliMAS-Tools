@@ -2,7 +2,7 @@
 
 class array_util
 {
-    
+
     /*
     * @method arrayAverage
     * @param $src
@@ -34,7 +34,7 @@ class array_util
         if (!is_null($nullValue)) $src = array_util::ExtractNullValues($src,$column_name,$nullValue);
 
         $mean = self::Average($src, null,$nullValue);
-        
+
         $dev_result = array();
         foreach ($src as $key => $value)
             $dev_result[$key] = $value - $mean;
@@ -66,7 +66,7 @@ class array_util
 
 
 
-    // sum 
+    // sum
     public static function Sum($src, $column_name = null,$nullValue = null)
     {
         if (!is_null($column_name))
@@ -88,22 +88,22 @@ class array_util
         if (!is_null($nullValue))
             $src = array_util::ExtractNullValues($src,$column_name,$nullValue);
 
-        
+
         $result = array();
-        
+
         $running_total = 0;
         foreach ($src as $key => $value)
         {
             $running_total += $value;
-            $result[$key] = $running_total;            
+            $result[$key] = $running_total;
         }
 
         return $result;
 
     }
-    
-    
-    // 
+
+
+    //
     public static function Count($src, $column_name = null,$nullValue = null)
     {
         if (!is_null($column_name))
@@ -119,16 +119,16 @@ class array_util
 
     }
 
-    
-    
+
+
     // Count Occurences of $toCount
     public static function CountAtDepth($src)
     {
         $result = array();
         foreach ($src as $key => $down_level)
         {
-            $result[$key] = -1; 
-            if (is_array($down_level)) $result[$key] = count($down_level); 
+            $result[$key] = -1;
+            if (is_array($down_level)) $result[$key] = count($down_level);
         }
         return $result;
 
@@ -165,8 +165,8 @@ class array_util
         return $result;
 
     }
-    
-    
+
+
 
     // get the key of the first elemant that has a value ie. != $nullValue
     public static function FirstValueKey($src, $column_name = null,$nullValue = null)
@@ -205,7 +205,7 @@ class array_util
             $src = array_util::ExtractNullValues($src,$column_name,$nullValue);
 
         rsort($src);
-        
+
         return $src[0];
 
     }
@@ -436,39 +436,39 @@ class array_util
         return $result;
     }
 
-    // copy keyed values from 
+    // copy keyed values from
     public static function CopyTo($source, &$dest = null,$these_keys_only = null)
     {
         if (is_null($dest)) $dest = array();
-        
+
         if (is_null($these_keys_only))
         {
             foreach ($source as $key => $value)
-                $dest[$key] = $value;   
+                $dest[$key] = $value;
         }
         else
         {
             $these_keys = (is_array($these_keys_only)) ? $these_keys_only : explode(",",$these_keys_only);
             foreach ($these_keys as $key)
                 $dest[$key] = $source[$key];
-            
+
         }
-        
+
     }
-    
-    
+
+
     public static function Replace($src,$search, $replace)
     {
         $result = array();
         foreach ($src as $key => $value)
             $result[$key] = str_replace($search, $replace, $value);
-            
+
 
         return $result;
     }
 
 
-    
+
     /*
     * @method arrayElements
     * @param $srcArr
@@ -496,16 +496,16 @@ class array_util
         return $result;
     }
 
-    
+
     public static function FirstElementsThatContain($array, $find)
-    {        
+    {
         $vals = array_values(self::ElementsThatContain($array, $find));
         if (count($vals) == 0 ) return null;
-        
-        return $vals[0];   
+
+        return $vals[0];
     }
-    
-    
+
+
     /*
     * @method arrayElementsThatContain
     * @param $array
@@ -573,7 +573,7 @@ class array_util
         if (count($array) < 2) return NULL;
 
         $vals = array_values($array);
-        
+
         $sumdist = 0;
         for ($index = 1; $index < count($vals); $index++)
         {
@@ -780,8 +780,8 @@ class array_util
 
         return $result;
     }
-    
-    
+
+
 
     public static function countdim($array)
     {
@@ -823,7 +823,7 @@ class array_util
 
     }
 
-    
+
     // explode an array by delim and make first part a key and the second part the vlaue
     public static function explode($array,$delim = "=")
     {
@@ -833,7 +833,7 @@ class array_util
             $pair = explode($delim, $value);
             $result[trim($pair[0])] = (isset($pair[1])) ? $pair[1] : null;
         }
-        
+
         return $result;
     }
 
@@ -844,112 +844,112 @@ class array_util
         foreach ($array as $line)
         {
             $pairs = explode($delim_pairs, $line);
-            
+
             $row = array();
-            foreach ($pairs as $KeyValue) 
+            foreach ($pairs as $KeyValue)
             {
                 $split_key_value = explode($delim_KeyValue,$KeyValue);
                 $row[$split_key_value[0]] = (!array_key_exists(1, $split_key_value)) ? null :  $split_key_value[1];
             }
             $result[] = $row;
         }
-        
+
         return $result;
     }
-    
-    
+
+
 
     // explode an array by delim and make first part a key and the second part the vlaue
     public static function JoinKeys($array,$delim = ",")
     {
         return join($delim,array_keys($array)) ;
     }
-    
-    
+
+
     /*
-    * @method hostname 
+    * @method hostname
     * @return mixed
     */
     public static function ShowCount($src)
     {
         echo "array count: ".count($src)."\n";;
     }
-    
+
     // need basin list to be in order of longest first
     public static function SortByLength($src,$ascending = true)
     {
         if (count($src) <= 1) return;
-        
+
         $lengths = array();
         foreach ($src as $key => $value)
             $lengths[$key] = strlen($value);
-        
+
         if ($ascending)
             asort($lengths);
         else
             arsort($lengths);
-        
-        
+
+
         $result = array();
         foreach ($lengths as $key => $length)
             $result[$key] = $src[$key];
 
         return $result;
-        
+
     }
-    
-    
+
+
     public static function StripTags($src,$allowed_tags = null)
     {
         $result = array();
-        foreach ($src as $key => $value) 
+        foreach ($src as $key => $value)
         {
-            $result[$key] = strip_tags($value,$allowed_tags);            
+            $result[$key] = strip_tags($value,$allowed_tags);
         }
-        
+
         return $result;
-        
+
     }
-    
+
     public static function ConvertTags($src,$tag,$to)
     {
         $result = array();
-        foreach ($src as $key => $value) 
+        foreach ($src as $key => $value)
         {
             $result[$key] = str_replace("<{$tag}>", $to, $value);
         }
-        
+
         return $result;
-        
+
     }
-    
+
 
     public static function html_entity_decode($src)
     {
         $result = array();
-        foreach ($src as $key => $value) 
+        foreach ($src as $key => $value)
         {
             $result[$key] = html_entity_decode($value);
         }
-        
+
         return $result;
-        
+
     }
 
     public static function urldecode($src)
     {
         $result = array();
-        foreach ($src as $key => $value) 
+        foreach ($src as $key => $value)
         {
             $result[$key] = urldecode($value);
         }
-        
+
         return $result;
-        
+
     }
 
 
-    /*
+    /**
      *
      * $src = Bidimensional Array  $src[$row_id] = array($column_id => $column_value, $column_id => $column_value, ...    )
      *
@@ -995,7 +995,7 @@ class array_util
                     if (is_null($value)) $value = "NULL";
                     $KeyValues .= "{$key}{$d1}{$value}{$d2}";
                 }
-                    
+
 
                 util::trim_end($KeyValues, $d2);
 
@@ -1020,7 +1020,10 @@ class array_util
 
         return $result;
     }
-    
-    
+
+
+
 }
 ?>
+
+

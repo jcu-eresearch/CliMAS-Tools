@@ -15,8 +15,8 @@ class classManager {
     */
 
     /*
-    * @method __construct 
-    * @param $rootFolder 
+    * @method __construct
+    * @param $rootFolder
     * @return mixed
     */
     public function __construct($rootFolder)
@@ -29,7 +29,7 @@ class classManager {
     private $config;
 
     /*
-    * @property Config 
+    * @property Config
     * @return mixed
     */
     public function Config()
@@ -43,17 +43,17 @@ class classManager {
         $configFilename = $this->ApplicationRootFolder()."/".$this->Hostname().".config";
 
         if (file_exists($configFilename))
-            $this->Config(util::loadMatrix($configFilename,",","key"));            
+            $this->Config(util::loadMatrix($configFilename,",","key"));
         else
             $this->Config(array());
-        
+
     }
 
 
 
     /*
-    * @method ConfigRow 
-    * @param $rowID 
+    * @method ConfigRow
+    * @param $rowID
     * @return mixed
     */
     public function ConfigRow($rowID)
@@ -65,9 +65,9 @@ class classManager {
 
 
     /*
-    * @method ConfigValue 
-    * @param $rowID 
-    * @param $defaultValue = null 
+    * @method ConfigValue
+    * @param $rowID
+    * @param $defaultValue = null
     * @return mixed
     */
     public function ConfigValue($rowID,$defaultValue = null)
@@ -82,7 +82,7 @@ class classManager {
     private $hostname = null;
 
     /*
-    * @method Hostname 
+    * @method Hostname
     * @return mixed
     */
     public function Hostname()
@@ -95,7 +95,7 @@ class classManager {
     private $applicationRootFolder;
 
     /*
-    * @property ApplicationRootFolder 
+    * @property ApplicationRootFolder
     * @return mixed
     */
     public function ApplicationRootFolder()
@@ -107,7 +107,7 @@ class classManager {
     private $applicationFiles = NULL;
 
     /*
-    * @method ApplicationFiles 
+    * @method ApplicationFiles
     * @return mixed
     */
     public function ApplicationFiles()
@@ -122,8 +122,8 @@ class classManager {
     // bulk load any classes available under the main folder
 
     /*
-    * @method loadTree 
-    * @param $folder 
+    * @method loadTree
+    * @param $folder
     * @return mixed
     */
     public function loadTree($folder)
@@ -147,8 +147,8 @@ class classManager {
 
 
     /*
-    * @method classInclude 
-    * @param $className 
+    * @method classInclude
+    * @param $className
     * @return mixed
     */
     public function classInclude($className)
@@ -180,8 +180,8 @@ class classManager {
 
 
     /*
-    * @method loadClass 
-    * @param $_className 
+    * @method loadClass
+    * @param $_className
     * @return mixed
     */
     public function loadClass($_className)
@@ -211,8 +211,8 @@ class classManager {
 
 
     /*
-    * @method classNames 
-    * @param $_className 
+    * @method classNames
+    * @param $_className
     * @return mixed
     */
     public function classNames($_className)
@@ -237,10 +237,10 @@ class classManager {
             if (util::contains(strtolower($line), 'class'))
             {
                 $extractClassName = util::midStr($line,'class ',' ');
-                $result[$extractClassName] = $extractClassName ;  // new for this class       
+                $result[$extractClassName] = $extractClassName ;  // new for this class
             }
         }
-        
+
 
         return $result;
     }
@@ -250,8 +250,8 @@ class classManager {
 
 
     /*
-    * @method loadFolder 
-    * @param $folder 
+    * @method loadFolder
+    * @param $folder
     * @return mixed
     */
     public function loadFolder($folder)
@@ -265,7 +265,7 @@ class classManager {
         $files = file::arrayFilterOut($files, ".backup");
 
 
-        foreach ($files as $classFilename) 
+        foreach ($files as $classFilename)
         {
             if (file_exists($classFilename) == FALSE) return false;
             include_once $classFilename;
@@ -277,9 +277,9 @@ class classManager {
 
 
     /*
-    * @method loadNew 
-    * @param $_className 
-    * @param $parms 
+    * @method loadNew
+    * @param $_className
+    * @param $parms
     * @return mixed
     */
     public function loadNew($_className, $parms)
@@ -305,7 +305,7 @@ class classManager {
 
 
     /*
-    * @method loadedClasses 
+    * @method loadedClasses
     * @return mixed
     */
     public function loadedClasses()
@@ -315,7 +315,7 @@ class classManager {
 
 
     /*
-    * @method loadedSensors 
+    * @method loadedSensors
     * @return mixed
     */
     public function loadedSensors()
@@ -328,7 +328,7 @@ class classManager {
 
 
         $sensorNamesList = array();
-        
+
         // load classes found
         foreach ($sensorPackageFiles as $sensorPackageFile)
         {
@@ -364,7 +364,7 @@ class classManager {
 
                 }
 
-    
+
 
             }
             // echo " class name in Load $value is $fileClassName <br>\n";

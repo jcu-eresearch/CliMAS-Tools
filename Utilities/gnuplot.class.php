@@ -19,7 +19,7 @@ class gnuplot
     private function init()
     {
         $this->property['DataSeries']       = array();
-        $this->property['OutputImage']      = '/tmp/php_gnuplot_image.png';
+        $this->property['OutputImage']      = '//**php_gnuplot_image.png';
         $this->property['ImageWidth']       = 1200;
         $this->property['ImageHeight']      = 1200;
 
@@ -79,11 +79,11 @@ class gnuplot
         if (is_null($series_title))
             $series_title = util::first_key($this->DataSeries());
         
-        // temp input filename
-        $temp_data_filename = "/tmp/__php_gnu_plot.data";
+        //** temp input filename
+        $temp_data_filename = "//**__php_gnu_plot.data";
         
         
-        // convert input array to a temp tab delimited file of column1 = keys , column 2 = values
+        //** convert input array to a temp tab delimited file of column1 = keys , column 2 = values
         $temp_data_filename = file::Array2File($array, $temp_data_filename, "", "","\t");
         
         if (is_null($temp_data_filename) )
@@ -100,27 +100,27 @@ class gnuplot
         if ($this->AddBezier()) 
                 $bezier = ", '{$temp_data_filename}' using 1:2 smooth bezier title 'bezier' with lines";
         
-        // might be better at some stage to create folders in tmp to do this
-        $gnu_plot_command_filename = "/tmp/php_gnuplot_script.gnu";
+        //** might be better at some stage to create folders in tmp to do this
+        $gnu_plot_command_filename = "//**php_gnuplot_script.gnu";
         
         $series_title = str_replace('_', '-', $series_title);
         
-        // build additional text
+        //** build additional text
         
-//        $additional_text ="";
-//        if (count($this->property['additional_text']) > 0)
-//        {
-//
-//            foreach ($this->property['additional_text'] as $index => $single_text)
-//            {
-//                $single_text = trim($single_text);
-//                
-//                $plot_offset = ( ($this->MarginTop() - 1) - $index);
-//                $label_num = $index + 1;
-//                $additional_text .= "set  label 11 \"{$single_text}\" at {$this->XRangeStart()}, {$this->YRangeEnd()}, 0 left norotate back textcolor lt 3 nopoint offset character 0, {$plot_offset}, 0";
-//            }
-//            
-//        }
+//**        $additional_text ="";
+//**        if (count($this->property['additional_text']) > 0)
+//**        {
+//**
+//**            foreach ($this->property['additional_text'] as $index => $single_text)
+//**            {
+//**                $single_text = trim($single_text);
+//**                
+//**                $plot_offset = ( ($this->MarginTop() - 1) - $index);
+//**                $label_num = $index + 1;
+//**                $additional_text .= "set  label 11 \"{$single_text}\" at {$this->XRangeStart()}, {$this->YRangeEnd()}, 0 left norotate back textcolor lt 3 nopoint offset character 0, {$plot_offset}, 0";
+//**            }
+//**            
+//**        }
         
         
 $gnu_script = <<<CMD
@@ -146,7 +146,7 @@ set pointsize {$this->DotSize()}
 plot '{$temp_data_filename}' using 1:2 with linespoints  pointtype {$this->DotType()} title '{$series_title}' {$spline} {$bezier}    
 CMD;
         
-        //logger::text($gnu_script);
+        //**logger::text($gnu_script);
 
         file_put_contents($gnu_plot_command_filename, $gnu_script);
 
@@ -161,7 +161,7 @@ CMD;
         file::Delete($temp_data_filename);
         file::Delete($gnu_plot_command_filename);
         
-        return $this->OutputImage();  // this should be the path to the image they asked for
+        return $this->OutputImage();  //** this should be the path to the image they asked for
         
     }
 
@@ -300,7 +300,7 @@ CMD;
         $result .= ($this->Title() == "") ? "" : $this->Title();
         
         if (($this->Title() != "") && ($this->SubTitle() != "")) 
-                $result .= "\\n";  // add CR after title if it's not empty and we have a substtitle
+                $result .= "\\n";  //** add CR after title if it's not empty and we have a substtitle
         
         $result .= ($this->SubTitle() == "") ? "" : $this->SubTitle();
         

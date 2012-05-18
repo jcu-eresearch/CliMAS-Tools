@@ -3,13 +3,13 @@
 class htmlutil {
 
     /*
-    * @method table 
-    * @param $data 
-    * @param $showValue = true { 
+    * @method table
+    * @param $data
+    * @param $showValue = true {
     * @return mixed
     */
-    public static function table($data, $showKey = true) {
-        
+    public static function table($data, $showValue = true) {
+
 
         if (count($data) == 0) return "NO DATA<br>";
 
@@ -19,7 +19,7 @@ class htmlutil {
         foreach ($data as $key => $value)
         {
             $result .= "<tr>";
-            if ($showKey) $result .= "<td>$key</td>";
+            if ($showValue) $result .= "<td>$key</td>";
             $result .= "<td>$value</td>";
             $result .= "</tr>"."\n";
         }
@@ -30,8 +30,8 @@ class htmlutil {
     }
 
 
-    /*
-     * 
+    /**
+     *
      */
     public static function TableRowTemplate($data, $template = null)
     {
@@ -41,39 +41,70 @@ class htmlutil {
         if (!is_array($data)) return str_replace ("\n", "<br/>\n", $data)."<br>\n";
 
         if (!is_null($template)) $template = trim($template);
-        
+
         if (!is_null($template) && $template == "") $template = null;
 
 
         $result = '<table border="1" >';
-        foreach ($data as $key => $row)
+        foreach ($data as $row_id => $row)
         {
+
+            $handled = false;
+
             $result .= "<tr>";
 
-            if (is_array($row))
+            if (!$handled && Object::isObject($row))
             {
+                //** if we find an object is passed as "row" then treet the properties of the object as the cells
+
+                $handled = true;
+                $row instanceof Object;
+
+                if (is_null($template))
+                    $sub_result = "<td>".$row->asFormattedString()."</td>";
+                else
+                {
+                    $sub_result = str_replace("{#row_id#}",  $row->Name(), $template);
+                    foreach ($row->PropertyNames() as $propertyName)
+                        $sub_result = str_replace("{{$propertyName}}", $row->getPropertyByName($propertyName, NULL), $sub_result);
+
+                    $sub_result = "<td>".$sub_result."</td>";
+                }
+
+            }
+
+
+
+            if (!$handled && is_array($row))
+            {
+                $handled = true;
+
                 if (is_null($template))
                     $sub_result = "<td>".join(" ", $row)."</td>";
                 else
                 {
-                    $sub_result = str_replace("{#row_id#}",  $key, $template);
+                    $sub_result = str_replace("{#row_id#}",  $row_id, $template);
                     foreach ($row as $column_id => $cell_value)
-                        $sub_result = str_replace("{{$key}}",  $cell_value, $sub_result);
+                        $sub_result = str_replace("{{$column_id}}",  $cell_value, $sub_result);
 
-                    $sub_result = "<td>aaa".$sub_result."</td>";
+                    $sub_result = "<td>".$sub_result."</td>";
                 }
 
             }
-            else
+
+
+            if (!$handled)
             {
+                $handled = true;
+
                 if (is_null($template))
                 {
-                    $sub_result = "<td>[".$key."] => [".$row."]</td>";
+                    $sub_result = "<td>[".$row_id."] => [".$row."]</td>";
                 }
                 else
                 {
-                    $sub_result = str_replace("{#row_id#}",  $key, $template);
-                    $sub_result = str_replace("{#key#}",  $key, $sub_result);
+                    $sub_result = str_replace("{#row_id#}",  $row_id, $template);
+                    $sub_result = str_replace("{#key#}",  $row_id, $sub_result);
                     $sub_result = str_replace("{#value#}",  $row, $sub_result);
                     $sub_result = "<td>".$sub_result."</td>";
                 }
@@ -91,16 +122,11 @@ class htmlutil {
     }
 
 
-
-
-    // htmlutil::table(array_util::FromTemplate(Session::LayerFinderNames(),$active_layer_template),false);
-
-
     /*
-    * @method img 
-    * @param $data 
-    * @param $height = 100 
-    * @param $width = 100 { 
+    * @method img
+    * @param $data
+    * @param $height = 100
+    * @param $width = 100 {
     * @return mixed
     */
     public static function img($data,$height = 100, $width = 100) {
@@ -117,10 +143,10 @@ class htmlutil {
 
 
     /*
-    * @method imgArray 
-    * @param $array 
-    * @param $height = 100 
-    * @param $width = 100 { 
+    * @method imgArray
+    * @param $array
+    * @param $height = 100
+    * @param $width = 100 {
     * @return mixed
     */
     public static function imgArray($array,$height = 100, $width = 100) {
@@ -137,12 +163,12 @@ class htmlutil {
 
 
     /*
-    * @method imgClick 
-    * @param $imageFilename 
-    * @param $height = 100 
-    * @param $width = 100 
-    * @param $hrefPrefix = "" 
-    * @param $caption = "" 
+    * @method imgClick
+    * @param $imageFilename
+    * @param $height = 100
+    * @param $width = 100
+    * @param $hrefPrefix = ""
+    * @param $caption = ""
     * @return mixed
     */
     public static function imgClick($imageFilename,$height = 100, $width = 100,$hrefPrefix = "",$caption = "")
@@ -167,11 +193,11 @@ class htmlutil {
 
 
     /*
-    * @method imgHref 
-    * @param $imageFilename 
-    * @param $height = 100 
-    * @param $width = 100 
-    * @param $href = "" 
+    * @method imgHref
+    * @param $imageFilename
+    * @param $height = 100
+    * @param $width = 100
+    * @param $href = ""
     * @return mixed
     */
     public static function imgHref($imageFilename,$height = 100, $width = 100,$href = "")
@@ -191,14 +217,14 @@ class htmlutil {
         return $result;
     }
 
- 
+
 
 
     /*
-    * @method href 
-    * @param $data 
-    * @param $linkText = "" 
-    * @param $target="" { 
+    * @method href
+    * @param $data
+    * @param $linkText = ""
+    * @param $target="" {
     * @return mixed
     */
     public static function href($data, $linkText = "" , $target="") {
@@ -217,8 +243,8 @@ class htmlutil {
 
 
     /*
-    * @method hrefArray 
-    * @param $array { 
+    * @method hrefArray
+    * @param $array {
     * @return mixed
     */
     public static function hrefArray($array) {
@@ -235,12 +261,12 @@ class htmlutil {
 
 
     /*
-    * @method div 
-    * @param $data 
-    * @param $class = "" 
-    * @param $style = "" 
-    * @param $alt = "" 
-    * @param $title = "" { 
+    * @method div
+    * @param $data
+    * @param $class = ""
+    * @param $style = ""
+    * @param $alt = ""
+    * @param $title = "" {
     * @return mixed
     */
     public static function div($data, $class = "",$style = "", $alt = "", $title = "") {
@@ -260,9 +286,9 @@ class htmlutil {
 
 
     /*
-    * @method br 
-    * @param $class = "" 
-    * @param $style = "" { 
+    * @method br
+    * @param $class = ""
+    * @param $style = "" {
     * @return mixed
     */
     public static function br($class = "",$style = "") {
@@ -277,21 +303,21 @@ class htmlutil {
 
 
     /*
-    * @method brRowBreak 
-    * @param { 
+    * @method brRowBreak
+    * @param {
     * @return mixed
     */
     public static function brRowBreak() {
 
         return htmlutil::br("","clear: left;") ;
-        
+
     }
 
 
 
     /*
-    * @method browser_info 
-    * @param $agent=null 
+    * @method browser_info
+    * @param $agent=null
     * @return mixed
     */
     function browser_info($agent=null)
@@ -528,18 +554,21 @@ STRING;
         if (is_array($html))
         {
             $html = "<html>\n".html_entity_decode(join("\n",$html))."\n</html>\n";
-            file_put_contents($filename, $html);        
+            file_put_contents($filename, $html);
         }
         else
         {
             $html = "<html>\n". html_entity_decode($html)."\n</html>\n";
-            file_put_contents($filename, $html);        
+            file_put_contents($filename, $html);
 
         }
-            
+
     }
 
-    
-    
+
+
 }
 ?>
+
+
+

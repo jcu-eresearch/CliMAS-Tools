@@ -29,8 +29,8 @@ class GRASS {
         
     public function GRASS_COMMAND($cmd)
     {
-        //logger::called();
-        //logger::text("$cmd");
+        //**logger::called();
+        //**logger::text("$cmd");
         
         $result = array();
         exec("$cmd",$result);
@@ -45,22 +45,22 @@ class GRASS {
         $delim = "|";
         $column_names = matrix::ColumnNames($src, true);
         
-        // detect lat long column names and then numbers
+        //** detect lat long column names and then numbers
         $lat_column_num = null;
         if (is_null($lat_column_name))
         {
-            // find column number 
+            //** find column number 
             $lat_column_num = (!is_null($lat_column_num)) ? $lat_column_num : array_util::ArrayKey($column_names, 'lat');
             $lat_column_num = (!is_null($lat_column_num)) ? $lat_column_num : array_util::ArrayKey($column_names, 'LAT');
             $lat_column_num = (!is_null($lat_column_num)) ? $lat_column_num : array_util::ArrayKey($column_names, 'latitude');        
             $lat_column_num = (!is_null($lat_column_num)) ? $lat_column_num : array_util::ArrayKey($column_names, 'y');
             $lat_column_num = (!is_null($lat_column_num)) ? $lat_column_num : array_util::ArrayKey($column_names, 'Y');
             
-            $lat_column_name = $column_names[$lat_column_num];// find column name
+            $lat_column_name = $column_names[$lat_column_num];//** find column name
         }
         else
         {
-            $lat_column_num = array_util::ArrayKey($column_names, $lat_column_name);// given column name - get column number
+            $lat_column_num = array_util::ArrayKey($column_names, $lat_column_name);//** given column name - get column number
         }
         
         
@@ -87,7 +87,7 @@ class GRASS {
         
         logger::text("Load sql points as vector $vector_name ");
         
-        // select first column as id columnb
+        //** select first column as id columnb
         if (is_null($id_column_name))  $id_column_name = $column_names[0];
         
         $columns_for_plot = array();
@@ -96,7 +96,7 @@ class GRASS {
         $columns_for_plot[$lng_column_name] = '';
         $columns_for_plot[$value_column_name] = '';
 
-        // if we have to remove null values then check value column value and remove the row if the value column is null        
+        //** if we have to remove null values then check value column value and remove the row if the value column is null        
         $filtered_src = $src;
         if ($remove_nulls) $filtered_src = matrix::RemoveRowsBasedColumnValue($filtered_src, $value_column_name, null);
         
@@ -129,33 +129,33 @@ class GRASS {
       
     public function vector_list()
     {
-        //logger::called();
+        //**logger::called();
         $list = $this->GRASS_COMMAND("g.mlist type=vect");
         return array_util::Trim($list);
     }
     
     public function raster_list()
     {
-        //logger::called();
+        //**logger::called();
         $list = $this->GRASS_COMMAND("g.mlist type=rast");
         return array_util::Trim($list);
     }
 
     public function hasVector($name)
     {        
-        //logger::called();
+        //**logger::called();
         return array_util::Contains($this->vector_list(),trim($name));
     }
 
     public function hasRaster($name)
     {        
-        //logger::called();
+        //**logger::called();
         return array_util::Contains($this->raster_list(),trim($name));
     }
     
     public function Resolution()
     {        
-        //logger::called();
+        //**logger::called();
         if (func_num_args() == 0) return $this->resolution;
         $this->resolution = func_get_arg(0);
         $this->GRASS_COMMAND("g.region -pg res={$this->resolution}");
@@ -164,14 +164,14 @@ class GRASS {
     
     public function ResetResolution()
     {        
-        //logger::called();
+        //**logger::called();
         $this->GRASS_COMMAND("g.region -pgd");
     }
     
     
     public function vectorColumnNames($name)
     {       
-        //logger::called();
+        //**logger::called();
         if (!$this->hasVector($name)) return null;
         return $this->GRASS_COMMAND("db.columns table=$name");
     }
@@ -208,11 +208,11 @@ class GRASS {
         
         $this->vectorAddColumn($to_check,$indicator_column_name,'int');
 
-        //updates  vector=$to_check with a column "basically nameed in(other polygon) and set's the value to "not null""
-        // where this point is inside the other polygon
+        //**updates  vector=$to_check with a column "basically nameed in(other polygon) and set's the value to "not null""
+        //** where this point is inside the other polygon
         $output = $this->GRASS_COMMAND("v.what.vect vector=$to_check qvector=$inside layer=1 qlayer=1 column=$indicator_column_name qcolumn=cat");
         
-        // extract from vector=$to_check where $column_name is not null
+        //** extract from vector=$to_check where $column_name is not null
         $extracted_vector_name = "{$to_check}_in{$inside}";
         $output = $this->GRASS_COMMAND("v.extract --o input=$to_check output={$extracted_vector_name} type=point layer=1 new=-1 where='{$indicator_column_name} is not null'");
                 
@@ -297,12 +297,12 @@ class GRASS {
                 return null;
             }
                     
-            $this->set_region($region); // set region
+            $this->set_region($region); //** set region
             if (!is_null($resolution)) $this->Resolution($resolution);
             
             $raster_name = "{$vector_name}_bspline";
             
-            // resample  {$vector_name}_bspline_full to the current region required
+            //** resample  {$vector_name}_bspline_full to the current region required
             $output = $this->GRASS_COMMAND("r.resample input={$vector_name}_bspline_full output={$raster_name} --o");
             
             GRASS::remove_raster("{$vector_name}_bspline_full");
@@ -339,8 +339,8 @@ class GRASS {
     }
 
     
-    //regularized_spline_with_tension
-    // 
+    //**regularized_spline_with_tension
+    //** 
     
     public function vector2raster_regularized_spline_with_tension($vector_name,$value_column_name,$region = null,$resolution = null,$tension = 40)
     {        
@@ -361,7 +361,7 @@ class GRASS {
     
     public function interpolate_vector($interpolation_type,$vector_name,$value_column_name,$region = null,$resolution = 0.05) 
     {
-        // might be nice to be able to save these rasters for viewing later
+        //** might be nice to be able to save these rasters for viewing later
 
         logger::called();       
         logger::text("interpolate_vector $vector_name");
@@ -627,7 +627,7 @@ class GRASS {
         
         $this->GRASS_COMMAND("v.out.ogr input={$vector_name} type=point dsn='{$shapefile_path}' olayer={$layer_name} layer=1 format=ESRI_Shapefile");
         
-        return file_exists($shapefile_path); // will return true if we have successfully exported a shape file
+        return file_exists($shapefile_path); //** will return true if we have successfully exported a shape file
         
     }
     
@@ -678,7 +678,7 @@ class GRASS {
         
         $output = $this->GRASS_COMMAND("r.out.gdal input='{$raster}' nodata=-9999.00 format=AAIGrid type=Float32 output='{$filename}' createopt='FORCE_CELLSIZE=TRUE'"); 
         
-        // file_put_contents($filename, str_replace('nan', $null_value, file_get_contents($filename)));
+        //** file_put_contents($filename, str_replace('nan', $null_value, file_get_contents($filename)));
         
         return (file_exists($filename));
         
@@ -743,7 +743,7 @@ class GRASS {
     
     
     
-    // GRASS colors 
+    //** GRASS colors 
     public static $COLOR_AQUA     = "aqua";
     public static $COLOR_BLACK    = "black";
     public static $COLOR_BLUE     = "blue";

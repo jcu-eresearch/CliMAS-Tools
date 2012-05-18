@@ -3,12 +3,12 @@
 class datetimeutil {
 
     /*
-    * @method now 
+    * @method now
     * @return mixed
     */
     public static function now()
     {
-        $today = getdate();    
+        $today = getdate();
         $result = sprintf("%02d", $today["hours"]).":".sprintf("%02d", $today["minutes"]).":".sprintf("%02d", $today["seconds"]);
 
         return $result;

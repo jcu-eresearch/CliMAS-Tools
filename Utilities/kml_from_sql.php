@@ -7,9 +7,9 @@ session_start();
 
     $info = $_SESSION[$_GET['name']];
 
-    // print_r($info);
+    //** print_r($info);
 
-    header("Content-type: application/vnd.google-earth.kml+xml");
+    header("Content-type: application/**vnd.google-earth.kml+xml");
     header('Content-Disposition: attachment; filename="'.$info['fn'].'.kml"');
 
     $link = database::connect($info['db']);
@@ -52,24 +52,24 @@ session_start();
 
 $placeMark = <<<PLACEMARK
 <Placemark>
-    <name>$id</name>
-    <description>$id </description>
+    <name>$id</**name>
+    <description>$id </**description>
     <LookAt>
-            <longitude>$lon</longitude>
-            <latitude>$lat</latitude>
-            <altitude>0</altitude>
-            <heading>0.0</heading>
-            <tilt>0</tilt>
-            <range>100</range>
-            <altitudeMode>relativeToGround</altitudeMode>
-            <gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-    </LookAt>
-    <styleUrl>#msn_ylw-pushpin</styleUrl>
+            <longitude>$lon</**longitude>
+            <latitude>$lat</**latitude>
+            <altitude>0</**altitude>
+            <heading>0.0</**heading>
+            <tilt>0</**tilt>
+            <range>100</**range>
+            <altitudeMode>relativeToGround</**altitudeMode>
+            <gx:altitudeMode>relativeToSeaFloor</**gx:altitudeMode>
+    </**LookAt>
+    <styleUrl>#msn_ylw-pushpin</**styleUrl>
     <Point>
-            <altitudeMode>absolute</altitudeMode>
-            <coordinates>$lon,$lat,100</coordinates>
-    </Point>
-</Placemark>        
+            <altitudeMode>absolute</**altitudeMode>
+            <coordinates>$lon,$lat,100</**coordinates>
+    </**Point>
+</**Placemark>        
 PLACEMARK;
 
         return $placeMark."\n";
@@ -82,37 +82,37 @@ PLACEMARK;
 
 $result=<<<KML
 <?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<kml xmlns="http://**www.opengis.net//**2.2" xmlns:gx="http://**www.google.com//**ext//**//**kml//**//**2005/**Atom">
 <Document>
-<name>from sql</name>
+<name>from sql</**name>
 <StyleMap id="msn_ylw-pushpin">
         <Pair>
-                <key>normal</key>
-                <styleUrl>#sn_ylw-pushpin</styleUrl>
-        </Pair>
+                <key>normal</**key>
+                <styleUrl>#sn_ylw-pushpin</**styleUrl>
+        </**Pair>
         <Pair>
-                <key>highlight</key>
-                <styleUrl>#sh_ylw-pushpin</styleUrl>
-        </Pair>
-</StyleMap>
+                <key>highlight</**key>
+                <styleUrl>#sh_ylw-pushpin</**styleUrl>
+        </**Pair>
+</**StyleMap>
 <Style id="sh_ylw-pushpin">
         <IconStyle>
-                <scale>1.3</scale>
+                <scale>1.3</**scale>
                 <Icon>
-                        <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
-                </Icon>
-                <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
-        </IconStyle>
-</Style>
+                        <href>http://**maps.google.com//**kml//**ylw-pushpin.png</**href>
+                </**Icon>
+                <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/**>
+        </**IconStyle>
+</**Style>
 <Style id="sn_ylw-pushpin">
         <IconStyle>
-                <scale>1.1</scale>
+                <scale>1.1</**scale>
                 <Icon>
-                        <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
-                </Icon>
-                <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
-        </IconStyle>
-</Style>
+                        <href>http://**maps.google.com//**kml//**ylw-pushpin.png</**href>
+                </**Icon>
+                <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/**>
+        </**IconStyle>
+</**Style>
 KML;
 
     return $result;
@@ -122,7 +122,7 @@ KML;
 
     function kmlFooter()
     {
-        return "</Document></kml>";
+        return "<//**kml>";
 
     }
 

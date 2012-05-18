@@ -14,11 +14,11 @@ class location_coordinate {
 
 
     /*
-    * @method __construct 
-    * @param $_projection = "WGS84" 
-    * @param $_xName = "latitude" 
-    * @param $_yName = "longitude" 
-    * @param $_units = "decimal degree" { 
+    * @method __construct
+    * @param $_projection = "WGS84"
+    * @param $_xName = "latitude"
+    * @param $_yName = "longitude"
+    * @param $_units = "decimal degree" {
     * @return mixed
     */
     public function __construct($_projection = "WGS84", $_xName = "latitude", $_yName = "longitude", $_units = "decimal degree") {
@@ -27,12 +27,12 @@ class location_coordinate {
         $this->yName = $_yName;
         $this->projection = $_projection;
         $this->units = $_units;
-        
+
     }
 
 
     /*
-    * @method X 
+    * @method X
     * @return mixed
     */
     public function X()
@@ -42,8 +42,8 @@ class location_coordinate {
 
 
     /*
-    * @method setX 
-    * @param $_value 
+    * @method setX
+    * @param $_value
     * @return mixed
     */
     public function setX($_value)
@@ -53,7 +53,7 @@ class location_coordinate {
 
 
     /*
-    * @method Y 
+    * @method Y
     * @return mixed
     */
     public function Y()
@@ -63,8 +63,8 @@ class location_coordinate {
 
 
     /*
-    * @method setY 
-    * @param $_value 
+    * @method setY
+    * @param $_value
     * @return mixed
     */
     public function setY($_value)
@@ -74,9 +74,9 @@ class location_coordinate {
 
 
     /*
-    * @method setXY 
-    * @param $_valueX 
-    * @param $_valueY 
+    * @method setXY
+    * @param $_valueX
+    * @param $_valueY
     * @return mixed
     */
     public function setXY($_valueX, $_valueY)
@@ -88,7 +88,7 @@ class location_coordinate {
 
 
     /*
-    * @method Projection 
+    * @method Projection
     * @return mixed
     */
     public function Projection()
@@ -98,8 +98,8 @@ class location_coordinate {
 
 
     /*
-    * @method setProjection 
-    * @param $_value 
+    * @method setProjection
+    * @param $_value
     * @return mixed
     */
     public function setProjection($_value)
@@ -109,7 +109,7 @@ class location_coordinate {
 
 
     /*
-    * @method Units 
+    * @method Units
     * @return mixed
     */
     public function Units()
@@ -119,8 +119,8 @@ class location_coordinate {
 
 
     /*
-    * @method setUnits 
-    * @param $_value 
+    * @method setUnits
+    * @param $_value
     * @return mixed
     */
     public function setUnits($_value)
@@ -139,8 +139,8 @@ class location_coordinate {
 
 
     /*
-    * @method XY 
-    * @param { 
+    * @method XY
+    * @param {
     * @return mixed
     */
     public function XY() {
@@ -150,9 +150,9 @@ class location_coordinate {
 
 
     /*
-    * @method WGS84 
-    * @param $_lat 
-    * @param $_long 
+    * @method WGS84
+    * @param $_lat
+    * @param $_long
     * @return mixed
     */
     public static function WGS84($_lat, $_long)

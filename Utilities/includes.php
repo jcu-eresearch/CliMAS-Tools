@@ -1,4 +1,5 @@
 <?php
+include_once 'Object.class.php';
 include_once 'array_util.class.php';
 include_once 'color.class.php';
 include_once 'database.class.php';

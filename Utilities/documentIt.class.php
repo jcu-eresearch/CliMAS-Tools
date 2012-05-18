@@ -3,8 +3,8 @@ class documentIt {
 
 
     /*
-    * @method now 
-    * @param $filename 
+    * @method now
+    * @param $filename
     * @return mixed
     */
     public static function now($filename)
@@ -30,7 +30,7 @@ class documentIt {
     private $filename;
 
     /*
-    * @property Filename 
+    * @property Filename
     * @return mixed
     */
     public function Filename()
@@ -44,7 +44,7 @@ class documentIt {
     private $cm;
 
     /*
-    * @property CM 
+    * @property CM
     * @return mixed
     */
     public function CM()
@@ -56,7 +56,7 @@ class documentIt {
 
 
     /*
-    * @method doWork 
+    * @method doWork
     * @return mixed
     */
     public function doWork()
@@ -85,7 +85,7 @@ class documentIt {
 
 
     /*
-    * @method doGenerateComments 
+    * @method doGenerateComments
     * @return mixed
     */
     public function doGenerateComments()
@@ -151,8 +151,8 @@ class documentIt {
 
 
     /*
-    * @method getMethodLineNumbers 
-    * @param $code 
+    * @method getMethodLineNumbers
+    * @param $code
     * @return mixed
     */
     private function getMethodLineNumbers($code)

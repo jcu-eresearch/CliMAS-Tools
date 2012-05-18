@@ -53,25 +53,25 @@ class matrix
                 $result .= "{$rowID}{$delim}{$row}\n";
                 $count++;
             }
-               
+
         }
         else
         {
             $ucn = util::uniqueColumnNames($src);
-            
+
             if (!is_null($max_width))
             {
                 $result .= str_pad("ROW", $max_width, $pad_char, STR_PAD_RIGHT)."{$delim}";
-                
-                foreach ($ucn as $column_name) 
+
+                foreach ($ucn as $column_name)
                     $result .= substr(str_pad($column_name, $max_width, $pad_char, STR_PAD_RIGHT),0,$max_width)."{$delim}";
             }
             else
             {
                 $result .= "ROW{$delim}".join("$delim",$ucn).$delim;
             }
-            
-            
+
+
             foreach ($src as $rowID => $row)
             {
                 if (!is_null($rowCount))  if ($count > $rowCount) return $result;
@@ -81,27 +81,27 @@ class matrix
                 foreach ($ucn as $ColumnName)
                 {
                     $rowToWrite[$ColumnName] = str_replace("\n"," ",$row[$ColumnName]);
-                    
+
                     if (!is_null($max_width))
                         $rowToWrite[$ColumnName] = substr(str_pad($rowToWrite[$ColumnName],$max_width," ",STR_PAD_RIGHT),0,$max_width);
                 }
 
                 if (!is_null($max_width))
                 {
-                    $result .= "\n".substr(str_pad($rowID, $max_width, " ", STR_PAD_RIGHT),0,$max_width)."{$delim}";   
+                    $result .= "\n".substr(str_pad($rowID, $max_width, " ", STR_PAD_RIGHT),0,$max_width)."{$delim}";
                     $result .= join("$delim",array_values($rowToWrite)).$delim;
                 }
                 else
                 {
-                    $result .= "\n{$rowID}{$delim}".join("$delim",array_values($rowToWrite)).$delim;    
+                    $result .= "\n{$rowID}{$delim}".join("$delim",array_values($rowToWrite)).$delim;
                 }
-                
+
                 $count++;
             }
 
         }
 
-        
+
         return $result;
     }
 
@@ -116,16 +116,16 @@ class matrix
 
         if ($style != "") $style = ' style="'.$style.'" ';
         if ($class != "") $class = ' class="'.$class.'" ';
-        
+
         $result = "";
 
         $ucn = util::uniqueColumnNames($src);
 
         $result .= "\n".'<table  cellspacing="0" cellpadding="0" border="0"'.$style.' '.$class.'>';
         $result .= "\n"."<tr>";
-        
+
         $rihdr = ($display_row_id) ? "<td class=\"table_td\">ROW</td> " : "";
-        
+
         $result .= "\n"."{$rihdr}<td class=\"table_td\"><b>".join("</b></td><td class=\"table_td\"><b>",$ucn)."</b></td>\n";
         $result .= "\n"."</tr>";
 
@@ -140,7 +140,7 @@ class matrix
             $rowToWrite = array();
             foreach ($ucn as $ColumnName)
             {
-                
+
                 if (array_key_exists($ColumnName, $row))
                 {
                     if (is_array($row[$ColumnName]))
@@ -148,15 +148,15 @@ class matrix
                         $rowToWrite[$ColumnName] = "Array [".count($row[$ColumnName])."]";
                     }
                     else
-                        $rowToWrite[$ColumnName] = $row[$ColumnName];        
-                    
+                        $rowToWrite[$ColumnName] = $row[$ColumnName];
+
                 }
                 else
                 {
                         $rowToWrite[$ColumnName] = "";
                 }
-                
-                
+
+
             }
 
             $ritext = ($display_row_id) ? "<td class=\"table_td\">{$rowID}</td> " : "";
@@ -173,19 +173,19 @@ class matrix
 
     }
 
-    
+
     public static function toHTML_CSS($src, $display_row_id = true)
     {
-        
+
         $result = "";
 
         $ucn = util::uniqueColumnNames($src);
 
         $result .= "\n".'<div class="css_table">';
         $result .= "\n".'<div class="css_row_header">';
-        
+
         $rihdr = ($display_row_id) ? '<div class="css_cell_header">ROW</div> ' : '';
-        
+
         $result .= "\n"."{$rihdr}<div class=\"css_cell_header\"><b>".join("</b></div><div class=\"css_cell_header\"><b>",$ucn)."</b></div>\n";
         $result .= "\n"."</div>";
 
@@ -217,8 +217,8 @@ class matrix
         return $result ;
 
     }
-    
-    
+
+
 
     // GIVEN Matirx
 // return : value for each column
@@ -374,7 +374,7 @@ class matrix
         $headerNames = array_util::Trim(explode($delim,$lines[0]));
 
         // find lat and long column names and row indexs
-        $lat_index = -1; 
+        $lat_index = -1;
         $lon_index = -1;
         $fid_index = -1;
         for ($ns = 0; $ns < count($headerNames); $ns++) {
@@ -401,8 +401,8 @@ class matrix
                 echo "incorrect number of cells on line: $index - ignored  " . count($cells) ." != ". count($headerNames);
                 continue;
             }
-            
-            $rowKey = 
+
+            $rowKey =
                 sprintf("%03.".$decimal_place."f",$cells[$lat_index]).
                 ascii_grid::$LatLonDelim.
                 sprintf("%03.".$decimal_place."f",$cells[$lon_index]); // here we are creating the ROW_ID from the Lat and Long columns
@@ -560,12 +560,12 @@ class matrix
         // print_r($headerNames);
 
         $lineCount = 1;
-        if (!is_null($index)) 
+        if (!is_null($index))
         {
 
             // echo "Finding index: $index\n";
 
-            // read lines and discard until you get to index 
+            // read lines and discard until you get to index
             for ($ra = 0; $ra < $index -1 ; $ra++) {
                 fgets($fh); // loater remove assignemnt as this will speedu and it's not needed
                 // echo "$lineCount.. ";
@@ -675,7 +675,7 @@ class matrix
     */
     public static function Save($src,$filename,$delim = ",",$id_column_name = "ROW",$selected_columns = null,$write_header = true, $append = false)
     {
-        
+
         if (is_null($src) || !is_array($src))
         {
             echo "### ERROR Matrix::Save - src passed to Save matrix is NOT a matrix\n";
@@ -693,7 +693,7 @@ class matrix
                 return $src;
             else
                 return NULL;
-            
+
         }
 
         $ucn = util::uniqueColumnNames($src);
@@ -707,12 +707,12 @@ class matrix
         // supports appending to a file
         $handle = ($append)? fopen($filename, "a",FILE_APPEND) : fopen($filename, "w");
 
-        if ($handle == false) 
+        if ($handle == false)
         {
             echo "##ERROR: Could not write to $filename\n";
             return null;
         }
-        
+
         // usually if we are appending we may want to not add another header row.
         if ($write_header)
         {
@@ -720,28 +720,28 @@ class matrix
             if (!is_null($id_column_name))  $rowToWrite[] = util::CleanStr($id_column_name, $delim);
 
             if (is_null($selected_columns))
-                foreach ($ucn as $ColumnName) $rowToWrite[] = util::CleanStr($ColumnName, $delim);   
+                foreach ($ucn as $ColumnName) $rowToWrite[] = util::CleanStr($ColumnName, $delim);
             else
                 foreach ($selected_columns as $ColumnName) $rowToWrite[] = util::CleanStr($ColumnName, $delim);
 
             fwrite($handle,join("$delim",$rowToWrite)."\n");
-            
+
         }
 
-        
+
         foreach ($src as $rowID => $row)
         {
             // for each row go thru Unique column names and if we have it add it if we don't have add empty cell
             $rowToWrite = array();
-            if (!is_null($id_column_name)) 
+            if (!is_null($id_column_name))
                 $rowToWrite[] = util::CleanStr($rowID, $delim);
-            
+
             if (is_null($selected_columns))
                 foreach ($ucn as $ColumnName) $rowToWrite[] = util::CleanStr($row[$ColumnName], $delim);
             else
-                foreach ($selected_columns as $ColumnName) 
+                foreach ($selected_columns as $ColumnName)
                     $rowToWrite[] = util::CleanStr($row[$ColumnName], $delim);
-                
+
             fwrite($handle,join("$delim",$rowToWrite)."\n");
         }
 
@@ -775,7 +775,7 @@ class matrix
         }
 
         $ucn = util::uniqueColumnNames($src);
-        
+
 
         if (is_null($src) || !is_array($src))
         {
@@ -829,7 +829,7 @@ class matrix
 
         return $result;
     }
-    
+
 
     /*
      * @method ros Statistics
@@ -858,7 +858,7 @@ class matrix
                 if ($result[$rowID]['count'] > 1)
                     $result[$rowID]['stddev'] = stats::StandardDeviation($row, null, $nullValue);
             }
-                
+
 
             $result[$rowID]['value_count'] = array_util::CountNotValue($row, $nullValue); // count NOT nulls
             $result[$rowID]['null_count'] = array_util::CountValue($row, $nullValue);     // count nulls
@@ -873,17 +873,17 @@ class matrix
             $result[$rowID]['max'] = array_util::Maximum($row, null, $nullValue); // count NOT nulls
 
             $result[$rowID]['range'] = $result[$rowID]['max'] - $result[$rowID]['min'];
-            $result[$rowID]['median'] = stats::Median($row, $nullValue);     
+            $result[$rowID]['median'] = stats::Median($row, $nullValue);
 
             // first and last non_null value
             $result[$rowID]['data_start'] = array_util::FirstValueKey($row, null, $nullValue);
             $result[$rowID]['data_end']   = array_util::LastValueKey($row, null, $nullValue);
 
-            
+
             $lr = stats::linear_regression_with_keys($row,$nullValue);
             $result[$rowID]['regression_slope']     = $lr['slope'];
             $result[$rowID]['regression_intercept'] = $lr['intercept'];
-            
+
         }
         return $result;
     }
@@ -891,18 +891,18 @@ class matrix
     // All column names of matrix
     public static function ColumnNames($src,$use_first_row = true)
     {
-        
+
         if (count($src) == 0)
         {
             echo "ERROR: matrix::ColumnNames src matrix has no rows\n";
             return null;
         }
-        
+
         // very quick - but if matrix is badly formed then this will miss column names
-        if ($use_first_row)    
+        if ($use_first_row)
             return array_keys(util::first_element($src));
-        
-        
+
+
         // scan entire Matrix for column names
         $columns = array();
         foreach ($src as $rowID => $row)
@@ -925,14 +925,14 @@ class matrix
     public static function ColumnAverage($src, $nullValue = null)
     {
         $result = array();
-        
+
         foreach (self::ColumnNames($src) as  $columnName)
-        {            
+        {
             $result[$columnName] = array_util::Average($src, $columnName,$nullValue);
             // echo "Column acverage $columnName ".$result[$columnName]."\n";
         }
-            
-        
+
+
         return $result;
     }
 
@@ -1040,7 +1040,7 @@ class matrix
 
         $count = 0;
         fgets($f); // read first line - skip first line
-        while (!feof($f)) 
+        while (!feof($f))
         {
             $cells = explode($delim, fgets($f));
             if (count($cells) <= 1) continue;
@@ -1098,7 +1098,7 @@ class matrix
             foreach ($column_names as $subset_column_name) {
                 $subset_row[$subset_column_name] = $row[$subset_column_name];
             }
-            
+
             $avg = array_util::Average($subset_row, null,$nullValue);
 
             if (is_null($avg) && $replaceNullWithNullValue)
@@ -1249,7 +1249,7 @@ class matrix
                 $single_cell_array_for_sd = array();
 
                 // collect the values of each matrix
-                foreach ($mats as $filename => $single_matrix) 
+                foreach ($mats as $filename => $single_matrix)
                     if (array_key_exists($rowName, $single_matrix))  // does this row exists in each matrix
                         if (array_key_exists($columnNameName, $single_matrix[$rowName]))
                                 if ($single_matrix[$rowName][$columnNameName] != $null_value)
@@ -1257,7 +1257,7 @@ class matrix
 
                    $result['sd'][$rowName][$columnNameName] = stats::StandardDeviation($single_cell_array_for_sd,NULL, $null_value);
                 $result['count'][$rowName][$columnNameName] = count($single_cell_array_for_sd);
-                
+
             }
 
         }
@@ -1351,7 +1351,7 @@ class matrix
     }
 
 
-    // 
+    //
     public static function ReplaceValue($src,$from,$to)
     {
         $result = array();
@@ -1382,8 +1382,8 @@ class matrix
 
         return $result;
     }
-    
-    
+
+
     public static function ScalarDivide($src,$scalar,$null_value = NULL)
     {
         $result = array();
@@ -1504,7 +1504,7 @@ class matrix
 
             foreach ($row as $columnID => $value)
             {
-                
+
                 // simple don't need to check
                 if (is_null($null_value))
                 {
@@ -1521,7 +1521,7 @@ class matrix
 
                 // we have two actual values to subtract
                 $result[$rowID][$columnID] = $value - $array[$rowID]; // simple don't need to check
-                
+
             }
 
         }
@@ -1600,7 +1600,7 @@ class matrix
             {
 
                 if (!array_key_exists($lhs_columnid, $rhs[$lhs_rowID])) continue;
-                
+
                 if ($lhs_cell == $lhs_null_value) continue;
                 if ($rhs[$lhs_rowID][$lhs_columnid] == $rhs_null_value) continue;
 
@@ -1631,7 +1631,7 @@ class matrix
         }
         echo "\n";
         return $current;
-        
+
     }
 
 
@@ -1755,7 +1755,7 @@ class matrix
 
         $result = array();
         foreach ($filenames as $filename)
-        {    
+        {
             $r = self::ValueCountByRow(matrix::Load($filename,$delim,$row_id),$value_to_count);
 
             foreach ($r as $row_id => $value_count)
@@ -1841,7 +1841,7 @@ class matrix
             {
                 $result[$matrix_row[$column_name]]++; // only process a single column
             }
-                
+
 
         ksort($result);
         return $result;
@@ -1877,7 +1877,7 @@ class matrix
             $group_count[$col_name]++;
 
         }
-           
+
         $result = array();
 
         foreach ($group_sum as $group_name => $value)
@@ -1897,7 +1897,7 @@ class matrix
         else
             $column_values = matrix::RowNames($src);
 
-        
+
         $valid_rowCount = 0;
         $maxStringLength = 0;
         $numberCount = 0;
@@ -1905,9 +1905,9 @@ class matrix
         {
             if (is_array($value))
                 $value = print_r($value,true);
-            
+
             if (trim($value) == "") continue; // skip spaces
-            
+
                                         /// strlen($value)
             $maxStringLength = max( strlen($value),$maxStringLength);
             if (is_numeric($value)) $numberCount++;
@@ -1923,7 +1923,7 @@ class matrix
 
     }
 
-    
+
     public static function ColumnTypeForDB_ALL($src)
     {
         $result = array();
@@ -1932,9 +1932,9 @@ class matrix
             $result[$column_name] = self::ColumnTypeForDB($src, $column_name);
         }
         return $result;
-        
+
     }
-    
+
 
     // count
     public static function RowNullCount($matrix,$null_value)
@@ -1960,15 +1960,15 @@ class matrix
             $result[$row[$key_column]] = $row[$value_column];
 
         if ($counts_must_match)
-            if (count($matrix) != count($result)) $result = null;            
-        
-        
+            if (count($matrix) != count($result)) $result = null;
+
+
         return $result;
     }
 
 
-    
-    
+
+
     // grpup data from $value_column based on the value in $key_column
     // returns: Jagged keyed array
     public static function ColumnGroupBy($matrix,$grouping_column,$key_column,$value_column)
@@ -1978,7 +1978,7 @@ class matrix
         // get unique list of values from key_column
         foreach ($matrix as $rowID => $row)
         {
-            $result[$row[$grouping_column]][$row[$key_column]] = $row[$value_column];    
+            $result[$row[$grouping_column]][$row[$key_column]] = $row[$value_column];
         }
         return $result;
     }
@@ -1987,35 +1987,35 @@ class matrix
     public static function ColumnGroupBy_First($matrix,$grouping_column,$key_column,$value_column)
     {
         $sub_result = self::ColumnGroupBy($matrix,$grouping_column,$key_column,$value_column);
-        
-        foreach ($sub_result as $row_id => $row) 
-        {            
+
+        foreach ($sub_result as $row_id => $row)
+        {
             $result[$row_id] = util::first_element($row);
         }
-        
+
         return $result;
-        
+
     }
-    
-    // $columns = comma delimited string of column namesstring 
-    //   or 
+
+    // $columns = comma delimited string of column namesstring
+    //   or
     //$columns = array of column names
     public static function SelectedColumns($matrix,$columns)
     {
-        
-        if (is_string($columns)) 
+
+        if (is_string($columns))
             $columns = explode(',',$columns);
-     
+
         $result = array();
-        foreach ($matrix as $row_id => $row) 
-            foreach ($columns as $column) 
+        foreach ($matrix as $row_id => $row)
+            foreach ($columns as $column)
                 $result[$row_id][$column] = $row[$column];
-        
+
         return $result ;
     }
 
-    // $columns = comma delimited string of column namesstring 
-    //   or 
+    // $columns = comma delimited string of column namesstring
+    //   or
     //$columns = array of column names
     public static function ColumnAdd($matrix,$column_name,$default_value = null)
     {
@@ -2023,15 +2023,15 @@ class matrix
             $column_names = explode(',',$column_name);
         else
             $column_names = $column_name;
-        
-        
+
+
         $result = array();
-        foreach ($matrix as $row_id => $row) 
+        foreach ($matrix as $row_id => $row)
         {
-            foreach ($row as $column_id => $cell) 
+            foreach ($row as $column_id => $cell)
                 $result[$row_id][$column_id] = $cell; // copy row
-            
-            foreach ($column_names as $column) 
+
+            foreach ($column_names as $column)
                 $result[$row_id][$column] = $default_value; // copy addon
         }
 
@@ -2043,17 +2043,17 @@ class matrix
      */
     public static function ColumnAppend($lhs,$rhs,$AppendPrefix = "")
     {
-        
+
         $result = array();
-        foreach ($lhs as $lhs_row_id => $lhs_row) 
-        {           
-            foreach ($lhs_row as $lhs_column_id => $lhs_cell) 
+        foreach ($lhs as $lhs_row_id => $lhs_row)
+        {
+            foreach ($lhs_row as $lhs_column_id => $lhs_cell)
                 $result[$lhs_row_id][$lhs_column_id] = $lhs_cell; // copy row
-            
+
             if (is_array($rhs[$lhs_row_id]))
             {
                 // rhs is a matrix
-                foreach ($rhs[$lhs_row_id] as $rhs_column_id => $rhs_cell) 
+                foreach ($rhs[$lhs_row_id] as $rhs_column_id => $rhs_cell)
                     $result[$lhs_row_id][$AppendPrefix.$rhs_column_id] = $rhs_cell; // copy row
             }
             else
@@ -2061,15 +2061,15 @@ class matrix
                 // rhs is a keyed array;
                 $result[$lhs_row_id][$AppendPrefix] = $rhs[$lhs_row_id]; // copy row
             }
-            
+
 
         }
 
         return $result;
     }
-    
-    
-    
+
+
+
     // return array of matrix for this filename each matrix is a sheet
     public static function FromXLS($filename)
     {
@@ -2078,36 +2078,36 @@ class matrix
         echo "Import Excel CSheets to Arry of Matrix {$filename}\n";
 
         $sheets = self::XLS_SheetNames($filename);
-        
-        foreach ($sheets as $index => $sheet_info) 
+
+        foreach ($sheets as $index => $sheet_info)
         {
             $matrix_name = util::leftStr(util::fromLastSlash($filename), ".")."_".util::CleanStr($sheet_info['Name'],NULL,"[]{}_- !@#$%^&*(),~'\"\\");
             $result[$matrix_name] = self::XLS_ExtractSheet($filename,$sheet_info['Page']);
         }
-        
+
         return $result;
-        
+
     }
- 
+
     public static function XLS_ExtractSheet($filename,$sheet_number = 0)
     {
-        
+
         $lines = array();
         exec("xlhtml -asc -xp:{$sheet_number} '{$filename}'", $lines);
-        
+
         $result = matrix::fromString(join("\n",$lines), "\t");
-        
+
         return $result;
-        
+
     }
-    
+
     public static function XLS_SheetNames($filename)
     {
         // count - sheets xlhtml -asc -dp  "caracteristique piezo.xls"
-        
+
         $return = array();
         exec("xlhtml -asc -dp  '{$filename}'", $return);
-        
+
         // example output
         //There are 4 pages total.
         //Page:0 Name:Feuil1 MaxRow:108 MaxCol:11
@@ -2115,10 +2115,10 @@ class matrix
         //Page:2 Name:Feuil3 MaxRow:108 MaxCol:11
         //Page:3 Name:caracteristique piezo MaxRow:108 MaxCol:10
 
-        foreach ($return as $line) 
+        foreach ($return as $line)
         {
             if (!util::contains($line, "Page:")) continue;
-            
+
             $row = array();
             $row['Page'] = trim(util::midStr($line, "Page:", "Name:"));
             $row['Name'] = trim(util::midStr($line, "Name:", "MaxRow:"));
@@ -2127,27 +2127,27 @@ class matrix
 
             $result[] = $row;
         }
-        
+
         return $result;
-        
+
     }
-    
-    
+
+
     /*
      * Convert each cell value as per the template
-     * 
+     *
      * @param String $cellTemplate - String with the following components
-     * 
+     *
      * {ColumnName} = changes this the current column name
      * {RowName}    = changes this the current row name (id)
      * {CellValue}  = changes this the current cell value
-     * 
+     *
      */
     public static function FromTemplate($matrix,$cellTemplate,$replacementSet = null)
     {
-     
+
         if (is_null($replacementSet)) $replacementSet = array();
-        
+
         $result = array();
         foreach ($matrix as $matrix_rowID => $matrix_row)
             foreach ($matrix_row as $matrix_columnid => $matrix_cell)
@@ -2156,24 +2156,24 @@ class matrix
                 $newCellValue = str_replace("{ColumnName}", $matrix_columnid, $newCellValue);
                 $newCellValue = str_replace("{RowName}",    $matrix_rowID,    $newCellValue);
 
-                if (!is_array($matrix_cell))                
-                    $newCellValue = str_replace("{CellValue}",  $matrix_cell,     $newCellValue);            
-                
-                foreach ($replacementSet as $replaceKey => $replaceValue) 
+                if (!is_array($matrix_cell))
+                    $newCellValue = str_replace("{CellValue}",  $matrix_cell,     $newCellValue);
+
+                foreach ($replacementSet as $replaceKey => $replaceValue)
                 {
                     $newCellValue = str_replace("{{$replaceKey}}",$replaceValue,$newCellValue);
                 }
-                
-               
+
+
                 $result[$matrix_rowID][$matrix_columnid] = $newCellValue;
-                
+
             }
 
         return $result;
     }
 
-    
-    
-    
+
+
+
 }
 ?>

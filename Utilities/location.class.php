@@ -11,8 +11,8 @@ class location {
 
 
     /*
-    * @method __construct 
-    * @param $_name { 
+    * @method __construct
+    * @param $_name {
     * @return mixed
     */
     public function __construct($_name) {
@@ -22,8 +22,8 @@ class location {
 
 
     /*
-    * @method setName 
-    * @param _$value 
+    * @method setName
+    * @param _$value
     * @return mixed
     */
     public function setName(_$value)
@@ -33,7 +33,7 @@ class location {
 
 
     /*
-    * @method Name 
+    * @method Name
     * @return mixed
     */
     public function Name()
@@ -44,8 +44,8 @@ class location {
 
 
     /*
-    * @method setCoordinate 
-    * @param _$value 
+    * @method setCoordinate
+    * @param _$value
     * @return mixed
     */
     public function setCoordinate(_$value)
@@ -55,9 +55,9 @@ class location {
 
 
     /*
-    * @method setCoordinateLatLong 
-    * @param $_lat 
-    * @param $_long 
+    * @method setCoordinateLatLong
+    * @param $_lat
+    * @param $_long
     * @return mixed
     */
     public function setCoordinateLatLong($_lat, $_long)
@@ -69,8 +69,8 @@ class location {
 
 
     /*
-    * @method Coordinate 
-    * @param _$value 
+    * @method Coordinate
+    * @param _$value
     * @return mixed
     */
     public function Coordinate(_$value)
@@ -81,8 +81,8 @@ class location {
 
 
     /*
-    * @method setElevation 
-    * @param _$value 
+    * @method setElevation
+    * @param _$value
     * @return mixed
     */
     public function setElevation(_$value)
@@ -92,8 +92,8 @@ class location {
 
 
     /*
-    * @method Elevation 
-    * @param _$value 
+    * @method Elevation
+    * @param _$value
     * @return mixed
     */
     public function Elevation(_$value)
@@ -103,8 +103,8 @@ class location {
 
 
     /*
-    * @method setDynamic 
-    * @param _$value 
+    * @method setDynamic
+    * @param _$value
     * @return mixed
     */
     public function setDynamic(_$value)
@@ -114,7 +114,7 @@ class location {
 
 
     /*
-    * @method Dynamic 
+    * @method Dynamic
     * @return mixed
     */
     public function Dynamic()
@@ -125,8 +125,8 @@ class location {
 
 
     /*
-    * @method setRelativeTo 
-    * @param _$value 
+    * @method setRelativeTo
+    * @param _$value
     * @return mixed
     */
     public function setRelativeTo(_$value)
@@ -136,7 +136,7 @@ class location {
 
 
     /*
-    * @method RelativeTo 
+    * @method RelativeTo
     * @return mixed
     */
     public function RelativeTo()
@@ -148,10 +148,10 @@ class location {
 
 
     /*
-    * @method fromLatLong 
-    * @param $_name 
-    * @param $_lat 
-    * @param $_long 
+    * @method fromLatLong
+    * @param $_name
+    * @param $_lat
+    * @param $_long
     * @return mixed
     */
     public static function fromLatLong($_name, $_lat, $_long)

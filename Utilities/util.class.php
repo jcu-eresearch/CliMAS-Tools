@@ -2,8 +2,8 @@
 
 class util {
 
-    /*
-    * @method isWebBrowser 
+    /**
+    * @method isWebBrowser
     * @return mixed
     */
     public static function isWebBrowser()
@@ -14,7 +14,7 @@ class util {
         return false;
     }
 
-    /*
+    /**
     * @method hostname 
     * @return mixed
     */
@@ -24,20 +24,8 @@ class util {
     }
 
 
-    /*
-    * @method ip_address 
-    * @param $networkDevice = "eth0" 
-    * @return mixed
-    */
-    public static function ip_address($networkDevice = "eth0")
-    {
-        $result = `ifconfig '.$networkDevice.' | head -n 2 | tail -n 1 | sed 's/:/\n/g' | head -n 2 | tail -n 1 | sed 's/ /\n/g' | head -n 1 | head -n 1 | sed 's/\n//g'`;
-        return $result;
-    }
 
-
-
-    /*
+    /**
     * @method scriptName 
     * @return mixed
     */
@@ -48,7 +36,7 @@ class util {
     }
 
 
-    /*
+    /**
     * @method visualWait 
     * @param $Time 
     * @return mixed
@@ -66,18 +54,16 @@ class util {
         return $argv[0];
     }
 
-    /*
+    /**
      * @method get number of days in month
      * @return array - if nothing passed
      * @return single value  - if passed year and month
     */
     public static function daysInMonth($year,$month)
     {
-
+        $months = array();
         $months[1] = 31;
-
         $months[2] = date('L', strtotime("$year-01-01")) ? 29 : 28;
-
         $months[3] = 31;
         $months[4] = 30;
         $months[5] = 31;
@@ -94,10 +80,7 @@ class util {
 
 
 
-
-
-
-    /*
+    /**
     * @method removeString 
     * @param $src 
     * @param $remove 
@@ -113,7 +96,7 @@ class util {
 
 
 
-    /*
+    /**
     * @method uniqueColumnNames 
     * @param $src 
     * @return mixed
@@ -140,7 +123,7 @@ class util {
 
 
 
-    /*
+    /**
     * @method sqlPivot 
     * @param $array 
     * @param $columnID 
@@ -192,12 +175,12 @@ class util {
             {
                 switch ($operation) {
                     case '+': $matrix[$row][$col] =  $matrix[$row][$col] + $srcRow[$cellID]; break; // sum
-                    case '-': $matrix[$row][$col] =  $matrix[$row][$col] - $srcRow[$cellID]; break; // sum
-                    case '/': $matrix[$row][$col] =  $matrix[$row][$col] / $srcRow[$cellID]; break; // sum
-                    case '*': $matrix[$row][$col] =  $matrix[$row][$col] * $srcRow[$cellID]; break; // sum
+                    case '-': $matrix[$row][$col] =  $matrix[$row][$col] - $srcRow[$cellID]; break; // subtract
+                    case '/': $matrix[$row][$col] =  $matrix[$row][$col] / $srcRow[$cellID]; break; // divide
+                    case '*': $matrix[$row][$col] =  $matrix[$row][$col] * $srcRow[$cellID]; break; // product
                     case 'mean':
                     case 'avg':
-                        $matrix[$row][$col] =  $matrix[$row][$col] + $srcRow[$cellID]; break; // sum
+                        $matrix[$row][$col] =  $matrix[$row][$col] + $srcRow[$cellID]; break; // m,ean
 
                     default:
                         break;
@@ -235,7 +218,7 @@ class util {
                             {
                                 if ($matrix_counts[$row_id][$column_id] == 0)
                                 {
-                                    $matrix[$row_id][$column_id] =  null;  // asked for average and we have zero count 
+                                    $matrix[$row_id][$column_id] =  null;  // asked for average and we have zero count
                                 }
                                 else
                                 {
@@ -259,7 +242,7 @@ class util {
 
 
 
-    /*
+    /**
     * @method sqlInfo 
     * @param $sqlResult 
     * @return mixed
@@ -268,8 +251,6 @@ class util {
     {
 
         displayMatrix($sqlResult);
-
-        echo "\n\ncount: ".count($sqlResult);
 
         $unique = sqlUniqueColumnValues($sqlResult);
         foreach ($unique as $key => $value)
@@ -280,7 +261,7 @@ class util {
 
 
 
-    /*
+    /**
     * @method sqlUniqueColumnValues 
     * @param $sqlResult 
     * @return mixed
@@ -314,7 +295,7 @@ class util {
     // failed  - array of rows and counts
     // success - cell count
 
-    /*
+    /**
     * @method checkCellCount 
     * @param $link 
     * @param $tableName 
@@ -351,7 +332,7 @@ class util {
 
 
 
-    /*
+    /**
     * @method groupSum 
     * @param $link 
     * @param $tableName 
@@ -379,7 +360,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method extractFileToDatabase 
     * @param $filename 
     * @param $tableName 
@@ -403,7 +384,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method createTable 
     * @param $uniqueValues 
     * @param $result 
@@ -440,7 +421,7 @@ SQL;
     }
 
 
-    /*
+    /**
     * @method deleteTable 
     * @param $tableName 
     * @return mixed
@@ -458,7 +439,7 @@ SQL;
     //}
 
 
-    /*
+    /**
     * @method explodeTree 
     * @param $array 
     * @param $delimiter = '_' 
@@ -467,6 +448,8 @@ SQL;
     */
     public static function explodeTree($array, $delimiter = '_', $baseval = false)
     {
+        if(!is_array($array)) return false;
+
         if(!is_array($array)) return false;
         $splitRE   = '/' . preg_quote($delimiter, '/') . '/';
         $returnArr = array();
@@ -503,7 +486,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method replaceInKey 
     * @param $srcArray 
     * @param $find_str 
@@ -526,7 +509,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method toLastSlash 
     * @param $src 
     * @param $slashType = "" 
@@ -539,7 +522,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method toLastChar 
     * @param $src 
     * @param $charType = "" 
@@ -555,10 +538,10 @@ SQL;
     }
 
 
-    /*
+    /**
     * @method fromLastSlash 
     * @param $src 
-    * @param $slashType = "/" 
+    * @param $slashType = "/**" 
     * @return mixed
     */
     public static function fromLastSlash($src, $slashType = "/")
@@ -568,7 +551,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method fromLastChar 
     * @param $src 
     * @param $charType = "" 
@@ -583,7 +566,7 @@ SQL;
     }
 
 
-    /*
+    /**
     * @method contains 
     * @param $in 
     * @param $find 
@@ -601,7 +584,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method URL Value
     * @param $array
     * @param $findIn
@@ -616,7 +599,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method trim_end 
     * @param $toTrim 
     * @param $trimOff 
@@ -630,7 +613,7 @@ SQL;
     }
 
 
-    /*
+    /**
     * @method last_char 
     * @param $str 
     * @return mixed
@@ -642,7 +625,7 @@ SQL;
     }
 
 
-    /*
+    /**
     * @method first_char 
     * @param $str 
     * @return mixed
@@ -654,7 +637,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method last_element 
     * @param $array 
     * @return mixed
@@ -668,7 +651,7 @@ SQL;
         return $vals[$lastIndex - 1];
     }
 
-    /*
+    /**
     * @method last_element
     * @param $array
     * @return mixed
@@ -684,7 +667,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method first_element 
     * @param $array 
     * @return mixed
@@ -696,7 +679,7 @@ SQL;
         return $vals[0];
     }
 
-    /*
+    /**
     * @method first_element
     * @param $array
     * @return mixed
@@ -709,7 +692,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method midStr 
     * @param $src 
     * @param $from 
@@ -751,7 +734,7 @@ SQL;
 
     }
 
-    /*
+    /**
     * @method midStr 
     * @param $src 
     * @param $from 
@@ -775,7 +758,7 @@ SQL;
     
 
 
-    /*
+    /**
     * @method leftStrFrom 
     * @param $src 
     * @param $fromChar 
@@ -798,7 +781,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method leftStr 
     * @param $src 
     * @param $toChar 
@@ -834,7 +817,7 @@ SQL;
     
     
 
-    /*
+    /**
     * @method rightStr 
     * @param $src 
     * @param $toChar 
@@ -856,7 +839,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method copyFiles 
     * @param $array 
     * @return mixed
@@ -885,7 +868,7 @@ SQL;
 
 // return matrix that each row is an accumulation of the previous
 
-    /*
+    /**
     * @method accumMatrix
     * @param $src
     * @return mixed
@@ -895,16 +878,11 @@ SQL;
         return matrix::accumulate($src);
     }
 
-// GIVEN Matirx
-// return : value for each column
-// where the cell value is less than or equial to (but not greater than $limit )
- // return array - Column / row id    where  value <= $limit
-
-    /*
+    /**
     * @method accumLimit
-    * @param $src
+    * @param matrix $src
     * @param $limit
-    * @return mixed
+    * @return mixed value for each column where the cell value is less than or equial to (but not greater than $limit )
     */
     public static function accumLimit($src, $limit)
     {
@@ -913,7 +891,7 @@ SQL;
 
 
 
-    /*
+    /**
     * @method MatrixCell
     * @param $matrix
     * @param $rowID
@@ -926,7 +904,7 @@ SQL;
         return matrix::Cell($matrix, $rowID, $column) ;
     }
 
-    /*
+    /**
     * @method displayMatrix
     * @param $src
     * @param $delim = "\t"
@@ -938,7 +916,7 @@ SQL;
     }
 
 
-    /*
+    /**
     * @method printableMatrix
     * @param $src
     * @param $delim = "\t"
@@ -950,7 +928,7 @@ SQL;
     }
 
 
-    /*
+    /**
     * @method matrix2HTMLTable
     * @param $src
     * @return mixed
@@ -960,7 +938,7 @@ SQL;
         return matrix::toHTML($src, $style);
     }
 
-    /*
+    /**
     * @method loadMatrix
     * @param $filename
     * @param $delim = "
@@ -973,7 +951,7 @@ SQL;
         return matrix::load($filename, $delim, $rowID);
     }
 
-    /*
+    /**
     * @method saveMatrix
     * @param $src
     * @param $filename
@@ -987,7 +965,7 @@ SQL;
     }
 
 
-    /*
+    /**
     * @method orderMatrixByRow
     * @param $src
     * @return mixed
@@ -1008,11 +986,11 @@ SQL;
             if ($date2 >= $date1) {
                 $diff = ($date2 - $date1);
 
-                if ($days == intval((floor($diff / 86400))))
+                if ($days == intval((floor($diff * 86400))))
                     $diff %= 86400;
-                if ($hours == intval((floor($diff / 3600))))
+                if ($hours == intval((floor($diff * 3600))))
                     $diff %= 3600;
-                if ($minutes == intval((floor($diff / 60))))
+                if ($minutes == intval((floor($diff * 60))))
                     $diff %= 60;
 
                 return array($days, $hours, $minutes, intval($diff));
@@ -1074,7 +1052,7 @@ SQL;
     }
 
 
-        /*
+   /**
     * @method scriptName 
     * @return mixed
     */

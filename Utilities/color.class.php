@@ -56,7 +56,7 @@ class color
 
         if (is_numeric($color_name))
             $color_name = $color_name % 135;
-        
+
         switch ($color_name) {
             case "black":
             case "0":
@@ -204,9 +204,9 @@ class color
 
     public static function names()
     {
-        
+
         $result = array();
-        
+
         $result["black"] = array( self::$RED=>0x00,  self::$GREEN=>0x00,  self::$BLUE=>0x00);
         $result[ "maroon"] = array( self::$RED=>0x80,  self::$GREEN=>0x00,  self::$BLUE=>0x00);
         $result[ "green"] = array( self::$RED=>0x00,  self::$GREEN=>0x80,  self::$BLUE=>0x00);
@@ -347,8 +347,8 @@ class color
         return $result;
 
     }
-    
-    
+
+
 
     // ref:: http://stackoverflow.com/questions/1890409/change-hue-of-an-image-with-php-gd-library
     public static function rgb2hsl($r, $g, $b) {
@@ -448,72 +448,72 @@ class color
 
     public static function ColorHistogramKeyedByCount($filename, $max_entries = null)
     {
-        $hist = self::ColorHistogramKeyedByColor($filename, $max_entries);        
+        $hist = self::ColorHistogramKeyedByColor($filename, $max_entries);
         if (is_null($hist)) return null;
-        
-        
+
+
         $result = array();
-        foreach ($hist as $hex_color => $arr) 
+        foreach ($hist as $hex_color => $arr)
         {
             $result[$arr['COUNT']] = array();
             $result[$arr['COUNT']]['R'] = $arr['R'];
             $result[$arr['COUNT']]['G'] = $arr['G'];
-            $result[$arr['COUNT']]['B'] = $arr['B'];            
+            $result[$arr['COUNT']]['B'] = $arr['B'];
         }
-        
+
         krsort($result);
-        
+
         return $result;
-        
+
     }
-    
+
     public static function ColorHistogramKeyedByColor($filename, $max_entries = null)
     {
-        
-        
-        if (!is_null($max_entries)) 
+
+
+        if (!is_null($max_entries))
             $max_entries = "| head -n {$max_entries}";
         else
-            $max_entries = "";       
-        
+            $max_entries = "";
+
         $cmd_result = array();
         $cmd = "convert {$filename} -format %c histogram:info:- | sort -n -r {$max_entries}";
         exec($cmd, $cmd_result);
-        
+
         if (count($cmd_result) == 0 ) return null;
         if (!util::contains($cmd_result[0],"(")) return null;  // does not look like out from $cmd
-        
+
         $result = array();
-        
-        foreach ($cmd_result as $index => $value) 
+
+        foreach ($cmd_result as $index => $value)
         {
             if (trim($value) == "") continue;
-            
+
             $hex = util::midStr($value, "#", " ");
-            
+
             if (!util::contains($value, "(")) continue;
             if (!util::contains($value, ")")) continue;
 
             $rgb_raw = util::midStr($value, "(", ")");
             $rgb_arr = explode(",",$rgb_raw);
-            
+
             $result[$hex]['R'] = trim($rgb_arr[0]);
             $result[$hex]['G'] = trim($rgb_arr[1]);
             $result[$hex]['B'] = trim($rgb_arr[2]);
             $result[$hex]['COUNT'] = trim(util::leftStr($value, ":",false));
-            
+
         }
-        
+
         return $result;
-        
+
     }
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
 }
 
 ?>

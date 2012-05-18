@@ -34,7 +34,7 @@ class draw {
         {
             return self::assignRGB($image, $color[color::$RED], $color[color::$GREEN], $color[color::$BLUE]);
         }
-            
+
 
         return NULL;
     }
@@ -124,7 +124,7 @@ class draw {
 
         $range = $max - $min;
         $numeric_step = $range / $color_count;
-        
+
         $result = array();
         $index = 0;
         for ($sc = $min; $sc <= $max; $sc = $sc + $numeric_step)

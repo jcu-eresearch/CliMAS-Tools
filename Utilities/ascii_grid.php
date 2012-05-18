@@ -100,7 +100,7 @@ class ascii_grid
 
         $this->uniqueValues = array_unique($this->LatLon());
         return $this->uniqueValues;
-        
+
     }
     private $uniqueValues = null;
 
@@ -263,7 +263,7 @@ class ascii_grid
     {
         if (is_array($this->FileContent()))
                 return count($this->FileContent());
-        
+
         return 0;
     }
 
@@ -364,12 +364,12 @@ class ascii_grid
                     $result[$key] = trim(substr($f[$rowIndex],$col * $this->FixedWidth(),$this->FixedWidth()));
                 else
                     $result[$key] = trim($cells[$col]);  // dynamic width
-                
+
 
                 $lon = $lon + $info['cellsize'];
 
             }
-            
+
             $lat = $lat + (-1.0 * $info['cellsize']);
 
         }
@@ -587,7 +587,7 @@ class ascii_grid
 
             if (!is_null($limitLatLon) ) // if we have a limit on lat and lon
                 if (!array_key_exists($rowKey, $limitLatLon)) continue;  // if we don't have current lat lon in the limit list then continue
-                
+
             $result[$rowKey] = cos( pi() * ($lat/180) ) * $dlon * $dlat * $Re2 * 0.000001; // pow(1,-6);;
 
         }
@@ -673,9 +673,9 @@ class ascii_grid
     private function SaveFixedWidthBOMFooter($file_handle)
     {
         $fc = $this->FileContent();
-        for ($index = 697; $index <= 714; $index++) 
+        for ($index = 697; $index <= 714; $index++)
         {
-            fwrite($file_handle,$fc[$index]);   
+            fwrite($file_handle,$fc[$index]);
         }
     }
 
@@ -698,7 +698,7 @@ class ascii_grid
 
     }
 
-    
+
     public static function PROJECTION_FILE_WGS84()
     {
         $r  = "Projection    GEOGRAPHIC\n";
@@ -932,7 +932,7 @@ META;
     public static function MatrixColumn2Grid($matrix, $column_name,$null_value,$outputfilename,$scale_factor = 1,$cell_size = NULL)
     {
         $matcol = matrix::Column($matrix, $column_name);
-        
+
         self::LatLonKeyedArray2Grid($matcol,$null_value,$outputfilename,$scale_factor ,$cell_size);
     }
 
@@ -948,7 +948,7 @@ META;
 
         $outputfilename = str_replace('.asc', '', $outputfilename);
         $outputfilename = str_replace('.csv', '', $outputfilename);
-        
+
         $grid_dims = self::CalculateGridDimesions($keyedArray);
 
         // if they pass in a grid size then us that instead of our calculated version
@@ -974,7 +974,7 @@ META;
                 // echo "$llkey\n";
                 if (array_key_exists($llkey, $keyedArray))
                 {
-                    
+
                     $v = sprintf("%05.5f", ($keyedArray[$llkey] * $scale_factor)).' ';
                 }
 
@@ -1016,7 +1016,7 @@ META;
 
         sort($Lats);
         sort($Lons);
-        
+
 
         if (is_null($cell_size))
         {

@@ -8,9 +8,9 @@ session_start();
 
     $info = $_SESSION[$_GET['name']];
 
-    // print_r($info);
+    //** print_r($info);
 
-    header("Content-type: application/octet-stream");
+    header("Content-type: application/**octet-stream");
     header('Content-Disposition: attachment; filename="'.$info['fn'].'.csv"');
 
     $link = database::connect($info['db']);

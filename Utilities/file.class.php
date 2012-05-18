@@ -4,8 +4,8 @@ class file {
 
 
     /*
-    * @method getTitleTagValue 
-    * @param $filename 
+    * @method getTitleTagValue
+    * @param $filename
     * @return mixed
     */
     public static function getTitleTagValue($filename)
@@ -28,8 +28,8 @@ class file {
 
 
     /*
-    * @method reallyDelete 
-    * @param $Filename 
+    * @method reallyDelete
+    * @param $Filename
     * @return mixed
     */
     public static function reallyDelete($Filename)
@@ -43,12 +43,12 @@ class file {
         return self::reallyDelete($Filename);
     }
 
-    
-    
+
+
 
     /*
-    * @method reallyExists 
-    * @param $Filename 
+    * @method reallyExists
+    * @param $Filename
     * @return mixed
     */
     public static function reallyExists($Filename)
@@ -72,9 +72,9 @@ class file {
 
 
     /*
-    * @method getFileExtension 
-    * @param $srcPathname 
-    * @param $ext_sep = "." 
+    * @method getFileExtension
+    * @param $srcPathname
+    * @param $ext_sep = "."
     * @return mixed
     */
     public static function getFileExtension($srcPathname, $ext_sep = ".")
@@ -93,8 +93,8 @@ class file {
 
 
     /*
-    * @method mkdir_safe 
-    * @param $pathname 
+    * @method mkdir_safe
+    * @param $pathname
     * @return mixed
     */
     public static function mkdir_safe($pathname)
@@ -105,9 +105,9 @@ class file {
 
 
     /*
-    * @method Array2File 
-    * @param $src 
-    * @param $dest 
+    * @method Array2File
+    * @param $src
+    * @param $dest
     * @return mixed
     */
     public static function Array2File($src,$dest,$file_header = "",$file_footer = "",$delim = ",",$clean_data = false)
@@ -133,9 +133,9 @@ class file {
 
 
     /*
-    * @method ArrayValues2File 
-    * @param $src 
-    * @param $dest 
+    * @method ArrayValues2File
+    * @param $src
+    * @param $dest
     * @return mixed
     */
     public static function ArrayValues2File($src,$dest)
@@ -161,9 +161,9 @@ class file {
 
 
     /*
-    * @method Array2HTML 
-    * @param $src 
-    * @param $dest 
+    * @method Array2HTML
+    * @param $src
+    * @param $dest
     * @return mixed
     */
     public static function Array2HTML($src,$dest)
@@ -185,8 +185,8 @@ class file {
 
 
     /*
-    * @method File2Array 
-    * @param $srcFilename 
+    * @method File2Array
+    * @param $srcFilename
     * @return mixed
     */
     public static function File2Array($srcFilename)
@@ -207,14 +207,14 @@ class file {
 
         $result = array();
 
-        foreach ($src as $src_line) 
+        foreach ($src as $src_line)
         {
             if ($src_line == $src[0]) continue;
             $split = explode($delim,$src_line);
             $result[trim($split[0])] = trim($split[1]);
         }
 
-        
+
 
         return $result;
 
@@ -222,9 +222,9 @@ class file {
 
 
     /*
-    * @method file_sizes 
-    * @param $fileArr 
-    * @param $divisor = 1 
+    * @method file_sizes
+    * @param $fileArr
+    * @param $divisor = 1
     * @return mixed
     */
     public static function file_sizes($fileArr, $divisor = 1)
@@ -245,9 +245,9 @@ class file {
 
 
     /*
-    * @method folder_folders 
-    * @param $path 
-    * @param $fs_folder_sep = "/" 
+    * @method folder_folders
+    * @param $path
+    * @param $fs_folder_sep = "/"
     * @return mixed
     */
     public static function folder_folders($path, $fs_folder_sep = "/",$basenameAsKey = false)
@@ -262,13 +262,13 @@ class file {
             $dir = $path.$file;
             if(is_dir($dir) && $file != '.' && $file !='..' )
             {
-                
+
                 if ($basenameAsKey)
                     $result[util::fromLastSlash(util::trim_end($dir, $fs_folder_sep),$fs_folder_sep)] = $dir;
                 else
                     $result[$dir] = $dir;
-                
-                
+
+
             }
             elseif ($file != '.' && $file !='..')
             {
@@ -297,37 +297,37 @@ class file {
     }
 
 
-    public static function folder_with_extension($path, $extension ,$sep = "/", $basenameAsKey = false )    
+    public static function folder_with_extension($path, $extension ,$sep = "/", $basenameAsKey = false )
     {
-        if (is_null($sep)) $sep = "/";        
+        if (is_null($sep)) $sep = "/";
         $extension = str_replace('.', '', $extension );
         $files = self::folder_files($path,$sep,$basenameAsKey);
         $files = self::arrayFilter($files, '.'.$extension);
         return $files;
     }
 
-    public static function folder_csv($path, $sep = "/", $basenameAsKey = false )    
+    public static function folder_csv($path, $sep = "/", $basenameAsKey = false )
     {
         return self::folder_with_extension($path, 'csv' ,$sep, $basenameAsKey);
     }
-    
-    
-    public static function folder_jpgs($path, $sep = "/", $basenameAsKey = false )    
+
+
+    public static function folder_jpgs($path, $sep = "/", $basenameAsKey = false )
     {
         return self::folder_with_extension($path, 'jpg' ,$sep, $basenameAsKey);
     }
 
-    public static function folder_pngs($path, $sep = "/", $basenameAsKey = false )    
+    public static function folder_pngs($path, $sep = "/", $basenameAsKey = false )
     {
         return self::folder_with_extension($path, 'png' ,$sep, $basenameAsKey );
     }
-    
-    
+
+
     /*
-    * @method folder_files 
-    * @param $path 
-    * @param $sep = "/" 
-    * @param $basenameAsKey = false 
+    * @method folder_files
+    * @param $path
+    * @param $sep = "/"
+    * @param $basenameAsKey = false
     * @return mixed
     */
     public static function folder_files($path, $sep = "/", $basenameAsKey = false )
@@ -351,7 +351,7 @@ class file {
                 {
                     $result[$dir] = $dir;
                 }
-                
+
 
             }
             elseif ($file != '.' && $file !='..')
@@ -378,26 +378,26 @@ class file {
     public static function find_files($path,$filter = "")
     {
         $result = array();
-        
+
         $cmd = "find $path | grep -i '{$filter}'";
         exec($cmd, $result);
         return $result;
     }
-    
+
 
 
 
     /*
-    * @method arrayFilter 
-    * @param $src 
-    * @param $mustHave 
+    * @method arrayFilter
+    * @param $src
+    * @param $mustHave
     * @return mixed
     */
     public static function arrayFilter($src, $mustHave)
     {
-        
+
         if (is_array($mustHave)) return self::arrayFilterMustHaveArray($src, $mustHave);
-        
+
         $result = array();
 
         foreach ($src as $key => $value)
@@ -413,20 +413,20 @@ class file {
         return $result;
     }
 
-    
+
     private static function arrayFilterMustHaveArray($src, $mustHaves)
     {
         $sub_result = $src;
-        foreach ($mustHaves as $mustHave) 
+        foreach ($mustHaves as $mustHave)
             $sub_result = self::arrayFilter($sub_result, $mustHave);
-        
+
     }
-    
+
 
     /*
-    * @method arrayFilterOut 
-    * @param $src 
-    * @param $mustNotHave 
+    * @method arrayFilterOut
+    * @param $src
+    * @param $mustNotHave
     * @return mixed
     */
         public static function arrayFilterOut($src, $mustNotHave)
@@ -452,15 +452,15 @@ class file {
         $file_tree = self::file_tree_filtered($startPath, $path_sep, ".class.php");
         return $file_tree;
     }
-    
+
 
     // i am filtereing out .svn  as well
 
     /*
-    * @method file_tree_filtered 
-    * @param $startPath 
-    * @param $path_sep = "/" 
-    * @param $filter = "" 
+    * @method file_tree_filtered
+    * @param $startPath
+    * @param $path_sep = "/"
+    * @param $filter = ""
     * @return mixed
     */
     public static function file_tree_filtered($startPath,$path_sep = "/",$filter = "")
@@ -492,9 +492,9 @@ class file {
 
 
     /*
-    * @method file_tree 
-    * @param $startPath 
-    * @param $path_sep = "/" 
+    * @method file_tree
+    * @param $startPath
+    * @param $path_sep = "/"
     * @return mixed
     */
     public static function file_tree($startPath,$path_sep = "/")
@@ -509,10 +509,10 @@ class file {
 
 
     /*
-    * @method list_dir 
-    * @param $path 
-    * @param &$result 
-    * @param $path_sep = "/" 
+    * @method list_dir
+    * @param $path
+    * @param &$result
+    * @param $path_sep = "/"
     * @return mixed
     */
     public static function list_dir($path, &$result,$path_sep = "/")
@@ -535,15 +535,15 @@ class file {
         closedir($dir_handle);
 
     }
-    
+
     public static function nthLines($filename, $start_line = 1,$num_lines = 10)
     {
         $result = array();
         exec("sed -n {$start_line},{$num_lines}p '{$filename}' ",$result);
-        
+
         return $result;
     }
-    
+
 
     public static function nthLine($filename, $lineNumber)
     {
@@ -649,16 +649,16 @@ class file {
 
             if ($debug && $index % 100 == 0) echo "index = $index\n";
 
-            foreach ($filenames as $filename) 
+            foreach ($filenames as $filename)
             {
                 $fs = trim(fgets($fh[$filename]));
                 $first_bit = util::leftStr($fs, $delim);
-                
+
                 if ($first_bit_count == 0)
                     $out .= $first_bit;
-                
+
                 $out .= str_replace($first_bit,'',$fs); // .$delim;
-                
+
                 $first_bit_count++;
             }
 
@@ -703,7 +703,7 @@ class file {
         $freemat .= "save '$output' var -ASCII\n";
         $freemat .= "var = NaN\n";
         $freemat .= "ans = NaN\n";
-        
+
         file_put_contents("FreematExport.m", $freemat); // write script to ".m" file so freemat can see it as a"command"
         $exec_result = exec("freemat -nogui -e -f FreematExport");  // execute freemat script via shell command
         unlink("FreematExport.m");
@@ -713,9 +713,9 @@ class file {
     public static function wget($url,$output_filename,$debug = false)
     {
         $cmd =  "wget -q -O -L1 \"$output_filename\" \"$url\"";
-        
+
         if ($debug) echo " WGET command : $cmd \n";
-        
+
         exec($cmd);
         if (file_exists($output_filename)) return $output_filename;
 
@@ -727,8 +727,8 @@ class file {
         file_put_contents($filename, file::get_page_using_curl($url));
         return file_exists($filename);
     }
-    
-    
+
+
     public static function get_page_using_curl($url)
     {
         $ch = curl_init();
@@ -738,27 +738,27 @@ class file {
         curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
         curl_setopt($ch, CURLOPT_FAILONERROR, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_REFERER, "http://www.google.com/");                
+        curl_setopt($ch, CURLOPT_REFERER, "http://www.google.com/");
         // curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);        
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,$timeout);
         curl_setopt($ch, CURLOPT_CERTINFO,true);
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        
+
         $data = curl_exec($ch);
         curl_close($ch);
         return $data;
-    }    
+    }
 
     public static function get_page_using_curl_post_data($url,$data)
     {
         $ch = curl_init();
-        
+
         $userAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)";
-        
+
         curl_setopt($ch, CURLOPT_HEADER,true);
         curl_setopt($ch, CURLOPT_URL,$url);
         curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
@@ -768,21 +768,21 @@ class file {
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 
         curl_setopt($ch, CURLOPT_FAILONERROR, true);
-        curl_setopt($ch, CURLOPT_REFERER, "http://www.google.com/");                
-        
-        
+        curl_setopt($ch, CURLOPT_REFERER, "http://www.google.com/");
+
+
         $data = curl_exec($ch);
         print_r(curl_getinfo($ch));
-        
+
         curl_close($ch);
         return $data;
-    }    
-    
-    
-    
+    }
+
+
+
     public static function gunzip($filename)
     {
-        if (is_null($filename)) 
+        if (is_null($filename))
         {
             echo "##ERROR: file::gunzip filename passed as NULL\n";
             return NULL;
@@ -800,19 +800,19 @@ class file {
     public static function zip_folder($folder,$zip_file)
     {
         $zip_file = str_replace(".zip",'',$zip_file);
-        
-        if (!is_dir($folder)) 
+
+        if (!is_dir($folder))
         {
             logger::error("$folder is not a folder");
             return NULL;
         }
-        
+
         exec("zip -r '{$zip_file}.zip' '$folder'");
 
         return file_exists($zip_file);
     }
-    
-    
+
+
     public static function grepped_text_file($filename,$grep)
     {
         $cmd = "cat {$filename} | grep {$grep}";
@@ -820,8 +820,8 @@ class file {
         $locate_result = exec($cmd ,$result_lines);
         return $result_lines;
     }
-    
-    
+
+
     public static function locate($str,$grep = null)
     {
         if (is_null($str))
@@ -859,97 +859,97 @@ class file {
         return $result;
     }
 
-    
-    public static function random_filename($folder = "/tmp") 
+
+    public static function random_filename($folder = "/tmp")
     {
         $result = $folder."/".uniqid();
         return $result;
     }
 
-    public static function copy($source, $dest,$overwrite) 
+    public static function copy($source, $dest,$overwrite)
     {
         //logger::text("$source to  $dest");
         copy($source, $dest);
-        
-        if (!file_exists($dest)) 
+
+        if (!file_exists($dest))
         {
             echo "ERROR: could not copy $source to $dest\n";
             return false;
         }
-        
+
         return true;
     }
-    
-    public static function move($source, $dest,$overwrite) 
+
+    public static function move($source, $dest,$overwrite)
     {
-        if (!file_exists($source)) 
+        if (!file_exists($source))
         {
             echo "EERROR: file $source does not exist\n";
             return null;
         }
-            
+
         if ($overwrite)  self::reallyDelete ($dest);
-        
-        if (file_exists($dest)) 
+
+        if (file_exists($dest))
         {
             echo "ERROR: file $dest exists\n";
             return null;
         }
-        
+
         // logger::text("$source to  $dest");
-        
+
         copy($source, $dest);
-        
-        if (!file_exists($dest)) 
+
+        if (!file_exists($dest))
         {
             echo "ERROR: could not move $source to $dest\n";
             return null;
         }
 
         unlink($source);
-        
+
         return $dest;
-        
+
     }
 
 
-    
-    
+
+
     public static function ftp_upload($host,$usr,$pwd,$local_file,$ftp_path,$port = 21)
     {
-        
+
         $conn_id = ftp_connect($host, $port);  // connect to FTP server (port 21)
         if (!$conn_id)
         {
             logger::error("failed to connect to ftp server ... $host");
             return null;
         }
-        
+
         $login_ok = @ftp_login($conn_id, $usr, $pwd);  // send access parameters
         if (!$login_ok)
         {
             logger::error("failed to login to ftp server ... $host with $usr $pwd");
             return null;
         }
-        
-        
-        ftp_pasv ($conn_id, true);  // turn on passive mode transfers (some servers need this)        
+
+
+        ftp_pasv ($conn_id, true);  // turn on passive mode transfers (some servers need this)
         $upload = ftp_put($conn_id, $ftp_path, $local_file, FTP_BINARY); // perform file upload
         if (!$upload)
         {
             logger::error("failed to upload file to $host with local_file = $local_file, ftp_path = $ftp_path ");
             return null;
         }
-        
+
         $chmod = ftp_chmod($conn_id, 0666, $ftp_path); // Chmod the file (just as example)
         if (!$chmod)
             logger::error("warning could not chnage to writeable ftp_path = $ftp_path ");
-        
-        
+
+
         ftp_close($conn_id);  // close the FTP stream
     }
-    
-    
+
+
     public static function ftp_mkdir($host,$user,$pass,$dirname) {
 
         $conn_id = ftp_connect($host);
@@ -961,12 +961,12 @@ class file {
         ftp_mkdir($conn_id, $dirname);
         ftp_chmod($conn_id, 757, $dirname); // read & write for everyone
         ftp_quit($conn_id);
-    }    
-    
+    }
+
     /*
      * Retrun Filename compoent - no path no extension
      */
-    public static function filenameOnly($pathname) 
+    public static function filenameOnly($pathname)
     {
 
         if (is_array($pathname))
@@ -987,11 +987,11 @@ class file {
                 $result = str_replace(".".$path_parts['extension'], "", $path_parts['basename']);
 
         }
-        
+
         return $result;
-    }    
-    
-    
+    }
+
+
 
 }
 ?>
