@@ -2,13 +2,104 @@
 
 class Session {
     
-    private static $LAYERS = "LAYERS";
+    private static $ActionsToBeMapped = "ActionsToBeMapped";
 
+    /**
+     * @param
+     * @return type
+     */
+    public static function MapableResults()
+    {
+
+        $actionsToMap = self::get(self::$ActionsToBeMapped);
+        if (count($actionsToMap) == 0)
+        {
+            self::AddMapableAction(configuration::DefaultMapableActionClassname());
+            $actionsToMap = self::get(self::$ActionsToBeMapped);
+        }
+
+        $result = array();
+        foreach ($actionsToMap as $actionToMap)
+            $result[$actionToMap] = FinderFactory::Result($actionToMap);
+
+        
+        return $result;
+    }
+
+    /**
+    * @param
+    * @return type
+    */
+    public static function PostableFinderActionNames()
+    {
+        return join(",",self::get(self::$ActionsToBeMapped));
+    }
+
+
+    /**
+     * @param
+     * @return type
+     */
+    public static function ClearLayers()
+    {
+        $_SESSION[self::SessionName()][self::$LAYERS] = array();
+    }
+
+
+    /**
+     *
+     * @param type $post_field
+     * @return type
+     */
+    public static function UpdateFromPostedFinderActionNames($post_field)
+    {
+
+        $postedActionClassNames = array_util::Value($_POST, $post_field, null);
+        if (is_null($postedActionClassNames)) return;
+
+
+        self::ClearLayers(); // clear layers and only add the ones we are posting in this time
+
+        // if we have layers posted to us then we need to add them to the session
+        foreach (explode(",",$postedActionClassNames) as $postedActionClassName)
+            self::AddMapableAction($postedActionClassName);
+
+    }
+
+
+
+    /**
+     *
+     * @param type $actionClassname
+     * @return type
+     */
+    public static function AddMapableAction($actionClassname)
+    {
+        $actionClassname = trim($actionClassname);
+        if ($actionClassname == "") return;
+
+        echo "Addlayer from actionClassname = $actionClassname<br>\n";
+
+        $current = self::get(self::$ActionsToBeMapped);
+        $current[$actionClassname] = $actionClassname;
+
+        self::add(self::$ActionsToBeMapped, $current);
+
+    }
+
+    /**
+     *
+     * @return type
+     */
     public static function SessionName()
     {
         return FindersConfiguration::$SESSION_NAME;
     }
 
+    /**
+     *
+     * @return array
+     */
     public static function AppSession()
     {
         if (!array_key_exists(self::SessionName(), $_SESSION))
@@ -17,6 +108,12 @@ class Session {
         return $_SESSION[self::SessionName()];
     }
 
+    /**
+     *
+     * @param type $key
+     * @param type $default
+     * @return type 
+     */
     public static function get($key,$default = null)
     {
         if (!self::has($key)) return $default;
@@ -26,127 +123,46 @@ class Session {
         return $session_data[$key];
     }
 
+    /**
+     *
+     * @param type $key
+     * @param type $value
+     */
     public static function add($key,$value)
     {
         $_SESSION[self::SessionName()][$key] = $value;
     }
 
+    /**
+     *
+     * @param type $key
+     */
     public static function remove($key)
     {
         if (self::has($key))
             unset($_SESSION[self::SessionName()][$key]);
     }
 
+    /**
+     *
+     */
     public static function clear()
     {
         $_SESSION[self::SessionName()] = array();
     }
 
 
+    /**
+     *
+     * @param type $key
+     * @return type
+     */
     public static function has($key)
     {
         $session_data = self::AppSession();
         return array_key_exists($key, $session_data);
     }
 
-    public static function PostableFinderActionNames()
-    {
-
-        $result = array();
-        foreach (self::LayerFinderNames() as $index => $finderActionRow)
-            $result[] = $finderActionRow[FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER]."-".$finderActionRow[FindersConfiguration::$CLASS_NAME_SUFFIX_ACTION];
-
-        return join(",",$result);
-    }
-
-
-    public static function ClearLayers()
-    {
-        $_SESSION[self::SessionName()][self::$LAYERS] = array();
-    }
-
-
-
-    public static function UpdateFromPostedFinderActionNames($post_field)
-    {
-        $current_posted_layers = array_util::Value($_POST, $post_field, null);
-        if (is_null($current_posted_layers)) return;
-
-        // clear layers and only add the ones we are posting in this time
-
-
-        self::ClearLayers();
-
-        // if we have layers posted to us then we need to add them to the session
-        foreach (explode(",",$current_posted_layers) as $current_posted_layer)
-        {
-            if (trim($current_posted_layer) == "") continue;
-
-            list($finderName,$actionName) = explode("-",$current_posted_layer);
-            self::AddLayerFinderActionName($finderName, $actionName);
-        }
-
-    }
-
-
-    public static function AddLayerFinderActionName($finder_name, $action_name)
-    {
-
-        $current_layers = self::get(self::$LAYERS);
-
-        $add_layer = array();
-        $add_layer[FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER] = $finder_name;
-        $add_layer[FindersConfiguration::$CLASS_NAME_SUFFIX_ACTION] = $action_name;
-
-        $current_layers[] = $add_layer;
-
-        self::add(self::$LAYERS, $current_layers);
-
-    }
-
-
-    /*
-     * RETURN::  layers currently defined /  requested
-     *
-     * if there are no layers then return default context layer
-     *
-     */
-    public static function LayerFinderNames()
-    {
-        $current_layers = self::get(self::$LAYERS);
-
-        // If there are no layers then add the Deafult Context Layer
-        // this would usually be the first timr thscreen opens
-        if (is_null($current_layers))
-        {
-            $current_layers = array();
-
-            $default_layer = array();
-            $default_layer[FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER] = configuration::DefaultLayerFinderName();
-            $default_layer[FindersConfiguration::$CLASS_NAME_SUFFIX_ACTION] = configuration::DefaultLayerFinderActionName();
-
-            $current_layers[] = $default_layer;
-
-            self::add(self::$LAYERS, $current_layers);
-        }
-
-        //print_r($current_layers);
-
-        return $current_layers;
-    }
-
-
-    public static function LayerFinderActionResults()
-    {
-
-        $result = array();
-        foreach (self::LayerFinderNames() as $key => $layerDesc)
-        {
-            $result[$key] = FinderFactory::Result($layerDesc[FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER], $layerDesc[FindersConfiguration::$CLASS_NAME_SUFFIX_ACTION]);
-        }
-
-        return $result;
-    }
 
 
 }

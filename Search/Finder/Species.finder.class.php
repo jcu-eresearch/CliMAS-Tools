@@ -1,6 +1,5 @@
 <?php
-/*
- * CLASS: SpeciesFinder
+/**
  *
  * Return lists of Species names and their associate ranges, thresholds, and subsets
  *

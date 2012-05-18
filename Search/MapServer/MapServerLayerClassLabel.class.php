@@ -1,13 +1,11 @@
 <?php
 
-/* 
- * CLASS: MapServerLayerLabel
+/***
  *        
  * 
  *   
  */
 class MapServerLayerClassLabel extends Object {
-    //put your code here
     
     public function __construct() { 
         
@@ -20,7 +18,7 @@ class MapServerLayerClassLabel extends Object {
         $this->ShadowSizeY(0);
         
         $this->Type("TRUETYPE");
-        $this->Font("arial"); // this needs to exsist in the Fontset Set File 
+        $this->Font("arial"); // TODO REad Default Font Name this needs to exsist in the Fontset Set File
         $this->Size(9);
         $this->AntiAlias(true);
         $this->Position(self::$POSITION_UPPER_LEFT);

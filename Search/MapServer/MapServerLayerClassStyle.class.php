@@ -1,14 +1,10 @@
 <?php
 include_once 'Mapserver.includes.php';
-/* 
- * CLASS: MapServerLayerClassStyle
- *        
+/**
  * 
  *   
  */
 class MapServerLayerClassStyle extends Object {
-    //put your code here
-    
     
     public function __construct() { 
         parent::__construct();
@@ -21,7 +17,7 @@ class MapServerLayerClassStyle extends Object {
     }
     
     
-    /*
+    /***
      * Something that will be abale to converted into and RGB object
      * 
      */

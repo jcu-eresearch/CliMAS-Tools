@@ -1,14 +1,10 @@
 <?php
-
-/* 
- * CLASS: SpeciesSuitabilityFinder
- *        
- * Look at the Species Range output folders and pull out Models, Scenarios and Years
- * 
- * 
+/**
+ *
+ * @todo  Look at the Species Range output folders and pull out Models, Scenarios and Years
  * Threshold value of wich we don't want to see  i e set to transparent
  *
- * * Filename            Column Name
+ * Filename            Column Name
  * maxentResults.csv - "Equate entropy of thresholded and original distributions logistic threshold"
  *   
  */
@@ -26,7 +22,10 @@ class SpeciesSuitabilityFinder extends aFinder {
         parent::__destruct();
     }
     
-    
+
+    /**
+     *
+     */
     public function Find() 
     {
         $path = $this->ParentFolder()."/".$this->Species();
@@ -48,6 +47,13 @@ class SpeciesSuitabilityFinder extends aFinder {
     
     
     private $result = null;
+    /**
+     * Called with (null) return value of property<br>
+     * Called with ($arg)    set value of property to $arg<br>
+     *
+     * @return mixed current property value
+     *
+     */
     public function Result() 
     {
         if (!is_null($this->result)) return $this->result;
@@ -55,12 +61,18 @@ class SpeciesSuitabilityFinder extends aFinder {
         return $this->result;
     }
 
+    /**
+     *
+     */
     public function ClearResult() 
     {
         $this->result = null;
     }
     
 
+    /**
+     *
+     */
     private function getModelScenarioMatrix()
     {
         
@@ -89,12 +101,13 @@ class SpeciesSuitabilityFinder extends aFinder {
     }
     
     
-    /*
+    /**
      * 
-     * http://www.ipcc-data.org/ar4/model-NASA-GISS-AOM.html
-     * 
+     * @see http://www.ipcc-data.org/ddc_gcm_intro.html
+     *
+     * @see http://www-pcmdi.llnl.gov/ipcc/model_documentation/ipcc_model_documentation.php
+     *
      */
-    
     private function getModelNames() 
     {
         $files = file::arrayFilter($this->file_tree, "output");
@@ -102,7 +115,7 @@ class SpeciesSuitabilityFinder extends aFinder {
         $files = file::arrayFilterOut($files, "aux");
         $files = file::arrayFilterOut($files, "xml");
         
-        $files = array_util::Replace($files, $this->ParentFolder()."/".$this->Species()."/", "");
+        $files = array_util::Replace($files, $this->ParentFolder()."/", "");
         $files = array_util::Replace($files, "output/","");
         
         
@@ -157,14 +170,14 @@ class SpeciesSuitabilityFinder extends aFinder {
             }
         }
         
-        
-        
-        
         $this->setPropertyByName("Models", $raw_names);
         
         
     }
-    
+
+    /**
+     *
+     */
     private function getScenarioNames() 
     {        
         $files = file::arrayFilter($this->file_tree, "output");
@@ -172,7 +185,7 @@ class SpeciesSuitabilityFinder extends aFinder {
         $files = file::arrayFilterOut($files, "aux");
         $files = file::arrayFilterOut($files, "xml");
         
-        $files = array_util::Replace($files, $this->ParentFolder()."/".$this->Species()."/", "");
+        $files = array_util::Replace($files, $this->ParentFolder()."/", "");
         $files = array_util::Replace($files, "output/","");
         
         
@@ -212,24 +225,46 @@ class SpeciesSuitabilityFinder extends aFinder {
         
     }
 
-
-
     
+    /**
+     *
+     * Use to limit the file list to only files that contain this model name
+     *
+     * Called with (null) return value of property<br>
+     * Called with ($arg)    set value of property to $arg<br>
+     *
+     * @return mixed current property value
+     *
+     */
     public function Species() {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
 
-    /*
+
+    /**
+     *
      * Use to limit the file list to only files that contain this model name
+     *
+     * Called with (null) return value of property<br>
+     * Called with ($arg)    set value of property to $arg<br>
+     *
+     * @return mixed current property value
+     *
      */
     public function LimitModel() {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
 
-    /*
+    /**
      * Use to limit the file list to only files that contain this scenario name
+     *
+     * Called with (null) return value of property<br>
+     * Called with ($arg)    set value of property to $arg<br>
+     *
+     * @return mixed current property value
+     *
      */
     public function LimitScenario() {
         if (func_num_args() == 0) return $this->getProperty();
@@ -237,27 +272,62 @@ class SpeciesSuitabilityFinder extends aFinder {
     }
     
     
+    /**
+     * Called with (null) return value of property<br>
+     * Called with ($arg)    set value of property to $arg<br>
+     *
+     * @return mixed current property value
+     *
+     */
     public function Models() {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
 
+    /**
+     * Called with (null) return value of property<br>
+     * Called with ($arg)    set value of property to $arg<br>
+     *
+     * @return mixed current property value
+     *
+     */
     public function Scenarios() {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
 
+    /**
+     * Called with (null) return value of property<br>
+     * Called with ($arg)    set value of property to $arg<br>
+     *
+     * @return mixed current property value
+     *
+     */
     public function ScenarioModelMatrix() {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
     
     
+    /**
+     * Called with (null) return value of property<br>
+     * Called with ($arg)    set value of property to $arg<br>
+     *
+     * @return mixed current property value
+     *
+     */
     public function ParentFolder() {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
 
+    /**
+     * Called with (null) return value of property<br>
+     * Called with ($arg)    set value of property to $arg<br>
+     *
+     * @return mixed current property value
+     *
+     */
     public function Filter($name,$value) 
     {
         

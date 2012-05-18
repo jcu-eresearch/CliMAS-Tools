@@ -1,7 +1,7 @@
 <?php
 include_once 'MapServerLayerClassStyle.class.php';
 include_once 'MapServerLayerClassLabel.class.php';
-/* 
+/**
  * CLASS:  MapServerLayerClass
  *        
  * 
@@ -17,7 +17,7 @@ class MapServerLayerClass extends Object {
         $this->$layer = $layer;
         
         $name = util::CleanStr($name, null, " _!@#$%^&*()_+\\{}[]<>?");
-        if ( is_numeric(substr($name, 0, 1))) $name = "A".$name; // make sure does not start with Number
+        if ( is_numeric(substr($name, 0, 1))) $name = "A".$name; //** make sure does not start with Number
         
         $this->ClassName($name);
         $this->Style(new MapServerLayerClassStyle());
@@ -48,7 +48,7 @@ class MapServerLayerClass extends Object {
     }
     
     
-    /*
+    /***
      * Map Server can hndle Multiple Styles and Multiple Labels 
      * - WISH:: Add array for Styles and Labels
      */

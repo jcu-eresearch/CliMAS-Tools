@@ -1,7 +1,7 @@
 <?php
 
-/* 
- * CLASS: OutputFactory
+/**
+ * 
  *        
  * 
  *   
@@ -9,7 +9,7 @@
 class OutputFactory  {
     
     
-    /*
+    /**
      * Search output foldert for class something like
      * 
      * Xxxxxx.output.class
@@ -17,9 +17,6 @@ class OutputFactory  {
      */
     public static function Find($src) 
     {
-        
-        
-        
         
         
     }

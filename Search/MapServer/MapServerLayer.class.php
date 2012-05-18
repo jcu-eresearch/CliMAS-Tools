@@ -7,16 +7,16 @@ include_once 'Mapserver.includes.php';
  * Mutli value item
  * - Spatial Extent of a Map.
  * 
- * @author jc166922
+ * @author Adam Fakes (James Cook University)
  */
 
 class MapServerLayer extends Object {
     
     public static function create(MapServerLayers $parent, $filename,$column_name = null,$LayerType = null)
     {
-        if (is_null($parent))  throw new Exception();  //TODO:Parent (MapServerLayers) is Null
+        if (is_null($parent))  throw new Exception();  //**TODO:Parent (MapServerLayers) is Null
         
-        if (!file_exists($filename)) return null; // todo:: Fail messsage
+        if (!file_exists($filename)) return null; //** todo:: Fail messsage
 
 
         if (is_null($LayerType)) 
@@ -50,7 +50,7 @@ class MapServerLayer extends Object {
 
             
             default:
-                $L = new MapServerLayerVector($parent,$filename,$column_name,  MapServerConfiguration::$SPATIAL_TYPE_LINE); // default shape typ[e is a line
+                $L = new MapServerLayerVector($parent,$filename,$column_name,  MapServerConfiguration::$SPATIAL_TYPE_LINE); //** default shape typ[e is a line
                 break;
         }
         
@@ -67,7 +67,7 @@ class MapServerLayer extends Object {
     protected $classes = null;
     
     
-    /*
+    /***
      *   String = Spatial filename 
      */
     public function __construct(MapServerLayers $parent, $filename,$layerName) {
@@ -114,13 +114,13 @@ class MapServerLayer extends Object {
         if (is_null($this->extent))  return false;        
         if (file_exists($this->Filename())) return false;
         
-        // Column name must extist 
+        //** Column name must extist 
         
         return true;
     }
    
 
-    /*
+    /***
      * Classes (for Display)
      */
     public function Classes() 
@@ -131,7 +131,7 @@ class MapServerLayer extends Object {
     }    
     
     
-    /*
+    /***
      * NAME
      */
     public function LayerName() 
@@ -139,7 +139,7 @@ class MapServerLayer extends Object {
         return $this->getProperty();
     }    
     
-    /*
+    /***
      * DATA
      */
     public function Filename()
@@ -147,7 +147,7 @@ class MapServerLayer extends Object {
         return $this->getProperty();
     }
 
-    /*
+    /***
      * STATUS
      */
     public function Status()
@@ -155,7 +155,7 @@ class MapServerLayer extends Object {
         return $this->getProperty();
     }
 
-    /*
+    /***
      * TYPE
      */
     public function LayerType()

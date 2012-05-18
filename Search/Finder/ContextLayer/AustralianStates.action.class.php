@@ -1,6 +1,6 @@
 <?php
 
-class ContextLayerAustralianStates extends Object implements iAction {
+class ContextLayerAustralianStates extends SpatialDescription implements iAction {
 
     public function __construct() {
         parent::__construct();
@@ -15,36 +15,13 @@ class ContextLayerAustralianStates extends Object implements iAction {
     public function Execute()
     {
         $this->Name("Australian States");
-        $this->Filename(configuration::ContextSpatialLayersFolder()."/Australia/States/AustralianStates.shp");
+        $this->Filename(configuration::ContextSpatialLayersFolder()."//**States/**AustralianStates.shp");
         $this->SpatialDatatype(spatial_util::$SPATIAL_TYPE_LINE);
         $this->Attribute('ISLAND_NAM');
         return $this;
 
     }
 
-    public function Filename() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    public function SpatialDatatype() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    public function Description() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    public function Attribute() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
 
 
 }

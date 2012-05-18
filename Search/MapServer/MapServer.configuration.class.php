@@ -1,18 +1,13 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of MapServer
  *
- * @author jc166922
+ * @author Adam Fakes (James Cook University)
  */
 class MapServerConfiguration {
 
-    // This folder must be configured to be accessible by the Apache
+    //** This folder must be configured to be accessible by the Apache
     public static function pathToMapfiles()   { return "/www/eresearch/MapserverMapfiles"; }
     public static function pathToImages()     { return "/www/eresearch/MapserverImages"; }
     public static function pathToImagesWeb()  { return     "/eresearch/MapserverImages"; } // HTML img src version
@@ -57,7 +52,7 @@ class MapServerConfiguration {
     public static function ColourFormat() { return "{Red} {Green} {Blue}";}
 
     public static $SPATIAL_TYPE_POLYGON  = "POLYGON";
-    public static $SPATIAL_TYPE_LINE = "LINE";
+    public static $SPATIAL_TYPE_LINE     = "LINE";
     public static $SPATIAL_TYPE_POINT    = "POINT";
 
     public static $SPATIAL_TYPE_RASTER   = "RASTER";

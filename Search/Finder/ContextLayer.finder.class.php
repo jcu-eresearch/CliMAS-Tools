@@ -1,15 +1,10 @@
-
 <?php
-
-/* 
- * CLASS: ContextLayers
+/**
  *        
  * Get lists of Context data requested
- * 
  *
- * 
- * 
- *   
+ *
+ *
  */
 class ContextLayerFinder extends aFinder  {
 

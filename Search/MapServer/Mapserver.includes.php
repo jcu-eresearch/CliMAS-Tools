@@ -1,7 +1,5 @@
 <?php
 
-
-
 include_once 'MapServer.configuration.class.php';
 
 include_once 'MapServerWrapper.class.php';

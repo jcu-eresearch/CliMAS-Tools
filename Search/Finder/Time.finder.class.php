@@ -1,8 +1,7 @@
 <?php
-/*
- * CLASS: SpeciesFinder
+/**
  *
- * Return lists of Species names and their associate ranges, thresholds, and subsets
+ * Return lists of TIme Periods and standard / predefined subsets
  *
  */
 class TimeFinder extends aFinder  {

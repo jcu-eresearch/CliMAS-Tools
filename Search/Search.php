@@ -11,10 +11,10 @@ Session::clear();
     <link rel="stylesheet" type="text/css" href="Search.css" />
     <script src="Search.js" type="text/javascript"></script>
 </head>
-<body>    
+<body>
     <FORM METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
         <INPUT TYPE=HIDDEN ID="ZoomFactor" NAME="ZoomFactor"  VALUE="2">
-    </FORM> 
+    </FORM>
     <div id="ToolBar">
         <a href="#" class="Tool" id="ToolFullExtent"    onclick="SetFullExtent()"    >Full Extent</a>
         <a href="#" class="Tool" id="ToolZoomOutLow1"   onclick="zoomOut();" >Zoom Out1</a>&nbsp;&nbsp
@@ -34,8 +34,8 @@ Session::clear();
 
     <iframe ID="DataSummary" src="SearchResults.php" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" >
     </iframe>
-    
-    
-    
+
+
+
 </body>
 </html>

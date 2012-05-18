@@ -1,13 +1,13 @@
 <?php
 
-/* 
+/*** 
  * CLASS: 
  *        
  * 
  *   
- */
+ */**
 class TemplateClass extends Object {
-    //put your code here
+    //**put your code here
     
     public function __construct() { 
         
@@ -24,11 +24,11 @@ class TemplateClass extends Object {
         
     }
 
-    /*
+    /***
      * Set the value of this Property in constructor
      * via $this->setPropertyByName("ReadOnlyProperty", "SomeValue")
      * 
-     */
+     */**
     public function ReadOnlyProperty() {
         return $this->getProperty();
     }

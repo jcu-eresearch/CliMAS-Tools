@@ -1,22 +1,17 @@
 <?php
-include_once 'aData.class.php';
-/* 
+/**
  * CLASS:  DataVisualText
  *        
  * 
  *   
  */
-class VisualText extends aData {
+class VisualText extends Data {
     
-    
-    public static function create($text = "DataVisualText",$point_size = 12,$colour = null) 
-    { 
-        $T = new VisualText($text, $point_size, $colour);
-        return $T;
-    }
     
     public function __construct($text = "DataVisualText",$point_size = 12,$colour = null) { 
         parent::__construct();
+        $this->Name(__CLASS__);
+
         $this->Text($text);
         $this->PointSize($point_size);
         $this->Colour($colour);
@@ -39,21 +34,22 @@ class VisualText extends aData {
         if (func_num_args() == 0) return $this->getProperty();
         
         $value = func_get_arg(0);
-        if ($value <=   3) $value = 3;    // TODO:: place in configuration 
-        if ($value >= 300) $value = 300;  // TODO:: place in configuration 
+        if ($value <=   3) $value = 3;    //** TODO:: place in configuration 
+        if ($value >= 300) $value = 300;  //** TODO:: place in configuration 
         
         return $this->setProperty(func_get_arg(0));        
     }
     
-    /*
+    /**
      * If param pased in is not an RGB then set colour to Black
      */
+
     public function Colour() {
         
         if (func_num_args() == 0) 
             return RGB::cast($this->getProperty());
             
-        $colour = RGB::create(func_get_arg(0)); // create RGB object and then set it
+        $colour = RGB::create(func_get_arg(0)); //** create RGB object and then set it
         
         return RGB::cast($this->setProperty($colour));
     }

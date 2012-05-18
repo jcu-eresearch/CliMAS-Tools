@@ -46,7 +46,7 @@ class MapServerLayerRaster extends MapServerLayer {
         
     }
 
-    /*
+    /***
      * Set Color Table using Image statistics 
      * 
      */
@@ -94,7 +94,7 @@ class MapServerLayerRaster extends MapServerLayer {
 
     public function StdDev() {  return $this->getProperty(); }
 
-    /*
+    /***
      * Attribute Column Name to be used to Class Features
      */
     public function ClassItem()
@@ -107,7 +107,7 @@ class MapServerLayerRaster extends MapServerLayer {
             
     }
     
-    /*
+    /***
      * Attribute Column Name to be used to Label Features
      */
     public function LabelItem()
@@ -120,7 +120,7 @@ class MapServerLayerRaster extends MapServerLayer {
             
     }
     
-    /*
+    /***
      * Attribute Column Name to be used to Label Features
      */
     public function Band()
@@ -133,7 +133,7 @@ class MapServerLayerRaster extends MapServerLayer {
             
     }
     
-    /*
+    /***
      * Attribute Column Name to be used to Label Features
      */
     public function BandCount()
@@ -142,7 +142,7 @@ class MapServerLayerRaster extends MapServerLayer {
     }
     
     
-    /*
+    /***
      * Array of Value to RGB Object
      * 
      * key = Pixel Value

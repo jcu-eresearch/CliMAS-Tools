@@ -3,12 +3,11 @@ include_once 'includes.php';
 
 $M = new MapServerWrapper();
 
-$caption = VisualText::create("Species suitability", 10, "Red");
+$caption = new VisualText("Species suitability", 10, "Red");
 $M->Caption($caption);
 
 
-foreach (Session::LayerFinderActionResults() as $FinderResult)
-    $M->Layers()->AddLayer($FinderResult);
+foreach (Session::MapableResults() as $MapableResult) $M->Layers()->AddLayer($MapableResult);
     
 
 

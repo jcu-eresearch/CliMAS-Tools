@@ -2,18 +2,29 @@
 $LayerListField = "LayerList";
 include_once 'includes.php';
 
-Session::UpdateFromPostedFinderActionNames($LayerListField);
 
 
-$contextLayers = ActionFactory::Available("ContextLayer");
+$activeLayerTemplate = <<<TEMPLATE
+<INPUT class="layer_button_unselected" ID="{#key#}" onclick="UpdateLayerList('{#key#}');" TYPE=BUTTON NAME="UserLayers[]" VALUE="{#value#}" >
+TEMPLATE;
+
+
+$activeLayerTable = htmlutil::TableRowTemplate(Session::MapableResults(),$activeLayerTemplate);
+
+
+
+
+$contextLayers = FinderFactory::Result(configuration::MapableBackgroundLayers());  // we want to get a list of SCreen Mappable Context Layers
 
 $contextLayersTemplate = <<<CT
-<INPUT class="AvailableLayerButton" ID="{#key#}" onclick="AddToLayerList('{#key#}');" TYPE=BUTTON NAME="AvailableLayers[]" VALUE="{#key#}" >
+<INPUT class="AvailableLayerButton" ID="{#key#}" onclick="AddToLayerList('{#key#}');" TYPE=BUTTON NAME="AvailableLayers[]" VALUE="{#value#}" >
 CT;
 
-$active_layer_template = <<<TEMPLATE
-<INPUT class="layer_button_unselected" ID="{Finder}-{Action}" onclick="UpdateLayerList('{Finder}-{Action}');" TYPE=BUTTON NAME="UserLayers[]" VALUE="{Action}" ><br>
-TEMPLATE;
+$contextLayersTable = htmlutil::TableRowTemplate($contextLayers,$contextLayersTemplate);
+
+
+
+Session::UpdateFromPostedFinderActionNames($LayerListField);
 
 ?>
 <html>
@@ -104,15 +115,6 @@ TEMPLATE;
             
         }
 
-
-
-
-//        function selectedScenarioModel(caller,url)
-//        {
-//            var extent = parent.GetExtentText();
-//            url += "&extent=" + encodeURIComponent(extent);
-//            parent.SetDataSummary(url);
-//        }
         
         </script>
         
@@ -120,16 +122,11 @@ TEMPLATE;
     <body onload="init()">
         <h1>layer manager</h1>
         <FORM id="LAYERS_FORM"  METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
-
-            <?php
-                echo htmlutil::table(array_util::FromTemplate(Session::LayerFinderNames(),$active_layer_template),false);
-
-                echo htmlutil::TableRowTemplate($contextLayers,$contextLayersTemplate);
-
-            ?>
-            
-            <INPUT TYPE=HIDDEN ID="<?php echo $LayerListField; ?>" NAME="<?php echo $LayerListField; ?>" VALUE="<?php echo Session::PostableFinderActionNames(); ?>" ><br>
+            <?php echo $activeLayerTable;?>
+            <?php echo $contextLayersTable; ?>
+            <INPUT TYPE=TEXT SIZE="100" ID="<?php echo $LayerListField; ?>" NAME="<?php echo $LayerListField; ?>" VALUE="<?php echo Session::PostableFinderActionNames(); ?>" ><br>
         </FORM>
         
     </body>
 </html>
+

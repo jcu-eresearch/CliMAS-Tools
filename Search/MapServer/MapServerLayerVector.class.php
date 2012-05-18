@@ -6,12 +6,11 @@ class MapServerLayerVector extends MapServerLayer {
     
     public function __construct(MapServerLayers $parent, $filename,$column_name, $LayerType = null) 
     {   
-
         
         // get column name
         if (is_null($column_name)) 
         {
-            // need to pickup first column that has some type of category    
+            // need to pickup first column that has some type of category
             $column_name = NULL;
             
             $names = spatial_util::VectorLayers($filename); // use first layer in spatial vector file
@@ -86,7 +85,7 @@ class MapServerLayerVector extends MapServerLayer {
         parent::__destruct();
     }
     
-    /*
+    /**
      * Attribute Column Name to be used to Class Features
      */
     public function ClassItem()
@@ -99,7 +98,7 @@ class MapServerLayerVector extends MapServerLayer {
             
     }
     
-    /*
+    /**
      * Attribute Column Name to be used to Label Features
      */
     public function LabelItem()

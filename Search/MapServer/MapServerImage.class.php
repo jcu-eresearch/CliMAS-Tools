@@ -2,14 +2,14 @@
 include_once 'Mapfile.class.php';
 include_once 'MapserverGUI.class.php';
 
-/* 
+/**
  * CLASS: 
  *        
  * 
  *   
  */
 class MapServerImage extends Object {
-    //put your code here
+    //**put your code here
     
     public static function FromFile($spatialFilename,$attributeColumnName = null,$layerType = null) 
     { 

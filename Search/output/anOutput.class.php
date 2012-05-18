@@ -1,18 +1,10 @@
 <?php
 
-/* 
+/**
  * INTERFACE: iOutput
  *        
- * 
- *   
  */
 interface iOutput {
-    //put your code here
-
-    /*
-     * General uses will be for  classes that implement or extend iData   
-     *                                     or implement or extend iFinder
-     */
     
     public function Source();
     
@@ -25,7 +17,7 @@ interface iOutput {
 }
 
 class anOutput extends Object implements iOutput{
-    //put your code here
+    //**put your code here
 
     public function __construct() { 
         parent::__construct();        

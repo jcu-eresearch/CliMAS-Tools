@@ -1,11 +1,12 @@
 <?php
-/*
- * CLASS: SpeciesFinder
+/**
  *
- * Return lists of Species names and their associate ranges, thresholds, and subsets
+ * Return lists of Emission Scenarios
+ * - will need to find what has already been calculated
+ * - what has to be calculated
  *
  */
-class EmissionScenarioFinder extends aFinder  {
+class EmissionScenarioFinder extends Finder  {
 
     public function __construct() {
         parent::__construct($this);

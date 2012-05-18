@@ -1,14 +1,8 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of Mapfile
  *
- * @author jc166922
+ * @author Adam Fakes (James Cook University)
  */
 class Mapfile extends Object{
 
@@ -290,14 +284,14 @@ OUTPUT;
         $caption = $this->Wrapper()->Caption();
         if (is_null($caption)) return "";
         
-        // get the left most edge of image / coordinate
+        //** get the left most edge of image /** coordinate
         $point = $this->Extent()->asFormattedString("{West} {South}");
         
-        //TODO:: Add support for Caption for Each layer
+        //**TODO:: Add support for Caption for Each layer
         
         $text = $caption;
         $point_size = 12;
-        $colour = "0 0 0";    // TODO:: Default Caption Colour
+        $colour = "0 0 0";    //** TODO:: Default Caption Colour
         
         if (VisualText::isVisualText($caption))
         {
@@ -353,7 +347,7 @@ OUTPUT;
     private function style_text(MapServerLayerClassStyle $src)
     {
 
-        //TODO: Better to setup some soirt of Array that can return only "Value" properties
+        //**TODO: Better to setup some soirt of Array that can return only "Value" properties
         $result = "";        
         $result .= "\n\t\t".$src->asFormattedString("COLOR {Color}");
         $result .= "\n\t\t".$src->asFormattedString("WIDTH {Width}");

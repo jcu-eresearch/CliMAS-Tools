@@ -6,7 +6,7 @@
  * Mutli value item
  * - Spatial Extent of a Map.
  * 
- * @author jc166922
+ * @author Adam Fakes (James Cook University)
  */
 
 class SpatialExtent extends Object {
@@ -24,7 +24,7 @@ class SpatialExtent extends Object {
 
     private $source = null;
     
-    /*
+    /**
      * Overloads : $north = null,$south = null,$east = null,$west = null
      *             array (4 elements) will be taken as north,south,east,west
      *             keyed array KEYS = north,south,east,west 
@@ -79,7 +79,7 @@ class SpatialExtent extends Object {
 
     private function initByArray($array) 
     {
-        if (count($array) !=4) throw new Exception();   //TODO -- Proper exepction array incorrect 
+        if (count($array) !=4) throw new Exception();   //**TODO -- Proper exepction array incorrect 
 
         if (
             array_key_exists(configuration::NORTH(), $array) &&
@@ -88,7 +88,7 @@ class SpatialExtent extends Object {
             array_key_exists(configuration::WEST() , $array)
            )    
         {
-            // all named keys    
+            //** all named keys    
             $north = $array[configuration::NORTH()];
             $south = $array[configuration::SOUTH()];
             $east  = $array[configuration::EAST()];
@@ -109,7 +109,7 @@ class SpatialExtent extends Object {
     
     private function initByFilename($filename)
     {
-        if (!file_exists($filename)) throw new Exception(); //TODO:  Proper Execption - Filename doesn n ott exist
+        if (!file_exists($filename)) throw new Exception(); //**TODO:  Proper Execption - Filename doesn n ott exist
 
         $this->Filename($filename);
         
@@ -123,7 +123,7 @@ class SpatialExtent extends Object {
     
     private function fromRaster($filename) 
     {
-        // GDALINFO
+        //** GDALINFO
 
         $north = null;
         $south = null;
@@ -135,27 +135,27 @@ class SpatialExtent extends Object {
         exec($cmd, $result);
 
         if (!util::contains($result[0],"Corner Coordinates:")) 
-                throw new Exception(); //TODO:: Proper Exception - NOT GDAL File
+                throw new Exception(); //**TODO:: Proper Exception - NOT GDAL File
 
 
-        // Lower Left 
+        //** Lower Left 
         $ll_raw = $result[2];
         $ll_raw = str_replace("Lower Left  (", "", $ll_raw);
         $ll_raw = str_replace("}", "", $ll_raw);
         $ll_split= explode(",", trim($ll_raw));
 
-        if (count($ll_split) != 2) throw new Exception(); //TODO:: Proper Exception - Can't get Lower Left
+        if (count($ll_split) != 2) throw new Exception(); //**TODO:: Proper Exception - Can't get Lower Left
 
         $west  = str_replace(")", "", trim($ll_split[0]));
         $south = str_replace(")", "", trim($ll_split[1]));
 
-        // upper right
+        //** upper right
         $ur_raw = $result[3];
         $ur_raw = str_replace("Upper Right (", "", $ur_raw);
         $ur_raw = str_replace(")", "", $ur_raw);
                 
         $ur_split = explode(",", trim($ur_raw));
-        if (count($ur_split) != 2) throw new Exception(); //TODO:: Proper Exception - Can't get Upper Right
+        if (count($ur_split) != 2) throw new Exception(); //**TODO:: Proper Exception - Can't get Upper Right
         
         $east  = str_replace(")", "", trim($ur_split[0]));
         $north = str_replace(")", "", trim($ur_split[1]));
@@ -172,18 +172,18 @@ class SpatialExtent extends Object {
         exec($cmd, $result);
         
         if (!util::contains($result[0],"Extent:"))
-            throw new Exception(); //TODO:: Proper Exception - NOT OGR
+            throw new Exception(); //**TODO:: Proper Exception - NOT OGR
 
-        // Extent: (113.156360, -43.642890) - (153.638340, -10.687530)                
-        // 
-        // OGR can handle this file format
+        //** Extent: (113.156360, -43.642890) - (153.638340, -10.687530)                
+        //** 
+        //** OGR can handle this file format
         $raw = $result[0];
         $raw = str_replace("Extent: (", "", $raw);
         $raw = str_replace(") - (", ",", $raw);
         $raw = str_replace(")", "", $raw);
         $raw = str_replace(" ", "", $raw);
 
-        //113.156360,-43.642890,153.638340,-10.687530
+        //**113.156360,-43.642890,153.638340,-10.687530
         list($west,$south,$east,$north) = explode(",", $raw);
      
         $this->setNSEW(trim($north), trim($south), trim($east), trim($west));                      

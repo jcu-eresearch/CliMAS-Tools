@@ -1,10 +1,10 @@
 <?php
 
-/* 
+/**
  * CLASS: Use to "run" for GUI page 
  *        
  * CLass flow
- *  Create / retrive  MapServer object  = $MS
+ *  Create /** retrive  MapServer object  = $MS
  *  create Mapserver with $MS
  * 
  */
@@ -60,7 +60,7 @@ class MapserverGUI extends Object {
     
     
     
-    // Interactive methods ---------------------------------------------- 
+    //** Interactive methods ---------------------------------------------- 
     
     public function hasInteractive() 
     {
@@ -136,7 +136,7 @@ class MapserverGUI extends Object {
     }
     
     
-    // Interactive methods ----------------------------------------------     
+    //** Interactive methods ----------------------------------------------     
     
     
     public function Extent() {
@@ -167,8 +167,8 @@ class MapserverGUI extends Object {
     
     public function MapObject() { return $this->mapObject; }
 
-    /*
-     * @param BOOL RELOAD   True = reload image  False = return current image URL / or NULL
+    /***
+     * @param BOOL RELOAD   True = reload image  False = return current image URL /** or NULL
      * 
      */
     public function MapImageLocation($reload = false) 
@@ -187,7 +187,7 @@ class MapserverGUI extends Object {
 
     public function MapLegendLocation($reload = false) 
     {        
-        if ($reload) $this->setPropertyByName("MapLegendLocation", null); // if they want to reloadf then clear current value
+        if ($reload) $this->setPropertyByName("MapLegendLocation", null); //** if they want to reloadf then clear current value
 
         $value = $this->getProperty();
 
@@ -204,7 +204,7 @@ class MapserverGUI extends Object {
 
     public function MapScaleLocation($reload = false) 
     {        
-        if ($reload) $this->setPropertyByName("MapScaleLocation", null); // if they want to reloadf then clear current value
+        if ($reload) $this->setPropertyByName("MapScaleLocation", null); //** if they want to reloadf then clear current value
         
         $value = $this->getProperty();
         if (!is_null($value)) return $this->getProperty();

@@ -1,7 +1,6 @@
 <?php
 
-/*
- * CLASS: VariableNamesFinder
+/**
  *        
  * Return lists of Variable names and their associate ranges, thresholds, and subsets
  *

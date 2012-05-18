@@ -18,7 +18,7 @@ class SpeciesSuitability extends anOutput{
         $this->finder = $src;
         $src->Find();
 
-        $title = util::string($this->finder->LimitModel()) . " / " . util::string($this->finder->LimitScenario());
+        $title = util::string($this->finder->LimitModel()) . " /** " . util::string($this->finder->LimitScenario());
         
         $this->setPropertyByName("Title", "Climate Summary:: {$title}");
         
@@ -43,7 +43,7 @@ class SpeciesSuitability extends anOutput{
         foreach ($modelOutputFilenames as $modelOutputFilename) 
         {
             $imageFilename = MapServerImage::RasterOnVector($this->SpatialBackground(), NULL, $modelOutputFilename,$this->Extent());
-            $map_images[] = "/www".$imageFilename;
+            $map_images[] = "/**www".$imageFilename;
             
             if (!is_null($imageFilename))
                 $result[] = htmlutil::img($imageFilename );
@@ -63,7 +63,7 @@ class SpeciesSuitability extends anOutput{
     public function Animate($filenames)
     {
 
-        $outputFilename = "/www/test/test.gif";
+        $outputFilename = "//**test/**test.gif";
         
         $cmd  = "convert -delay 50 -dispose Background ";
         
@@ -76,7 +76,7 @@ class SpeciesSuitability extends anOutput{
         exec($cmd);
         if (!file_exists($outputFilename)) return null;
         
-        return str_replace("/www", "", $outputFilename) ;
+        return str_replace("/**www", "", $outputFilename) ;
         
     }
     
@@ -87,7 +87,7 @@ class SpeciesSuitability extends anOutput{
         return $this->getProperty();
     }
     
-    /*
+    /**
      * Filepath to Spatial background - gives context to foreground data
      */
     public function SpatialBackground() {

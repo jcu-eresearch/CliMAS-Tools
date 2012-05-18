@@ -1,17 +1,16 @@
 <?php
 
-/* 
+/**
  * Interface : iFinder
  *        
  * 
  *   
  */
 interface iFinder {
-    //put your code here
 
     public function Filter($name,$value);
     
-    public function Find();
+    public function Execute();
     
     public function Result();
 
@@ -20,16 +19,18 @@ interface iFinder {
     
 }
 
-class aFinder extends Object implements iFinder  {
-    //put your code here
-
-
+/**
+ * Base class for all finders 
+ * - supports common processes for finders 
+ * - Properties, Executing an Action and returning the Action result
+ *
+ */
+class Finder extends Object implements iFinder  {
 
     public function __construct($child) {
         $this->Actions(get_class($child));
         parent::__construct();
         $this->Name(__CLASS__);
-
 
     }
     
@@ -38,34 +39,53 @@ class aFinder extends Object implements iFinder  {
         
     }
 
+    /**
+     * @method
+     * @throws Exception - Execption forces subclasses to define this method
+     */
     public function Description()
     {
+        /**
+         *@todo - LOG this
+         */
         throw new Exception("###Finder Description has not be defined");
     }
 
 
-    /*
-     * Find the requested action and then run it.
-     * place result into $this->Result
+    /**
+     *  Find the requested action ($this-UseAction) and then run it. place result into $this->Result
      */
-    public function Find()
+    public function Execute()
     {
+
         if ( is_null($this->UseAction()) ) $this->UseAction($this->DefaultAction()) ;
-        $action = ActionFactory::Find($this, $this->UseAction()); // get the class that is defined by this Finder / Action Combo
+        $action = ActionFactory::Find($this, $this->UseAction()); // get the class that is defined by this Finder Action Combo
 
         $this->Result($action->Execute());
     }
-    
+
+    /**
+     * 
+     * @return mixed .. Result of action
+     */
     public function Result()
     {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     } 
 
-    
+
+    /**
+     * Finder level filters available to Finders and Actions
+     *
+     * @param type $name
+     * @param type $value
+     * @return null|\array (Filter name not valid | All Filters | key/value pair of filter just added )
+     * @throws Exception
+     */
     public function Filter($name = null, $value = null)
     {
-        
+
         if (is_null($name) && is_null($value)) return $this->getProperty(); // return all filters
         
         if (!is_null($value) && is_null($name)) 
@@ -93,16 +113,19 @@ class aFinder extends Object implements iFinder  {
     }
 
     
-    /*
-     * Actions is a list of available actions for this filter
-     */    
+    /**
+     *
+     * @return array  available actions for this Finder
+     */
     public function Actions()
     {
-        return ActionFactory::Available($this); //  a list of actions found for this finder
+        return ActionFactory::Available($this); 
     }
     
-    /*
-     * An action is something this finder will do with the Filters
+
+    /**
+     *
+     * @return string Name of Action to Run
      */
     public function UseAction() {
         if (func_num_args() == 0)
@@ -110,9 +133,9 @@ class aFinder extends Object implements iFinder  {
         return $this->setProperty(func_get_arg(0));
     }
 
-    /*
-     * A default action will be done if no Action was passed to FinderFactory
+    /**
      *
+     * @return string Name of default action for this finder
      */
     public function DefaultAction() {
         if (func_num_args() == 0)

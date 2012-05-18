@@ -1,6 +1,6 @@
 <?php
 include_once 'MapServerLayerClass.class.php';
-/* 
+/**
  * CLASS: MapServerLayerClasses
  *        
  * To manage Classes for Layer

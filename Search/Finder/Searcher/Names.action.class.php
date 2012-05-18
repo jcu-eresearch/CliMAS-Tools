@@ -14,8 +14,8 @@ class SearcherNames extends Object implements iAction {
 
     public function Execute()
     {
-        // look into the finders and return only those that have a 
-        // Search Action
+        //** look into the finders and return only those that have a 
+        //** Search Action
 
         $result = array();
 

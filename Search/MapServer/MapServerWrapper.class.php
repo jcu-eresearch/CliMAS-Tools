@@ -2,7 +2,6 @@
 include_once 'MapServerLayers.class.php';
 
 class MapServerWrapper extends Object {
-    //put your code here
     
     private $layers = null;
 
@@ -21,7 +20,7 @@ class MapServerWrapper extends Object {
         
     }
     
-    /*
+    /***
      * Path to map file, unique mapfilename that can be re-accessed.
      */
     public function MapfilePathname() 
@@ -31,7 +30,6 @@ class MapServerWrapper extends Object {
 
     private function getMapfilePathname()
     {
-
 
         $result = MapServerConfiguration::pathToMapfiles().configuration::osPathDelimiter().
                   $this->ID().configuration::osExtensionDelimiter().
@@ -57,7 +55,7 @@ class MapServerWrapper extends Object {
     
     
     
-    /*
+    /***
      * Set image type - type of image to be displayed
      * 
      */
@@ -67,7 +65,7 @@ class MapServerWrapper extends Object {
         
         $type = func_get_arg(0); 
         
-        // if they ask for an unknown type reset it to PNG
+        //** if they ask for an unknown type reset it to PNG
         if (!array_key_exists($type, MapServerConfiguration::imageTypes()))  $type = MapServerConfiguration::imageTypePNG ();
         return  $this->setProperty($type);
     }
@@ -83,7 +81,7 @@ class MapServerWrapper extends Object {
     {
         if (func_num_args() == 0) return $this->getProperty();        
         
-        // if width set to out of bounds chnage to default values
+        //** if width set to out of bounds chnage to default values
         $value = func_get_arg(0); 
         if ($value < MapServerConfiguration::imageMinWidth()) $value = MapServerConfiguration::imageMinWidth();
         if ($value > MapServerConfiguration::imageMaxWidth()) $value = MapServerConfiguration::imageMaxWidth();
@@ -105,7 +103,7 @@ class MapServerWrapper extends Object {
     private $outputImageHeight = NULL; 
 
     
-    /*
+    /***
      * Background color of image
      * - overloads
      *   - instance of RGB
@@ -119,10 +117,10 @@ class MapServerWrapper extends Object {
         $value = func_get_arg(0); 
         if ( !($value instanceof RGB))  
         {
-            $value = new RGB(); // not RGB class so set as new
+            $value = new RGB(); //** not RGB class so set as new
             if (func_num_args() == 3) 
             {
-                  // assume they meant to say RGB
+                  //** assume they meant to say RGB
                   $value->Red(func_get_arg(0));
                 $value->Green(func_get_arg(1));
                  $value->Blue(func_get_arg(2));
@@ -133,7 +131,7 @@ class MapServerWrapper extends Object {
         $this->setProperty($value);
         
         $result = $this->getProperty();  
-        $result instanceof RGB;         // type hint - really so that netbeans can hint properly
+        $result instanceof RGB;         //** type hint - really so that netbeans can hint properly
         
         return  $result;
     }
@@ -144,7 +142,7 @@ class MapServerWrapper extends Object {
     }
 
     
-    /*
+    /***
      * Convert string to Spatial Extent - $src format  "{West} {South} {East} {North}"
      * 
      * @param $default: if not a well foprmatted string then return current extent

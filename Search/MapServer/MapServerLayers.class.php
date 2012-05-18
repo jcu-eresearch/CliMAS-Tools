@@ -1,6 +1,5 @@
 <?php
-//include_once 'Mapserver.includes.php';
-/* 
+/**
  * CLASS: MapServerLayers
  *        
  * To manage layers for ultimatley buliding the MapServer MapFile
@@ -18,7 +17,7 @@ class MapServerLayers extends Object {
         parent::__construct();
         
         $this->parent = $parent;    
-        $this->layers = array(); // array of MapServerLayer
+        $this->layers = array(); //** array of MapServerLayer
         
     }
     
@@ -28,12 +27,10 @@ class MapServerLayers extends Object {
     }
     
 
-    /*
+    /***
      * Extent of all layers on map
      * - each layer will hold an extent of itself
-     */
-    
-    /** @function Extent SpatialExtent **/
+     */    
     public function Extent($update = false)
     {
         
@@ -44,18 +41,18 @@ class MapServerLayers extends Object {
             return $this->extent;
         }
         
-        // get extent for all layers
+        //** get extent for all layers
         $extent_matrix = array();
         foreach ($this->layers as $layer_name => $layer) 
         {
-            $layer instanceof MapServerLayer;  // type hint
+            $layer instanceof MapServerLayer;  //** type hint
             $extent_matrix[MapServerConfiguration::NORTH()][$layer_name] = $layer->North();
             $extent_matrix[MapServerConfiguration::SOUTH()][$layer_name] = $layer->South();
             $extent_matrix[MapServerConfiguration::EAST() ][$layer_name] = $layer->East();
             $extent_matrix[MapServerConfiguration::WEST() ][$layer_name] = $layer->West();
         }
         
-        // update map extent
+        //** update map extent
         $this->extent = new SpatialExtent();
         $this->extent->North(max($extent_matrix[MapServerConfiguration::NORTH()]));
         $this->extent->South(min($extent_matrix[MapServerConfiguration::SOUTH()]));
@@ -71,7 +68,7 @@ class MapServerLayers extends Object {
 
         if (is_null($src)) return null;
 
-        // load mulitple objects
+        //** load mulitple objects
         if (is_array($src))
         {
             $result = array();
@@ -85,12 +82,12 @@ class MapServerLayers extends Object {
         if (Object::isObject($src))
             $this->AddLayerFromObject($src);
 
-        // It's a string so most likely a Filename
+        //** It's a string so most likely a Filename
         if (is_string($src))
         {
             if (file_exists($src))
             {
-                $L = MapServerLayer::create($this, $src); // default details
+                $L = MapServerLayer::create($this, $src); //** default details
 
                 if (is_null($L))
                 {
@@ -122,7 +119,7 @@ class MapServerLayers extends Object {
 
         if (!file_exists($filename))
         {
-            echo "<br>File does not exist Failed to load layer filename [{$filename}] "; //TODO:: logg
+            echo "<br>File does not exist Failed to load layer filename [{$filename}] "; //**TODO:: logg
             return null;
         }
 
