@@ -5,7 +5,7 @@
  * Return lists of Variable names and their associate ranges, thresholds, and subsets
  *
  */
-class SearcherFinder extends aFinder  {
+class SearcherFinder extends Finder  {
 
     public function __construct() {
         parent::__construct($this);

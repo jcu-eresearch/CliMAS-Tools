@@ -55,7 +55,7 @@ class htmlutil {
 
             if (!$handled && Object::isObject($row))
             {
-                //** if we find an object is passed as "row" then treet the properties of the object as the cells
+                // if we find an object is passed as "row" then treat the properties of the object as the cells
 
                 $handled = true;
                 $row instanceof Object;
@@ -65,6 +65,8 @@ class htmlutil {
                 else
                 {
                     $sub_result = str_replace("{#row_id#}",  $row->Name(), $template);
+
+
                     foreach ($row->PropertyNames() as $propertyName)
                         $sub_result = str_replace("{{$propertyName}}", $row->getPropertyByName($propertyName, NULL), $sub_result);
 
@@ -83,7 +85,10 @@ class htmlutil {
                     $sub_result = "<td>".join(" ", $row)."</td>";
                 else
                 {
+
                     $sub_result = str_replace("{#row_id#}",  $row_id, $template);
+                    $sub_result = str_replace("{#key#}",  $row_id, $template);
+
                     foreach ($row as $column_id => $cell_value)
                         $sub_result = str_replace("{{$column_id}}",  $cell_value, $sub_result);
 

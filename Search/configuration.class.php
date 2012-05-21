@@ -18,7 +18,7 @@ class configuration {
 
     public static function ContextSpatialLayersFolder() {return "/www/eresearch/source/context";}
 
-    public static function DefaultMapableActionClassname() { return "ContextLayerAustralianRiverBasins"; }
+    public static function DefaultMapableActionClassname() { return "ContextLayerAustralianStates"; }
 
     public static function MapableBackgroundLayers() { return "ContextLayerMapableBackgroundLayers"; }
 

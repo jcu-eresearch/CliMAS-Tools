@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Description of Description
+ * 
  *
  * @author Adam Fakes (James Cook University)
  */
-class DescriptionOutput extends Output
+class GenericOutput extends Output
 {
 
     public function __construct() {
@@ -21,18 +21,16 @@ class DescriptionOutput extends Output
 
     public function Style()
     {
-        return "Descriptions Style";
+        return "";
 
     }
 
     public function Content()
     {
 
-        return "Descriptions COntent";
+        return "GENERIC ::: ".$this->Source()->asFormattedString();
 
     }
-
-
 
 
 }

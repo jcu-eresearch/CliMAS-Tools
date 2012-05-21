@@ -1,6 +1,8 @@
 <?php
 class Object  {
-    
+
+
+
     protected $name = "AnObject";
     
     private $property = null;
@@ -24,7 +26,12 @@ class Object  {
     public function __destruct() {        
         $this->property = null;
     }
-    
+
+    public function _ClassName() {
+        return get_class($this);
+    }
+
+
     protected function setProperty($value) {
         $bt = debug_backtrace(); 
         $property_name = $bt[1]['function'];
@@ -89,6 +96,17 @@ class Object  {
         return array_keys($result);
     }
 
+    public function PropertyValues()
+    {
+        $result = array();
+        foreach ($this->property as $key => $value) {
+            $result[$key] = $value;
+        }
+        unset($result['Tags']);
+        return $result;
+    }
+
+
 
     public function Debug($web = false)
     {
@@ -121,7 +139,16 @@ class Object  {
     {
         $result = "";
         if (is_null($format))
-            $result = join (",", $this->property);
+            foreach ($this->property as $key => $value)
+            {
+                if (is_bool($value)) $value = ($value) ? self::$TRUE : self::$FALSE;
+                if (is_array($value))
+                    $result = join (",", $value);
+                else
+                    $result = $value;
+
+            }
+            
         else
         {
             $result = $format;

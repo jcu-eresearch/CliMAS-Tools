@@ -2,27 +2,17 @@
 $LayerListField = "LayerList";
 include_once 'includes.php';
 
-
-
-$activeLayerTemplate = <<<TEMPLATE
-<INPUT class="layer_button_unselected" ID="{#key#}" onclick="UpdateLayerList('{#key#}');" TYPE=BUTTON NAME="UserLayers[]" VALUE="{#value#}" >
-TEMPLATE;
-
-
-$activeLayerTable = htmlutil::TableRowTemplate(Session::MapableResults(),$activeLayerTemplate);
-
-
-
-
-$contextLayers = FinderFactory::Result(configuration::MapableBackgroundLayers());  // we want to get a list of SCreen Mappable Context Layers
+$O = OutputFactory::Content(FinderFactory::Result(configuration::MapableBackgroundLayers())); // we want to get a list of SCreen Mappable Context Layers
 
 $contextLayersTemplate = <<<CT
-<INPUT class="AvailableLayerButton" ID="{#key#}" onclick="AddToLayerList('{#key#}');" TYPE=BUTTON NAME="AvailableLayers[]" VALUE="{#value#}" >
+<INPUT class="AvailableLayerButton" 
+ ID="{Classname}"
+ onclick="AddToLayerList('{Classname}');"
+ TYPE=BUTTON
+ NAME="AvailableLayers[]"
+ VALUE="{Name}"
+>
 CT;
-
-$contextLayersTable = htmlutil::TableRowTemplate($contextLayers,$contextLayersTemplate);
-
-
 
 Session::UpdateFromPostedFinderActionNames($LayerListField);
 
@@ -122,9 +112,8 @@ Session::UpdateFromPostedFinderActionNames($LayerListField);
     <body onload="init()">
         <h1>layer manager</h1>
         <FORM id="LAYERS_FORM"  METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
-            <?php echo $activeLayerTable;?>
-            <?php echo $contextLayersTable; ?>
-            <INPUT TYPE=TEXT SIZE="100" ID="<?php echo $LayerListField; ?>" NAME="<?php echo $LayerListField; ?>" VALUE="<?php echo Session::PostableFinderActionNames(); ?>" ><br>
+            <?php echo htmlutil::TableRowTemplate($O,$contextLayersTemplate); ?>
+            <INPUT TYPE="hidden" SIZE="100" ID="<?php echo $LayerListField; ?>" NAME="<?php echo $LayerListField; ?>" VALUE="<?php echo Session::PostableFinderActionNames(); ?>" ><br>
         </FORM>
         
     </body>

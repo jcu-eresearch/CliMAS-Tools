@@ -90,7 +90,7 @@ class ActionFactory {
      * @param type $action_name
      * @return null|\iAction
      */
-    public static function Find(aFinder $owner, $action_name = null)
+    public static function Find(Finder $owner, $action_name = null)
     {
         if (is_null($action_name)) $action_name = $owner->DefaultAction();
         if (strtolower($action_name) == "default") $action_name = $owner->DefaultAction();

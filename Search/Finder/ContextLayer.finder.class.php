@@ -6,7 +6,7 @@
  *
  *
  */
-class ContextLayerFinder extends aFinder  {
+class ContextLayerFinder extends Finder  {
 
     public function __construct() { 
         parent::__construct($this);

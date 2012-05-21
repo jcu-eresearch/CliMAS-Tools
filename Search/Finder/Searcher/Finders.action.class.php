@@ -22,6 +22,8 @@ class VariablesFinders extends Object implements iAction {
         foreach ($names as $key => $value)
             $result[$key] = $key.FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER;
 
+        $this->Result($result);
+
         return $result;
 
     }
@@ -32,6 +34,11 @@ class VariablesFinders extends Object implements iAction {
         return $this->setProperty(func_get_arg(0));
     }
 
+    public function Result() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
 
 }
 

@@ -19,7 +19,15 @@ class FinderFactory {
      */
     public static function Find($srcClassname)
     {
-        
+
+        $srcClassname = trim($srcClassname);
+        if ($srcClassname == "")
+        {
+            echo "srcClassnamedoes Passed Empty<br>"; // TODO:: Exception or ??
+            return null;   // Return Null if we can't find a class
+        }
+
+
         $finderClassname = null;
         $actionClassname = null;
 
@@ -32,6 +40,8 @@ class FinderFactory {
             // maybe $srcClassname is an action class name
 
             $finderClassname = self::FinderClassnameForActionClassname($srcClassname); // try to find vi an action lookup
+
+
             if (!is_null($finderClassname)) $actionClassname = $srcClassname; // found finder thru actionCLassName so $src must be an action
         }
 
@@ -67,7 +77,6 @@ class FinderFactory {
             echo "class inside {$finderFilename} is not an instance of aFinder<br>";  //TODO: logg
             return null;   // Return Null
         }
-
 
         $result instanceof Finder;
 
@@ -123,9 +132,10 @@ class FinderFactory {
      */
     public static function FinderClassnames()
     {
-        $files = file::find_files(file::currentScriptFolder(__FILE__), self::$EXTENTSION);
 
-        $files = array_util::Replace($files,file::currentScriptFolder(__FILE__)."/**","");
+        // Finders must hyave folders with the same name
+        $files = file::find_files(file::currentScriptFolder(__FILE__), self::$EXTENTSION);
+        $files = array_util::Replace($files,file::currentScriptFolder(__FILE__).configuration::osPathDelimiter(),"");
         $files = array_util::Replace($files,self::$EXTENTSION,"");
 
         $finders = array();
@@ -149,7 +159,16 @@ class FinderFactory {
 
 
     /**
-     * @return array(JaggedArray) All actions for all finders [FinderClassname] => ( [ActionClassname]=>ActionName, ...)
+     *
+     * All actions for all finders
+     * [FinderClassname] => <br>
+     * Array(<br>
+     *   [ActionClassname]=>ActionName,<br>
+     *   [ActionClassname]=>ActionName,<br>
+     *   .......<br>
+     *   )<br>
+     *<br>
+     * @return array(JaggedArray)
      */
     public static function Finders2Actions()
     {
@@ -172,6 +191,28 @@ class FinderFactory {
 
 
     }
+
+
+    public static function findActionByString($findActionName)
+    {
+
+        $result = array();
+
+        foreach (self::Finders2Actions() as $finderClassname => $actions)
+        {
+            foreach ($actions as $actionClassname => $actionName)
+            {
+                if ($actionName == $findActionName)
+                    $result[$actionClassname] = $actionName;
+            }
+        }
+
+
+        return $result;
+
+    }
+
+
 
     /**
      *
@@ -196,6 +237,7 @@ class FinderFactory {
      */
     public static function FinderClassnameForActionClassname($actionClassname)
     {
+        
         return array_util::Value(self::ActionClassnamesToFinderClassnames(), $actionClassname, null);
     }
 

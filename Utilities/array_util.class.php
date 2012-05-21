@@ -975,43 +975,54 @@ class array_util
         {
 
             if (is_null($src_row)) continue;
-            if (!is_array($src_row)) continue;
-
-            $sub_result = $rowTemplate;
-            $sub_result = str_replace('{#row_id#}', $src_rowID, $sub_result);
-
-
-            if (util::contains($sub_result,'{#join',false))
+            if (!is_array($src_row)) 
             {
-                $delims = str_split(util::midStr($sub_result, '{#join', '}', true,false));
+                $sub_result = $rowTemplate;
+                $sub_result = str_replace('{#row_id#}', $src_rowID, $sub_result);
+                $sub_result = str_replace('{#key#}', $src_rowID, $sub_result);
+                $sub_result = str_replace('{#value#}', $src_row, $sub_result);
+                
+                $result[$src_rowID] = $sub_result;
 
-                $d1 = $delims[0];
-                $d2 = $d1;
-                if (array_key_exists(1, $delims)) $d2 = $delims[1];
+            }
+            else
+            {
 
-                $KeyValues = "";
-                foreach ($src_row as $key => $value)
+
+                if (util::contains($sub_result,'{#join',false))
                 {
-                    if (is_null($value)) $value = "NULL";
-                    $KeyValues .= "{$key}{$d1}{$value}{$d2}";
+                    $delims = str_split(util::midStr($sub_result, '{#join', '}', true,false));
+
+                    $d1 = $delims[0];
+                    $d2 = $d1;
+                    if (array_key_exists(1, $delims)) $d2 = $delims[1];
+
+                    $KeyValues = "";
+                    foreach ($src_row as $key => $value)
+                    {
+                        if (is_null($value)) $value = "NULL";
+                        $KeyValues .= "{$key}{$d1}{$value}{$d2}";
+                    }
+
+
+                    util::trim_end($KeyValues, $d2);
+
+                    $to_replace = '{#join'.util::midStr($sub_result, "{#join", "}", true, true)."}";
+
+                    $sub_result = str_replace($to_replace,  $KeyValues, $sub_result);
+
                 }
 
 
-                util::trim_end($KeyValues, $d2);
+                foreach ($src_row as $key => $value)
+                {
+                    $sub_result = str_replace("{{$key}}",  $value, $sub_result);
+                }
 
-                $to_replace = '{#join'.util::midStr($sub_result, "{#join", "}", true, true)."}";
-
-                $sub_result = str_replace($to_replace,  $KeyValues, $sub_result);
+                $result[$src_rowID] = $sub_result;
 
             }
 
-
-            foreach ($src_row as $key => $value)
-            {
-                $sub_result = str_replace("{{$key}}",  $value, $sub_result);
-            }
-
-            $result[$src_rowID] = $sub_result;
 
 
         }

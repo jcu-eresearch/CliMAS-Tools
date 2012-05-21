@@ -14,24 +14,19 @@ class SearcherNames extends Object implements iAction {
 
     public function Execute()
     {
-        //** look into the finders and return only those that have a 
-        //** Search Action
+        // look into the finders and return only those that have a 
 
         $result = array();
 
-        $finders = FinderFactory::Available();
+        $searchActions = FinderFactory::findActionByString("Search");
 
-        foreach ($finders as $key => $value)
+        foreach ($searchActions as $actionClassname => $actionName)
         {
-            $finder = FinderFactory::Find($value);
-
-            if (array_key_exists(FindersConfiguration::$ACTION_TYPE_SEARCH, $finder->Actions()))
-            {
-                $action = ActionFactory::Find($finder, FindersConfiguration::$ACTION_TYPE_SEARCH);
-                $result[$action->Name()] = $action->Description();
-            }
-
+            $result[$actionClassname] = str_replace($actionName, "", $actionClassname);
         }
+            
+
+        $this->Result($result);
 
         return $result;
     }
@@ -42,6 +37,11 @@ class SearcherNames extends Object implements iAction {
         return $this->setProperty(func_get_arg(0));
     }
 
+    public function Result() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
 
 
 }

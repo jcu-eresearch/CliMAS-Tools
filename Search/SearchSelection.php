@@ -1,29 +1,60 @@
 <?php
 include_once 'includes.php';
-$variableNames = FinderFactory::Result("Searcher");
+$variableNames = FinderFactory::Result("SearcherNames");
 
 $snapshotTemplate = <<<CT
-\n<INPUT class="MapVariableButton" ID="Map{#key#}" onclick="SetSnapshotVariable('{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}">
+\n<INPUT class="SnapshotButton" ID="Snapshot{#key#}" onclick="Set('Snapshot','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}">
 CT;
 $showTemplate = <<<CT
-\n<INPUT class="MapVariableButton" ID="Map{#key#}" onclick="SetShowVariable('{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}">
+\n<INPUT class="ShowButton" ID="Show{#key#}" onclick="Set('Show','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}" disabled>
 CT;
 $restrictionsTemplate = <<<CT
-\n<INPUT class="MapVariableButton" ID="Map{#key#}" onclick="SetRestriction('{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}">
+\n<INPUT class="RestrictionButton" ID="Restriction{#key#}" onclick="Set('Restriction','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}" >
 CT;
+
+
+$subsetFormTemplate = <<<SFT
+<div id="Subset{#key#}" class="subsetter">
+    <h2>Subset for {#value#}</h2>
+    Sometype of lists here to be allow subsetting
+
+    <dfn>Restrict Data on each map to this subset</dfn>
+    <input type="button" name="closediv" onClick="ToggleDisplay('Subset{#key#}')" value="CLOSE">
+</div>
+SFT;
+
+
 
 ?>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <style>
+
             body {
                 font-family: sans-serif;
                 font-size: 12pt;
             }
 
+            .subsetter 
+            {
+                border: 1px solid blue;
+                height: 300px;
+                width: 400px;
+                overflow: hidden;
+                display: none;
+
+                z-index: 200;
+                position: fixed;
+                top: 20px;
+                left:20px;
+                background-color: white;
+                
+
+            }
+
             .selected {
-                background-color: pink;
+                background-color: yellow;
             }
 
             .selector{
@@ -61,17 +92,19 @@ CT;
             }
 
 
-            #snapshot{
-
-
-            }
-
-            #Show{
+            .SnapshotButton
+            {
 
             }
 
-            #Restrictions{
+            .ShowButton
+            {
 
+            }
+
+            .RestrictionButton
+            {
+                
             }
 
             #Process{
@@ -94,20 +127,108 @@ CT;
 
         </style>
         <script>
-            function SetSnapshotVariable(src)
+            function Set(type,src)
             {
-                alert(" SetSnapshotVariable = " + src);
+
+                switch(type) {
+                    case 'Snapshot':
+                        SetSnapshot(type,src);
+                    break;
+
+                    case 'Show':
+                        SetShow(type,src);
+                    break;
+
+                    case 'Restriction':
+                        SetRestriction(type,src);
+                    break;
+                }
+
+
             }
 
-            function SetShowVariable(src)
+            function SetSnapshot(type,src)
             {
-                alert(" SetShowVariable = " + src);
+                // can only have one snap shot so reset the others and set this one
+                var snaps = elementsThatContain(type);
+                for (var i=0; i < snaps.length; i++)
+                    snaps[i].className = snaps[i].className.replace(" selected","");
+
+                ToggleSelected(type +  src);
+
+                // find Show version of src and make it Disabled
+                var shows = elementsThatContain('Show');
+                for (var i=0; i < shows.length; i++)
+                    shows[i].disabled = false;
+
+                var showToDisable = 'Show' + src;
+                // if a show had been select and they have changed the "snapshot" then deselect the show
+                document.getElementById(showToDisable).className = document.getElementById(showToDisable).className.replace(" selected","");
+                document.getElementById(showToDisable).disabled = true;
+
             }
 
-            function SetRestriction(src)
+
+            function elementsThatContain(str)
             {
-                alert(" SetRestriction = " + src);
+                var all = document.getElementsByTagName("*");
+
+                var result = new Array();
+
+                count = 0;
+                for (var i=0; i < all.length; i++)
+                {
+                    if (all[i].id.indexOf(str) != -1)
+                    {
+                        result[count] = all[i];
+                        count++;
+                    }
+                }
+                return result;
+
             }
+
+
+            function SetShow(type,src)
+            {
+                var shows = elementsThatContain(type);
+                for (var i=0; i < shows.length; i++)
+                    shows[i].className = shows[i].className.replace(" selected","");
+
+                ToggleSelected(type +  src);
+
+            }
+
+            function SetRestriction(type,src)
+            {
+                ToggleSelected(type +  src);
+                ToggleDisplay('Subset' + src);
+
+            }
+
+            function ToggleDisplay(id)
+            {
+                if (document.getElementById(id).style.display == "block")
+                    document.getElementById(id).style.display = "none";
+                else
+                    document.getElementById(id).style.display = "block";
+            }
+
+
+            function ToggleSelected(src)
+            {
+                var classes = document.getElementById(src).className;
+
+                if (classes.indexOf("selected") == -1)
+                    document.getElementById(src).className += " selected";
+                else
+                    document.getElementById(src).className = document.getElementById(src).className.replace(" selected","");
+                
+            }
+
+
+
+
 
         </script>
         <title>Search Selector</title>
@@ -141,6 +262,10 @@ CT;
             <dfn>Restrict Data on each map to this subset</dfn>
             
         </div>
+
+        <?php
+            echo join("\n",array_util::FromTemplate($variableNames,$subsetFormTemplate));
+        ?>
 
 
         <div id="Process">

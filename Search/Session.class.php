@@ -42,7 +42,7 @@ class Session {
      */
     public static function ClearLayers()
     {
-        $_SESSION[self::SessionName()][self::$LAYERS] = array();
+        $_SESSION[self::SessionName()][self::$ActionsToBeMapped] = array();
     }
 
 
@@ -56,7 +56,6 @@ class Session {
 
         $postedActionClassNames = array_util::Value($_POST, $post_field, null);
         if (is_null($postedActionClassNames)) return;
-
 
         self::ClearLayers(); // clear layers and only add the ones we are posting in this time
 
@@ -77,8 +76,6 @@ class Session {
     {
         $actionClassname = trim($actionClassname);
         if ($actionClassname == "") return;
-
-        echo "Addlayer from actionClassname = $actionClassname<br>\n";
 
         $current = self::get(self::$ActionsToBeMapped);
         $current[$actionClassname] = $actionClassname;
