@@ -19,6 +19,17 @@ interface iFinder {
     
 }
 
+interface iAction {
+
+    public function Execute();
+
+    public function Result();
+
+    public function Description();
+
+}
+
+
 /**
  * Base class for all finders 
  * - supports common processes for finders 
@@ -57,7 +68,6 @@ class Finder extends Object implements iFinder  {
      */
     public function Execute()
     {
-
         if ( is_null($this->UseAction()) ) $this->UseAction($this->DefaultAction()) ;
         $action = ActionFactory::Find($this, $this->UseAction()); // get the class that is defined by this Finder Action Combo
 
@@ -119,7 +129,7 @@ class Finder extends Object implements iFinder  {
      */
     public function Actions()
     {
-        return ActionFactory::Available($this); 
+        return ActionFactory::Available($this);
     }
     
 

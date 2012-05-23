@@ -4,12 +4,12 @@
  * Return lists of TIme Periods and standard / predefined subsets
  *
  */
-class TimeFinder extends aFinder  {
+class TimeFinder extends Finder  {
 
     public function __construct() {
         parent::__construct($this);
         $this->Name("Time");
-        $this->DefaultAction("List");
+        $this->DefaultAction("Search");
     }
 
     public function __destruct() {

@@ -6,9 +6,8 @@ $M = new MapServerWrapper();
 $caption = new VisualText("Species suitability", 10, "Red");
 $M->Caption($caption);
 
-
-foreach (Session::MapableResults() as $MapableResult) $M->Layers()->AddLayer($MapableResult);
-    
+foreach (Session::MapableResults() as $MapableResult)
+    $M->Layers()->AddLayer($MapableResult);
 
 
 $MF = Mapfile::create($M);

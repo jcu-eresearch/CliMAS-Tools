@@ -4,12 +4,12 @@
  * Return lists of Species names and their associate ranges, thresholds, and subsets
  *
  */
-class SpeciesFinder extends aFinder  {
+class SpeciesFinder extends Finder  {
 
     public function __construct() {
         parent::__construct($this);
         $this->Name("Species");
-        $this->DefaultAction("List");
+        $this->DefaultAction("Search");
     }
 
     public function __destruct() {

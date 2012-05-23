@@ -1,10 +1,12 @@
 <?php
 
-class VariablesFinders extends Object implements iAction {
+class TimeSearch extends Object implements iAction {
 
     public function __construct() {
         parent::__construct();
         $this->Name(__CLASS__);
+        $this->Description("Time search");
+        $this->AllValues("TimeAllValues");
     }
 
 
@@ -12,20 +14,11 @@ class VariablesFinders extends Object implements iAction {
         parent::__destruct();
     }
 
-
     public function Execute()
     {
 
-        $names = FinderFactory::Result("Variables", "Names");
-
-        $result = array();
-        foreach ($names as $key => $value)
-            $result[$key] = $key.FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER;
-
-        $this->Result($result);
-
-        return $result;
-
+        $this->Result($this);
+        return $this;
     }
 
     public function Description() {
@@ -39,6 +32,19 @@ class VariablesFinders extends Object implements iAction {
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
+
+    /**
+     *
+     * @return string - Action Class - Return list of all Time Slices
+     */
+    public function AllValues() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+
+
 
 }
 

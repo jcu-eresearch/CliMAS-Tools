@@ -2,15 +2,15 @@
 $LayerListField = "LayerList";
 include_once 'includes.php';
 
-$O = OutputFactory::Content(FinderFactory::Result(configuration::MapableBackgroundLayers())); // we want to get a list of SCreen Mappable Context Layers
+$MBL = FinderFactory::Result(configuration::MapableBackgroundLayers());
 
 $contextLayersTemplate = <<<CT
 <INPUT class="AvailableLayerButton" 
- ID="{Classname}"
- onclick="AddToLayerList('{Classname}');"
+ ID="{#key#}"
+ onclick="AddToLayerList('{#key#}');"
  TYPE=BUTTON
  NAME="AvailableLayers[]"
- VALUE="{Name}"
+ VALUE="{#value#}"
 >
 CT;
 
@@ -112,7 +112,7 @@ Session::UpdateFromPostedFinderActionNames($LayerListField);
     <body onload="init()">
         <h1>layer manager</h1>
         <FORM id="LAYERS_FORM"  METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
-            <?php echo htmlutil::TableRowTemplate($O,$contextLayersTemplate); ?>
+            <?php echo htmlutil::TableRowTemplate($MBL,$contextLayersTemplate); ?>
             <INPUT TYPE="hidden" SIZE="100" ID="<?php echo $LayerListField; ?>" NAME="<?php echo $LayerListField; ?>" VALUE="<?php echo Session::PostableFinderActionNames(); ?>" ><br>
         </FORM>
         

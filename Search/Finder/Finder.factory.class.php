@@ -9,7 +9,7 @@
  */
 class FinderFactory {
 
-    public static $EXTENTSION = ".finder.class.php";
+    public static $EXTENTSION_FINDER = ".finder.class.php";
     public static $EXTENTSION_ACTION = ".action.class.php";
 
     /**
@@ -20,67 +20,122 @@ class FinderFactory {
     public static function Find($srcClassname)
     {
 
-        $srcClassname = trim($srcClassname);
-        if ($srcClassname == "")
-        {
-            echo "srcClassnamedoes Passed Empty<br>"; // TODO:: Exception or ??
-            return null;   // Return Null if we can't find a class
-        }
+        if (self::isFinder($srcClassname)) return self::Finder ($srcClassname);
+
+        $action = self::Action($srcClassname);
+        if (!is_null($action)) return $action;
+
+        return null;
+    }
 
 
-        $finderClassname = null;
-        $actionClassname = null;
 
-        $finderClassname = self::hasFinder($srcClassname);  // get finder for this $src
-        
-        // $finder  is not NULL it represnts a Simple Finder Name
+    private static function Finder($finderClassname)
+    {
+        if (!self::isFinder($finderClassname)) return null; //TODO: LOG
 
-        if (is_null($finderClassname))
-        {
-            // maybe $srcClassname is an action class name
+        if (!self::FinderFilenameExists($finderClassname)) return null; //TODO: LOG
 
-            $finderClassname = self::FinderClassnameForActionClassname($srcClassname); // try to find vi an action lookup
+        include_once self::FinderFilename($finderClassname);  // INCLUDE this finder
+
+        if (!self::FinderClassExists($finderClassname)) return null; //TODO: LOG
 
 
-            if (!is_null($finderClassname)) $actionClassname = $srcClassname; // found finder thru actionCLassName so $src must be an action
-        }
-
-        if (is_null($finderClassname))
-        {
-            echo "[{$finderClassname}]does not seem to be a Finder Class<br>"; // TODO:: Exception or ??
-            return null;   // Return Null if we can't find a class
-        }
-
-
-        $finderFilename = file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().self::SimpleFinderName($finderClassname).self::$EXTENTSION;
-
-        if (!file_exists($finderFilename))
-        {
-            echo "Can't find file $finderFilename for a Finder [{$finderClassname}]"; // TODO:: Exception or Logg
-            return null;   // Return Null if we can't find a class
-        }
-
-
-        include_once $finderFilename;  // INCLUDE this finder
-
-        if (!class_exists($finderClassname))  // check to see if we includes it properly
-        {
-            echo "AFter including {$finderFilename}  class {$finderClassname} does not exist<br>";  //TODO: logg this
-            return null;   // Return Null
-        }
-
-
+        // Instantiate an object from the Class
         $result = new $finderClassname();
 
-        if (!($result instanceof Finder))
-        {
-            echo "class inside {$finderFilename} is not an instance of aFinder<br>";  //TODO: logg
-            return null;   // Return Null
-        }
-
+        if (!($result instanceof Finder)) return null; //TODO: LOG
         $result instanceof Finder;
 
-        $result->UseAction(self::SimpleActionName($actionClassname));
+        return $result;
+
+
+    }
+
+    public static function isFinder($finderClassname)
+    {
+        return util::contains($finderClassname, FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER);
+    }
+
+
+    public static function FinderName($finderClassname)
+    {
+        if (!self::isFinder($finderClassname)) return null;
+        return str_replace(FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER, "", $finderClassname);
+    }
+
+
+    public static function FinderFilename($finderClassname)
+    {
+        if (!self::isFinder($finderClassname)) return null;
+        return file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().self::FinderName($finderClassname).self::$EXTENTSION_FINDER;
+    }
+
+    public static function FinderFilenameExists($finderClassname)
+    {
+        return file_exists(self::FinderFilename($finderClassname));
+    }
+
+
+    public static function FinderClassExists($finderClassname)
+    {
+        return class_exists($finderClassname);
+    }
+
+
+    public static function Actions()
+    {
+        // Actin class names from folders
+        $files = file::find_files(file::currentScriptFolder(__FILE__), self::$EXTENTSION_ACTION);
+        
+        $actions = array();
+        foreach ($files as $file) 
+        {
+            $key = str_replace(self::$EXTENTSION_ACTION, "", $file);
+            $key = str_replace(file::currentScriptFolder(__FILE__).configuration::osPathDelimiter(), "", $key);
+            $key = util::fromLastSlash($key);
+
+            $actions[$key] = $file;
+        }
+
+        return $actions;
+        
+    }
+
+    public static function ActionsContaining($str)
+    {
+        return array_util::ElementsThatContain(self::Actions(), $str);
+    }
+
+
+    public static function ActionsNamed($str)
+    {
+        $actions = array_util::ElementsThatContain(self::Actions(), $str);
+
+        $result = array();
+        foreach ($actions as $actionClassname => $actionFilename)
+        {            
+            if (util::endsWith($actionClassname, $str))
+               $result[$actionClassname] = $actionFilename;
+        }
+
+        return $result;
+    }
+
+
+    public static function Action($actionClassname)
+    {
+
+        $actionFilename = array_util::Value(self::Actions(), $actionClassname, null);
+        if (is_null($actionFilename)) return null; // todo: log
+
+        include_once $actionFilename;  // INCLUDE this action Class
+
+        $result = new $actionClassname();
+
+        if (!($result instanceof iAction)) return null; //TODO: LOG
+
+        $result instanceof iAction;
 
         return $result;
         
@@ -94,17 +149,18 @@ class FinderFactory {
      */
     public static function Execute($actionClassname)
     {
+        if (is_null($actionClassname)) return null;
 
-        $F = self::Find($actionClassname);
-        if (is_null($F))
+        $A = self::Action($actionClassname);
+        if (is_null($A))
         {
             echo "FAILED: Execute {$actionClassname}";  //TODO: logg
             return null;   // Return Null
         }
 
-        $F instanceof Finder;
-        $F->Execute();
-        return $F;
+        $A instanceof iAction;
+        $A->Execute();
+        return $A;
     }
 
 
@@ -115,178 +171,19 @@ class FinderFactory {
      */
     public static function Result($actionClassname)
     {
-        $F = self::Execute($actionClassname);
-        if (is_null($F))
+
+        if (is_null($actionClassname)) return null;
+
+        $A = self::Execute($actionClassname);
+        if (is_null($A))
         {
             echo "FAILED: Result {$actionClassname}";  //TODO: logg
             return null;   // Return Null
         }
 
-        return $F->Result();
+        return $A->Result();
     }
 
-
-    /**
-     *
-     * @return array .. [Finder Classname]  => FinderName
-     */
-    public static function FinderClassnames()
-    {
-
-        // Finders must hyave folders with the same name
-        $files = file::find_files(file::currentScriptFolder(__FILE__), self::$EXTENTSION);
-        $files = array_util::Replace($files,file::currentScriptFolder(__FILE__).configuration::osPathDelimiter(),"");
-        $files = array_util::Replace($files,self::$EXTENTSION,"");
-
-        $finders = array();
-        foreach ($files as $FinderFolderName) 
-            if (is_dir(file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().$FinderFolderName))
-                $finders[$FinderFolderName.FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER] = $FinderFolderName;
-
-        return $finders;
-    }
-
-    /**
-     * If we have a finder of this name  $finderClassname the return it
-     *
-     * @param type $finderClassname
-     * @return null|\string
-     */
-    public static function hasFinder($finderClassname)
-    {
-        return array_util::Value(self::FinderClassnames(), $finderClassname, null);
-    }
-
-
-    /**
-     *
-     * All actions for all finders
-     * [FinderClassname] => <br>
-     * Array(<br>
-     *   [ActionClassname]=>ActionName,<br>
-     *   [ActionClassname]=>ActionName,<br>
-     *   .......<br>
-     *   )<br>
-     *<br>
-     * @return array(JaggedArray)
-     */
-    public static function Finders2Actions()
-    {
-
-        $result = array();
-        foreach (self::FinderClassnames() as $finderClassname => $finderName)
-        {
-
-            $actionFolder = file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().$finderName;
-            $files = file::folder_files($actionFolder, configuration::osPathDelimiter(), true);
-            $files = file::arrayFilter($files, self::$EXTENTSION_ACTION);
-
-            $action_names = array_util::Replace(array_keys($files),self::$EXTENTSION_ACTION,"");
-
-            foreach ($action_names as $action_name)
-               $result[$finderClassname][$finderName.$action_name] = $action_name;
-        }
-
-        return $result;
-
-
-    }
-
-
-    public static function findActionByString($findActionName)
-    {
-
-        $result = array();
-
-        foreach (self::Finders2Actions() as $finderClassname => $actions)
-        {
-            foreach ($actions as $actionClassname => $actionName)
-            {
-                if ($actionName == $findActionName)
-                    $result[$actionClassname] = $actionName;
-            }
-        }
-
-
-        return $result;
-
-    }
-
-
-
-    /**
-     *
-     * @return array [ActionClassname] => [(Parent) FinderClassname]
-     */
-    public static function ActionClassnamesToFinderClassnames()
-    {
-        $result = array();
-        foreach (self::Finders2Actions() as $finderClassname => $actionClassnames)
-            foreach ($actionClassnames as $actionClassname => $actionName)
-               $result[$actionClassname] = $finderClassname;
-
-        return $result;
-
-    }
-
-
-    /**
-     *
-     * @param type $actionClassname .. Action name to lookup to find it's "parent" Finder Class Name
-     * @return type
-     */
-    public static function FinderClassnameForActionClassname($actionClassname)
-    {
-        
-        return array_util::Value(self::ActionClassnamesToFinderClassnames(), $actionClassname, null);
-    }
-
-    /**
-     *
-     * @param type $finderClassName
-     * @return array ActionsClassNames associated with this Finder
-     */
-    public static function ActionsForFinder($finderClassName)
-    {
-        return array_util::Value(self::Finders2Actions, $finderClassName, null);
-    }
-
-
-    /**
-     *
-     * @param type $finderName
-     * @return string FinderClassname
-     */
-    public static function SimpleFinderName2FullFinderName($finderName)
-    {
-        return $finderName.FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER;
-    }
-
-
-    /**
-     *
-     * @param type $finderClassName
-     * @return string .. Finder Name
-     */
-    public static function SimpleFinderName($finderClassName)
-    {
-        return str_replace(FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER, "", $finderClassName);
-    }
-
-
-    /**
-     *
-     * @param type $actionClassname
-     * @return string Simple action name
-     */
-    public static function SimpleActionName($actionClassname)
-    {
-        $finderClassname = self::FinderClassnameForActionClassname($actionClassname);
-
-        $finder_simple_name = self::SimpleFinderName($finderClassname);
-
-        return str_replace($finder_simple_name, "", $actionClassname);
-    }
 
 
 

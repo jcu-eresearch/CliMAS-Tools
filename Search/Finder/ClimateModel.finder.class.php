@@ -5,7 +5,7 @@
  * Return lists of Species names and their associate ranges, thresholds, and subsets
  *
  */
-class ClimateModelFinder extends aFinder  {
+class ClimateModelFinder extends Finder  {
 
     public function __construct() {
         parent::__construct($this);

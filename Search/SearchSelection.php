@@ -1,6 +1,14 @@
 <?php
 include_once 'includes.php';
-$variableNames = FinderFactory::Result("SearcherNames");
+
+
+$variableNames = array();
+foreach (FinderFactory::Result("SearcherNames") as $actionClassname)
+{
+    $action = FinderFactory::Action($actionClassname);
+    $variableNames[$actionClassname] = $action->Description();
+}
+
 
 $snapshotTemplate = <<<CT
 \n<INPUT class="SnapshotButton" ID="Snapshot{#key#}" onclick="Set('Snapshot','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}">
@@ -12,15 +20,12 @@ $restrictionsTemplate = <<<CT
 \n<INPUT class="RestrictionButton" ID="Restriction{#key#}" onclick="Set('Restriction','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}" >
 CT;
 
-
 $subsetFormTemplate = <<<SFT
-<div id="Subset{#key#}" class="subsetter">
-    <h2>Subset for {#value#}</h2>
-    Sometype of lists here to be allow subsetting
-
-    <dfn>Restrict Data on each map to this subset</dfn>
-    <input type="button" name="closediv" onClick="ToggleDisplay('Subset{#key#}')" value="CLOSE">
+<div id="Subset{#key#}" class="subsetter" >
+    <iframe ID="popup{#key#}" src="" style="width:100%; height: 100%;" frameBorder="0" border="0" >
+    </iframe>
 </div>
+
 SFT;
 
 
@@ -202,6 +207,7 @@ SFT;
             function SetRestriction(type,src)
             {
                 ToggleSelected(type +  src);
+                document.getElementById("popup" + src).src = "popup.php?a=" + src; // set URL for popup
                 ToggleDisplay('Subset' + src);
 
             }
@@ -233,7 +239,7 @@ SFT;
         </script>
         <title>Search Selector</title>
     </head>
-    <body>
+    <body >
         Search Selector<br>
 
         <div id="snapshot" class="selector">

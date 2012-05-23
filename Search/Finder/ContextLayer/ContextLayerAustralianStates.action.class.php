@@ -41,6 +41,13 @@ class ContextLayerAustralianStates extends SpatialDescription implements iAction
     }
 
 
+    public function Description() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+
 }
 
 

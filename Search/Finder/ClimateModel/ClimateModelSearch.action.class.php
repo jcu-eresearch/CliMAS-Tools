@@ -1,11 +1,11 @@
 <?php
 
-class EmissionScenarioSearch extends Object implements iAction {
+class ClimateModelSearch extends Object implements iAction {
 
     public function __construct() {
         parent::__construct();
-        $this->Name("EmissionScenario");
-        $this->Description("Emission Scenario");
+        $this->Name("ClimateModel");
+        $this->Description("Climate Model");
     }
 
 
@@ -15,8 +15,8 @@ class EmissionScenarioSearch extends Object implements iAction {
 
     public function Execute()
     {
-        $result = "Emission Scenario Search";
-        return $result;
+        $this->Result($this);
+        return $this;
     }
 
     public function Description() {
@@ -24,6 +24,13 @@ class EmissionScenarioSearch extends Object implements iAction {
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
+
+    public function Result() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
 
 
 }

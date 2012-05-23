@@ -124,7 +124,14 @@ class OutputFactory  {
     // all of there should return a class  - will make OUtput CFLases for all of these
     private static function forArray($src)
     {
-        return htmlutil::table($src);
+
+        $sub_result = array();
+        foreach ($src as $key => $sub_array)
+        {
+            $sub_result[$key] = self::Find($sub_array);
+        }
+
+        return htmlutil::table($sub_result);
     }
 
     private static function forBoolean($src)
@@ -177,9 +184,11 @@ class OutputFactory  {
 
     public static function Content($src)
     {        
-        $o = self::Find($src);
-        return $o->Content();
         
+
+
+        $o = self::Find($src);
+        return $o->Content();   
     }
 
 
