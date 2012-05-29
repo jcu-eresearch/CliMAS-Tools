@@ -19,7 +19,13 @@ class GenericOutput extends Output
 
     }
 
-    public function Style()
+    public function Title()
+    {
+        return configuration::ApplicationName()." :: POPUP";
+    }
+
+
+    public function Head()
     {
         return "";
 

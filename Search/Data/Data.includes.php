@@ -7,4 +7,6 @@ include_once 'Description.data.class.php';
 include_once 'SpatialDescription.data.class.php';
 
 include_once 'VisualText.data.class.php';
+
+include_once 'Actions.data.class.php';
 ?>

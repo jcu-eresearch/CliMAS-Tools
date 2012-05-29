@@ -5,7 +5,7 @@ class TimeSearch extends Object implements iAction {
     public function __construct() {
         parent::__construct();
         $this->Name(__CLASS__);
-        $this->Description("Time search");
+        $this->Description("Time");
         $this->AllValues("TimeAllValues");
     }
 
@@ -42,6 +42,11 @@ class TimeSearch extends Object implements iAction {
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
+
+    public function Subsets() {
+        return FinderFactory::Result("TimeAllValues");
+    }
+
 
 
 

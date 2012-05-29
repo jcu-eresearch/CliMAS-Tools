@@ -19,7 +19,7 @@ class DescriptionOutput extends Output
 
     }
 
-    public function Style()
+    public function Head()
     {
         return "Descriptions Style";
 

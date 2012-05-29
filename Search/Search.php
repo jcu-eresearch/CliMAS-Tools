@@ -1,6 +1,12 @@
 <?php
 include_once 'includes.php';
 Session::clear();
+
+function icon($name)
+{
+    echo '<img title="'.$name.'" style="height: 30px; width: 30px;" border="0" src="'.configuration::IconSource().configuration::osPathDelimiter().$name.'" />';
+}
+
 ?>
 <html>
 <head>
@@ -13,26 +19,30 @@ Session::clear();
     <FORM METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
         <INPUT TYPE=HIDDEN ID="ZoomFactor" NAME="ZoomFactor"  VALUE="2">
     </FORM>
-    <div id="ToolBar">
-        <a href="#" class="Tool" id="ToolFullExtent"    onclick="SetFullExtent()"    >Full Extent</a>
-        <a href="#" class="Tool" id="ToolZoomOutLow1"   onclick="zoomOut();" >Zoom Out1</a>&nbsp;&nbsp
-        <a href="#" class="Tool" id="ToolZoomOutLow"    onclick="SetZoom(this,-2.0);" >Zoom Out</a>&nbsp;&nbsp
-        <a href="#" class="Tool" id="ToolCentre"        onclick="SetZoom(this,1.0)"  >Center </a>&nbsp&nbsp
-        <a href="#" class="Tool" id="ToolZoomInLow"     onclick="SetZoom(this,2.0)"  >Zoom In</a>&nbsp;&nbsp
+
+    <div style="float: left; height: 700px; width: 200px;">
+        <iframe ID="Selector" src="SearchSelection.php" width="190" height="600" frameBorder="0" border="0" style="overflow:hidden; float: none;" ></iframe><br>
+        <iframe ID="Layers"   src="SearchLayers.php"    width="200" height="300" frameBorder="0" border="0" style="overflow:hidden; float: none;" ></iframe>
     </div>
-    <iframe ID="GUI" src="SearchMap.php" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" >
-    </iframe>
 
-    <iframe ID="Selector" src="SearchSelection.php" width="600" height="400" frameBorder="0" border="0" style="overflow:auto; float:left;" >
-    </iframe>
+    <div style="float: left; height: 700px; width: 1000px;">
+        <div id="ToolBar">
+            <a href="#" class="Tool" id="ToolFullExtent"    onclick="SetFullExtent()"><?php icon("FullExtent.png")?></a>
+            <a href="#" class="Tool" id="ToolZoomOutLow"    onclick="SetZoom(this,-2.0);" ><?php icon("Zoom-Out-icon.png")?></a>&nbsp;&nbsp
+            <a href="#" class="Tool" id="ToolCentre"        onclick="SetZoom(this,1.0)"  ><?php icon("pan.png")?></a>&nbsp&nbsp
+            <a href="#" class="Tool" id="ToolZoomInLow"     onclick="SetZoom(this,2.0)"  ><?php icon("Zoom-In-icon.png")?></a>&nbsp;&nbsp
+            <a href="#" class="Tool" id="ToolZoomOutLow1"   onclick="zoomOut();" >Zoom Out1</a>&nbsp;&nbsp
+        </div>
+        <iframe ID="GUI" src="SearchMap.php" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" ></iframe>
+        <br style="clear:both;">
 
+        <iframe ID="DataSummary" src="SearchResults.php" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" ></iframe>
+    </div>
 
-    <iframe ID="Layers" src="SearchLayers.php" width="600" height="600" frameBorder="0" border="0" style="overflow:auto; float:left;" >
-    </iframe>
-
-    <iframe ID="DataSummary" src="SearchResults.php" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" >
-    </iframe>
-
+    <div ID="popup" >
+        <a  ID="PopupCloseLink" onclick="closePopup();"  ><img ID="PopupCloseButton" border="0" src="/eresearch/TDH-Tools/Resources/icons/Close-icon.png"></a>
+        <iframe ID="popup_content"   frameBorder="0" border="0"  ></iframe>
+    </div>
 
 
 </body>

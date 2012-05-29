@@ -10,7 +10,7 @@ class configuration {
     public static function osPathDelimiter()  { return "/"; }
     public static function osExtensionDelimiter() { return "."; }
 
-    public static function ApplicationName() {return "SRD::";}
+    public static function ApplicationName() {return "TDH-TOOLS";}
 
     public static function UtilityClasses() {return "/www/eresearch/TDH-Tools/Utilities/includes.php";}
     
@@ -21,6 +21,8 @@ class configuration {
     public static function DefaultMapableActionClassname() { return "ContextLayerAustralianStates"; }
 
     public static function MapableBackgroundLayers() { return "ContextLayerMapableBackgroundLayers"; }
+
+    public static function IconSource() { return "/eresearch/TDH-Tools/Resources/icons"; }
 
 }
 

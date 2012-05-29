@@ -1,11 +1,11 @@
 <?php
 
-class TimeAllValues extends Object implements iAction {
+class SpeciesComputed extends Object implements iAction {
 
     public function __construct() {
         parent::__construct();
         $this->Name(__CLASS__);
-        $this->Description("All available values for Time");
+        $this->Description("All species cached ready for delivery");
     }
 
 
@@ -15,12 +15,13 @@ class TimeAllValues extends Object implements iAction {
 
     public function Execute()
     {
-        $result = Descriptions::create(ToolsData::Times());
+        $result = array();;
+        $result[] = "GOULFINC";
 
         $this->Result($result);
+
         return $result;
     }
-
 
     public function Description() {
         if (func_num_args() == 0)

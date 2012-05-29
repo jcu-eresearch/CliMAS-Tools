@@ -6,13 +6,59 @@
  */
 class Descriptions extends Data {
     
+    public static function create(array $src,$keyIsDescriptive = false)
+    {
+        $D = new Descriptions();
+        $D->keyIsDescriptive($keyIsDescriptive);
+        $D->FromArray($src);
+        return $D;
+    }
+
+    public static function fromFile($filename, $delim = ",", $stringQuote = '"')
+    {
+        
+        if (!file_exists($filename)) return null;
+
+        $file = file($filename);
+
+        $header = str_getcsv($file[0], $delim, $stringQuote);
+
+        // get indexs for each column nam
+        $indexName = array_util::GetKeyForValueContain($header,"Name");
+        $indexDesc = array_util::GetKeyForValueContain($header,"Description");
+        $indexMoreInfo = array_util::GetKeyForValueContain($header,"MoreInformation");
+        $indexURI = array_util::GetKeyForValueContain($header,"URI");
+
+        $D = new Descriptions();
+        $D->keyIsDescriptive(false);
+
+        for ($index = 1; $index < count($file); $index++)
+        {
+            $line = str_getcsv($file[$index], ",", '"');
+
+            $desc = new Description();
+            $desc->Name(array_util::Value($line, $indexName));
+            $desc->Description(array_util::Value($line, $indexDesc));
+            $desc->MoreInformation(array_util::Value($line, $indexMoreInfo));
+            $desc->URI(array_util::Value($line, $indexURI));
+
+            $D->Add($desc);
+
+        }
+        
+        
+        return $D;
+    }
+
+
+
 
     private $descriptions = array();
 
     public function __construct() {
         parent::__construct();
         $this->Name(__CLASS__);
-
+        $this->keyIsDescriptive(false);
     }
     
     public function __destruct() {
@@ -25,9 +71,26 @@ class Descriptions extends Data {
     }
 
 
+    public function FromArray($src)
+    {
+        if (is_null($src)) return null;
+        if (!is_array($src)) return null;
+
+        foreach ($src as $key => $value)
+        {
+            $d = new Description();
+            $d->Name(null);
+            if ($this->keyIsDescriptive())  $d->Name($key); //only set the name to the key  if it means something
+            $d->Description($value);
+            $this->Add($d);
+        }
+
+    }
+
+
     public function Add(Description $value)
     {
-        $this->descriptions[$value->Name()] = $value;
+        $this->descriptions[$value->ID()] = $value;
         return $value->Name();
     }
 
@@ -61,6 +124,15 @@ class Descriptions extends Data {
         $result instanceof Descriptions;
         return $result;
     }
+
+    
+    
+    public function keyIsDescriptive() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
 
 }
 

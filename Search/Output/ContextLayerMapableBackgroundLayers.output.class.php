@@ -19,7 +19,7 @@ class ContextLayerMapableBackgroundLayersOutput extends Output
 
     }
 
-    public function Style()
+    public function Head()
     {
         return "";
 

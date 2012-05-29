@@ -1,23 +1,17 @@
 <?php
 include_once 'includes.php';
 
-
-$variableNames = array();
-foreach (FinderFactory::Result("SearcherNames") as $actionClassname)
-{
-    $action = FinderFactory::Action($actionClassname);
-    $variableNames[$actionClassname] = $action->Description();
-}
+$variableNames = FinderFactory::Descriptions(FinderFactory::Result("SearcherNames"));
 
 
 $snapshotTemplate = <<<CT
-\n<INPUT class="SnapshotButton" ID="Snapshot{#key#}" onclick="Set('Snapshot','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}">
+<INPUT class="SnapshotButton" ID="Snapshot{#key#}" onclick="Set('Snapshot','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}">
 CT;
 $showTemplate = <<<CT
-\n<INPUT class="ShowButton" ID="Show{#key#}" onclick="Set('Show','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}" disabled>
+<INPUT class="ShowButton" ID="Show{#key#}" onclick="Set('Show','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}" disabled>
 CT;
 $restrictionsTemplate = <<<CT
-\n<INPUT class="RestrictionButton" ID="Restriction{#key#}" onclick="Set('Restriction','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}" >
+<INPUT class="RestrictionButton" ID="Restriction{#key#}" onclick="Set('Restriction','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}" >
 CT;
 
 $subsetFormTemplate = <<<SFT
@@ -25,9 +19,7 @@ $subsetFormTemplate = <<<SFT
     <iframe ID="popup{#key#}" src="" style="width:100%; height: 100%;" frameBorder="0" border="0" >
     </iframe>
 </div>
-
 SFT;
-
 
 
 ?>
@@ -63,11 +55,11 @@ SFT;
             }
 
             .selector{
-                height: 270px;
-                width: 32%;
-                float: left;
+                height: 160px;
+                width: 99%;
+                float: none;
                 margin: 2px;
-                background-color: aliceblue;
+                
                 overflow: hidden;
                 font-weight: lighter;
             }
@@ -77,6 +69,7 @@ SFT;
                 margin: 0px;
                 display: block;
                 border-bottom: 1px solid black;
+                font-size: 10pt;
             }
 
 
@@ -88,8 +81,15 @@ SFT;
             }
 
             .selector input {
-                width: 100%;
+                display: block;
+                width: 90%;
+                height: 30px;
                 text-align: left;
+                vertical-align: top;
+                border-radius: 5px;
+                float: left;
+                font-weight: bold;
+
             }
 
             .selector input:hover {
@@ -118,7 +118,6 @@ SFT;
                 clear: both;
                 float: none;
                 margin: 2px;
-                background-color: aliceblue;
 
             }
             #Messages{
@@ -206,10 +205,7 @@ SFT;
 
             function SetRestriction(type,src)
             {
-                ToggleSelected(type +  src);
-                document.getElementById("popup" + src).src = "popup.php?a=" + src; // set URL for popup
-                ToggleDisplay('Subset' + src);
-
+                window.top.openPopup(src);
             }
 
             function ToggleDisplay(id)
@@ -240,14 +236,11 @@ SFT;
         <title>Search Selector</title>
     </head>
     <body >
-        Search Selector<br>
 
         <div id="snapshot" class="selector">
             <h2>Snapshot</h2>
-            <?php
-                echo htmlutil::TableRowTemplate($variableNames,$snapshotTemplate);
-            ?>
-            <dfn>A single map for a subset of values in this variable  (a Subset could be ALL)</dfn>
+            <?php echo htmlutil::TableRowTemplate($variableNames,$snapshotTemplate);?>
+            <!-- <dfn>A single map for a subset of values in this variable  (a Subset could be ALL)</dfn> -->
             
         </div>
 
@@ -256,7 +249,7 @@ SFT;
             <?php
                 echo htmlutil::TableRowTemplate($variableNames,$showTemplate);
             ?>
-            <dfn>On each map show this variable (Mutually Exclusive to the "Snapshot")</dfn>
+            <!-- <dfn>On each map show this variable (Mutually Exclusive to the "Snapshot")</dfn> -->
 
         </div>
 
@@ -264,30 +257,16 @@ SFT;
             <h2>subset</h2>
             <?php
                 echo htmlutil::TableRowTemplate($variableNames,$restrictionsTemplate);
-            ?>
-            <dfn>Restrict Data on each map to this subset</dfn>
+            ?>id
+            <!-- <dfn>Restrict Data on each map to this subset</dfn> -->
             
         </div>
 
-        <?php
-            echo join("\n",array_util::FromTemplate($variableNames,$subsetFormTemplate));
-        ?>
-
 
         <div id="Process">
-            RUN BUtton<br>
-
-        </div>
-
-        <div id="Messages" >
-            Message here for wait / email.
-
+            <INPUT  ID="RUN" TYPE=BUTTON NAME="RunProcess" VALUE="RUN"  style="width: 90%; padding: 1%;">
         </div>
 
 
-        <?php
-
-
-        ?>
     </body>
 </html>

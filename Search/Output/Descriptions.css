@@ -1,0 +1,65 @@
+
+root { 
+    display: block;
+}
+
+
+/*<div class="DescriptionCell">
+    <div class="DescriptionName">{Name}</div>
+    <div class="DescriptionText">{Description}</div>
+    <div class="DescriptionLink">{URI}</div>
+    <div class="DescriptionMoreInformation">{MoreInformation}</div>
+</div>*/
+
+
+.DescriptionCell
+{
+  border-bottom: 2px solid black;
+  border-right: 2px solid black;
+  border-radius: 10px;
+  display: block;
+  width: 95%;
+  height: 100px;
+  float: left;
+  padding: 5px;
+  background-color: white;
+  margin: 5px;
+
+}
+
+.DescriptionName
+{
+  height: 30px;
+  width: 30%;
+  float: left;
+  overflow-wrap: hyphenate;
+  overflow: hidden;
+  font-weight: bold;
+
+}
+
+.DescriptionText
+{
+   height: 30px;
+   width:  70%;
+   float: left;
+   font-weight: bold;
+   overflow: hidden;
+}
+
+.DescriptionLink
+{
+    display: block;
+}
+
+.DescriptionMoreInformation
+{
+    display: block;
+    float: left;
+    height: 50px;
+    width:  98%;
+    overflow: hidden;
+}
+
+
+

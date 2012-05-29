@@ -60,3 +60,24 @@ function zoomOut()
     
 }
 
+function openPopup(action)
+{
+    document.getElementById('popup_content').src = "popup.php?a=" + action;
+    ToggleDisplay('popup');
+}
+
+function closePopup()
+{
+    ToggleDisplay('popup');
+}
+
+function ToggleDisplay(id)
+{
+
+    if (document.getElementById(id).style.display == "block")
+        document.getElementById(id).style.display = "none";
+    else
+        document.getElementById(id).style.display = "block";
+}
+
+

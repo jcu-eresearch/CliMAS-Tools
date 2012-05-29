@@ -35,9 +35,9 @@ if ($GUI->hasInteractive()) $GUI->ZoomAndPan();
 </HEAD>
 <BODY>
     <FORM id="MAP_FORM"  onsubmit="GetZoom()" METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
-        <INPUT id="mapa" TYPE=IMAGE NAME="mapa" SRC="<?php echo $GUI->MapImageLocation();?>">      
+        <INPUT id="mapa" TYPE=IMAGE NAME="mapa" SRC="<?php echo $GUI->MapImageLocation();?>" style="clear:both; ">
         <INPUT TYPE=HIDDEN ID="ZoomFactor" NAME="ZoomFactor" VALUE="">
-        <INPUT TYPE=HIDDEN ID="extent"     NAME="extent"     VALUE="<?php echo $GUI->ExtentString(); ?>">
+        <INPUT TYPE=HIDDEN SIZE="100" ID="extent" NAME="extent"  VALUE="<?php echo $GUI->ExtentString(); ?>">
     </FORM>
     <!-- <img src="<?php echo $GUI->MapLegendLocation(); ?>"  style="float:left;" /> -->
 

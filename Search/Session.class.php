@@ -32,7 +32,13 @@ class Session {
     */
     public static function PostableFinderActionNames()
     {
-        return join(",",self::get(self::$ActionsToBeMapped));
+        $toPost = self::get(self::$ActionsToBeMapped);
+
+        if (is_null($toPost))
+            return configuration::DefaultMapableActionClassname();
+
+        return join(",",$toPost);
+        
     }
 
 

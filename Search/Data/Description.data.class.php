@@ -12,6 +12,12 @@ class Description extends Data {
         parent::__construct();
         $this->Name(__CLASS__);
 
+        $this->Filename();
+        $this->Description();
+        $this->Source();
+        $this->MoreInformation();
+        $this->URI();
+
     }
     
     public function __destruct() {

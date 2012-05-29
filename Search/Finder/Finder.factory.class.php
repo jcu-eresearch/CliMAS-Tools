@@ -126,6 +126,7 @@ class FinderFactory {
     public static function Action($actionClassname)
     {
 
+        if (is_null($actionClassname)) return null; // todo: log
         $actionFilename = array_util::Value(self::Actions(), $actionClassname, null);
         if (is_null($actionFilename)) return null; // todo: log
 
@@ -186,6 +187,28 @@ class FinderFactory {
 
 
 
+    public static function Description($actionClassname)
+    {
+        if (is_null($actionClassname)) return null;
+
+        $action = self::Action($actionClassname);
+        if (is_null($action)) return null; //TODO log
+
+        return $action->Description();
+
+    }
+
+    public static function Descriptions($actionClassnames)
+    {
+        if (is_null($actionClassnames)) return null;
+        if (!is_array($actionClassnames)) self::Description($actionClassnames);
+
+        $result = array();
+        foreach ($actionClassnames as $actionClassname)
+            $result[$actionClassname] = self::Description($actionClassname);
+
+        return $result;
+    }
 
 }
 

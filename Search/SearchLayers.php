@@ -110,10 +110,9 @@ Session::UpdateFromPostedFinderActionNames($LayerListField);
         
     </head>
     <body onload="init()">
-        <h1>layer manager</h1>
         <FORM id="LAYERS_FORM"  METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
             <?php echo htmlutil::TableRowTemplate($MBL,$contextLayersTemplate); ?>
-            <INPUT TYPE="hidden" SIZE="100" ID="<?php echo $LayerListField; ?>" NAME="<?php echo $LayerListField; ?>" VALUE="<?php echo Session::PostableFinderActionNames(); ?>" ><br>
+            <INPUT TYPE="HIDDEN" SIZE="100" ID="<?php echo $LayerListField; ?>" NAME="<?php echo $LayerListField; ?>" VALUE="<?php echo Session::PostableFinderActionNames(); ?>" ><br>
         </FORM>
         
     </body>

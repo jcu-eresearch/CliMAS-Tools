@@ -84,7 +84,7 @@ class Object  {
         
         $result = $this->name."::";
         foreach ($this->property as $key => $value) 
-            $result .= "$key => $value, ";
+            $result .= "$key => $value\n<br>";
         
         return $result;
     }

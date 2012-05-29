@@ -31,6 +31,11 @@ class ClimateModelSearch extends Object implements iAction {
         return $this->setProperty(func_get_arg(0));
     }
 
+    public function Subsets() {
+        return FinderFactory::Result("ClimateModelAllValues");
+    }
+
+
 
 
 }

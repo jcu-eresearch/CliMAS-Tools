@@ -6,6 +6,7 @@ include_once configuration::UtilityClasses();
 // include interfaces & factories here
 include_once 'Finder/Finder.includes.php';
 include_once 'Data/Data.includes.php';
+include_once 'DB/ToolsData.includes.php';
 
 include_once 'Output/Output.includes.php';
 include_once 'extras/extras.includes.php';

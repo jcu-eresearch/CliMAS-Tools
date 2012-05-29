@@ -15,14 +15,30 @@ interface iOutput {
     /**
      * Can store CSS or other syle information that maybe need before the Result can be displayed
      */
-    public function Style();
+    public function Head();
 
     /**
      * What is to be to be displayed
      *
      */
     public function Content();
-    
+
+
+    /**
+     * Title tag
+     *
+     */
+    public function Title();
+
+
+    /**
+     * PreoProcess
+     * - any procxessing that has to be done beforew thoputput is available
+     */
+    public function PreProcess();
+
+
+
 }
 
 class Output extends Object implements iOutput{
@@ -62,7 +78,7 @@ class Output extends Object implements iOutput{
     /**
      * Can store CSS or other syle information that maybe need before the Result can be displayed
      */
-    public function Style()
+    public function Head()
     {
         throw new Exception("{$this->Name()} Style has not been implemented");
     }
@@ -75,7 +91,27 @@ class Output extends Object implements iOutput{
     {
         throw new Exception("{$this->Name()} Content has not been imnplemented");
     } 
-    
+
+    /**
+     * Title Tag
+     *
+     */
+    public function Title()
+    {
+        throw new Exception("{$this->Name()} Title has not been imnplemented");
+    }
+
+
+    /**
+     * WIll be left blank here
+     * - a subclass can override this for things to be done
+     */
+    public function PreProcess()
+    {
+
+    }
+
+
     
 }
 

@@ -18,7 +18,7 @@ class OutputFactory  {
      * Xxxxxx.output.class
      * 
      */
-    public static function Find($src) 
+    public static function Find($src)
     {
 
         if ($src instanceof Object) return self::forObject($src);
@@ -74,6 +74,7 @@ class OutputFactory  {
 
         $outputter = self::getOutputFor($src);
 
+
         if (!is_null($outputter))
         {
             $outputter instanceof Output;
@@ -87,9 +88,10 @@ class OutputFactory  {
             
         }
 
-        return $outputter;
+        $outputter->PreProcess();
 
-        return null;
+        return $outputter;
+        
 
     }
 
@@ -97,28 +99,67 @@ class OutputFactory  {
     private static function getOutputFor($srcClass)
     {
         // Output Classname
-        
-        $outputClassname = get_class($srcClass)."Output";
+
+        //echo "srcClass = $srcClass<br>";
+
+        $className = get_class($srcClass);
+
+        $outputClassname = $className;
+        if (!util::contains($outputClassname, "Output"))  $outputClassname = $outputClassname . "Output";
+
+        //echo "outputClassname = $outputClassname<br>";
+
         if (!class_exists($outputClassname))
+        if (!self::includeOutputClassFor($srcClass))
         {
-            $outputClassFilename = file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().get_class($srcClass).self::$EXTENSION;
-
-            if (!file_exists($outputClassFilename))
-            {
-                // todo LOG ERROR - Throw new Exception("Can't find classfile for {$outputClassname} - Looking for {$outputClassFilename}");
-                return null;
-            }
-
-            include_once $outputClassFilename;
-
+            echo "{$outputClassname} still does not exist<br>";
         }
-
 
         $outputObject = new $outputClassname();
         $outputObject instanceof Output;
+
         return $outputObject;
         
     }
+
+
+    private static function outputClassfilename($srcClass)
+    {
+        return file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().get_class($srcClass).self::$EXTENSION;
+    }
+
+    private static function outputClassfilenameExists($srcClass)
+    {
+        if (!self::hasOutputClassFor($srcClass))
+        {
+            echo "Can't find Output class file for ".get_class($srcClass)." ... ".self::outputClassfilename($srcClass)."<br>";
+
+            // todo LOG ERROR - Throw new Exception("Can't find classfile for {$outputClassname} - Looking for {$outputClassFilename}");
+            return false;
+        }
+
+        return true;
+    }
+
+
+    private static function includeOutputClassFor($srcClass)
+    {
+        if (self::outputClassfilenameExists($srcClass))
+        {
+            include_once self::outputClassfilename($srcClass);
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public static function hasOutputClassFor($srcClass)
+    {
+        return file_exists(self::outputClassfilename($srcClass));
+    }
+
+
 
 
     // all of there should return a class  - will make OUtput CFLases for all of these
@@ -176,20 +217,21 @@ class OutputFactory  {
     }
 
 
-    public static function Style($src)
+    public static function Style(iOutput $src)
     {
         $o = self::Find($src);
         return $o->Style();
     }
 
-    public static function Content($src)
+    public static function Content(iOutput $src)
     {        
-        
-
+        if (is_null($src)) return null;
 
         $o = self::Find($src);
         return $o->Content();   
     }
+
+
 
 
 }

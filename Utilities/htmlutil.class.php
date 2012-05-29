@@ -2,6 +2,8 @@
 
 class htmlutil {
 
+
+
     /*
     * @method table
     * @param $data
@@ -15,7 +17,7 @@ class htmlutil {
 
         if (!is_array($data)) return str_replace ("\n", '<br/>', $data)."<br>";
 
-        $result = '<table border="1" >';
+        $result = '<table border="0" >';
         foreach ($data as $key => $value)
         {
             $result .= "<tr>";

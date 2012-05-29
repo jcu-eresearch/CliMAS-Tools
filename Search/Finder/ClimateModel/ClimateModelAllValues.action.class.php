@@ -1,13 +1,12 @@
 <?php
 
-class TimeAllValues extends Object implements iAction {
+class ClimateModelAllValues extends Object implements iAction {
 
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
-        $this->Description("All available values for Time");
+        $this->Name("ClimateModelAllValues");
+        $this->Description("A list of Climate Models");
     }
-
 
     public function __destruct() {
         parent::__destruct();
@@ -15,12 +14,10 @@ class TimeAllValues extends Object implements iAction {
 
     public function Execute()
     {
-        $result = Descriptions::create(ToolsData::Times());
-
+        $result = ToolsData::ClimateModels();
         $this->Result($result);
         return $result;
     }
-
 
     public function Description() {
         if (func_num_args() == 0)
@@ -33,6 +30,7 @@ class TimeAllValues extends Object implements iAction {
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
+
 
 
 }
