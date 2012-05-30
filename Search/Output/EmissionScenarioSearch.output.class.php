@@ -20,6 +20,35 @@ class EmissionScenarioSearchOutput extends Output
 
     }
 
+    private function descriptions() {
+        if (func_num_args() == 0)
+        {
+            $result = $this->getProperty();
+            $result instanceof Descriptions;
+            return $result;
+        }
+
+        $result = $this->setProperty(func_get_arg(0));
+        $result instanceof Descriptions;
+        return $result;
+
+    }
+
+    private function descriptionsOutput() {
+        if (func_num_args() == 0)
+        {
+            $result = $this->getProperty();
+            $result instanceof DescriptionsOutput;
+            return $result;
+        }
+
+        $result = $this->setProperty(func_get_arg(0));
+        $result instanceof DescriptionsOutput;
+        return $result;
+
+    }
+
+
     private function search()
     {
         $result = $this->Source();
@@ -30,25 +59,35 @@ class EmissionScenarioSearchOutput extends Output
 
     public function Title()
     {
-        return configuration::ApplicationName()."::Species Search";
+        return configuration::ApplicationName()."::Emmision Scenario ";
     }
 
 
     public function Head()
     {
-        return "";
+        $result = $this->descriptionsOutput()->Head();
+        return $result;
 
     }
 
     public function Content()
     {
 
-        $values = $this->search()->Subsets();
-        $rowTemplate = '<input type="BUTTON" class="Button" id="{#key#}" onClick="action(\'{#key#}\')" value="{#value#}"><br>';
-        
-        $result = array_util::FromTemplate($values, $rowTemplate);
-        return join("",$result);
+        $o = $this->descriptionsOutput();
+        $o->DescriptionTemplate('<a href="{Value}">{Value}</a>');
+
+        return $o->Content();
     }
+
+    public function PreProcess()
+    {
+
+        $this->descriptions($this->search()->Subsets());
+        $this->descriptionsOutput(OutputFactory::Find($this->descriptions()));
+
+
+    }
+
 
 }
 

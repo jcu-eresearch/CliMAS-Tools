@@ -67,8 +67,20 @@ root {
     top: 00px;
     left: 550px;
     z-index: 1000;
+}
+
+#PopupOKButton
+{
+    position: relative;
+    width: 30px;
+    height: 30px;
+    padding: 10px;
+    top: 40px;
+    left: 498px;
+    z-index: 1000;
 
 }
+
 
 
 

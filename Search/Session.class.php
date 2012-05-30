@@ -126,6 +126,26 @@ class Session {
         return $session_data[$key];
     }
 
+
+    /**
+     *
+     * @param type $key
+     * @param type $value
+     */
+    public static function addActionIds($actionName,$idsString)
+    {
+        if (is_null($actionName)) return null;
+        if (is_null($idsString)) return null;
+
+        self::add($actionName,$idsString);
+    }
+
+    public static function getActionIds($actionName)
+    {
+        if (is_null($actionName)) return null;
+        return self::get($actionName);
+    }
+
     /**
      *
      * @param type $key

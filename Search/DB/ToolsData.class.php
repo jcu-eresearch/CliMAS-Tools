@@ -71,15 +71,18 @@ class ToolsData extends Object {
 
     public static function EmissionScenarios()
     {
-        $result = array_util::Trim(file("/data/dmf/TDH/scenario.txt"));
-        return $result;
-
+        $d = Descriptions::fromFile("/www/eresearch/source/scenario.csv");
+        return $d;
     }
 
     public static function Times()
     {
-        $result = array_util::Trim(file("/data/dmf/TDH/year.txt"));
-        return $result;
+
+        $d = Descriptions::fromFile("/www/eresearch/source/year.txt");
+        return $d;
+
+        //$result = array_util::Trim(file("/data/dmf/TDH/year.txt"));
+        //return $result;
 
     }
 

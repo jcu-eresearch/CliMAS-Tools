@@ -15,8 +15,7 @@ class TimeAllValues extends Object implements iAction {
 
     public function Execute()
     {
-        $result = Descriptions::create(ToolsData::Times());
-
+        $result = ToolsData::Times();
         $this->Result($result);
         return $result;
     }

@@ -41,7 +41,9 @@ function icon($name)
 
     <div ID="popup" >
         <a  ID="PopupCloseLink" onclick="closePopup();"  ><img ID="PopupCloseButton" border="0" src="/eresearch/TDH-Tools/Resources/icons/Close-icon.png"></a>
-        <iframe ID="popup_content"   frameBorder="0" border="0"  ></iframe>
+        <a  ID="PopupOKLink" onclick="okPopup();"  ><img ID="PopupOKButton" border="0" src="/eresearch/TDH-Tools/Resources/icons/Ok.png"></a>
+        <iframe ID="popup_content"  frameBorder="0" border="0"  ></iframe>
+
     </div>
 
 

@@ -12,6 +12,8 @@ class DescriptionsOutput extends Output
         parent::__construct();
         $this->Name(__CLASS__);
 
+        $this->MoreInformationLinkText('<img src="/eresearch/TDH-Tools/Resources/icons/more_info.png" width="20px" height="20px">');
+
         $this->Template($this->defaultTemplate());
 
 
@@ -29,9 +31,13 @@ class DescriptionsOutput extends Output
 
         if (file_exists($fn))
             $css = "\n".'<style type="text/css">\n'.  file_get_contents($fn)."\n</style>\n";
-            
 
-        return $css;
+        $js = "";
+        $fn = file::currentScriptFolder(__FILE__)."/Descriptions.js";
+        if (file_exists($fn))
+            $js = "\n".'<script type="text/javascript">'."\n".  file_get_contents($fn)."\n</script>\n";
+
+        return $css."\n".$js."\n";
 
     }
 
@@ -75,6 +81,10 @@ class DescriptionsOutput extends Output
                 $temp = str_replace("{".$propertyName."}", $miniTemplate, $temp);
         }
 
+        $link = '<a target="_moreinfo" href="'.$desc->URI().'">'.$this->MoreInformationLinkText().'</a>';
+        $temp = str_replace("{URI}",$link , $temp);
+
+
         return $temp;
 
     }
@@ -90,14 +100,12 @@ class DescriptionsOutput extends Output
     public function defaultTemplate()
     {
 
-        
-
 $tmp = <<<TEMPLATE
-<div class="DescriptionCell">
-    <div class="DescriptionName">{Name}</div>
+<div id="{Name}" class="DescriptionCell" >
+    <span class="DescriptionLink">{URI}</span><div class="DescriptionName">{Name}</div>
     <div class="DescriptionText">{Description}</div>
+    <div id="Selector{Name}"class="DescriptionSelector" onclick="descriptionSelect('{Name}');" ></div>
     <div class="DescriptionMoreInformation">{MoreInformation}</div>
-    <div class="DescriptionLink">{URI}</div>
 </div>
 
 TEMPLATE;
@@ -143,6 +151,13 @@ TEMPLATE;
 
         return $this->setProperty($value);
     }
+
+    public function MoreInformationLinkText() {
+        if (func_num_args() == 0) return $this->getProperty();
+        $value = func_get_arg(0);
+        return $this->setProperty($value);
+    }
+
 
 }
 

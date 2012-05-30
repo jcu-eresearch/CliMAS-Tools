@@ -44,7 +44,8 @@ class ClimateModelSearchOutput extends Output
     public function Content()
     {
         $o = $this->descriptionsOutput();
-        $o->NameTemplate('<a href="{Value}">{Value}</a>');
+        $o->DescriptionTemplate('<a href="{Value}">{Value}</a>');
+
         return $o->Content();
     }
 

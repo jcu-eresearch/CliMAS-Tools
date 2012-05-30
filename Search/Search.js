@@ -81,3 +81,17 @@ function ToggleDisplay(id)
 }
 
 
+function okPopup()
+{
+    ToggleDisplay('popup');
+
+    var iframe = document.getElementById('popup_content');
+    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+    var selectedForm = innerDoc.getElementById('popupSelectedForm');
+    
+    selectedForm.submit();
+
+}
+
+

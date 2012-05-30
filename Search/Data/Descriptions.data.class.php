@@ -21,6 +21,7 @@ class Descriptions extends Data {
 
         $file = file($filename);
 
+
         $header = str_getcsv($file[0], $delim, $stringQuote);
 
         // get indexs for each column nam
@@ -34,8 +35,9 @@ class Descriptions extends Data {
 
         for ($index = 1; $index < count($file); $index++)
         {
-            $line = str_getcsv($file[$index], ",", '"');
+            if (trim($file[$index]) == "") continue;
 
+            $line = str_getcsv($file[$index], ",", '"');
             $desc = new Description();
             $desc->Name(array_util::Value($line, $indexName));
             $desc->Description(array_util::Value($line, $indexDesc));
