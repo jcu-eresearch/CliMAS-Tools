@@ -3,7 +3,6 @@ include_once 'includes.php';
 
 $variableNames = FinderFactory::Descriptions(FinderFactory::Result("SearcherNames"));
 
-
 $snapshotTemplate = <<<CT
 <INPUT class="SnapshotButton" ID="Snapshot{#key#}" onclick="Set('Snapshot','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}">
 CT;
@@ -13,13 +12,6 @@ CT;
 $restrictionsTemplate = <<<CT
 <INPUT class="RestrictionButton" ID="Restriction{#key#}" onclick="Set('Restriction','{#key#}');" TYPE=BUTTON NAME="MapVariables[]" VALUE="{#value#}" >
 CT;
-
-$subsetFormTemplate = <<<SFT
-<div id="Subset{#key#}" class="subsetter" >
-    <iframe ID="popup{#key#}" src="" style="width:100%; height: 100%;" frameBorder="0" border="0" >
-    </iframe>
-</div>
-SFT;
 
 
 ?>

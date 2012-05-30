@@ -10,7 +10,7 @@ class DescriptionsOutput extends Output
 
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->OutputName(__CLASS__);
 
         $this->MoreInformationLinkText('<img src="/eresearch/TDH-Tools/Resources/icons/more_info.png" width="20px" height="20px">');
 
@@ -101,10 +101,10 @@ class DescriptionsOutput extends Output
     {
 
 $tmp = <<<TEMPLATE
-<div id="{Name}" class="DescriptionCell" >
-    <span class="DescriptionLink">{URI}</span><div class="DescriptionName">{Name}</div>
+<div id="{DataName}" class="DescriptionCell" >
+    <span class="DescriptionLink">{URI}</span><div class="DescriptionName">{DataName}</div>
     <div class="DescriptionText">{Description}</div>
-    <div id="Selector{Name}"class="DescriptionSelector" onclick="descriptionSelect('{Name}');" ></div>
+    <div id="Selector{DataName}" class="DescriptionSelector" onclick="descriptionSelect('{DataName}');" ></div>
     <div class="DescriptionMoreInformation">{MoreInformation}</div>
 </div>
 

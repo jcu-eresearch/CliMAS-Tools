@@ -5,7 +5,7 @@
  */
 interface iData {
 
-    public function Name();
+    public function DataName();
 
     public function Type();
 
@@ -40,7 +40,7 @@ class Data extends Object implements iData{
      * @property
      * @return type
      */
-    public function Name()
+    public function DataName()
     {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));

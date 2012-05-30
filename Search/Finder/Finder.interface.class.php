@@ -16,6 +16,8 @@ interface iFinder {
 
     public function Description();
 
+    public function FinderName();
+
     
 }
 
@@ -26,6 +28,9 @@ interface iAction {
     public function Result();
 
     public function Description();
+
+    public function ActionName();
+
 
 }
 
@@ -41,7 +46,7 @@ class Finder extends Object implements iFinder  {
     public function __construct($child) {
         $this->Actions(get_class($child));
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->FinderName(__CLASS__);
 
     }
     
@@ -152,8 +157,88 @@ class Finder extends Object implements iFinder  {
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
-    
+
+    public function FinderName() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+
 }
+
+
+
+
+
+/**
+ * Base class for all Actions
+ * - supports common processes for Actions
+ * 
+ *
+ */
+class Action extends Object implements iAction  {
+
+    public function __construct() {
+        parent::__construct();
+        $this->ActionName(__CLASS__);
+
+    }
+
+    public function __destruct() {
+        parent::__destruct();
+
+    }
+
+    /**
+     * @method
+     * @throws Exception - Execption forces subclasses to define this method
+     */
+    public function Description()
+    {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+
+    /**
+     *  Find the requested action ($this-UseAction) and then run it. place result into $this->Result
+     */
+    public function Execute()
+    {
+        throw new Exception("Execute not defined for ".$this->ActionName());
+
+    }
+
+    /**
+     *
+     * @return mixed .. Result of action
+     */
+    public function Result()
+    {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+    public function ActionName()
+    {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+
+    public function FinderName()
+    {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+
+
+}
+
 
 
 

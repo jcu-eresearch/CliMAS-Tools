@@ -1,12 +1,12 @@
 <?php
 
-class SpeciesSearch extends Object implements iAction {
+class SpeciesSearch extends Action implements iAction {
 
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->ActionName(__CLASS__);
+        $this->FinderName("SpeciesFinder");
         $this->Description("Species");
-
     }
 
 
@@ -19,19 +19,6 @@ class SpeciesSearch extends Object implements iAction {
         $this->Result($this);
         return $this;
     }
-
-    public function Description() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    public function Result() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
 
     /**
      *
@@ -58,10 +45,6 @@ class SpeciesSearch extends Object implements iAction {
         return $actions;
 
     }
-
-
-
-
 
 }
 

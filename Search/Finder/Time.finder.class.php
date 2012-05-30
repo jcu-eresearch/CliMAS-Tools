@@ -8,7 +8,7 @@ class TimeFinder extends Finder  {
 
     public function __construct() {
         parent::__construct($this);
-        $this->Name("Time");
+        $this->FinderName(__CLASS__);
         $this->DefaultAction("Search");
     }
 

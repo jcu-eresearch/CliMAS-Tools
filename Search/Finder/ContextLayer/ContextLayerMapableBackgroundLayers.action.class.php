@@ -4,13 +4,12 @@
  * 
  *  
  */
-
-class ContextLayerMapableBackgroundLayers extends Object implements iAction {
+class ContextLayerMapableBackgroundLayers extends Action implements iAction {
 
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
-
+        $this->ActionName(__CLASS__);
+        $this->FinderName("ContextLayerFinder");
     }
 
 
@@ -25,33 +24,16 @@ class ContextLayerMapableBackgroundLayers extends Object implements iAction {
     public function Execute()
     {
 
-        //TODO will be get descirptiosn from clasas
-        $result = array();
-        $result['ContextLayerAustralianRiverBasins'] = "Australian River Basins";
-        $result['ContextLayerAustralianStates'] = "Australian State borders";
+        $d = new Descriptions();
 
-        $this->Result($result);
+        $d->Add( FinderFactory::Result("ContextLayerAustralianRiverBasins"));
+        $d->Add( FinderFactory::Result("ContextLayerAustralianStates"));
 
-        return $this;
+        $this->Result($d);
+
+        return $d;
     }
-
-    public function Result() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-
-    public function Description() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
 
 }
-
-
-
 ?>
 

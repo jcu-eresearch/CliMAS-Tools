@@ -5,11 +5,13 @@
  *
  * @author Adam Fakes (James Cook University)
  */
-class TimeSearchOutput extends Output
+class SpeciesSearchOutput extends Output
 {
+
+
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->OutputName(__CLASS__);
 
     }
 
@@ -18,60 +20,62 @@ class TimeSearchOutput extends Output
 
     }
 
-    private function descriptions() {
-        if (func_num_args() == 0)
-        {
-            $result = $this->getProperty();
-            $result instanceof Descriptions;
-            return $result;
-        }
-
-        $result = $this->setProperty(func_get_arg(0));
-        $result instanceof Descriptions;
-        return $result;
-
-    }
-
-    private function descriptionsOutput() {
-        if (func_num_args() == 0)
-        {
-            $result = $this->getProperty();
-            $result instanceof DescriptionsOutput;
-            return $result;
-        }
-
-        $result = $this->setProperty(func_get_arg(0));
-        $result instanceof DescriptionsOutput;
-        return $result;
-
-    }
-
-
     private function search()
     {
         $result = $this->Source();
-        $result  instanceof TimeSearch;
+        $result  instanceof SpeciesSearch;
         return  $result;
+    }
+
+
+    private function actions() {
+        if (func_num_args() == 0)
+        {
+            $result = $this->getProperty();
+            $result instanceof Actions;
+            return $result;
+        }
+
+        $result = $this->setProperty(func_get_arg(0));
+        $result instanceof Actions;
+        return $result;
+
+    }
+
+    private function actionsOutput() {
+        if (func_num_args() == 0)
+        {
+            $result = $this->getProperty();
+            $result instanceof ActionsOutput;
+            return $result;
+        }
+
+        $result = $this->setProperty(func_get_arg(0));
+        $result instanceof ActionsOutput;
+        return $result;
+
     }
 
 
 
     public function Title()
     {
-        return configuration::ApplicationName()."::Time slices";
+        return configuration::ApplicationName()."::Species Search";
     }
 
 
     public function Head()
     {
-        $result = $this->descriptionsOutput()->Head();
+        $result = $this->actionsOutput()->Head();
         return $result;
+
     }
 
     public function Content()
     {
-        $o = $this->descriptionsOutput();
-        $o->DescriptionTemplate('<a href="{Value}">{Value}</a>');
+
+        $o = $this->actionsOutput();
+        //$o->DescriptionTemplate('<a href="{Value}">{Value}</a>');
 
         return $o->Content();
 
@@ -80,8 +84,8 @@ class TimeSearchOutput extends Output
     public function PreProcess()
     {
 
-        $this->descriptions($this->search()->Subsets());
-        $this->descriptionsOutput(OutputFactory::Find($this->descriptions()));
+        $this->actions($this->search()->Subsets());
+        $this->actionsOutput(OutputFactory::Find($this->actions()));
 
 
     }

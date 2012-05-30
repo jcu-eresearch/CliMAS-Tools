@@ -5,13 +5,11 @@
  *
  * @author Adam Fakes (James Cook University)
  */
-class EmissionScenarioSearchOutput extends Output
+class TimeSearchOutput extends Output
 {
-
-
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->OutputName(__CLASS__);
 
     }
 
@@ -52,14 +50,15 @@ class EmissionScenarioSearchOutput extends Output
     private function search()
     {
         $result = $this->Source();
-        $result  instanceof EmissionScenarioSearch;
+        $result  instanceof TimeSearch;
         return  $result;
     }
 
 
+
     public function Title()
     {
-        return configuration::ApplicationName()."::Emmision Scenario ";
+        return configuration::ApplicationName()."::Time slices";
     }
 
 
@@ -67,16 +66,15 @@ class EmissionScenarioSearchOutput extends Output
     {
         $result = $this->descriptionsOutput()->Head();
         return $result;
-
     }
 
     public function Content()
     {
-
         $o = $this->descriptionsOutput();
         $o->DescriptionTemplate('<a href="{Value}">{Value}</a>');
 
         return $o->Content();
+
     }
 
     public function PreProcess()

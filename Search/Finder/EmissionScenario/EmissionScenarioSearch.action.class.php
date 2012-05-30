@@ -1,11 +1,13 @@
 <?php
 
-class EmissionScenarioSearch extends Object implements iAction {
+class EmissionScenarioSearch extends Action implements iAction {
 
     public function __construct() {
         parent::__construct();
-        $this->Name("EmissionScenario");
+        $this->ActionName(__CLASS__);
         $this->Description("Emission Scenario");
+        $this->FinderName("EmissionScenario");
+
     }
 
 
@@ -19,23 +21,9 @@ class EmissionScenarioSearch extends Object implements iAction {
         return $this;
     }
 
-    public function Description() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-
-    public function Result() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
     public function Subsets() {
         return FinderFactory::Result("EmissionScenarioAllValues");
     }
-
 
 
 }

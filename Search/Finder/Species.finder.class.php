@@ -8,7 +8,7 @@ class SpeciesFinder extends Finder  {
 
     public function __construct() {
         parent::__construct($this);
-        $this->Name("Species");
+        $this->FinderName(__CLASS__);
         $this->DefaultAction("Search");
     }
 

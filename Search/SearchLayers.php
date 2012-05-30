@@ -2,7 +2,11 @@
 $LayerListField = "LayerList";
 include_once 'includes.php';
 
-$MBL = FinderFactory::Result(configuration::MapableBackgroundLayers());
+$MBLDescs = FinderFactory::Result(configuration::MapableBackgroundLayers());
+$MBLDescs instanceof Descriptions;
+
+$MBL = $MBLDescs->asSimpleArray();
+
 
 $contextLayersTemplate = <<<CT
 <INPUT class="AvailableLayerButton" 

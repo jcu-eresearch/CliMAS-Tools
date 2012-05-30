@@ -1,11 +1,12 @@
 <?php
 
-class ClimateModelSearch extends Object implements iAction {
+class ClimateModelSearch extends Action implements iAction {
 
     public function __construct() {
         parent::__construct();
-        $this->Name("ClimateModel");
+        $this->ActionName(__CLASS__);
         $this->Description("Climate Model");
+        $this->FinderName("ClimateModelFinder");
     }
 
 
@@ -19,23 +20,10 @@ class ClimateModelSearch extends Object implements iAction {
         return $this;
     }
 
-    public function Description() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    public function Result() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
 
     public function Subsets() {
         return FinderFactory::Result("ClimateModelAllValues");
     }
-
-
 
 
 }

@@ -6,7 +6,9 @@
  */
 interface iOutput {
 
-    
+
+    public function OutputName();
+
     /** 
      * Where is the data for the content (& styles) comning from
      */
@@ -109,6 +111,12 @@ class Output extends Object implements iOutput{
     public function PreProcess()
     {
 
+    }
+
+    public function OutputName() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
     }
 
 

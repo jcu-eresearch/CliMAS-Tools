@@ -4,17 +4,15 @@
  */
 function descriptionSelect(divID)
 {
-
-    var selectColour = "red";
-    var unselectColour = "green";
-
     var selectorDivID = 'Selector' + divID;
+    
+    var isSelected = document.getElementById(selectorDivID).className.indexOf('selected');
 
-    var color = document.getElementById(selectorDivID).style.backgroundColor;
-    if (color == selectColour)
-        document.getElementById(selectorDivID).style.backgroundColor = unselectColour
+    if (isSelected == -1)
+        document.getElementById(selectorDivID).classList.add('selected');
     else
-        document.getElementById(selectorDivID).style.backgroundColor = selectColour;
+        document.getElementById(selectorDivID).classList.remove('selected');
+    
 
     select(divID);
 
@@ -26,11 +24,9 @@ function descriptionSelect(divID)
  */
 function doReselect(ids)
 {
-    var selectColour = "red";
-
     var i=0;
     for (i=0;i < ids.length;i++)
-        document.getElementById('Selector' + ids[i]).style.backgroundColor = selectColour;
+        document.getElementById('Selector' + ids[i]).className += " selected";
 
 }
 

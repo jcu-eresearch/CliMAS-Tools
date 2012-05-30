@@ -10,7 +10,7 @@ class DescriptionOutput extends Output
 
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->OutputName(__CLASS__);
 
     }
 

@@ -10,8 +10,7 @@ class VisualText extends Data {
     
     public function __construct($text = "DataVisualText",$point_size = 12,$colour = null) { 
         parent::__construct();
-        $this->Name(__CLASS__);
-
+        $this->DataName(__CLASS__);
         $this->Text($text);
         $this->PointSize($point_size);
         $this->Colour($colour);

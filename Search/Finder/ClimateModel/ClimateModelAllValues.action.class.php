@@ -1,11 +1,12 @@
 <?php
 
-class ClimateModelAllValues extends Object implements iAction {
+class ClimateModelAllValues extends Action  {
 
     public function __construct() {
         parent::__construct();
-        $this->Name("ClimateModelAllValues");
+        $this->ActionName(__CLASS__);
         $this->Description("A list of Climate Models");
+        $this->FinderName("ClimateModelFinder");
     }
 
     public function __destruct() {
@@ -18,20 +19,6 @@ class ClimateModelAllValues extends Object implements iAction {
         $this->Result($result);
         return $result;
     }
-
-    public function Description() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    public function Result() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-
 
 }
 

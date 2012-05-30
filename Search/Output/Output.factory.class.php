@@ -125,7 +125,28 @@ class OutputFactory  {
 
     private static function outputClassfilename($srcClass)
     {
-        return file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().get_class($srcClass).self::$EXTENSION;
+        $fn = file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().get_class($srcClass).self::$EXTENSION;
+
+        if (file_exists($fn)) return $fn; // it's in the Outputfolder
+
+        // otherwise see if we have it ina "Finder" folder
+        // ie we will look at the class name and see if we can find a folder that has the saem finder name
+
+        if ($srcClass instanceof Action)
+        {
+            $srcClass instanceof Action;
+            $folderName =   file::currentScriptFolder(__FILE__).
+                            configuration::osPathDelimiter().
+                            str_replace(FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER, "", $srcClass->FinderName());
+
+            if (is_dir($folderName))
+            {
+                $fn = $folderName.configuration::osPathDelimiter().get_class($srcClass).self::$EXTENSION;
+                if (file_exists($fn)) return $fn; // it's in a FINDER Outputfolder
+            }
+        }
+
+        return null;
     }
 
     private static function outputClassfilenameExists($srcClass)
@@ -146,6 +167,7 @@ class OutputFactory  {
     {
         if (self::outputClassfilenameExists($srcClass))
         {
+
             include_once self::outputClassfilename($srcClass);
             return true;
         }

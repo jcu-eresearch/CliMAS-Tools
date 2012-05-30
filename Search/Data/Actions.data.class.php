@@ -9,9 +9,11 @@ class Actions extends Data {
 
     private $actions = array();
 
+    private $actionObjects = null;
+
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->DataName(__CLASS__);
 
     }
 
@@ -22,6 +24,26 @@ class Actions extends Data {
 
     public function Actions() {
         return $this->actions;
+    }
+
+    public function ActionObjects()
+    {
+        if (!is_null($this->actionObjects)) return $this->actionObjects;
+
+        $this->actionObjects = array();
+        foreach ($this->Actions() as $actionName)
+        {            
+            $actionObject = FinderFactory::Find($actionName);
+            
+            if (!is_null($actionObject)) 
+            {
+                //$actionObject->ActionName($actionName);
+                $this->actionObjects[$actionName] = $actionObject;
+            }
+
+        }
+
+        return $this->actionObjects;
     }
 
 

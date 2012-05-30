@@ -66,7 +66,7 @@ class htmlutil {
                     $sub_result = "<td>".$row->asFormattedString()."</td>";
                 else
                 {
-                    $sub_result = str_replace("{#row_id#}",  $row->Name(), $template);
+                    $sub_result = str_replace("{#row_id#}",  $row->DataName(), $template);
 
 
                     foreach ($row->PropertyNames() as $propertyName)

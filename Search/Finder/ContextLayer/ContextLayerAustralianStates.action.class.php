@@ -4,11 +4,12 @@
  *  Describe map of State political boundaries for Australia
  *
  */
-class ContextLayerAustralianStates extends SpatialDescription implements iAction {
+class ContextLayerAustralianStates extends Action implements iAction {
 
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->ActionName(__CLASS__);
+        $this->FinderName("ContextLayerFinder");
     }
 
 
@@ -22,30 +23,20 @@ class ContextLayerAustralianStates extends SpatialDescription implements iAction
      */
     public function Execute()
     {
-        $this->Name("Australian States");
-        $this->Filename(configuration::ContextSpatialLayersFolder()."/Australia/States/AustralianStates.shp");
-        $this->SpatialDatatype(spatial_util::$SPATIAL_TYPE_LINE);
-        $this->Attribute('ISLAND_NAM');
-        $this->Description("Describe map of State Political boundaries for Australia");
+        $d = new SpatialDescription();
 
-        $this->Result($this);
+        $d->DataName("ContextLayerAustralianStates");
+        $d->Filename(configuration::ContextSpatialLayersFolder()."/Australia/States/AustralianStates.shp");
+        $d->SpatialDatatype(spatial_util::$SPATIAL_TYPE_LINE);
+        $d->Attribute('ISLAND_NAM');
+        $d->Description("Australian state boundaries");
 
-        return $this;
+        $this->Result($d);
+
+        return $d;
 
     }
 
-    public function Result() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-
-    public function Description() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
 
 
 }

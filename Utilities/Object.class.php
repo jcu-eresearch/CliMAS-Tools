@@ -2,7 +2,6 @@
 class Object  {
 
 
-
     protected $name = "AnObject";
     
     private $property = null;
@@ -114,7 +113,7 @@ class Object  {
         
         foreach ($this->property as $key => $value) 
         {
-            echo $eol.$this->Name().":: $key => $value";
+            echo $eol.$this->DataName().":: $key => $value";
         }
         
         echo $eol."------------------------------------".$eol;
@@ -168,7 +167,7 @@ class Object  {
     }
     
     
-    public function Name()
+    public function DataName()
     {
         return $this->name;
     }

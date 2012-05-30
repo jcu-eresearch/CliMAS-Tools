@@ -5,11 +5,12 @@
  * Describe map of River Basins for Australia
  *
  */
-class ContextLayerAustralianRiverBasins extends SpatialDescription implements iAction {
+class ContextLayerAustralianRiverBasins extends Action implements iAction {
 
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->ActionName(__CLASS__);
+        $this->FinderName("ContextLayerFinder");
 
     }
 
@@ -19,29 +20,19 @@ class ContextLayerAustralianRiverBasins extends SpatialDescription implements iA
 
     public function Execute()
     {
-        $this->Name("Australian River Basins");
-        $this->Filename(configuration::ContextSpatialLayersFolder()."/Australia/RiverBasins1997/rbasin_polygon.shp");
-        $this->SpatialDatatype(spatial_util::$SPATIAL_TYPE_LINE);
-        $this->Attribute('BNAME');
-        $this->Description("Describe map of River Basins for Australia");
-        $this->Result($this);
 
-        return $this;
+        $d = new SpatialDescription();
+
+        $d->DataName("ContextLayerAustralianRiverBasins");
+        $d->Filename(configuration::ContextSpatialLayersFolder()."/Australia/RiverBasins1997/rbasin_polygon.shp");
+        $d->SpatialDatatype(spatial_util::$SPATIAL_TYPE_LINE);
+        $d->Attribute('BNAME');
+        $d->Description("Australian River Basins");
+
+        $this->Result($d);
+
+        return $d;
     }
-
-    public function Result() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-
-    public function Description() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
 
 
 

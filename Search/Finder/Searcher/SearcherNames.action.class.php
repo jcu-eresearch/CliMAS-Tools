@@ -1,10 +1,12 @@
 <?php
 
-class SearcherNames extends Object implements iAction {
+class SearcherNames extends Action {
 
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->ActionName(__CLASS__);
+        $this->FinderName("SearcherFinder");
+
     }
 
 
@@ -25,18 +27,6 @@ class SearcherNames extends Object implements iAction {
         $this->Result($result);
 
         return $result;
-    }
-
-    public function Description() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    public function Result() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
     }
 
 

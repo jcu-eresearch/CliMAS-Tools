@@ -3,14 +3,12 @@ root {
     display: block;
 }
 
-
 /*<div class="DescriptionCell">
     <div class="DescriptionName">{Name}</div>
     <div class="DescriptionText">{Description}</div>
     <div class="DescriptionLink">{URI}</div>
     <div class="DescriptionMoreInformation">{MoreInformation}</div>
 </div>*/
-
 
 .DescriptionCell
 {
@@ -96,3 +94,11 @@ root {
 }
 
 
+/**
+* override this style to chnage what happens to items that are selected
+* this will be added a secondary class
+*/
+.selected
+{
+    background-color: red;
+}

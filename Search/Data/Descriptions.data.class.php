@@ -39,7 +39,7 @@ class Descriptions extends Data {
 
             $line = str_getcsv($file[$index], ",", '"');
             $desc = new Description();
-            $desc->Name(array_util::Value($line, $indexName));
+            $desc->DataName(array_util::Value($line, $indexName));
             $desc->Description(array_util::Value($line, $indexDesc));
             $desc->MoreInformation(array_util::Value($line, $indexMoreInfo));
             $desc->URI(array_util::Value($line, $indexURI));
@@ -59,7 +59,7 @@ class Descriptions extends Data {
 
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->DataName(__CLASS__);
         $this->keyIsDescriptive(false);
     }
     
@@ -81,7 +81,7 @@ class Descriptions extends Data {
         foreach ($src as $key => $value)
         {
             $d = new Description();
-            $d->Name(null);
+            $d->DataName(null);
             if ($this->keyIsDescriptive())  $d->Name($key); //only set the name to the key  if it means something
             $d->Description($value);
             $this->Add($d);
@@ -93,7 +93,7 @@ class Descriptions extends Data {
     public function Add(Description $value)
     {
         $this->descriptions[$value->ID()] = $value;
-        return $value->Name();
+        return $value->DataName();
     }
 
     public function Remove($key)
@@ -109,6 +109,19 @@ class Descriptions extends Data {
         if (!$this->has($key)) return $null_value;
         return $this->descriptions[$key];
     }
+
+    public function asSimpleArray($valuePropertyName = "Description")
+    {
+        $result = array();
+        foreach ($this->descriptions as $key => $desc)
+        {
+            $desc instanceof Description;
+            $result[$desc->DataName()] = $desc->getPropertyByName($valuePropertyName);
+        }
+        
+        return $result;
+    }
+
 
     public function has($key)
     {

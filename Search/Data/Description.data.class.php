@@ -10,7 +10,7 @@ class Description extends Data {
     
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->DataName(__CLASS__);
 
         $this->Filename();
         $this->Description();

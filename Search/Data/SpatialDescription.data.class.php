@@ -10,7 +10,11 @@ class SpatialDescription extends Description {
 
     public function __construct() { 
         parent::__construct();
-        $this->Name(__CLASS__);
+        $this->DataName(__CLASS__);
+
+        $this->SpatialDatatype();
+        $this->Attribute();
+
     }
     
     public function __destruct() {    

@@ -1,12 +1,12 @@
 <?php
 
-class SpeciesTaxanomicNames extends Object implements iAction {
+class SpeciesTaxanomicNames extends Action implements iAction {
 
     public function __construct() {
         parent::__construct();
-        $this->Name(__CLASS__);
-        $this->Description("Taxanomic Names");
-
+        $this->ActionName(__CLASS__);
+        $this->FinderName("SpeciesFinder");
+        $this->Description("By Taxanomic Name");
 
     }
 
@@ -27,19 +27,6 @@ class SpeciesTaxanomicNames extends Object implements iAction {
 
         return $result;
     }
-
-    public function Description() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    public function Result() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
 
 }
 
