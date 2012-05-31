@@ -9,6 +9,9 @@ class SpeciesSearchOutput extends Output
 {
 
 
+    private $toOutput = null;
+
+
     public function __construct() {
         parent::__construct();
         $this->OutputName(__CLASS__);
@@ -28,36 +31,6 @@ class SpeciesSearchOutput extends Output
     }
 
 
-    private function actions() {
-        if (func_num_args() == 0)
-        {
-            $result = $this->getProperty();
-            $result instanceof Actions;
-            return $result;
-        }
-
-        $result = $this->setProperty(func_get_arg(0));
-        $result instanceof Actions;
-        return $result;
-
-    }
-
-    private function actionsOutput() {
-        if (func_num_args() == 0)
-        {
-            $result = $this->getProperty();
-            $result instanceof ActionsOutput;
-            return $result;
-        }
-
-        $result = $this->setProperty(func_get_arg(0));
-        $result instanceof ActionsOutput;
-        return $result;
-
-    }
-
-
-
     public function Title()
     {
         return configuration::ApplicationName()."::Species Search";
@@ -66,27 +39,41 @@ class SpeciesSearchOutput extends Output
 
     public function Head()
     {
-        $result = $this->actionsOutput()->Head();
-        return $result;
+        $result = "";
 
+        foreach ($this->toOutput as $output)
+        {
+            $output instanceof Output;
+            $result .= $output->Head();
+        }
+        
+        $result .= htmlutil::includeLocalHeadCodeFromPathPrefix(file::currentScriptFolder(__FILE__),"Species",configuration::osPathDelimiter(),configuration::osExtensionDelimiter());
+        
+        return $result;
     }
 
     public function Content()
     {
 
-        $o = $this->actionsOutput();
-        //$o->DescriptionTemplate('<a href="{Value}">{Value}</a>');
+        $result = "";
 
-        return $o->Content();
+        foreach ($this->toOutput as $output)
+        {
+            $output instanceof Output;
+            $result .= $output->Content();
+        }
+
+        return $result;
 
     }
 
     public function PreProcess()
     {
+        $this->search()->Execute();
 
-        $this->actions($this->search()->Subsets());
-        $this->actionsOutput(OutputFactory::Find($this->actions()));
-
+        $this->toOutput = array();
+        $this->toOutput[] = OutputFactory::Find($this->search()->Subsets());
+        $this->toOutput[] = OutputFactory::Find($this->search()->Result());
 
     }
 

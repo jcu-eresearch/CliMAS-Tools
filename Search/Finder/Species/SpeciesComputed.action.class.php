@@ -15,11 +15,10 @@ class SpeciesComputed extends Action implements iAction {
 
     public function Execute()
     {
-        $result = array();;
-        $result[] = "GOULFINC";
+        $result = ToolsData::ComputedSpecies();
+
 
         $this->Result($result);
-
         return $result;
     }
 

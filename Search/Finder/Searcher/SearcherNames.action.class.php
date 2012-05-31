@@ -14,7 +14,6 @@ class SearcherNames extends Action {
         parent::__destruct();
     }
 
-
     /*
      *
      * @return array ActionClassname Search Actions for Finders

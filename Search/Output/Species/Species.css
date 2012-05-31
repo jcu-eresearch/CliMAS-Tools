@@ -3,6 +3,63 @@ root {
     display: block;
 }
 
+.ActionCell
+{
+  border-bottom: 2px solid black;
+  border-right: 2px solid black;
+  border-radius: 10px;
+  display: block;
+  width: 30%;
+  height: 30px;
+  float: left;
+  padding: 5px;
+  background-color: white;
+  margin-bottom: 10px;
+
+}
+
+.ActionName
+{
+  display: none;
+  height: 12pt;
+  font-size: 12pt;
+/*  width: 30%;*/
+  float: left;
+  overflow-wrap: hyphenate;
+  overflow: hidden;
+  font-weight: bold;
+  padding-right: 10px;
+
+
+}
+
+.ActionDescription
+{
+    display: none;
+   height: 12pt;
+   width:  70%;
+   float: left;
+   font-weight: bold;
+   font-size: 12pt;
+   overflow: hidden;
+
+}
+
+.ActionButton
+{
+    width: 100%;
+    height: 100%;
+
+}
+
+.ActionButton input
+{
+    display: block;
+    width: 100%;
+    height: 100%;
+    font-size: 16pt;
+    font-weight: bold;
+}
 /*
 <div id="{DataName}" class="DescriptionCell" >
     <span class="DescriptionLink">{URI}</span><div class="DescriptionName">{DataName}</div>
@@ -19,12 +76,14 @@ root {
   border-right: 2px solid black;
   border-radius: 10px;
   display: block;
-  width: 95%;
-  height: 100px;
+  width: 30%;
+  height: 20px;
   float: left;
   padding: 5px;
   background-color: white;
   margin-bottom: 10px;
+  overflow: hidden;
+
 
 }
 
@@ -43,13 +102,14 @@ root {
 
 .DescriptionText
 {
+    display: none;
    height: 12pt;
    width:  70%;
    float: left;
    font-weight: bold;
    font-size: 12pt;
    overflow: hidden;
-   
+
 }
 
 .DescriptionText a
@@ -60,8 +120,9 @@ root {
 
 .DescriptionSelector
 {
+
     border-radius: 10px;
-    display: block;
+    display: none;
     clear: left;
     float: left;
     height: 50px;
@@ -80,7 +141,7 @@ root {
 
 .DescriptionMoreInformation
 {
-    display: block;
+    display: none;
     float: left;
     height: 50px;
     width:  90%;
@@ -105,3 +166,4 @@ root {
 {
     background-color: red;
 }
+

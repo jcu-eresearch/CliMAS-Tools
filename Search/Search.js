@@ -27,9 +27,6 @@ function SetDataSummary(url)
 }
 
 
-
-
-
 function SetZoom(caller,zoom_value) {
     document.getElementById('ZoomFactor').value = zoom_value;   
 }
@@ -50,14 +47,6 @@ function zoomOut()
     
     innerDoc.getElementById('mapa').click();
     
-    
-    //map_form.submit();
-    
-    //var se = innerDoc.getElementById("extent");
-    
-    //alert(se.value);
-    
-    
 }
 
 function openPopup(action)
@@ -69,6 +58,7 @@ function openPopup(action)
 function closePopup()
 {
     ToggleDisplay('popup');
+    
 }
 
 function ToggleDisplay(id)
@@ -92,6 +82,12 @@ function okPopup()
     
     selectedForm.submit();
 
+}
+
+
+function run(action)
+{
+    document.getElementById('DataSummary').src = "SearchResults.php?a=" + action;
 }
 
 

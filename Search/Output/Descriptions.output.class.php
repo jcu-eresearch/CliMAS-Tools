@@ -26,19 +26,7 @@ class DescriptionsOutput extends Output
 
     public function Head()
     {
-        $css = "";
-        $fn = file::currentScriptFolder(__FILE__)."/Descriptions.css";
-
-        if (file_exists($fn))
-            $css = "\n".'<style type="text/css">\n'.  file_get_contents($fn)."\n</style>\n";
-
-        $js = "";
-        $fn = file::currentScriptFolder(__FILE__)."/Descriptions.js";
-        if (file_exists($fn))
-            $js = "\n".'<script type="text/javascript">'."\n".  file_get_contents($fn)."\n</script>\n";
-
-        return $css."\n".$js."\n";
-
+        return htmlutil::includeLocalHeadCodeFromPathPrefix(file::currentScriptFolder(__FILE__),"Descriptions",configuration::osPathDelimiter(),configuration::osExtensionDelimiter());
     }
 
     public function Title()

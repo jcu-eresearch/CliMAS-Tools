@@ -86,6 +86,46 @@ class ToolsData extends Object {
 
     }
 
+// /data/dmf/TDH/maxent_model
+
+
+    /**
+     * Lookinto the data folder and see what folders are thyere - this will be computed species available for direct delivery
+     * 
+     * @return type 
+     */
+    public static function ComputedSpecies()
+    {
+
+        $folderNames = file::folder_folders(ToolsDataConfiguration::ModelledSpeciesFolder(), configuration::osPathDelimiter(), true);
+
+        $descs = new Descriptions();
+
+        foreach ($folderNames as $key => $folder)
+        {
+            $desc = self::DescriptionForSpecies($key);
+            $desc->Filename($folder);
+            $descs->Add($desc);
+        }
+
+        return $descs;
+
+    }
+
+
+    public static function DescriptionForSpecies($speciesName)
+    {
+        $desc = new Description();
+        $desc->DataName($speciesName);
+        $desc->Description($speciesName);
+        $desc->MoreInformation("SHort data from ALA");
+        $desc->URI(ToolsDataConfiguration::ALAFullTextSearch().urlencode($desc->DataName()) );
+
+        return $desc;
+    }
+
+
+
 
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-class SpeciesAllValues extends Action implements iAction {
+class SpeciesAllValues extends Action {
 
     public function __construct() {
         parent::__construct();
@@ -17,12 +17,11 @@ class SpeciesAllValues extends Action implements iAction {
 
     public function Execute()
     {
-        $result = array();;
-        $result[] = "GOULFINC";
-        $result[] = "RAVEN";
+
+        $result = ToolsData::ComputedSpecies();
+
 
         $this->Result($result);
-
         return $result;
     }
 

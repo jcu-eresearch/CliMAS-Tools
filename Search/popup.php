@@ -34,7 +34,6 @@ if (!is_null($F))
             <INPUT TYPE="HIDDEN" ID="actionName" NAME="actionName"  VALUE="<?php echo $a; ?>">
             <INPUT TYPE="HIDDEN" ID="selectedIDs" NAME="selectedIDs" VALUE="">
         </FORM>
+        <script>selectIDs('<?php echo $ids; ?>')</script>
     </body>
-    <script>selectIDs('<?php echo $ids; ?>')</script>
-
 </html>

@@ -17,14 +17,10 @@ class SpeciesTaxanomicNames extends Action implements iAction {
 
     public function Execute()
     {
-        // TODO:: Will be array of Descriptions
+        $result = ToolsData::ComputedSpecies();
 
-        $result = array();
-        $result["Birds"][] = "GOULFINC";
-        $result["Birds"][] = "RAVEN";
 
         $this->Result($result);
-
         return $result;
     }
 

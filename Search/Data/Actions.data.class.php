@@ -46,6 +46,12 @@ class Actions extends Data {
         return $this->actionObjects;
     }
 
+    public function ActionNames()
+    {
+        return array_keys($this->Actions());
+    }
+
+
 
     public function FromArray($src)
     {

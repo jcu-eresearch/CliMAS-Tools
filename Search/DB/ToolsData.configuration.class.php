@@ -12,6 +12,11 @@ class ToolsDataConfiguration {
     public static function Password() { return "Volts100."; }
     public static function Database() {return "TDH-TOOLS";}
 
+    public static function ALAFullTextSearch() { return  "http://bie.ala.org.au/search?q=";}
+
+    public static function ALAFullTextSearchJSON() { return  "http://bie.ala.org.au/search.json?q=";}
+
+
     //
     // this is used
     /**
@@ -25,8 +30,24 @@ class ToolsDataConfiguration {
     {
         return "/data/dmf/TDH/ClimateModellingFilelist.txt";
     }
-
     
+    
+    /**
+     * look into this folder for a list of folder's
+     * - this set of folders are those that have been computed
+     * @return string 
+     */
+    public static function ModelledSpeciesFolder()
+    {
+        return "/data/dmf/TDH/maxent_model";
+    }
+
+
+
+
+
+
+
 
 }
 

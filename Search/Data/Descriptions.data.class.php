@@ -90,6 +90,13 @@ class Descriptions extends Data {
     }
 
 
+
+    public function count()
+    {
+        return count($this->descriptions);
+    }
+
+
     public function Add(Description $value)
     {
         $this->descriptions[$value->ID()] = $value;
@@ -147,6 +154,9 @@ class Descriptions extends Data {
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
+
+
+
 
 
 }

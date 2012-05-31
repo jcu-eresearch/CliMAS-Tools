@@ -1,7 +1,7 @@
 
-root { 
-    display: block;
-}
+/*
+This will be used to override the Actions ooutput for TIME and just display simple liost of values
+*/
 
 /*
 <div id="{DataName}" class="DescriptionCell" >
@@ -15,16 +15,19 @@ root {
 
 .DescriptionCell
 {
-  border-bottom: 2px solid black;
-  border-right: 2px solid black;
+/*  border-bottom: 2px solid black;
+  border-right: 2px solid black;*/
+  border-bottom: none;
+  border-right: none;
   border-radius: 10px;
   display: block;
-  width: 95%;
-  height: 100px;
-  float: left;
+  width: 20%;
+  height: 20px;
+  float: none;
   padding: 5px;
   background-color: white;
   margin-bottom: 10px;
+  overflow: hidden;
 
 }
 
@@ -32,55 +35,62 @@ root {
 {
   height: 12pt;
   font-size: 12pt;
-/*  width: 30%;*/
-  float: left;
-  overflow-wrap: hyphenate;
+  width: 30%;
   overflow: hidden;
   font-weight: bold;
-  padding-right: 10px;
-
-}
-
-.DescriptionText
-{
-   height: 12pt;
-   width:  70%;
-   float: left;
-   font-weight: bold;
-   font-size: 12pt;
-   overflow: hidden;
-   
-}
-
-.DescriptionText a
-{
-    color: darkgoldenrod;
-    text-decoration: none;
+  
 }
 
 .DescriptionSelector
 {
     border-radius: 10px;
-    display: block;
-    clear: left;
-    float: left;
-    height: 50px;
-    width:  3%;
-    padding-top: 10px;
+    height: 80%;
+    width:  40%;
     background-color: darkgreen;
-    overflow: hidden;
-    margin-right: 5px;
-    margin-left: 5px;
+    float:right;
+    position: relative;
+    top: -18px;
 }
 
 .DescriptionSelector:hover
 {
+    background-color: yellow;
+}
+
+.selected
+{
     background-color: red;
+}
+
+
+
+/**
+* Hidden
+*/
+.DescriptionText
+{
+    visibility: hidden;
+   display:none;
+   height: 12pt;
+   width:  40%;
+   font-weight: bold;
+   font-size: 12pt;
+   overflow: hidden;
+
+}
+
+.DescriptionLink
+{
+    visibility: hidden;
+    display: none;
+    overflow: hidden;
+    float: left;
 }
 
 .DescriptionMoreInformation
 {
-    display: block;
+    visibility: hidden;
+    display: none;
     float: left;
     height: 50px;
     width:  90%;
@@ -89,19 +99,10 @@ root {
     overflow: hidden;
 }
 
-.DescriptionLink
+.DescriptionText a
 {
-    display: block;
-    overflow: hidden;
-    float: left;
-}
-
-
-/**
-* override this style to chnage what happens to items that are selected
-* this will be added a secondary class
-*/
-.selected
-{
-    background-color: red;
+    visibility: hidden;
+    display:none;
+    color: darkgoldenrod;
+    text-decoration: none;
 }

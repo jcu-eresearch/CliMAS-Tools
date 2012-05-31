@@ -19,12 +19,12 @@ if (is_null($GUI)) die ("Map Server GUI failed");
 
 if ($GUI->hasInteractive()) $GUI->ZoomAndPan();
 
-
+Session::add('MAP_EXTENT', $GUI->ExtentString()); // make available to session so we know where to look later
 
 ?>
 <HTML>
 <HEAD>
-    <TITLE>Map 2</TITLE>
+    <TITLE></TITLE>
     <script type="text/javascript">
     function GetZoom() {
         document.getElementById('ZoomFactor').value = parent.document.getElementById('ZoomFactor').value;

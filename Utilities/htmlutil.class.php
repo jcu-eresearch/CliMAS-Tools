@@ -573,6 +573,51 @@ STRING;
     }
 
 
+    public static function CSS($filename)
+    {
+        if (!file_exists($filename)) return "";
+        return "\n".'<style type="text/css">'."\n". file_get_contents($filename)."\n</style>\n";
+    }
+
+    public static function javascript($filename)
+    {
+        if (!file_exists($filename)) return "";
+        return "\n".'<script type="text/javascript">'."\n".  file_get_contents($filename)."\n</script>\n";
+    }
+
+    
+    /**
+     * Include CSS and JS in same folder as calling script that hase the same basename
+     * 
+     * e.g.    $filename = /code/fred.html
+     * 
+     * would try to include  CSS from fred.css and javascript from fred.js
+     * 
+     * @param type $filename 
+     */
+    public static function includeLocalHeadCode($filename,$pathDelim = "/")
+    {
+        $path_parts = pathinfo($filename);
+
+        $simpleFilename = $path_parts['dirname'].$pathDelim. $path_parts['filename'];
+        $css = self::CSS("{$simpleFilename}.css");
+        $js = self::javascript("{$simpleFilename}.js");
+
+        return "$css\n$js\n";
+
+    }
+
+    public static function includeLocalHeadCodeFromPathPrefix($folder,$prefix,$pathDelim = "/",$osExtensionSep = ".")
+    {
+        $simpleFilename = $folder.$pathDelim.$prefix;
+
+        $css = self::CSS("{$simpleFilename}{$osExtensionSep}css");
+        $js = self::javascript("{$simpleFilename}{$osExtensionSep}js");
+
+        return "$css\n$js\n";
+
+    }
+
 
 }
 ?>

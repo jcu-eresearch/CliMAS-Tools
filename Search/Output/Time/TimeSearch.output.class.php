@@ -64,7 +64,8 @@ class TimeSearchOutput extends Output
 
     public function Head()
     {
-        $result = $this->descriptionsOutput()->Head();
+        $result  = $this->descriptionsOutput()->Head();
+        $result .= htmlutil::includeLocalHeadCodeFromPathPrefix(file::currentScriptFolder(__FILE__),"Time",configuration::osPathDelimiter(),configuration::osExtensionDelimiter());
         return $result;
     }
 

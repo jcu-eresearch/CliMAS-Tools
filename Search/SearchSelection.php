@@ -127,19 +127,10 @@ CT;
             {
 
                 switch(type) {
-                    case 'Snapshot':
-                        SetSnapshot(type,src);
-                    break;
-
-                    case 'Show':
-                        SetShow(type,src);
-                    break;
-
-                    case 'Restriction':
-                        SetRestriction(type,src);
-                    break;
+                    case 'Snapshot':  SetSnapshot(type,src); break;
+                    case 'Show': SetShow(type,src);break;
+                    case 'Restriction': SetRestriction(type,src); break;
                 }
-
 
             }
 
@@ -220,8 +211,10 @@ CT;
                 
             }
 
-
-
+            function run()
+            {
+                window.parent.run('SearcherToCompute');
+            }
 
 
         </script>
@@ -254,9 +247,8 @@ CT;
             
         </div>
 
-
         <div id="Process">
-            <INPUT  ID="RUN" TYPE=BUTTON NAME="RunProcess" VALUE="RUN"  style="width: 90%; padding: 1%;">
+            <INPUT  ID="RUN" TYPE=BUTTON NAME="RunProcess" VALUE="RUN"  onclick="run();" style="width: 90%; padding: 1%;">
         </div>
 
 

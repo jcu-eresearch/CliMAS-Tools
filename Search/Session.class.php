@@ -127,6 +127,11 @@ class Session {
     }
 
 
+    public static function SessionVariablesForApplication()
+    {
+        return self::AppSession();
+    }
+
     /**
      *
      * @param type $key
@@ -140,6 +145,12 @@ class Session {
         self::add($actionName,$idsString);
     }
 
+    /**
+     *
+     *
+     * @param string $actionName
+     * @return string SPace seperated list of id's that have been selected for this action
+     */
     public static function getActionIds($actionName)
     {
         if (is_null($actionName)) return null;
