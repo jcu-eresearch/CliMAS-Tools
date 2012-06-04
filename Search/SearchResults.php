@@ -8,11 +8,12 @@ $F = FinderFactory::Action($a);
 if (!is_null($F))
 {
     $O = OutputFactory::Find($F);
+    
     $head = $O->Head();
     $title = $O->Title();
     $content = $O->Content();
-}
 
+}
 
 ?>
 <html>

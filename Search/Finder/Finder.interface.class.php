@@ -44,7 +44,7 @@ interface iAction {
 class Finder extends Object implements iFinder  {
 
     public function __construct($child) {
-        $this->Actions(get_class($child));
+        //$this->Actions(get_class($child));
         parent::__construct();
         $this->FinderName(__CLASS__);
 
@@ -128,14 +128,14 @@ class Finder extends Object implements iFinder  {
     }
 
     
-    /**
-     *
-     * @return array  available actions for this Finder
-     */
-    public function Actions()
-    {
-        return ActionFactory::Available($this);
-    }
+//    /**
+//     *
+//     * @return array  available actions for this Finder
+//     */
+//    public function Actions()
+//    {
+//        return ActionFactory::Available($this);
+//    }
     
 
     /**

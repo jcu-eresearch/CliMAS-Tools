@@ -34,25 +34,6 @@ class ToolsData extends Object {
     }
 
 
-    private function a() {
-        if (func_num_args() == 0)
-            return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-
-    }
-
-
-    /*
-     * Set the value of this Property in constructor
-     * via $this->setPropertyByName("ReadOnlyProperty", "SomeValue")
-     *
-     */
-
-    public function ReadOnlyProperty() {
-        return $this->getProperty();
-    }
-
-
     /**
      * File list that will; give us the source of [scenario]_[gcm]_[year]
      *

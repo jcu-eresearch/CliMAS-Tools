@@ -210,6 +210,29 @@ class FinderFactory {
         return $result;
     }
 
+
+    /**
+     * Lookfor Finder or Action Class, LOad it, Instatiate it then return value from method
+     *
+     * @param string $className Finder or Action Name
+     * @param type $methodName  Method of that Finder or Action
+     * @return mixed Returned valie of method
+     */
+    public static function GetMethodResult($className,$methodName,$params = null)
+    {
+        $object = self::Find($className);
+        if (is_null($object)) return null;
+
+        if (!method_exists($object, $methodName)) return null;
+
+
+        return $object->$methodName($params);
+
+
+    }
+
+
+
 }
 
 ?>

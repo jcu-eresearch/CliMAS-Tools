@@ -1,23 +1,13 @@
 <?php
+include_once 'SpeciesMaxent.configuration.class.php';
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of RemoteCommand
- *
- * @author jc166922
- */
-
-class RemoteCommand extends Object {
-
-    //put your code here
+class SpeciesMaxentAction extends CommandAction {
 
 
     public function __construct() {
         parent::__construct();
+        $this->ActionName(__CLASS__);
+        $this->FinderName("");
     }
 
 
@@ -25,21 +15,16 @@ class RemoteCommand extends Object {
         parent::__destruct();
     }
 
-    public function ReadWriteProperty() {
-        if (func_num_args() == 0)
-            return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
 
-    }
+    public function Execute()
+    {
 
-    /*
-     * Set the value of this Property in constructor
-     * via $this->setPropertyByName("ReadOnlyProperty", "SomeValue")
-     *
-     */
+        $result = "Try to run as QSUB job SPecies Maxent ";
 
-    public function ReadOnlyProperty() {
-        return $this->getProperty();
+        $this->Result($result);
+
+        return $result;
+
     }
 
 
@@ -68,13 +53,13 @@ class RemoteCommand extends Object {
     {
 
         // $toCompute['Species'] - file per species.
-    
+
         // species file contains a row for each permutation of
         //     $toCompute['EmissionScenario']
         //     $toCompute['ClimateModel']
         //     $toCompute['Time']
 
-        foreach ($toCompute['Species'] as $speciesID => $speciesName ) 
+        foreach ($toCompute['Species'] as $speciesID => $speciesName )
         {
             $file = array();
             $file[$speciesName] = array();
@@ -161,7 +146,7 @@ echo Make script folder {$script_folder}
 if (! -e "{$script_folder}" ) then
   mkdir {$script_folder}
 endif
-  
+
 echo execute model for {$speciesName}
 
 #model the species distribution
@@ -171,8 +156,13 @@ java -mx2048m -jar {$maxent} environmentallayers={$train} samplesfile={$occur} o
 AAA;
 
 
-        return $script."\n".print_r($combinations,true)."\n";
-  
+        foreach ($combinations as $combination)
+        {
+            $script .= "\necho qsub this $combination\n";
+        }
+
+        return $script;
+
     }
 
 
@@ -198,7 +188,7 @@ AAA;
 //
 //
 
-
+    
 
 }
 

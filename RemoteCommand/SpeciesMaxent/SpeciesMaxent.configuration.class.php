@@ -1,7 +1,6 @@
 <?php
+class SpeciesMaxentConfiguration {
 
-class RemoteCommandConfiguration
-{
     public static $MAXENT = "/home/jc166922/TDH/maxent_model/maxent.jar";
     public static $TRAINCLIMATE = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
     public static $PROJECTCLIMATE = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/";

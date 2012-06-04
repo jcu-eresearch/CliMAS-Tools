@@ -4,11 +4,11 @@ class Object  {
 
     protected $name = "AnObject";
     
-    private $property = null;
+    private $property = array();
     
     public function __construct($id = null) {    
         
-        $this->property = array();
+        
         $bt = debug_backtrace(); 
         $this->name = $bt[1]['class'];
         
@@ -81,9 +81,9 @@ class Object  {
     
     public function __toString() {
         
-        $result = $this->name."::";
+        $result = $this->name."::\n<br>";
         foreach ($this->property as $key => $value) 
-            $result .= "$key => $value\n<br>";
+            $result .= "* $key => $value\n<br>";
         
         return $result;
     }

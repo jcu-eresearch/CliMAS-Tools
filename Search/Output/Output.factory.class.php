@@ -68,51 +68,80 @@ class OutputFactory  {
     }
 
 
-    private static function forObject($src)
+    private static function forObject(Object $src)
     {
         $src instanceof Object;
 
-        $outputter = self::getOutputFor($src);
+        $outputter = null;
+        $outputter instanceof Output;
 
-
+        $outputter = self::getOutputFor(get_class($src) ); // Try toi find a Actaul Outputter for this object
         if (!is_null($outputter))
         {
-            $outputter instanceof Output;
             $outputter->Source($src);
+            $outputter->PreProcess();
+            return $outputter;
         }
-        else
+
+
+        if (is_null($outputter))
         {
-            // return a Gneneric Outputtter
-            $outputter = new GenericOutput();
-            $outputter->Source($src);
-            
+            // try to get Outputter for Parent Object - kinda fail UP ??
+            $parent_class_name = get_parent_class($src);
+
+            if ($parent_class_name)
+            {
+                //echo "Lookig for output for parent $parent_class_name<br>";
+                $outputter = self::getOutputFor($parent_class_name);
+                if (!is_null($outputter))
+                {
+                    $outputter->Source($src);
+                    $outputter->PreProcess();
+                    return $outputter;
+                }
+
+            }
+                
         }
 
-        $outputter->PreProcess();
 
-        return $outputter;
-        
+        if (is_null($outputter))  // still could not find an outputter for this Object
+        {
+            $outputter = new GenericOutput(); // otherwise return a Gneneric Outputtter
+            $outputter->Source($src);
+        }
 
+
+        return null;
     }
 
 
-    private static function getOutputFor($srcClass)
+    private static function getOutputFor($srcClassname)
     {
-        // Output Classname
 
-        //echo "srcClass = $srcClass<br>";
+        $outputClassname = (util::contains($srcClassname, "Output")) ? $srcClassname : "{$srcClassname}Output";
 
-        $className = get_class($srcClass);
-
-        $outputClassname = $className;
-        if (!util::contains($outputClassname, "Output"))  $outputClassname = $outputClassname . "Output";
-
-        //echo "outputClassname = $outputClassname<br>";
-
+        // is it already in memory
         if (!class_exists($outputClassname))
-        if (!self::includeOutputClassFor($srcClass))
         {
-            echo "{$outputClassname} still does not exist<br>";
+
+            $classFilename = self::outputClassfilename($srcClassname);
+
+            if (is_null($classFilename))
+            {
+                //TODO just log this echo "<br>Could not find an output class filename named[{$classFilename}] for Class named [{$srcClassname}]"; //Todo Log this
+                return null;
+            }
+
+            include_once $classFilename;   // So the class filename  $classFilename exists so now include it
+
+            // test to see after include we do actually have the class in memory
+            if (!class_exists($outputClassname))
+            {
+                echo "<br>{$outputClassname} still does not exist<br>"; //Todo Log this
+                return null;
+            }
+
         }
 
         $outputObject = new $outputClassname();
@@ -123,65 +152,39 @@ class OutputFactory  {
     }
 
 
-    private static function outputClassfilename($srcClass)
+    /**
+     * Find filename of Class file that holds an output class for thisd ClassName
+     *
+     * @param string $classname  Name of Class to find and output for
+     * @return string|null
+     */
+    private static function outputClassfilename($classname)
     {
-        $fn = file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().get_class($srcClass).self::$EXTENSION;
+
+        // look files class files  that have .output.php in the filename
+
+        $fn = file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().$classname.self::$EXTENSION;
 
         if (file_exists($fn)) return $fn; // it's in the Outputfolder
 
         // otherwise see if we have it ina "Finder" folder
-        // ie we will look at the class name and see if we can find a folder that has the saem finder name
 
-        if ($srcClass instanceof Action)
+        $folders = file::folder_folders(file::currentScriptFolder(__FILE__),configuration::osPathDelimiter() , true);
+        
+
+        foreach ($folders as $folderPath) 
         {
-            $srcClass instanceof Action;
-            $folderName =   file::currentScriptFolder(__FILE__).
-                            configuration::osPathDelimiter().
-                            str_replace(FindersConfiguration::$CLASS_NAME_SUFFIX_FINDER, "", $srcClass->FinderName());
+            $fn = $folderPath.configuration::osPathDelimiter().$classname.self::$EXTENSION;
+            if (file_exists($fn)) 
+                return $fn; // it's in a FINDER Outputfolder
 
-            if (is_dir($folderName))
-            {
-                $fn = $folderName.configuration::osPathDelimiter().get_class($srcClass).self::$EXTENSION;
-                if (file_exists($fn)) return $fn; // it's in a FINDER Outputfolder
-            }
         }
 
         return null;
     }
 
-    private static function outputClassfilenameExists($srcClass)
-    {
-        if (!self::hasOutputClassFor($srcClass))
-        {
-            echo "Can't find Output class file for ".get_class($srcClass)." ... ".self::outputClassfilename($srcClass)."<br>";
 
-            // todo LOG ERROR - Throw new Exception("Can't find classfile for {$outputClassname} - Looking for {$outputClassFilename}");
-            return false;
-        }
-
-        return true;
-    }
-
-
-    private static function includeOutputClassFor($srcClass)
-    {
-        if (self::outputClassfilenameExists($srcClass))
-        {
-
-            include_once self::outputClassfilename($srcClass);
-            return true;
-        }
-
-        return false;
-
-    }
-
-    public static function hasOutputClassFor($srcClass)
-    {
-        return file_exists(self::outputClassfilename($srcClass));
-    }
-
-
+    
 
 
     // all of there should return a class  - will make OUtput CFLases for all of these

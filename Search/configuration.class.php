@@ -13,6 +13,8 @@ class configuration {
     public static function ApplicationName() {return "TDH-TOOLS";}
 
     public static function UtilityClasses() {return "/www/eresearch/TDH-Tools/Utilities/includes.php";}
+
+    public static function RemoteCommandClasses() {return "/www/eresearch/TDH-Tools/RemoteCommand/Command.includes.php";}
     
     public static function SourceDataFolder() {return "/www/eresearch/source";}
 
