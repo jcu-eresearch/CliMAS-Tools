@@ -26,7 +26,8 @@ class ContextLayerAustralianStates extends Action implements iAction {
         $d = new SpatialDescription();
 
         $d->DataName("ContextLayerAustralianStates");
-        $d->Filename(configuration::ContextSpatialLayersFolder()."/Australia/States/AustralianStates.shp");
+                                                                //Australia/States/AustralianStates.shp
+        $d->Filename(configuration::ContextSpatialLayersFolder()."Australia/States/AustralianStates.shp");
         $d->SpatialDatatype(spatial_util::$SPATIAL_TYPE_LINE);
         $d->Attribute('ISLAND_NAM');
         $d->Description("Australian state boundaries");

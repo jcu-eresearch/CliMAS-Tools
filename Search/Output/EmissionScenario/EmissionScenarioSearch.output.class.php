@@ -52,7 +52,7 @@ class EmissionScenarioSearchOutput extends Output
     private function search()
     {
         $result = $this->Source();
-        $result  instanceof EmissionScenarioSearch;
+        $result instanceof EmissionScenarioSearch;
         return  $result;
     }
 
@@ -65,6 +65,7 @@ class EmissionScenarioSearchOutput extends Output
 
     public function Head()
     {
+
         $result = $this->descriptionsOutput()->Head();
         return $result;
 
@@ -81,10 +82,8 @@ class EmissionScenarioSearchOutput extends Output
 
     public function PreProcess()
     {
-
         $this->descriptions($this->search()->Subsets());
         $this->descriptionsOutput(OutputFactory::Find($this->descriptions()));
-
 
     }
 

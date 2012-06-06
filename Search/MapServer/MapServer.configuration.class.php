@@ -7,13 +7,33 @@
  */
 class MapServerConfiguration {
 
-    //** This folder must be configured to be accessible by the Apache
-    public static function pathToMapfiles()   { return "/www/eresearch/MapserverMapfiles"; }
-    public static function pathToImages()     { return "/www/eresearch/MapserverImages"; }
-    public static function pathToImagesWeb()  { return     "/eresearch/MapserverImages"; } // HTML img src version
 
-    public static function pathToMapSymbols()  { return "/www/eresearch/TDH-Tools/Resources/symbols/symbols35.sym";}
-    public static function pathToMapFonts()    { return "/www/eresearch/TDH-Tools/Resources/fonts/fonts.list";}
+    public static $LOCATION_PREFIX_WEBSERVER = "/www/eresearch/TDH-Tools/";
+    public static $LOCATION_PREFIX_HPC       = "/home/jc166922/TDH-Tools/";
+
+    private static function where()
+    {
+        $hostname = trim(exec("hostname --fqdn"));
+        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return self::$LOCATION_PREFIX_WEBSERVER;
+        if (stripos( $hostname, "default.domain") !== FALSE) return self::$LOCATION_PREFIX_HPC;
+        return null;
+    }
+
+    public static function ApplicationName() { return "TDH-TOOLS"; }
+
+    public static function osPathDelimiter()      { return "/"; }
+    public static function osExtensionDelimiter() { return ".";}
+
+
+    //** This folder must be configured to be accessible by the Apache
+    public static function pathToMapfiles()   { return self::where()."tmp/MapserverMapfiles"; }
+    public static function pathToImages()     { return self::where()."tmp/MapserverImages"; }
+    public static function pathToImagesWeb()  { return    "/eresearch/TDH-Tools/tmp/MapserverImages"; } // webserver4 accessible version of path for images
+
+    public static function pathToMapSymbols()  { return self::where()."Resources/symbols/symbols35.sym";}
+    public static function pathToMapFonts()    { return self::where()."Resources/fonts/fonts.list";}
+    
+
 
     public static function mapfileExtension()  { return "map"; }
 

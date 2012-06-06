@@ -76,6 +76,8 @@ class OutputFactory  {
         $outputter instanceof Output;
 
         $outputter = self::getOutputFor(get_class($src) ); // Try toi find a Actaul Outputter for this object
+
+
         if (!is_null($outputter))
         {
             $outputter->Source($src);
@@ -165,7 +167,11 @@ class OutputFactory  {
 
         $fn = file::currentScriptFolder(__FILE__).configuration::osPathDelimiter().$classname.self::$EXTENSION;
 
-        if (file_exists($fn)) return $fn; // it's in the Outputfolder
+        if (file_exists($fn)) 
+        {
+            return $fn; // it's in the Outputfolder
+        }
+
 
         // otherwise see if we have it ina "Finder" folder
 
@@ -175,8 +181,11 @@ class OutputFactory  {
         foreach ($folders as $folderPath) 
         {
             $fn = $folderPath.configuration::osPathDelimiter().$classname.self::$EXTENSION;
-            if (file_exists($fn)) 
+            if (file_exists($fn))
+            {
                 return $fn; // it's in a FINDER Outputfolder
+            }
+                
 
         }
 

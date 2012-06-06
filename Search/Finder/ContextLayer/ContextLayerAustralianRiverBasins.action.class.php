@@ -24,7 +24,7 @@ class ContextLayerAustralianRiverBasins extends Action implements iAction {
         $d = new SpatialDescription();
 
         $d->DataName("ContextLayerAustralianRiverBasins");
-        $d->Filename(configuration::ContextSpatialLayersFolder()."/Australia/RiverBasins1997/rbasin_polygon.shp");
+        $d->Filename(configuration::ContextSpatialLayersFolder()."Australia/RiverBasins1997/rbasin_polygon.shp");
         $d->SpatialDatatype(spatial_util::$SPATIAL_TYPE_LINE);
         $d->Attribute('BNAME');
         $d->Description("Australian River Basins");

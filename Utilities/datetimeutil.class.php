@@ -1,5 +1,7 @@
 <?php
 
+
+
 class datetimeutil {
 
     /*
@@ -8,6 +10,7 @@ class datetimeutil {
     */
     public static function now()
     {
+        date_default_timezone_set("Australia/Queensland");
         $today = getdate();
         $result = sprintf("%02d", $today["hours"]).":".sprintf("%02d", $today["minutes"]).":".sprintf("%02d", $today["seconds"]);
 
@@ -16,6 +19,7 @@ class datetimeutil {
 
     public static function Today()
     {
+        date_default_timezone_set("Australia/Queensland");
         $today = getdate();
         $result = $today["year"]."-".$today["mon"]."-".$today["mday"];
         return $result;

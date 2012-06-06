@@ -5,23 +5,57 @@
  */
 include_once 'Command.includes.php';
 
-$files = file::folder_with_extension(CommandConfiguration::CommandQueueFolder(), RemoteCommandConfiguration::CommandExtension(), RemoteCommandConfiguration::osExtensionDelimiter(),true);
 
-/**
- * Loop thru command files and process 
- */
-foreach ($files as $filename => $filepath)
-{
+// check the queue 6 times in this minute
 
-    // look at files and unserialase and check there status - may have incoming queue and outgoing queue
+for ($index = 1; $index <= 20; $index++) {
+
+    /**
+    * Loop thru command files and process
+    */
+    $files = file::find_files(CommandConfiguration::CommandQueueFolder(),CommandConfiguration::CommandExtension());
+
+    foreach ($files as $filepath)
+         processSingleQueueItem($filepath);
     
-    // log time and what files
-
-    file_put_contents(CommandConfiguration::CommandQueueLog(),"HPC checking $filepath\n" , FILE_APPEND);
-
+    sleep(3);
+    echo "Process $index\n";
 }
 
+function processSingleQueueItem($filepath)
+{
 
+    echo "Process $filepath\n";
+
+    $command = CommandUtil::GetCommandFromFile($filepath);
+
+    if (!is_null($command))
+    {
+        $log  = datetimeutil::now().",checking $filepath\n";
+        $log .= "Command was NULL\n\n\n";
+        echo "{$log}";
+    }
+    else
+    {
+
+        print_r($command);
+
+        exit();
+
+        // just update with "has touched HPC " then wite dame file anme b ack with new object
+        $command->Result($command->Result()."\n".datetimeutil::now()." Touch by HPC");
+
+        $log  = datetimeutil::now().",checking $filepath\n";
+        $log .= "Command Result now ".$command->Result()."\n\n\n";
+
+        file_put_contents(CommandConfiguration::CommandQueueLog(),$log , FILE_APPEND);
+
+
+        CommandUtil::PutCommandToFile($command);
+
+    }
+
+}
 
 
 ?>

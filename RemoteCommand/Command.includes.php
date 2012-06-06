@@ -1,13 +1,16 @@
 <?php
 include_once 'Command.configuration.class.php';
+
 include_once CommandConfiguration::UtilityClasses();
 include_once CommandConfiguration::FinderClasses();
 
-include_once 'Command.class.php';
-include_once 'CommandAction.class.php';
-include_once 'CommandUtil.class.php';
-include_once 'Command.factory.class.php';
+$cf = CommandConfiguration::CommandClassesFolder();
 
-include_once 'SpeciesMaxent/SpeciesMaxent.includes.php';
+include_once $cf.'Command.class.php';
+include_once $cf.'CommandAction.class.php';
+include_once $cf.'CommandUtil.class.php';
+include_once $cf.'Command.factory.class.php';
+
+include_once $cf.'SpeciesMaxent/SpeciesMaxent.includes.php';
 
 ?>

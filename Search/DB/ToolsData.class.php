@@ -46,25 +46,20 @@ class ToolsData extends Object {
     {
         // /www/eresearch/source/gcm.csv
 
-        $d = Descriptions::fromFile("/www/eresearch/source/gcm.csv");
+        $d = Descriptions::fromFile(configuration::Descriptions_ClimateModels());
         return $d;
     }
 
     public static function EmissionScenarios()
     {
-        $d = Descriptions::fromFile("/www/eresearch/source/scenario.csv");
+        $d = Descriptions::fromFile(configuration::Descriptions_EmissionScenarios());
         return $d;
     }
 
     public static function Times()
     {
-
-        $d = Descriptions::fromFile("/www/eresearch/source/year.txt");
+        $d = Descriptions::fromFile(configuration::Descriptions_Years());
         return $d;
-
-        //$result = array_util::Trim(file("/data/dmf/TDH/year.txt"));
-        //return $result;
-
     }
 
 // /data/dmf/TDH/maxent_model

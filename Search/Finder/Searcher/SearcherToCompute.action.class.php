@@ -42,13 +42,14 @@ class SearcherToCompute extends Action {
         $speciesCommand->ClimateModelIDs(Session::get("ClimateModelSearch", ""));
         $speciesCommand->TimeIDs(Session::get("TimeSearch", ""));
 
-        CommandFactory::Queue($speciesCommand);
+
+        $speciesCommand->Result("Starting here");
         
-        $updated = CommandFactory::QueueStatus($speciesCommand);
+        CommandFactory::Queue($speciesCommand);
 
-        $result = $updated->Result();
+        $updated = CommandFactory::QueueStatus($speciesCommand,FALSE);
 
-
+        $result = "Original ID {$speciesCommand->ID()}\n<br>updated ID = ".$updated->ID()."<br>\n Updated Result =  {$updated->Result()}<br>\n";
 
         $this->Result($result);
         return $result;

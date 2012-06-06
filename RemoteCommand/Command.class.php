@@ -52,6 +52,8 @@ class Command extends Object implements iCommand,  Serializable {
             $this->setPropertyByName($name, $value);
         }
 
+
+
     }
 
 

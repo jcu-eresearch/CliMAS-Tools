@@ -4,7 +4,7 @@ Session::clear();
 
 function icon($name)
 {
-    echo '<img title="'.$name.'" style="height: 30px; width: 30px;" border="0" src="'.configuration::IconSource().configuration::osPathDelimiter().$name.'" />';
+    echo '<img title="'.$name.'" style="height: 30px; width: 30px;" border="0" src="'.configuration::IconSource().$name.'" />';
 }
 
 ?>

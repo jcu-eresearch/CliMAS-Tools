@@ -2,7 +2,7 @@
 session_start();
 include_once 'configuration.class.php';
 include_once configuration::UtilityClasses();
-include_once configuration::RemoteCommandClasses();
+include_once configuration::CommandClasses();
 
 
 // include interfaces & factories here

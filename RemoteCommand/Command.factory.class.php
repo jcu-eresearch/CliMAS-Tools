@@ -29,7 +29,7 @@ class CommandFactory {
     {
         $lookupID = ($command instanceof Command) ? $command->ID() : $command;
 
-        $updatedCommand = CommandUtil::GetCommandFromFile($lookupID); // Updated Command - something else will write and u[dated version of this object
+        $updatedCommand = CommandUtil::GetCommandFromID($lookupID,false); // Updated Command - something else will write and u[dated version of this object
 
         $updatedCommand->Result("<br>Status from File ???????");
 

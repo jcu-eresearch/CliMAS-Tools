@@ -5,27 +5,55 @@
  * TODO:: Needs to com from Config file that is specific to HOstname
  *
  */
+
 class configuration {
 
-    public static function osPathDelimiter()  { return "/"; }
-    public static function osExtensionDelimiter() { return "."; }
+    public static $LOCATION_PREFIX_WEBSERVER = "/www/eresearch/TDH-Tools/";
+    public static $LOCATION_PREFIX_HPC       = "/home/jc166922/TDH-Tools/";
 
-    public static function ApplicationName() {return "TDH-TOOLS";}
+    private static function where()
+    {
+        $hostname = trim(exec("hostname --fqdn"));
+        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return self::$LOCATION_PREFIX_WEBSERVER;
+        if (stripos( $hostname, "default.domain") !== FALSE) return self::$LOCATION_PREFIX_HPC;
+        return null;
+    }
 
-    public static function UtilityClasses() {return "/www/eresearch/TDH-Tools/Utilities/includes.php";}
+    public static function ApplicationName() { return "TDH-TOOLS"; }
 
-    public static function RemoteCommandClasses() {return "/www/eresearch/TDH-Tools/RemoteCommand/Command.includes.php";}
-    
-    public static function SourceDataFolder() {return "/www/eresearch/source";}
+    public static function osPathDelimiter()      { return "/"; }
+    public static function osExtensionDelimiter() { return ".";}
 
-    public static function ContextSpatialLayersFolder() {return "/www/eresearch/source/context";}
+    public static function UtilityClasses() { return self::where()."Utilities/includes.php";}
+    public static function CommandClasses() { return self::where()."RemoteCommand/Command.includes.php";}
+    public static function CommandClassesFolder() { return self::where()."RemoteCommand".self::osPathDelimiter() ;}
+
+    public static function CommandQueueFolder() { return self::where()."queue".self::osPathDelimiter();}
+    public static function CommandQueueLog()    { return self::where()."queue".self::osExtensionDelimiter()."log";}
+    public static function CommandExtension()   { return self::osExtensionDelimiter()."command";}
+
+    public static function SourceDataFolder() {return self::where()."source".self::osPathDelimiter();}
+
+                                                        ///www/eresearch/TDH-Tools/source/context/
+
+    public static function ContextSpatialLayersFolder() {return self::SourceDataFolder()."context".self::osPathDelimiter();}
+
+
 
     public static function DefaultMapableActionClassname() { return "ContextLayerAustralianStates"; }
 
     public static function MapableBackgroundLayers() { return "ContextLayerMapableBackgroundLayers"; }
 
-    public static function IconSource() { return "/eresearch/TDH-Tools/Resources/icons"; }
+
+    // web paath to ICONS
+    public static function IconSource() { return "/eresearch/TDH-Tools/Resources/icons/"; }
+
+    public static function Descriptions_ClimateModels()     {return self::SourceDataFolder()."descriptions/gcm.csv";}
+    public static function Descriptions_EmissionScenarios() {return self::SourceDataFolder()."descriptions/scenario.csv";}
+    public static function Descriptions_Years()             {return self::SourceDataFolder()."descriptions/year.txt";}
 
 }
 
 ?>
+
+

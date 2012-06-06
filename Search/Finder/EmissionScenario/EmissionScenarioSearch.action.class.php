@@ -22,7 +22,12 @@ class EmissionScenarioSearch extends Action implements iAction {
     }
 
     public function Subsets() {
-        return FinderFactory::Result("EmissionScenarioAllValues");
+
+        $result = FinderFactory::Result("EmissionScenarioAllValues");
+
+        
+
+        return $result;
     }
 
 
