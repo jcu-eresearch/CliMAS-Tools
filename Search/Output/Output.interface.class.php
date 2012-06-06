@@ -40,6 +40,18 @@ interface iOutput {
     public function PreProcess();
 
 
+    /**
+     * Number of seconds to refresh page
+     *  
+     */
+    public function Refresh();
+
+    /**
+     * Used to hold IDs that can be passed to and from the action and
+     *
+     * @return type
+     */
+    public function IDs();
 
 }
 
@@ -66,15 +78,17 @@ class Output extends Object implements iOutput{
         if (func_num_args() == 0)
         {
             $result = $this->getProperty();
-            $result instanceof Output;
+            $result instanceof Object;
             return $result;
         }
 
         $result = $this->setProperty(func_get_arg(0));
-        $result instanceof Output;
+        $result instanceof  Object;
 
         return $result;
     }
+
+
 
 
     /**
@@ -120,10 +134,27 @@ class Output extends Object implements iOutput{
         return $this->setProperty(func_get_arg(0));
     }
 
+    public function Refresh() 
+    {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+    /**
+     * Used to hold IDs that can be passed to and from the action and
+     *
+     * @return type
+     */
+    public function IDs()
+    {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
 
     
 }
-
-
 
 ?>

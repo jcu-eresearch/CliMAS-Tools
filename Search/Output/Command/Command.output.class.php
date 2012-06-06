@@ -21,7 +21,7 @@ class CommandOutput extends Output
 
     public function Title()
     {
-        return configuration::ApplicationName()." :: SOme Command";
+        return configuration::ApplicationName()." :: Command";
     }
 
 
@@ -42,7 +42,7 @@ class CommandOutput extends Output
     public function Content()
     {
 
-        return "COMAND Object ???::: ".$this->command()->Description();
+        return "CC:".$this->command()->Description();
 
     }
 

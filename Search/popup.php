@@ -3,6 +3,7 @@ include_once 'includes.php';
 $head = "";
 $title = "POPUP";
 $content = "NO CONTENT";
+$refresh = "";
 
 $a = array_util::Value($_GET, "a", null);
 if (is_null($a)) $a = array_util::Value($_POST, "actionName", null);
@@ -14,9 +15,12 @@ $F = FinderFactory::Action($a);
 if (!is_null($F))
 {
     $O = OutputFactory::Find($F);
+    $refresh = htmlutil::RefreshPageMetatag($O->Refresh(), $_SERVER['PHP_SELF']);
+
     $head = $O->Head();
     $title = $O->Title();
     $content = $O->Content();
+
 }
 ?>
 <html>
@@ -24,7 +28,7 @@ if (!is_null($F))
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="popup.css" />
         <script src="popup.js" type="text/javascript"></script>
-        <?php echo $head; ?>
+        <?php echo $head."\n".$refresh."\n"; ?>
         <title><?php echo $title;?></title>
     </head>
     <body >

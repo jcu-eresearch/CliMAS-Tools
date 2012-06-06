@@ -619,8 +619,27 @@ STRING;
     }
 
 
+    /**
+     * Return HTML string for Page refresh via metatag  only if time is not null
+     * - if timne is null return "" empty string
+     *
+     * @param type $time
+     * @param type $url
+     *
+     * @return string [HTML tag for refresh] || [empty string]
+     */
+    public static function RefreshPageMetatag($time = null, $url = null )
+    {
+        if (is_null($time)) return "";
+        if (is_null($url)) return "";
+        if ($time < 0 ) return "";
+
+
+        $result = '<meta http-equiv="refresh" content="'.$time.'; url='.$url.' " />';
+
+        return $result;
+
+    }
+
 }
 ?>
-
-
-

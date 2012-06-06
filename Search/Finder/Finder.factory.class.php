@@ -127,6 +127,10 @@ class FinderFactory {
     {
 
         if (is_null($actionClassname)) return null; // todo: log
+        
+        $actionClassname = trim($actionClassname);
+        if ($actionClassname == "") return null; // todo: log
+
 
         $actionFilename = array_util::Value(self::Actions(), $actionClassname, null);
 

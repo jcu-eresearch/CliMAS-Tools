@@ -23,8 +23,6 @@ class array_util
 
         $avg = $sum / $count;
 
-        // echo "$column_name .. sum = $sum  count = $count  avg = $avg\n";
-
         return $avg;
     }
 
@@ -544,22 +542,10 @@ class array_util
     */
     public static function ValueThatContain($array, $findIn)
     {
-
-        $result = array();
         foreach ($array as $key => $value)
-        {
-
-            // echo "searching for $value to match $findIn\n ";
-
-            if ( (util::contains($findIn, $value )) )
-            {
-               return $value;
-            }
-
-        }
+            if ( (util::contains($findIn, $value )) ) return $value;
 
         return FALSE;
-
     }
 
     /*

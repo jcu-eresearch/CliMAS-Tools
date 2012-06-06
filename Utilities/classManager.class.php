@@ -153,7 +153,7 @@ class classManager {
     */
     public function classInclude($className)
     {
-        // echo "load class -- $className";
+        
         $files = file::file_tree_filtered($this->ApplicationRootFolder,"/",$filter);
 
         // load classes found
@@ -167,7 +167,7 @@ class classManager {
 
             $fileClassName = substr($thisFile, $classPos, $classNameLen);
 
-            // echo " class name in Load $value is $fileClassName <br>\n";
+            
             // include_once $value;
         }
 

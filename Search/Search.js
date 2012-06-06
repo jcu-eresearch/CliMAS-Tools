@@ -87,7 +87,7 @@ function okPopup()
 
 function run(action)
 {
-    document.getElementById('DataSummary').src = "SearchResults.php?a=" + action;
+    document.getElementById('DataSummary').src = "QueueCommand.php?a=" + action;
 }
 
 

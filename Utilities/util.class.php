@@ -51,7 +51,6 @@ class util {
         }
 
         echo "\n";
-        return $argv[0];
     }
 
     /**
@@ -429,14 +428,8 @@ SQL;
     public static function deleteTable($tableName)
     {
         $result = mysql_query("delete from $tableName");
+        return $result;
     }
-
-
-
-    //public static function debug($str)
-    //{
-    //    echo config::$newline.$str.config::$newline;
-    //}
 
 
     /**
@@ -727,8 +720,6 @@ SQL;
             $result = str_replace($from, "", $result);
             $result = str_replace($to, "", $result);
         }
-
-        //echo "midstr::    $from ($posFrom) $to ($posTo)  .....  ($result) \n";
         
         return $result;
 

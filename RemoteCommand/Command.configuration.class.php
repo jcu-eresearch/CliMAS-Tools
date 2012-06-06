@@ -17,10 +17,31 @@ class CommandConfiguration
     private static function where()
     {
         $hostname = trim(exec("hostname --fqdn"));
-        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return self::$LOCATION_PREFIX_WEBSERVER;
-        if (stripos( $hostname, "default.domain") !== FALSE) return self::$LOCATION_PREFIX_HPC;
+        if (stripos( $hostname, "afakes-eresearch") !== FALSE) 
+        {
+            return self::$LOCATION_PREFIX_WEBSERVER;
+        }
+
+        if (stripos( $hostname, "default.domain") !== FALSE) 
+        {
+            return self::$LOCATION_PREFIX_HPC;
+        }
+
         return null;
     }
+
+    private static function queueWhere()
+    {
+
+        switch (self::where())
+        {
+            case self::$LOCATION_PREFIX_HPC:       return "/home/jc166922/TDH-Tools/"; break;
+            case self::$LOCATION_PREFIX_WEBSERVER: return "/data/dmf/TDH-Tools/"; break;
+        }
+
+        return null;
+    }
+
 
     public static function ApplicationName() { return "TDH-TOOLS"; }
 
@@ -32,8 +53,12 @@ class CommandConfiguration
     public static function CommandClasses() { return self::where()."RemoteCommand/Command.includes.php";}
     public static function CommandClassesFolder() { return self::where()."RemoteCommand".self::osPathDelimiter() ;}
 
-    public static function CommandQueueFolder() { return self::where()."queue";}
-    public static function CommandQueueLog()    { return self::where()."queue.log";}
+
+    // This is where the web server can place a file and it will end up on the HPC
+    // at the moment we have a mounted NFS drive
+    
+    public static function CommandQueueFolder() { return self::queueWhere()."queue";}
+    public static function CommandQueueLog()    { return self::queueWhere()."queue.log";}
     public static function CommandExtension()   { return self::osExtensionDelimiter()."command";}
 
 }

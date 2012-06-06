@@ -31,7 +31,8 @@ interface iAction {
 
     public function ActionName();
 
-
+    public function AttachedCommand();
+    
 }
 
 
@@ -164,6 +165,12 @@ class Finder extends Object implements iFinder  {
         return $this->setProperty(func_get_arg(0));
     }
 
+    public function IDs() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
 
 }
 
@@ -235,11 +242,26 @@ class Action extends Object implements iAction  {
         return $this->setProperty(func_get_arg(0));
     }
 
+    public function AttachedCommand()
+    {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
 
+    /**
+     * Space delimited IDs for this action
+     *
+     * @return string Of Space delimited IDs for this action
+     */
+    public function IDs()
+    {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
 
 }
-
-
 
 
 ?>

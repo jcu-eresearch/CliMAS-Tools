@@ -36,7 +36,7 @@ function icon($name)
         <iframe ID="GUI" src="SearchMap.php" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" ></iframe>
         <br style="clear:both;">
 
-        <iframe ID="DataSummary" src="SearchResults.php" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" ></iframe>
+        <iframe ID="DataSummary" src="" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" ></iframe>
     </div>
 
     <div ID="popup" >

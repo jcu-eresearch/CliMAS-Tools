@@ -48,8 +48,6 @@ class CommandUtil
     {
         if (!file_exists($filename)) return null; // todo Log this
 
-        echo "get command from {$filename}\n";
-
         $file = file_get_contents($filename);
         $object = unserialize($file);
 

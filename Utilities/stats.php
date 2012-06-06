@@ -216,7 +216,7 @@ class stats
             $bucket_start_value = $buckets[$bucket_index];
             $bucket_end_value   = $buckets[$bucket_index + 1];
 
-            // echo "searching  $bucket_start_value < $value_to_place > $bucket_end_value \n";
+            // "searching  $bucket_start_value < $value_to_place > $bucket_end_value \n";
             // for each bucket find array_values that are great than this buck but less than bucketID + $bucket_size
             if ($value_to_place >= $bucket_start_value && $value_to_place < $bucket_end_value)
                 return $bucket_start_value;

@@ -30,11 +30,11 @@ class CommandFactory {
         $lookupID = ($command instanceof Command) ? $command->ID() : $command;
 
         $updatedCommand = CommandUtil::GetCommandFromID($lookupID,false); // Updated Command - something else will write and u[dated version of this object
-
-        $updatedCommand->Result("<br>Status from File ???????");
-
+        if (is_null($updatedCommand)) return "Failed to Read Command back from Server";  // todo: log
+        
         $updatedCommand instanceof Command;
-        return $updatedCommand; // 
+        return $updatedCommand->Status(); //
+
     }
 
 

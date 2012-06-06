@@ -15,6 +15,10 @@ interface iCommand
 
     public function LocationName();
 
+    public function Status();
+
+    public function LastUpdated();
+
 
 }
 
@@ -23,6 +27,8 @@ class Command extends Object implements iCommand,  Serializable {
 
     public function __construct() {
         parent::__construct();
+        $this->ExecutionFlag(self::$EXECUTION_FLAG_READY);
+
     }
 
     public function __destruct() {
@@ -51,7 +57,6 @@ class Command extends Object implements iCommand,  Serializable {
         {
             $this->setPropertyByName($name, $value);
         }
-
 
 
     }
@@ -125,6 +130,65 @@ class Command extends Object implements iCommand,  Serializable {
         return $this->setProperty(func_get_arg(0));
     }
 
+    public function Status() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+    /**
+     * Date and Time Command was Last Updated
+     * @return string Updated Date & Time
+     */
+    public function LastUpdated() 
+    {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+
+    /**
+     * READY    -- Needs to be started - ie find action execute  Change ExecutionFlag to RUNNING
+     * RUNNING  -- Go and check QSUB status / status of action via its mechanisim - WIll Set to COMPLETE if it's all done
+     * TIMEOUT  -- Maybe ?   it's taken to long ?
+     * COMPLETE -- Has completed - results to be returned
+     *
+     * @return string Execution phase
+     */
+    public function ExecutionFlag()
+    {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+
+
+
+     /**
+      * READY    -- Needs to be started - ie find action execute  Change ExecutionFlag to RUNNING
+      */
+     public static $EXECUTION_FLAG_READY = "EXECUTION_FLAG_READY";
+
+     /**
+      * RUNNING  -- Go and check QSUB status / status of action via its mechanisim - WIll Set to FINALISE if it's all done
+      */
+     public static $EXECUTION_FLAG_RUNNING = "EXECUTION_FLAG_RUNNING";
+
+     /**
+      * TIMEOUT  -- Maybe ?   it's taken to long ?
+      */
+     public static $EXECUTION_FLAG_TIMEOUT = "EXECUTION_FLAG_TIMEOUT";
+
+     /**
+      *  FINALISE -- Has finished - but not yet complete
+      */
+     public static $EXECUTION_FLAG_FINALISE = "EXECUTION_FLAG_FINALISE";
+
+
+     /**
+      * COMPLETE -- Has completed - results to be returned
+      */
+     public static $EXECUTION_FLAG_COMPLETE = "EXECUTION_FLAG_COMPLETE";
 
 
 

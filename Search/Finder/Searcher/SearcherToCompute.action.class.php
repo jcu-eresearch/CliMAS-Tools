@@ -7,8 +7,6 @@ class SearcherToCompute extends Action {
         $this->ActionName(__CLASS__);
         $this->FinderName("SearcherFinder");
 
-
-
     }
 
     public function __destruct() {
@@ -21,38 +19,46 @@ class SearcherToCompute extends Action {
      */
     public function Execute()
     {
-        // look into session and find what Species, Scenario, TIme and MOdles are selected
 
+        // here we may run off and check to see if we already have the data here.
+        // currently we are creating a command but this might be an action if we already have the data
+
+        $haveData = false;
+
+        if($haveData)
+        {
+
+        }
+        else
+        {
+            // this should just create a command to be executed, and don't woirry abaout getting status back.'
+            $result = $this->getCommand();
+            CommandFactory::Queue($result);
+        }
+
+
+        $this->Result($result);
+        return $result;
+    }
+
+    private function getCommand()
+    {
         /*
          * [ActionsToBeMapped] => Array ( [ContextLayerAustralianStates] => ContextLayerAustralianStates [ContextLayerAustralianRiverBasins] => ContextLayerAustralianRiverBasins )
          * [MAP_EXTENT] => 124.05662341892 -22.264512887509 137.84288405521 -13.654570387491
-         * [SpeciesAllValues] => GOULFINC CASSOWARY
-         * [SpeciesComputed]
-         * [SpeciesTaxanomicNames]
-         * [EmissionScenarioSearch] => RCP45 RCP3PD RCP6
-         * [TimeSearch] => 2015 2035
-         * [ClimateModelSearch] => ccsr-miroc32med
-         * [SpeciesSearch] => )
          */
-
 
         $speciesCommand = new SpeciesMaxentCommand();
         $speciesCommand->SpeciesIDs(FinderFactory::GetMethodResult("SpeciesFinder","SelectedSpeciesIDs"));
         $speciesCommand->EmissionScenarioIDs(Session::get("EmissionScenarioSearch", ""));
         $speciesCommand->ClimateModelIDs(Session::get("ClimateModelSearch", ""));
         $speciesCommand->TimeIDs(Session::get("TimeSearch", ""));
+        $speciesCommand->ActionName(__CLASS__);
 
+        $speciesCommand->Result("");
 
-        $speciesCommand->Result("Starting here");
+        return $speciesCommand;
         
-        CommandFactory::Queue($speciesCommand);
-
-        $updated = CommandFactory::QueueStatus($speciesCommand,FALSE);
-
-        $result = "Original ID {$speciesCommand->ID()}\n<br>updated ID = ".$updated->ID()."<br>\n Updated Result =  {$updated->Result()}<br>\n";
-
-        $this->Result($result);
-        return $result;
     }
 
 }

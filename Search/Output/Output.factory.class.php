@@ -20,6 +20,8 @@ class OutputFactory  {
      */
     public static function Find($src)
     {
+        if (is_null($src)) return null;
+
 
         if ($src instanceof Object) return self::forObject($src);
 
@@ -70,12 +72,19 @@ class OutputFactory  {
 
     private static function forObject(Object $src)
     {
+
+
         $src instanceof Object;
 
         $outputter = null;
         $outputter instanceof Output;
 
+        
+
         $outputter = self::getOutputFor(get_class($src) ); // Try toi find a Actaul Outputter for this object
+
+        if ($src instanceof Action) $src instanceof Action;
+
 
 
         if (!is_null($outputter))
@@ -85,6 +94,7 @@ class OutputFactory  {
             return $outputter;
         }
 
+        
 
         if (is_null($outputter))
         {
@@ -93,12 +103,14 @@ class OutputFactory  {
 
             if ($parent_class_name)
             {
-                //echo "Lookig for output for parent $parent_class_name<br>";
+
                 $outputter = self::getOutputFor($parent_class_name);
                 if (!is_null($outputter))
                 {
                     $outputter->Source($src);
                     $outputter->PreProcess();
+
+
                     return $outputter;
                 }
 
@@ -110,6 +122,7 @@ class OutputFactory  {
         if (is_null($outputter))  // still could not find an outputter for this Object
         {
             $outputter = new GenericOutput(); // otherwise return a Gneneric Outputtter
+            $outputter->IDs($src->IDs()); // pass any IDs from object to output object
             $outputter->Source($src);
         }
 
@@ -131,7 +144,7 @@ class OutputFactory  {
 
             if (is_null($classFilename))
             {
-                //TODO just log this echo "<br>Could not find an output class filename named[{$classFilename}] for Class named [{$srcClassname}]"; //Todo Log this
+                //TODO just log this "<br>Could not find an output class filename named[{$classFilename}] for Class named [{$srcClassname}]"; //Todo Log this
                 return null;
             }
 

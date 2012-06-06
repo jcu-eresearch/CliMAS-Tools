@@ -7,7 +7,6 @@ class SpeciesMaxentCommand extends Command {
     public function __construct() {
         parent::__construct();
         $this->ActionName("SpeciesMaxentAction");
-        $this->LocationName(CommandConfiguration::$LOCATION_HPC);
         $this->Description("Run the Species Maxent Compututations on HPC");
 
     }

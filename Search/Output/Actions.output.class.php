@@ -42,8 +42,6 @@ class ActionsOutput extends Output
         foreach ($actions->ActionObjects() as $action)
         {
             $action instanceof iAction;
-            //echo "{$action->Description()}";
-
             $tmp .= $this->formattedAction($action);
         }
 
