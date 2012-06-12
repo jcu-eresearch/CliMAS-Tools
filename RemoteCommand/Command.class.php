@@ -5,19 +5,17 @@ interface iCommand
 
     public function CommandName();
 
-    public function Description();
-
-    public function ActionName();
-
     public function Parameters();
-
-    public function Result();
 
     public function LocationName();
 
     public function Status();
 
     public function LastUpdated();
+
+    public function ExecutionFlag();
+
+    public function QueueID();
 
 
 }
@@ -84,12 +82,6 @@ class Command extends Object implements iCommand,  Serializable {
         return $this->setProperty(func_get_arg(0));
     }
 
-
-    public function Description() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
 
 
     /**
@@ -161,6 +153,18 @@ class Command extends Object implements iCommand,  Serializable {
         return $this->setProperty(func_get_arg(0));
     }
 
+    /**
+     * Holds the ID from QSUB
+     * - gets written to the command at the start of execution - 
+     *  allows us to find the QSTAT details
+     *
+     * @return string QSUB ID
+     */
+    public function QueueID()
+    {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
 
 
 
@@ -178,6 +182,13 @@ class Command extends Object implements iCommand,  Serializable {
       * TIMEOUT  -- Maybe ?   it's taken to long ?
       */
      public static $EXECUTION_FLAG_TIMEOUT = "EXECUTION_FLAG_TIMEOUT";
+
+
+     /**
+      *  QUEUE_DONE -- Job has completed as far as the QSTAT is concered
+      */
+     public static $EXECUTION_FLAG_QUEUE_DONE = "EXECUTION_FLAG_QUEUE_DONE";
+
 
      /**
       *  FINALISE -- Has finished - but not yet complete

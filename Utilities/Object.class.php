@@ -81,9 +81,9 @@ class Object  {
     
     public function __toString() {
         
-        $result = $this->name."::\n<br>";
+        $result = $this->name."::\n";
         foreach ($this->property as $key => $value) 
-            $result .= "* $key => $value\n<br>";
+            $result .= "* $key => $value\n";
         
         return $result;
     }
@@ -123,6 +123,8 @@ class Object  {
         
         
     }
+
+
 
     /**
      * $format should contain a string with
@@ -180,49 +182,49 @@ class Object  {
     
     
 
-    /**
-     * Overloads
-     * ()            = return Tags array
-     * ($key)        = return Value of this Tag
-     * ($key,$value) = Add new Tag ($key) and set it's value ot ($value)
-     * ($array)      = Foreach the array and add tags as per  $array's key/**values
-     *
-     */
-    public function Tags()
-    {
-
-        if (func_num_args() == 0) return $this->getProperty(); //** return all tags
-
-        if (func_num_args() == 1 && !is_array(func_get_arg(0)))
-        {
-            //** single
-            $tag_array = $this->getProperty();
-            if (!array_key_exists(func_get_arg(0), $tag_array)) return null;  //** if the key does not exist then return null
-            return $tag_array[func_get_arg(0)];
-        }
-
-        //** they sent an array as the first parameter - so assum they want to add this array as tags
-        if (func_num_args() == 1 && is_array(func_get_arg(0)))
-        {
-            $tag_array = $this->getProperty();
-            foreach (func_get_arg(0) as $key => $value)
-            {
-                $tag_array[$key] = $value;
-                $this->setProperty($tag_array);
-            }
-        }
-
-
-        //** two parameters - so add new tag with Key and Value
-        if (func_num_args() >= 2)
-        {
-            $tag_array = $this->getProperty();
-            $tag_array[func_get_arg(0)] = func_get_arg(1);
-            $this->setProperty($tag_array);
-        }
-
-        
-    }
+//    /**
+//     * Overloads
+//     * ()            = return Tags array
+//     * ($key)        = return Value of this Tag
+//     * ($key,$value) = Add new Tag ($key) and set it's value ot ($value)
+//     * ($array)      = Foreach the array and add tags as per  $array's key/**values
+//     *
+//     */
+//    public function Tags()
+//    {
+//
+//        if (func_num_args() == 0) return $this->getProperty(); //** return all tags
+//
+//        if (func_num_args() == 1 && !is_array(func_get_arg(0)))
+//        {
+//            //** single
+//            $tag_array = $this->getProperty();
+//            if (!array_key_exists(func_get_arg(0), $tag_array)) return null;  //** if the key does not exist then return null
+//            return $tag_array[func_get_arg(0)];
+//        }
+//
+//        //** they sent an array as the first parameter - so assum they want to add this array as tags
+//        if (func_num_args() == 1 && is_array(func_get_arg(0)))
+//        {
+//            $tag_array = $this->getProperty();
+//            foreach (func_get_arg(0) as $key => $value)
+//            {
+//                $tag_array[$key] = $value;
+//                $this->setProperty($tag_array);
+//            }
+//        }
+//
+//
+//        //** two parameters - so add new tag with Key and Value
+//        if (func_num_args() >= 2)
+//        {
+//            $tag_array = $this->getProperty();
+//            $tag_array[func_get_arg(0)] = func_get_arg(1);
+//            $this->setProperty($tag_array);
+//        }
+//
+//
+//    }
 
     
 

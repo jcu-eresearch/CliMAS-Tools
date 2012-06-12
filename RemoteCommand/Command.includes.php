@@ -12,5 +12,6 @@ include_once $cf.'CommandUtil.class.php';
 include_once $cf.'Command.factory.class.php';
 
 include_once $cf.'SpeciesMaxent/SpeciesMaxent.includes.php';
+include_once $cf.'PackageDatafiles/PackageDatafiles.includes.php';
 
 ?>

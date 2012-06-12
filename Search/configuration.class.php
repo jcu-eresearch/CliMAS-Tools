@@ -19,6 +19,30 @@ class configuration {
         return null;
     }
 
+    /**
+     * Path to Downloads folder accessable from the web
+     * @return string|null Filepath
+     */
+    public static function WebDownloadFolder()
+    {
+        $hostname = trim(exec("hostname --fqdn"));
+        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/outputs/";
+        if (stripos( $hostname, "default.domain")   !== FALSE) return "/outputs/";
+        return null;
+    }
+
+    /**
+     * Filesystem buddy to WebDownloadFolder
+     * @return string|null  Filepath
+     */
+    public static function FilesDownloadFolder()
+    {
+        $hostname = trim(exec("hostname --fqdn"));
+        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/outputs/";
+        if (stripos( $hostname, "default.domain")   !== FALSE) return "/home/jc166922/TDH-Tools/outputs/";
+        return null;
+    }
+
     public static function ApplicationName() { return "TDH-TOOLS"; }
 
     public static function osPathDelimiter()      { return "/"; }

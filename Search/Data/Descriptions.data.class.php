@@ -117,6 +117,12 @@ class Descriptions extends Data {
         return $this->descriptions[$key];
     }
 
+    /**
+     * array ( array[$key] => $valuePropertyName  )
+     *
+     * @param string $valuePropertyName Name of Property filed to place as value
+     * @return array
+     */
     public function asSimpleArray($valuePropertyName = "Description")
     {
         $result = array();

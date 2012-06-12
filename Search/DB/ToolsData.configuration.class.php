@@ -39,12 +39,20 @@ class ToolsDataConfiguration {
      */
     public static function ModelledSpeciesFolder()
     {
-        return "/data/dmf/TDH/maxent_model";
+        return "/data/dmf/TDH-Tools/source/species";
     }
 
-
-
-
+    /**
+     * Chnage this to the folder that will actaully hold the data accessible on the HPC
+     *
+     * most likley /home/jc165798/Climate/CIAS/Australia/5km/bioclim_asc/
+     *
+     * @return string
+     */
+    public static function BioclimSourceFolder()
+    {
+        return "/www/eresearch/TDH-Tools/source/bc/";
+    }
 
 
 

@@ -6,18 +6,14 @@ class CommandFactory {
      *
      * @param Command $command
      */
-    public static function Queue(Command $command)
-    {   
-        $filename = CommandUtil::PutCommandToFile($command);
-
-        $command->Tags("fn",$filename);
-
-        $command->Result("Queued to file ".$filename);
+    public static function Queue(iCommand $command)
+    {
+        CommandUtil::PutCommandToFile($command);
     }
 
 
     /**
-     * Used by Webserver to get Current values of Object while it's out of Webserver control
+     * Used by Webserver  to get Current values of Object while it's out of Webserver control
      * - other system will serialize staes and certain times and reseralize the object
      * 
      * @param Command/String $command
@@ -38,58 +34,46 @@ class CommandFactory {
     }
 
 
-
-
-    public static function Find($commandName)
+    public static function QueueUpdateExecutionFlag(iCommand $command, $flag)
     {
 
+        $lookupID = ($command instanceof iCommand) ? $command->ID() : $command;
 
-        
-    }
+        echo "Find command   lookupID = {$lookupID}\n";
 
+        $updatedCommand = CommandUtil::GetCommandFromID($lookupID,false); // Updated Command - something else will write and u[dated version of this object
 
+        if (is_null($updatedCommand)) return "Failed to Read Command back from Server";  // todo: log
 
-    public static function Execute(Command $command)
-    {
-        
-        // look up and retive list of commands to be executed
-        
-        // unserialize objects (a Command)
-        
-        // find Action for this command
-        
-        // instantite action Object
-        
-        // set source of action to the command
-        
-        // execute Action
-        
-        
-        // take Result from Action back to commnand
-        
-        // serialize command
-        
-        // send command back to caller  (Web server) - 
-        
-        
-        $command->Result("Executed");
-        
+        $updatedCommand instanceof iCommand;
+
+        $updatedCommand->ExecutionFlag($flag);
+
+        CommandUtil::PutCommandToFile($updatedCommand);
+
+        return $updatedCommand->Status();
+
     }
 
 
 
 
-    private static function GetAction(Command $cmd)
+    public static function CommandFromQueue($command)
     {
-        $action = FinderFactory::Find($cmd->ActionName());
-        $action instanceof Action;
-        return $action;
+        $lookupID = ($command instanceof Command) ? $command->ID() : $command;
+
+        $updatedCommand = CommandUtil::GetCommandFromID($lookupID,false); // Updated Command - something else will write and u[dated version of this object
+        if (is_null($updatedCommand)) return null;  // todo: log
+
+        if (!method_exists($updatedCommand, "ExecutionFlag"))
+        {
+            return null;
+        }
+
+        $updatedCommand instanceof Command;
+        return $updatedCommand; //
+
     }
-
-
-
-
-
 
 }
 

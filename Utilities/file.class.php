@@ -35,7 +35,16 @@ class file {
     public static function reallyDelete($Filename)
     {
         if (self::reallyExists($Filename) == FALSE) return TRUE; // it did not exists therefor delete is TRUE
-        return unlink($Filename);
+
+        try {
+                if (file_exists($Filename)) unlink($Filename);
+            } catch (Exception $exc) {
+                if (file_exists($Filename))
+                    throw new Exception("Can't delete file {$Filename}");
+
+            }
+        
+        return !file_exists($Filename);
     }
 
     public static function Delete($Filename)
@@ -379,7 +388,7 @@ class file {
     {
         $result = array();
 
-        $cmd = "find $path | grep -i '{$filter}'";
+        $cmd = "find '$path' | grep -i '{$filter}'";
         exec($cmd, $result);
         return $result;
     }

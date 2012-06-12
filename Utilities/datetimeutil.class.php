@@ -21,7 +21,14 @@ class datetimeutil {
     {
         date_default_timezone_set("Australia/Queensland");
         $today = getdate();
-        $result = $today["year"]."-".$today["mon"]."-".$today["mday"];
+        $result = sprintf("%04d", $today["year"])."-".sprintf("%02d", $today["mon"])."-".sprintf("%02d", $today["mday"]);
+        return $result;
+    }
+
+
+    public static function NowDateTime()
+    {
+        $result = self::Today()." ".self::now();
         return $result;
     }
 
