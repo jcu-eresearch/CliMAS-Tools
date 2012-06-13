@@ -142,7 +142,7 @@ function downloadRequestConfirmation($requestedScenario,$requestedModel,$request
 
         // even just push to new URL
 
-        echo "<br><a href=\"$self\">Update page</a><br>";
+        echo "<br><a href=\"$self?requestID={$pdc->ID()}\">Update page</a><br>Use this link to come back later and check progress<br>";
 
     }
 

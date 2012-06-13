@@ -37,7 +37,7 @@ class file {
         if (self::reallyExists($Filename) == FALSE) return TRUE; // it did not exists therefor delete is TRUE
 
         try {
-                if (file_exists($Filename)) unlink($Filename);
+                if (file_exists($Filename)) @unlink($Filename);
             } catch (Exception $exc) {
                 if (file_exists($Filename))
                     throw new Exception("Can't delete file {$Filename}");

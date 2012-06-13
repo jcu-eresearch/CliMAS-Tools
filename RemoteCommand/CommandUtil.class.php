@@ -51,9 +51,26 @@ class CommandUtil
             $prev_command_filename = self::CommandFilenamePrevious($lookupID);
             if (file_exists($prev_command_filename))
             {
-                $object = unserialize(file_get_contents($prev_command_filename));
-                $object instanceof iCommand;
-                return $object;  // We have a previous command so lets use it instead - this will save on race condictions
+
+                $unserData = null;
+
+                try {
+                        $unserData = @file_get_contents($prev_command_filename);
+                    } catch (Exception $exc) {
+                        $unserData = null;
+                    }
+
+                try {
+                        if (!is_null($unserData))
+                        {
+                            $object = unserialize($unserData);
+                            $object instanceof iCommand;
+                            return $object;  // We have a previous command so lets use it instead - this will save on race condictions
+                        }
+                    } catch (Exception $exc) {
+                        $unserData = null;
+                    }
+
             }
 
         }
@@ -95,7 +112,7 @@ class CommandUtil
         
         // make previous version if we can 
         if (file_exists($fn))
-            file::copy($fn, self::CommandFilenamePrevious($command->ID()), true);
+            @file::copy($fn, self::CommandFilenamePrevious($command->ID()), true);
         else
         
 
