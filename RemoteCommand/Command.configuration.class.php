@@ -36,7 +36,7 @@ class CommandConfiguration
 
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/queue/";
-        if (stripos( $hostname, "default.domain") !== FALSE) return "/home/ctbccr/spatialecology_interchange/app/queue/";
+        if (stripos( $hostname, "default.domain") !== FALSE) return "/home/ctbccr/spatialecology_interchange/queue/";
         if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/home/ctbccr/bioclimdata/data/interchange/queue/";
 
         return null;
