@@ -1,12 +1,13 @@
 <?php
 include_once 'includes.php';
 
+
 $haveRequest = null;
 $requestID = null;
 
 $newRequest = array_util::Value($_GET, "new", "false");
 
-if ($newRequest == "true") 
+if ($newRequest == "true")
 {
     Session::add("requestID", null);
 }
@@ -171,7 +172,7 @@ function requestStatus($requestID)
             if ($cmd instanceof PackageDatafilesCommand)
             {
                 $cmd instanceof PackageDatafilesCommand;
-                
+
                 $toDownload = configuration::WebDownloadFolder().$cmd->PackageFilename();
 
                 echo "<br><a href=\"{$toDownload}\">Download</a><br>"; //
@@ -198,7 +199,7 @@ function requestStatus($requestID)
 
         }
 
-        
+
     }
 
 
@@ -216,7 +217,7 @@ function requestStatus($requestID)
         <table>
         <?php
 
-            if (!is_null($requestID)) 
+            if (!is_null($requestID))
                 requestStatus($requestID);
             else
             {
@@ -225,7 +226,7 @@ function requestStatus($requestID)
                 else
                     selectionTable();
             }
-                
+
         ?>
         </table>
     </body>
