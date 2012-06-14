@@ -40,7 +40,7 @@ function selectionTable()
     $f[] = "URI";
 
 
-    $self = "http://".$_SERVER['REMOTE_ADDR'].$_SERVER['PHP_SELF'];
+    $self = "http://".$_SERVER['SERVER_ADDR'].$_SERVER['PHP_SELF'];
 
     $result = "";
 
