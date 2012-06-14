@@ -11,7 +11,7 @@ class PackageDatafilesConfiguration {
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "";  // #NA
         if (stripos( $hostname, "default.domain")   !== FALSE) return          "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_asc";
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/home_hpc/jc165798/Climate/CIAS/Australia/5km/bioclim_asc";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/home/ctbccr/bioclimdata/data/source/bioclim_asc";
 
         return null;
     }

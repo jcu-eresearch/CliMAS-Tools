@@ -125,12 +125,32 @@ class Descriptions extends Data {
      */
     public function asSimpleArray($valuePropertyName = "Description")
     {
-        $result = array();
-        foreach ($this->descriptions as $key => $desc)
+
+        if (!is_array($valuePropertyName))
         {
-            $desc instanceof Description;
-            $result[$desc->DataName()] = $desc->getPropertyByName($valuePropertyName);
+            $result = array();
+            foreach ($this->descriptions as $key => $desc)
+            {
+                $desc instanceof Description;
+                $result[$desc->DataName()] = $desc->getPropertyByName($valuePropertyName);
+            }
         }
+        else
+        {
+            $result = array();
+            foreach ($this->descriptions as $key => $desc)
+            {
+                $desc instanceof Description;
+
+                foreach ($valuePropertyName as $PropertyName)
+                    $result[$desc->DataName()][$PropertyName] = $desc->getPropertyByName($PropertyName);
+
+
+            }
+
+        }
+
+
         
         return $result;
     }

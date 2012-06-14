@@ -37,7 +37,7 @@ class CommandConfiguration
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/queue/";
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/queue/";
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/data/dmf/TDH-Tools/queue/";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/home/ctbccr/bioclimdata/data/interchange/queue/";
 
         return null;
 
@@ -48,7 +48,7 @@ class CommandConfiguration
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/queue.log";
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/queue.log";
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/data/dmf/TDH-Tools/queue.log";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/home/ctbccr/bioclimdata/data/queue.log";
 
         return null;
 
@@ -61,7 +61,7 @@ class CommandConfiguration
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/scripts/";
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/scripts/";
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/data/dmf/TDH-Tools/scripts/";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/home/ctbccr/bioclimdata/data/interchange/scripts/";
 
         return null;
 
@@ -74,7 +74,7 @@ class CommandConfiguration
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/outputs/";
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/outputs/";
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/data/dmf/TDH-Tools/outputs/";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/home/ctbccr/bioclimdata/data/interchange/output/";
 
         return null;
 

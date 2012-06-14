@@ -31,63 +31,88 @@ function selectionTable()
 
     Session::add("requestID", null); // clear this requestID - so we are not rerequesting something
 
-
-    $modelsDesc = ToolsData::ClimateModels();
+    $modelDesc = ToolsData::ClimateModels();
     $scenarioDesc = ToolsData::EmissionScenarios();
     $timeDesc = ToolsData::Times();
 
+    $f = array();
+    $f[] = "Description";
+    $f[] = "URI";
 
-    $self = $_SERVER['PHP_SELF'];
+
+    $self = "http://".$_SERVER['REMOTE_ADDR'].$_SERVER['PHP_SELF'];
+
+    $result = "";
+
+    $result .= "<h1>Spatial Ecology Climate Change Data</h1>";
+
+    $r1 = array();
+    foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo)
+       $r1[$scenarioKey] = "{$self}?scenario=$scenarioKey&model=all&time=all";
+
+    $sscap = "<tr><td colspan=\"".count($r1)."\">Modelling data for one Emission Scenario (~ 245 megabytes)</td></tr>";
+    $sst = "<div class=\"SingleScenario\"><a href=\"{#value#}\">{#key#}<br></a></div>";
+
+    $result .= htmlutil::TableRowTemplate($r1,$sst,true,$sscap,"SingleScenariosTable");
+
+
+    $r2 = array();
+    foreach ($modelDesc->asSimpleArray($f) as $modelKey => $modelInfo)
+       $r2[$modelKey] = "{$self}?scenario=all&model={$modelKey}&time=all";
+
+    $sscap = "<tr><td colspan=\"".count($r2)."\">Modelling data for one Climate model and all scenarios (~ XXX megabytes)</td></tr>";
+    $sst = "<div class=\"SingleModel\"><a href=\"{#value#}\">{#key#}<br></a></div>";
+
+    $result .= htmlutil::TableRowTemplate($r2,$sst,false,"","SingleModelTable",$sscap);
+
 
     $rowcount = 0;
     $colcount = 0;
 
-    echo "<h1>Data Download - Step 1</h1>";
-    echo "<h2>select the datset you would like</h2>";
 
-
+    $result .= "<table>";
     // loop thru the various data sets and create a display
-    foreach ($modelsDesc->asSimpleArray() as $modelKey => $modelDescription)
+    foreach ($modelDesc->asSimpleArray() as $modelKey => $modelDescription)
     {
-        echo "<tr>";
-        echo "<td><a href=\"{$self}?scenario=all&model={$modelKey}&time=all\">$modelKey</a></td>";
+        $result .= "<tr>";
+        $result .= "<td><a href=\"{$self}?scenario=all&model={$modelKey}&time=all\">$modelKey</a></td>";
 
         $colcount = 0;
 
         foreach ($scenarioDesc->asSimpleArray() as $scenarioKey => $scenarioDescription)
         {
 
-            echo "<td>";
-            echo "<table>";
+            $result .= "<td>";
+            $result .= "<table>";
 
-            if ($rowcount == 0)
-            {
-                echo "<tr><td><a href=\"{$self}?scenario=$scenarioKey&model=all&time=all\">$scenarioKey</a></td></tr>";
-            }
-
-            echo "<tr><td><a href=\"{$self}?scenario={$scenarioKey}&model={$modelKey}&time=all\">$scenarioKey</a></td></tr>";
+            $result .= "<tr><td><a href=\"{$self}?scenario={$scenarioKey}&model={$modelKey}&time=all\">$scenarioKey</a></td></tr>";
 
             foreach ($timeDesc->asSimpleArray() as $timeKey => $timeDescDescription)
             {
 
-                echo "<tr>";
-                echo "<td><a href=\"{$self}?scenario={$scenarioKey}&model={$modelKey}&time={$timeKey}\">$timeKey</a></td>";
-                echo "</tr>";
+                $result .= "<tr>";
+                $result .= "<td><a href=\"{$self}?scenario={$scenarioKey}&model={$modelKey}&time={$timeKey}\">$timeKey</a></td>";
+                $result .= "</tr>";
 
                 $colcount++;
 
             }
 
-            echo "</table>";
-            echo "</td>";
+            $result .= "</table>";
+            $result .= "</td>";
 
         }
-        echo "</tr>";
+        $result .= "</tr>";
 
         $rowcount++;
 
-
     }
+
+    $result .= OutputFactory::Find($modelDesc->asSimpleArray($f));
+
+    $result = "<div class=\"FileSelection\">".$result."</div>";
+
+    return $result;
 
 }
 
@@ -207,27 +232,119 @@ function requestStatus($requestID)
 }
 ?>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script type="text/javascript">
-        </script>
-        <title>Data Download</title>
-    </head>
-    <body>
-        <table>
-        <?php
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript">
+</script>
+<title>Data Download</title>
+<link rel="stylesheet" type="text/css" href="Output/Descriptions.css" />
+<style type="text/css">
 
-            if (!is_null($requestID))
-                requestStatus($requestID);
-            else
-            {
-                if ($haveRequest)
-                    downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime,$requestID);
-                else
-                    selectionTable();
-            }
+    .FileSelection
+    {
 
-        ?>
-        </table>
-    </body>
+
+    }
+
+    .SingleScenariosTable
+    {
+         border-collapse: collapse;
+         border: 1ps solid red;
+    }
+
+    .SingleScenario
+    {
+      width: 100px;
+      height: 16pt;
+      padding: 5px;
+      border-radius: 5px;
+      background-color: lightgray;
+      border-right: 2px solid gray;
+      border-bottom: 2px solid gray;
+
+    }
+    .SingleScenario:hover
+    {
+        background-color: red;
+        
+    }
+
+    .SingleScenario a
+    {
+        display: block;
+        text-decoration: none;
+        color:black;
+        text-align: center;
+        font-size: 14pt;
+        font-weight: bold;
+    }
+
+    .SingleScenario a:hover
+    {
+      text-decoration: none;
+        color:white;
+    }
+
+
+
+    .SingleModelTable
+    {
+         border-collapse: collapse;
+         border: 1ps solid red;
+    }
+
+    .SingleModel
+    {
+      width: 100px;
+      height: 12pt;
+      padding: 5px;
+      border-radius: 5px;
+      background-color: lightgray;
+      border-right: 2px solid gray;
+      border-bottom: 2px solid gray;
+
+    }
+    .SingleModel:hover
+    {
+        background-color: red;
+
+    }
+
+    .SingleModel a
+    {
+        display: block;
+        text-decoration: none;
+        color:black;
+        text-align: center;
+        font-size: 10pt;
+        font-weight: bold;
+    }
+
+    .SingleModel a:hover
+    {
+      text-decoration: none;
+        color:white;
+    }
+
+
+</style>
+</head>
+<body>
+<table>
+<?php
+
+    if (!is_null($requestID))
+        requestStatus($requestID);
+    else
+    {
+        if ($haveRequest)
+            downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime,$requestID);
+        else
+
+            echo selectionTable();
+    }
+
+?>
+</table>
+</body>
 </html>

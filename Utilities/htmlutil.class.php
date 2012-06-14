@@ -17,16 +17,22 @@ class htmlutil {
 
         if (!is_array($data)) return str_replace ("\n", '<br/>', $data)."<br>";
 
-        $result = '<table border="0" >';
+        $result = "\n".'<table border="0" >';
+
         foreach ($data as $key => $value)
         {
-            $result .= "<tr>";
-            if ($showValue) $result .= "<td>$key</td>";
-            $result .= "<td>$value</td>";
-            $result .= "</tr>"."\n";
+            $result .= "\n"."<tr>";
+            if ($showValue) $result .= "\n"."<td class=\"rowheader\">$key</td>";
+
+            if (substr($value,0,4) == "http")
+                $result .= "\n".'<td class="rowvalue"><a href="'.$value.'">'.$value.'</a></td>';
+            else
+                $result .= "\n"."<td class=\"rowvalue\">$value</td>";
+            
+            $result .= "\n"."</tr>"."\n";
         }
 
-        $result .= "</table>"."\n";
+        $result .= "\n"."</table>"."\n";
 
         return $result;
     }
@@ -35,7 +41,7 @@ class htmlutil {
     /**
      *
      */
-    public static function TableRowTemplate($data, $template = null)
+    public static function TableRowTemplate($data, $template = null,$horizontal = false,$pre_first_row = "",$class = "",$caption = "")
     {
 
         if (count($data) == 0) return "NO DATA<br>";
@@ -47,13 +53,31 @@ class htmlutil {
         if (!is_null($template) && $template == "") $template = null;
 
 
-        $result = '<table border="1" >';
+        $caption_class = "";
+        if ($class != "") $caption_class = ' class="'.$class.' caption" ';
+        $result = "<div ".$caption_class." >{$caption}</div><br>";
+
+
+        if ($class != "") $class = ' class="'.$class.'" ';
+        $result .= '<table '.$class.' >';
+
+        if ($horizontal) 
+        {
+            $result .= $pre_first_row;
+            $result .= "<tr>";
+        }
+
+
         foreach ($data as $row_id => $row)
         {
 
             $handled = false;
+            if (!$horizontal) 
+            {
+                $result .= $pre_first_row;
+                $result .= "<tr>";
+            }
 
-            $result .= "<tr>";
 
             if (!$handled && Object::isObject($row))
             {
@@ -120,8 +144,12 @@ class htmlutil {
 
             $result .= $sub_result;
 
-            $result .= "</tr>"."\n";
+            if (!$horizontal) $result .= "</tr>"."\n";
+
+            
         }
+
+        if ($horizontal) $result .= "</tr>"."\n";
 
         $result .= "</table>"."\n";
 

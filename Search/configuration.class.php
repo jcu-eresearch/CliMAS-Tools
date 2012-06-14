@@ -51,7 +51,7 @@ class configuration {
         if (stripos( $hostname, "default.domain")   !== FALSE) return "/outputs/";
 
         // web accessabkle version for below
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/outputs/";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/download/";
 
         return null;
     }
@@ -67,7 +67,7 @@ class configuration {
         if (stripos( $hostname, "default.domain")   !== FALSE) return "/home/jc166922/TDH-Tools/outputs/";
         
         // make this availabe to the web server and
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/home_hpc/ctbccr/TDH/bioclimedata/outputs/";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/home/ctbccr/bioclimdata/data/interchange/output/";
 
         return null;
     }
@@ -114,7 +114,7 @@ class configuration {
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/www/eresearch/TDH-Tools/source/";
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/source/";
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/var/www/html/bioclimdata/source/";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/var/www/html/bioclimdata/Resources/source/";
 
         return null;
     }
