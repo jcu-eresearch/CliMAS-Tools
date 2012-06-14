@@ -5,19 +5,40 @@
  * TODO:: Needs to com from Config file that is specific to HOstname
  *
  */
-
 class configuration {
 
-    public static $LOCATION_PREFIX_WEBSERVER = "/www/eresearch/TDH-Tools/";
-    public static $LOCATION_PREFIX_HPC       = "/home/jc166922/TDH-Tools/";
+    //spatialecology.jcu.edu.au
+    // /var/www/html/bioclimdata
+
+
+    public static function ApplicationName() { return "TDH-TOOLS"; }
+
 
     private static function where()
     {
         $hostname = trim(exec("hostname --fqdn"));
-        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return self::$LOCATION_PREFIX_WEBSERVER;
-        if (stripos( $hostname, "default.domain") !== FALSE) return self::$LOCATION_PREFIX_HPC;
+        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/www/eresearch/TDH-Tools/";
+        if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/var/www/html/bioclimdata";
+
         return null;
     }
+
+
+    public static function UtilityClasses() {
+        return self::where() . "Utilities/includes.php";
+    }
+
+    public static function CommandClasses() {
+        return self::where() . "RemoteCommand/Command.includes.php";
+    }
+
+    public static function CommandClassesFolder() {
+        return self::where() . "RemoteCommand" . self::osPathDelimiter();
+    }
+
+
+
 
     /**
      * Path to Downloads folder accessable from the web
@@ -28,11 +49,15 @@ class configuration {
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/outputs/";
         if (stripos( $hostname, "default.domain")   !== FALSE) return "/outputs/";
+
+        // web accessabkle version for below
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/outputs/";
+
         return null;
     }
 
     /**
-     * Filesystem buddy to WebDownloadFolder
+     * Filesystem  buddy to WebDownloadFolder
      * @return string|null  Filepath
      */
     public static function FilesDownloadFolder()
@@ -40,41 +65,70 @@ class configuration {
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/outputs/";
         if (stripos( $hostname, "default.domain")   !== FALSE) return "/home/jc166922/TDH-Tools/outputs/";
+        
+        // make this availabe to the web server and
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/home_hpc/ctbccr/TDH/bioclimedata/outputs/";
+
         return null;
     }
 
-    public static function ApplicationName() { return "TDH-TOOLS"; }
+
+    public static function ResourcesFolder()
+    {
+
+        $hostname = trim(exec("hostname --fqdn"));
+        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/www/eresearch/TDH-Tools/Resources/";
+        if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/Resources/";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/var/www/html/bioclimdata/Resources/";
+
+        return null;
+
+    }
+
+    public static function Descriptions_ClimateModels() {
+        return self::ResourcesFolder() . "descriptions/gcm.csv";
+    }
+
+    public static function Descriptions_EmissionScenarios() {
+        return self::ResourcesFolder() . "descriptions/scenario.csv";
+    }
+
+    public static function Descriptions_Years() {
+        return self::ResourcesFolder() . "descriptions/year.txt";
+    }
+
+    // web paath to ICONS
+    public static function IconSource() {
+
+        $hostname = trim(exec("hostname --fqdn"));
+        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/eresearch/TDH-Tools/Resources/icons/";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/bioclimdata/Resources/icons";
+
+        return "";
+
+    }
+
+
+    public static function SourceDataFolder() {
+
+        $hostname = trim(exec("hostname --fqdn"));
+        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/www/eresearch/TDH-Tools/source/";
+        if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/source/";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/var/www/html/bioclimdata/source/";
+
+        return null;
+    }
+
+    public static function ContextSpatialLayersFolder()
+    {
+        return self::SourceDataFolder() . "context" . self::osPathDelimiter();
+    }
+
+    public static function DefaultMapableActionClassname() { return "ContextLayerAustralianStates"; }
+    public static function MapableBackgroundLayers() { return "ContextLayerMapableBackgroundLayers"; }
 
     public static function osPathDelimiter()      { return "/"; }
     public static function osExtensionDelimiter() { return ".";}
-
-    public static function UtilityClasses() { return self::where()."Utilities/includes.php";}
-    public static function CommandClasses() { return self::where()."RemoteCommand/Command.includes.php";}
-    public static function CommandClassesFolder() { return self::where()."RemoteCommand".self::osPathDelimiter() ;}
-
-    public static function CommandQueueFolder() { return self::where()."queue".self::osPathDelimiter();}
-    public static function CommandQueueLog()    { return self::where()."queue".self::osExtensionDelimiter()."log";}
-    public static function CommandExtension()   { return self::osExtensionDelimiter()."command";}
-
-    public static function SourceDataFolder() {return self::where()."source".self::osPathDelimiter();}
-
-                                                        ///www/eresearch/TDH-Tools/source/context/
-
-    public static function ContextSpatialLayersFolder() {return self::SourceDataFolder()."context".self::osPathDelimiter();}
-
-
-
-    public static function DefaultMapableActionClassname() { return "ContextLayerAustralianStates"; }
-
-    public static function MapableBackgroundLayers() { return "ContextLayerMapableBackgroundLayers"; }
-
-
-    // web paath to ICONS
-    public static function IconSource() { return "/eresearch/TDH-Tools/Resources/icons/"; }
-
-    public static function Descriptions_ClimateModels()     {return self::SourceDataFolder()."descriptions/gcm.csv";}
-    public static function Descriptions_EmissionScenarios() {return self::SourceDataFolder()."descriptions/scenario.csv";}
-    public static function Descriptions_Years()             {return self::SourceDataFolder()."descriptions/year.txt";}
 
 }
 
