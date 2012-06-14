@@ -25,7 +25,7 @@ class CommandConfiguration
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/www/eresearch/TDH-Tools/";
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/";
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/var/www/html/bioclimdata";
+        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/var/www/html/bioclimdata/";
 
         return null;
 
