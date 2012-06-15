@@ -19,7 +19,7 @@ class configuration {
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/www/eresearch/TDH-Tools/";
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/ctbccr/spatialecology_interchange/app/";
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/var/www/html/bioclimdata/";
+        if (stripos( $hostname, "spatialecology") !== FALSE) return "/var/www/html/bioclimdata/";
 
         return null;
     }
@@ -48,10 +48,10 @@ class configuration {
     {
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/outputs/";
-        if (stripos( $hostname, "default.domain")   !== FALSE) return "/outputs/";
+        //if (stripos( $hostname, "default.domain")   !== FALSE) return "/output/";
 
         // web accessabkle version for below
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/download/";
+        if (stripos( $hostname, "spatialecology") !== FALSE) return "/download/";
 
         return null;
     }
@@ -64,10 +64,10 @@ class configuration {
     {
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/outputs/";
-        if (stripos( $hostname, "default.domain")   !== FALSE) return "/home/ctbccr/spatialecology_interchange/outputs/";
+        if (stripos( $hostname, "default.domain")   !== FALSE) return "/home/ctbccr/spatialecology_interchange/output/";
         
         // make this availabe to the web server and
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/home/ctbccr/bioclimdata/data/interchange/output/";
+        if (stripos( $hostname, "spatialecology") !== FALSE) return "/home/ctbccr/bioclimdata/data/interchange/output/";
 
         return null;
     }
@@ -79,7 +79,7 @@ class configuration {
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/www/eresearch/TDH-Tools/Resources/";
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/Resources/";
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/var/www/html/bioclimdata/Resources/";
+        if (stripos( $hostname, "spatialecology") !== FALSE) return "/var/www/html/bioclimdata/Resources/";
 
         return null;
 
@@ -102,7 +102,7 @@ class configuration {
 
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/eresearch/TDH-Tools/Resources/icons/";
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/bioclimdata/Resources/icons/";
+        if (stripos( $hostname, "spatialecology") !== FALSE) return "/bioclimdata/Resources/icons/";
 
         return "";
 
@@ -114,7 +114,7 @@ class configuration {
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/www/eresearch/TDH-Tools/source/";
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/source/";
-        if (stripos( $hostname, "spatialecology.jcu.edu.au") !== FALSE) return "/var/www/html/bioclimdata/Resources/source/";
+        if (stripos( $hostname, "spatialecology") !== FALSE) return "/var/www/html/bioclimdata/Resources/source/";
 
         return null;
     }

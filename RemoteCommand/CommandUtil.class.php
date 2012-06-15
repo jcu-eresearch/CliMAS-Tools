@@ -49,6 +49,9 @@ class CommandUtil
         {
             // check for previous
             $prev_command_filename = self::CommandFilenamePrevious($lookupID);
+
+            echo "prev_command_filename = $prev_command_filename<br>";
+
             if (file_exists($prev_command_filename))
             {
 
@@ -78,18 +81,22 @@ class CommandUtil
         
         // We don't have a previous command or they have chosen to ignore it.
 
-        if (!file_exists(self::CommandFilename($lookupID))) return null; // todo Log this
+        $cmdFN = self::CommandFilename($lookupID);
+
+        echo "cmdFN = $cmdFN<br>";
+
+        if (!file_exists($cmdFN)) return null; // todo Log this
 
         try {
-            $file = file_get_contents(self::CommandFilename($lookupID));
+            $file = file_get_contents($cmdFN);
         } catch (Exception $e) {
             sleep(1);
-            $file = file_get_contents(self::CommandFilename($lookupID));  // hopefully after 1 second it will exists again
+            $file = file_get_contents($cmdFN);  // hopefully after 1 second it will exists again
         }
 
         $object = unserialize($file);
 
-        if ($delete) file::Delete(self::CommandFilename($lookupID));
+        if ($delete) file::Delete($cmdFN);
 
         // todo:: check that $object is  actually instanceof iCommand;
 
@@ -109,7 +116,9 @@ class CommandUtil
         // copy current to previous
 
         $fn = self::CommandFilename($command->ID());
-        
+
+        echo "put command file = $fn<br>";
+
         // make previous version if we can 
         if (file_exists($fn))
             @file::copy($fn, self::CommandFilenamePrevious($command->ID()), true);
@@ -134,6 +143,8 @@ class CommandUtil
         $fn = CommandConfiguration::CommandQueueFolder().
               CommandConfiguration::osPathDelimiter().
               $commandID.CommandConfiguration::CommandExtension();
+
+        
 
         return $fn;
     }
