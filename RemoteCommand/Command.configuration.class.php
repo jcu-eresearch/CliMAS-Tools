@@ -73,7 +73,7 @@ class CommandConfiguration
     {
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/outputs/";
-        if (stripos( $hostname, "default.domain") !== FALSE) return "/home/ctbccr/spatialecology_interchange/outputs/";
+        if (stripos( $hostname, "default.domain") !== FALSE) return "/home/ctbccr/spatialecology_interchange/output/";
         if (stripos( $hostname, "spatialecology") !== FALSE) return "/home/ctbccr/bioclimdata/data/interchange/output/";
 
         return null;

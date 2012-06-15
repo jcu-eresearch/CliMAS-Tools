@@ -121,15 +121,19 @@ class CommandUtil
 
         // make previous version if we can 
         if (file_exists($fn))
+        {
             @file::copy($fn, self::CommandFilenamePrevious($command->ID()), true);
-        else
+            @chmod(self::CommandFilenamePrevious($command->ID()), "u+rwx,o+rxw");
+        }
         
 
-        if (file_exists($fn)) file::Delete($fn);
+        // if (file_exists($fn)) file::Delete($fn);
 
         $command->LastUpdated(datetimeutil::now());
         $ser = serialize($command);
         file_put_contents($fn,$ser);
+
+        @chmod($fn, "u+rwx,o+rxw");
 
         // finished writing to command so we can remove previous
         file::Delete(self::CommandFilenamePrevious($command->ID()));
