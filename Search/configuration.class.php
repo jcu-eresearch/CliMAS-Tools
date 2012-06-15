@@ -51,7 +51,7 @@ class configuration {
         //if (stripos( $hostname, "default.domain")   !== FALSE) return "/output/";
 
         // web accessabkle version for below
-        if (stripos( $hostname, "spatialecology") !== FALSE) return "/download/";
+        if (stripos( $hostname, "spatialecology") !== FALSE) return "/download/"; // might be ??
 
         return null;
     }

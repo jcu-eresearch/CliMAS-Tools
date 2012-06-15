@@ -37,7 +37,7 @@ class CommandConfiguration
         $hostname = trim(exec("hostname --fqdn"));
         if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/queue";
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/ctbccr/spatialecology_interchange/queue";
-        if (stripos( $hostname, "spatialecology") !== FALSE) return "/home/ctbccr/bioclimdata/data/interchange/queue";
+        if (stripos( $hostname, "spatialecology") !== FALSE) return "/tmp/queue";
 
         return null;
 
@@ -46,9 +46,9 @@ class CommandConfiguration
     public static function CommandQueueLog()
     {
         $hostname = trim(exec("hostname --fqdn"));
-        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/queue.log";
-        if (stripos( $hostname, "default.domain") !== FALSE) return "/home/ctbccr/spatialecology_interchange/queue.log";
-        if (stripos( $hostname, "spatialecology") !== FALSE) return "/home/ctbccr/bioclimdata/data/queue.log";
+        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return "/data/dmf/TDH-Tools/queue/tdh_tools_queue.log";
+        if (stripos( $hostname, "default.domain") !== FALSE) return "/home/ctbccr/spatialecology_interchange/queue/tdh_tools_queue.log";
+        if (stripos( $hostname, "spatialecology") !== FALSE) return "/tmp/queue/tdh_tools_queue.log";
 
         return null;
 
