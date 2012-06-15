@@ -123,7 +123,7 @@ class CommandUtil
         if (file_exists($fn))
         {
             @file::copy($fn, self::CommandFilenamePrevious($command->ID()), true);
-            @chmod(self::CommandFilenamePrevious($command->ID()), "u+rwx,o+rxw");
+            exec('chmod o+rw '.self::CommandFilenamePrevious($command->ID()));
         }
         
 
@@ -133,8 +133,8 @@ class CommandUtil
         $ser = serialize($command);
         file_put_contents($fn,$ser);
 
-        @chmod($fn, "u+rwx,o+rxw");
-
+        exec('chmod o+rw '.$fn);
+        
         // finished writing to command so we can remove previous
         file::Delete(self::CommandFilenamePrevious($command->ID()));
 
