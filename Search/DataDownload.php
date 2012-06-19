@@ -89,8 +89,10 @@ function downloadRequestConfirmation($requestedScenario,$requestedModel,$request
     // ### WEB ACCESSIBLE FOLDER
     //
 
-    $WEB_FOLDER = '/eresearch/TDH-Tools/output/';
-    
+    // $WEB_FOLDER = '/eresearch/TDH-Tools/output/';
+
+    $WEB_FOLDER = "/climate_2012/output/";
+
     $result =  "";
     $result .= OutputFactory::Find($requestedData);
 
@@ -105,13 +107,14 @@ function zipFiles($requestedData)
     //
     // ### SOURCE DATA FOLDER
     //
-    $DF = "/www/eresearch/TDH-Tools/source/data/";
-    
+    // $DF = "/www/eresearch/TDH-Tools/source/data/";
+
+    $DF = "/homes/jc165798/Climate/CIAS/Australia/5km/bioclim_asc";
+
     //
     // ### OUTPUT FOLDER - Full path name to WEB ACCESSIBLE FOLDER
     //
-    $outputFolder = "/www/eresearch/TDH-Tools/output/";
-
+    $outputFolder = "/local/climate_2012/output";
 
     $archiveFilename  = $outputFolder;
     $archiveFilename .= "JCU-ClimateData";
