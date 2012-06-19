@@ -96,7 +96,7 @@ function downloadRequestConfirmation($requestedScenario,$requestedModel,$request
     $result =  "";
     $result .= OutputFactory::Find($requestedData);
 
-    $result .= '<br>'.'<a href="http://'.$_SERVER['SERVER_NAME'].$WEB_FOLDER.$archive.'">DOWNOAD</a>';
+    $result .= '<br>'.'<a href="http://'.$_SERVER['SERVER_NAME'].$WEB_FOLDER.$archive.'">DOWNLOAD</a>';
 
     return $result ;
 
@@ -168,6 +168,9 @@ function zipFiles($requestedData)
         font-family: sans-serif;
     }
 
+    .scenCell a, .modelScenCell a, .modelCell a {
+        display: block; width: 100%; height: 100%;
+    }
 
     .scenTable
     {
