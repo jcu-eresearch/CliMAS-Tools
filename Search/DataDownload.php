@@ -177,6 +177,9 @@ function zipFiles($requestedData)
         font-family: sans-serif;
     }
 
+    .scenCell a, .modelScenCell a, .modelCell a {
+        display: block; width: 100%; height: 100%;
+    }
 
     .scenTable
     {
