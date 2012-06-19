@@ -114,7 +114,7 @@ function zipFiles($requestedData)
     //
     // ### OUTPUT FOLDER - Full path name to WEB ACCESSIBLE FOLDER
     //
-    $outputFolder = "/local/climate_2012/output";
+    $outputFolder = "/local/climate_2012/output/";
 
     $archiveFilename  = $outputFolder;
     $archiveFilename .= "JCU-ClimateData";

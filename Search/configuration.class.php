@@ -21,7 +21,7 @@ class configuration {
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/ctbccr/spatialecology_interchange/app/";
         if (stripos( $hostname, "spatialecology") !== FALSE) return "/var/www/html/bioclimdata/";
 
-        return null;
+        return "/local/climate_2012/tdhtools/";
     }
 
 
@@ -81,7 +81,7 @@ class configuration {
         if (stripos( $hostname, "default.domain") !== FALSE) return "/home/jc166922/TDH-Tools/Resources/";
         if (stripos( $hostname, "spatialecology") !== FALSE) return "/var/www/html/bioclimdata/Resources/";
 
-        return null;
+        return "/local/climate_2012/tdhtools/Resources/";
 
     }
 
