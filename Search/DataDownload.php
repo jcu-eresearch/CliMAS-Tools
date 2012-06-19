@@ -1,7 +1,6 @@
 <?php
 include_once 'includes.php';
 
-
 $requestedScenario = array_util::Value($_GET, "scenario", null);
 $requestedModel = array_util::Value($_GET, "model", null);
 $requestedTime = array_util::Value($_GET, "time", null);
@@ -13,7 +12,6 @@ function selectionTable()
 {
 
     $self = "http://".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
-
 
     $modelDesc = ToolsData::ClimateModels();
     $scenarioDesc = ToolsData::EmissionScenarios();
@@ -68,35 +66,26 @@ function selectionTable()
 function downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime)
 {
 
-    $scenarioDesc = ToolsData::EmissionScenarios();
-    $modelsDesc = ToolsData::ClimateModels();
-    $timeDesc = ToolsData::Times();
-
-    $scenarios = ($requestedScenario == "all") ? join(" ",array_keys($scenarioDesc->asSimpleArray())) : $requestedScenario;
-    $models    = ($requestedModel    == "all") ? join(" ",array_keys($modelsDesc->asSimpleArray()))   : $requestedModel;
-    $times     = ($requestedTime     == "all") ? join(" ",array_keys($timeDesc->asSimpleArray()))     : $requestedTime;
-
     $requestedData = array();
-    $requestedData["Scenarios"] = $scenarios;
-    $requestedData["Models"] = $models;
-    $requestedData["Times"] = $times;
+    $requestedData["Scenarios"] = $requestedScenario;
+    $requestedData["Models"] = $requestedModel;
+    $requestedData["Times"] = $requestedTime;
 
     $archive = zipFiles($requestedData);
-
-    // set url here to the url of the file to download
 
     //
     // ### WEB ACCESSIBLE FOLDER
     //
+    if (util::contains(util::hostname(), "afakes"))
+        $WEB_FOLDER = "/eresearch/TDH-Tools/output/";
+    else
+        $WEB_FOLDER = "/climate_2012/output/";
 
-    // $WEB_FOLDER = '/eresearch/TDH-Tools/output/';
-
-    $WEB_FOLDER = "/climate_2012/output/";
 
     $result =  "";
     $result .= OutputFactory::Find($requestedData);
 
-    $result .= '<br>'.'<a href="http://'.$_SERVER['SERVER_NAME'].$WEB_FOLDER.$archive.'">DOWNOAD</a>';
+    $result .= '<br>'.'<a href="http://'.$_SERVER['SERVER_NAME'].$WEB_FOLDER.$archive.'">DOWNLOAD</a>';
 
     return $result ;
 
@@ -104,17 +93,27 @@ function downloadRequestConfirmation($requestedScenario,$requestedModel,$request
 function zipFiles($requestedData)
 {
 
-    //
-    // ### SOURCE DATA FOLDER
-    //
-    // $DF = "/www/eresearch/TDH-Tools/source/data/";
+    if (util::contains(util::hostname(), "afakes"))
+    {
+        $DF = "/www/eresearch/TDH-Tools/source/data/";
+        $outputFolder = "/www/eresearch/TDH-Tools/output/";
+    }
+    else
+    {
+        //
+        // ### SOURCE DATA FOLDER
+        //
+        // $DF = "/www/eresearch/TDH-Tools/source/data/";
 
-    $DF = "/homes/jc165798/Climate/CIAS/Australia/5km/bioclim_asc";
+        $DF = "/homes/jc165798/Climate/CIAS/Australia/5km/bioclim_asc";
 
-    //
-    // ### OUTPUT FOLDER - Full path name to WEB ACCESSIBLE FOLDER
-    //
-    $outputFolder = "/local/climate_2012/output";
+        //
+        // ### OUTPUT FOLDER - Full path name to WEB ACCESSIBLE FOLDER
+        //
+        $outputFolder = "/local/climate_2012/output";
+    }
+
+
 
     $archiveFilename  = $outputFolder;
     $archiveFilename .= "JCU-ClimateData";
@@ -123,8 +122,19 @@ function zipFiles($requestedData)
     $archiveFilename .= "-".str_replace(" ","_",$requestedData["Times"])."";
     $archiveFilename .= ".zip";
 
+
     if (!file_exists($archiveFilename))
     {
+
+        $scenarioDesc = ToolsData::EmissionScenarios();
+        $modelsDesc = ToolsData::ClimateModels();
+        $timeDesc = ToolsData::Times();
+
+        $requestedData["Scenarios"] = ($requestedData["Scenarios"] == "all") ? join(" ",array_keys($scenarioDesc->asSimpleArray())) : $requestedData["Scenarios"];
+        $requestedData["Models"]    = ($requestedData["Models"]    == "all") ? join(" ",array_keys($modelsDesc->asSimpleArray()))   : $requestedData["Models"];
+        $requestedData["Times"]     = ($requestedData["Times"]     == "all") ? join(" ",array_keys($timeDesc->asSimpleArray()))     : $requestedData["Times"];
+
+
 
         $scenarios = explode(" ",$requestedData["Scenarios"]);
         $models = explode(" ",$requestedData["Models"]);
