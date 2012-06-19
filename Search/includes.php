@@ -13,7 +13,7 @@ include_once 'DB/ToolsData.includes.php';
 
 include_once 'Output/Output.includes.php';
 include_once 'extras/extras.includes.php';
-include_once 'MapServer/Mapserver.includes.php';
-include_once 'Session.class.php';
+//include_once 'MapServer/Mapserver.includes.php';
+//include_once 'Session.class.php';
 
 ?>
