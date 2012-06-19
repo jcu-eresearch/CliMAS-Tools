@@ -157,6 +157,172 @@ class htmlutil {
     }
 
 
+
+    /**
+     *
+     * CReta e "Table" from css
+     *
+     * @param type $data  array of data used
+     * @param type $cellTemplate - template to be warpped arounf Cell data
+     * @param type $tableClass - class wrapped around table
+     * @param type $rowClass  - class wrapped around row
+     * @param type $cellClass  - class wrapped around cell
+     * @return string complete HTML
+     */
+    public static function TableByCSS($data, $cellTemplate = null,$tableClass = "aTable", $rowClass = "aRow",$cellClass = "aCell",$rowHeader = false)
+    {
+
+        if (count($data) == 0) return "NO DATA<br>";
+
+        if (!is_array($data)) return str_replace ("\n", "<br/>\n", $data)."<br>\n";
+
+        $result = '<div class="'.$tableClass.'">';
+
+
+        foreach ($data as $row_id => $row)
+        {
+
+            $handle = false;
+            
+            if (!$handle)
+            {
+
+                if (is_array($row))  // if $row is an array then this is basically a matrix
+                {
+
+                    $cells = array();
+
+                    foreach ($row as $cell_id => $cell)
+                    {
+
+                        if (is_null($cellTemplate))
+                        {
+                            $rowHeaderClass = (count($cells) == 0 ) ? " rowHeader " :"";
+                            $cells[] = '<div class="'.$cellClass.$rowHeaderClass.'">'.$cell.'</div>';
+                        }
+                        else
+                        {
+
+
+                            $sub_result = $cellTemplate;   // do a replacement from all values from this row
+
+                            foreach ($row as $column_id => $cell_value) 
+                                $sub_result = str_replace("{{$column_id}}",  $cell_value, $sub_result);
+
+
+                            $sub_result = str_replace("{#row_id#}",  $row_id, $sub_result);
+                            $sub_result = str_replace("{#key#}",  $row_id, $sub_result);
+                            $sub_result = str_replace("{#column_id#}",  $cell_id, $sub_result);
+                            $sub_result = str_replace("{#column#}",  $cell_id, $sub_result);
+                            $sub_result = str_replace("{#value#}",  $cell, $sub_result);
+
+                            $rowHeaderClass = (count($cells) == 0 ) ? " rowHeader " :"";
+                            $cells[] = '<div class="'.$cellClass.$rowHeaderClass.'">'.$sub_result.'</div>';
+
+                        }
+
+                    }
+                    
+                    $result .= "\n".'<div class="'. $rowClass .'">'.join("\n",$cells).'</div>'."\n";
+
+                    $handle = true;
+
+                }
+
+                
+
+            }
+
+
+            if (!$handle)
+            {
+
+                // treat properties as cells
+                if (Object::isObject($row))
+                {
+
+                    $row instanceof Object;
+
+                    $cells = array();
+                    foreach ($row->PropertyNames() as $propertyName)
+                    {
+
+                        $cell = $row->getPropertyByName($propertyName, NULL);
+
+                        if (is_null($cellTemplate))
+                            $cells[] = $cell;
+                        else
+                        {
+                            $sub_result = $cellTemplate;   // do a replacement from all values from this object
+                            foreach ($row->PropertyNames() as $propertyName)
+                                $sub_result = str_replace("{{$propertyName}}", $row->getPropertyByName($propertyName, NULL), $sub_result);
+
+                            $sub_result = str_replace("{#row_id#}",  $row_id, $sub_result);
+                            $sub_result = str_replace("{#key#}",  $row_id, $sub_result);
+
+                        }
+
+
+                    }
+
+                    $cells_str = '<div class="'.$cellClass.'">'.join("\n",$cells).'</div>';
+                    $row = "\n".'<div class="'. $rowClass .'">'.$cells_str.'</div>'."\n";
+                    $result .= $row ;
+
+                    $handle = true;
+
+                }
+
+
+                
+            }
+
+
+            if (!$handle)
+            {
+
+                $cells = array();
+                if (is_null($cellTemplate))
+                {
+                    $cells[] = $row;
+                }
+                else
+                {
+                    //  just $row_id => $row
+                    $sub_result = $cellTemplate;   // do a replacement key and vbalue
+                    $sub_result = str_replace("{#row_id#}",  $row_id, $sub_result);
+                    $sub_result = str_replace("{#key#}",  $row_id, $sub_result);
+                    $sub_result = str_replace("{#value#}",  $row, $sub_result);
+
+                    $cells[] = $sub_result;
+                }
+
+                $handle = true;
+
+                $cells_str = '<div class="'.$cellClass.'">'.join("\n",$cells).'</div>';
+                $row = "\n".'<div class="'. $rowClass .'">'.$cells_str.'</div>'."\n";
+                $result .= $row ;
+
+
+            }
+
+
+
+        } //end foreach
+
+
+
+        $result .= '</div>';
+
+
+        return $result;
+
+    }
+
+
+
+
+
     /*
     * @method img
     * @param $data

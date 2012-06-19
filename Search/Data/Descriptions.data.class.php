@@ -132,7 +132,7 @@ class Descriptions extends Data {
             foreach ($this->descriptions as $key => $desc)
             {
                 $desc instanceof Description;
-                $result[$desc->DataName()] = $desc->getPropertyByName($valuePropertyName);
+                $result[trim($desc->DataName())] = $desc->getPropertyByName($valuePropertyName);
             }
         }
         else
@@ -143,7 +143,7 @@ class Descriptions extends Data {
                 $desc instanceof Description;
 
                 foreach ($valuePropertyName as $PropertyName)
-                    $result[$desc->DataName()][$PropertyName] = $desc->getPropertyByName($PropertyName);
+                    $result[trim($desc->DataName())][trim($PropertyName)] = $desc->getPropertyByName($PropertyName);
 
 
             }

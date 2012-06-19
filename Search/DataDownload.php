@@ -2,34 +2,18 @@
 include_once 'includes.php';
 
 
-$haveRequest = null;
-$requestID = null;
+$requestedScenario = array_util::Value($_GET, "scenario", null);
+$requestedModel = array_util::Value($_GET, "model", null);
+$requestedTime = array_util::Value($_GET, "time", null);
 
-$newRequest = array_util::Value($_GET, "new", "false");
-
-if ($newRequest == "true")
-{
-    Session::add("requestID", null);
-}
-else
-{
-
-    $requestedScenario = array_util::Value($_GET, "scenario", null);
-    $requestedModel = array_util::Value($_GET, "model", null);
-    $requestedTime = array_util::Value($_GET, "time", null);
-
-    $haveRequest = (!is_null($requestedScenario)) && (!is_null($requestedModel)) && (!is_null($requestedTime));
-
-    // look at Session for Request ID otherwise look at URL for requestID
-    $requestID = Session::get("requestID",array_util::Value($_GET, "requestID",null ));
-
-}
+$haveRequest = (!is_null($requestedScenario)) && (!is_null($requestedModel)) && (!is_null($requestedTime));
 
 
 function selectionTable()
 {
 
-    Session::add("requestID", null); // clear this requestID - so we are not rerequesting something
+    $self = "http://".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
+
 
     $modelDesc = ToolsData::ClimateModels();
     $scenarioDesc = ToolsData::EmissionScenarios();
@@ -39,74 +23,39 @@ function selectionTable()
     $f[] = "Description";
     $f[] = "URI";
 
-
-    $self = "http://".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
-
     $result = "";
 
-    $result .= "<h1>Spatial Ecology Climate Change Data</h1>";
-
     $r1 = array();
-    foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo)
-       $r1[$scenarioKey] = "{$self}?scenario=$scenarioKey&model=all&time=all";
-
-    $sscap = "<tr><td colspan=\"".count($r1)."\">Modelling data for one Emission Scenario (~ 245 megabytes)</td></tr>";
-    $sst = "<div class=\"SingleScenario\"><a href=\"{#value#}\">{#key#}<br></a></div>";
-
-    $result .= htmlutil::TableRowTemplate($r1,$sst,true,$sscap,"SingleScenariosTable");
+    foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo) $r1[$scenarioKey] = "{$self}?scenario=$scenarioKey&model=all&time=all";
+    $result .= "\n"."Modelling data for one Emission Scenario & all models (~ 245 megabytes)<br>";
+    $result .= "\n".htmlutil::TableByCSS($r1, "<a target=\"_dl\" href=\"{#value#}\">{#key#}</a>","scenTable", "scenRow","scenCell");
 
 
     $r2 = array();
+    foreach ($modelDesc->asSimpleArray($f) as $modelKey => $modelInfo) $r2[$modelKey] = "{$self}?scenario=all&model={$modelKey}&time=all";
+    $result .= "\n"."Modelling data for one Climate model and all scenarios (~ XXX megabytes)<br>";
+    $result .= "\n".htmlutil::TableByCSS($r2,"<a target=\"_dl\" href=\"{#value#}\">{#key#}</a>","modelTable", "modelRow","modelCell");
+    $result .= "<br>";
+
+    $r3 = array();
     foreach ($modelDesc->asSimpleArray($f) as $modelKey => $modelInfo)
-       $r2[$modelKey] = "{$self}?scenario=all&model={$modelKey}&time=all";
-
-    $sscap = "<tr><td colspan=\"".count($r2)."\">Modelling data for one Climate model and all scenarios (~ XXX megabytes)</td></tr>";
-    $sst = "<div class=\"SingleModel\"><a href=\"{#value#}\">{#key#}<br></a></div>";
-
-    $result .= htmlutil::TableRowTemplate($r2,$sst,false,"","SingleModelTable",$sscap);
-
-
-    $rowcount = 0;
-    $colcount = 0;
-
-
-    $result .= "<table>";
-    // loop thru the various data sets and create a display
-    foreach ($modelDesc->asSimpleArray() as $modelKey => $modelDescription)
     {
-        $result .= "<tr>";
-        $result .= "<td><a href=\"{$self}?scenario=all&model={$modelKey}&time=all\">$modelKey</a></td>";
+        $r3[$modelKey] = array();
+        $r3[$modelKey][] = $modelKey;
 
-        $colcount = 0;
-
-        foreach ($scenarioDesc->asSimpleArray() as $scenarioKey => $scenarioDescription)
+        foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo)
         {
-
-            $result .= "<td>";
-            $result .= "<table>";
-
-            $result .= "<tr><td><a href=\"{$self}?scenario={$scenarioKey}&model={$modelKey}&time=all\">$scenarioKey</a></td></tr>";
-
-            foreach ($timeDesc->asSimpleArray() as $timeKey => $timeDescDescription)
-            {
-
-                $result .= "<tr>";
-                $result .= "<td><a href=\"{$self}?scenario={$scenarioKey}&model={$modelKey}&time={$timeKey}\">$timeKey</a></td>";
-                $result .= "</tr>";
-
-                $colcount++;
-
-            }
-
-            $result .= "</table>";
-            $result .= "</td>";
-
+            $link = $self."?scenario={$scenarioKey}&model={$modelKey}&time=all";
+            $value = '<a target=\"_dl\" href="'.$link.'">'.$scenarioKey.'</a>';
+            $r3[$modelKey][$scenarioKey] = $value;
         }
-        $result .= "</tr>";
-
-        $rowcount++;
 
     }
+
+    $result .= "\n"."Modelling data Individual Models and Emission Scenarios (~ YYYY megabytes)<br>";
+    $result .= "\n".htmlutil::TableByCSS($r3,null,"modelScenTable", "modelScenRow","modelScenCell");
+    $result .= "<br>";
+
 
     $result .= OutputFactory::Find($modelDesc->asSimpleArray($f));
 
@@ -116,120 +65,91 @@ function selectionTable()
 
 }
 
-function downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime,$requestID)
+function downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime)
 {
 
-    if (!is_null($requestID))
-    {
-        echo "<br><a href=\"$self\"> Request Already made  goto - Update page</a><br>";
+    $scenarioDesc = ToolsData::EmissionScenarios();
+    $modelsDesc = ToolsData::ClimateModels();
+    $timeDesc = ToolsData::Times();
 
+    $scenarios = ($requestedScenario == "all") ? join(" ",array_keys($scenarioDesc->asSimpleArray())) : $requestedScenario;
+    $models    = ($requestedModel    == "all") ? join(" ",array_keys($modelsDesc->asSimpleArray()))   : $requestedModel;
+    $times     = ($requestedTime     == "all") ? join(" ",array_keys($timeDesc->asSimpleArray()))     : $requestedTime;
+
+    $requestedData = array();
+    $requestedData["Scenarios"] = $scenarios;
+    $requestedData["Models"] = $models;
+    $requestedData["Times"] = $times;
+
+    $archive = zipFiles($requestedData);
+
+    // set url here to the url of the file to download
+
+    //
+    // ### WEB ACCESSIBLE FOLDER
+    //
+
+    $WEB_FOLDER = '/eresearch/TDH-Tools/output/';
+    
+    $result =  "";
+    $result .= OutputFactory::Find($requestedData);
+
+    $result .= '<br>'.'<a href="http://'.$_SERVER['SERVER_NAME'].$WEB_FOLDER.$archive.'">DOWNOAD</a>';
+
+    return $result ;
+
+}
+function zipFiles($requestedData)
+{
+
+    //
+    // ### SOURCE DATA FOLDER
+    //
+    $DF = "/www/eresearch/TDH-Tools/source/data/";
+    
+    //
+    // ### OUTPUT FOLDER - Full path name to WEB ACCESSIBLE FOLDER
+    //
+    $outputFolder = "/www/eresearch/TDH-Tools/output/";
+
+
+    $archiveFilename  = $outputFolder;
+    $archiveFilename .= "JCU-ClimateData";
+    $archiveFilename .= "-".str_replace(" ","_",$requestedData["Scenarios"])."";
+    $archiveFilename .= "-".str_replace(" ","_",$requestedData["Models"])."";
+    $archiveFilename .= "-".str_replace(" ","_",$requestedData["Times"])."";
+    $archiveFilename .= ".zip";
+
+    if (!file_exists($archiveFilename))
+    {
+
+        $scenarios = explode(" ",$requestedData["Scenarios"]);
+        $models = explode(" ",$requestedData["Models"]);
+        $times = explode(" ",$requestedData["Times"]);
+
+        $total = count($scenarios) * count($models) * count($times);
+        $count = 1;
+        foreach ($scenarios as $scenario)
+            foreach ($models as $model)
+                foreach ($times as $time)
+                {
+                    $toStore = "{$scenario}_{$model}_{$time}".CommandConfiguration::osPathDelimiter()."*.gz";
+
+                    $cmd  = "cd '{$DF}'; ";
+                    $cmd .= "zip -0 $archiveFilename {$toStore}".";";
+
+                    exec("{$cmd}"); // add files to archive
+
+                    $count++;
+                }
 
     }
-    else
-    {
 
-        echo "<h1>Data Download - Step 2</h1>";
-        echo "<h2>requesting packaged files.</h2>";
-
-        $scenarioDesc = ToolsData::EmissionScenarios();
-        $modelsDesc = ToolsData::ClimateModels();
-        $timeDesc = ToolsData::Times();
-
-        echo "<br>Scenarios ".$requestedScenario;
-        echo "<br>Models ".$requestedModel;
-        echo "<br>Times ".$requestedTime;
-
-        // get key list for each variable
-
-        $scenarios = ($requestedScenario == "all") ? join(" ",array_keys($scenarioDesc->asSimpleArray())) : $requestedScenario;
-        $models    = ($requestedModel    == "all") ? join(" ",array_keys($modelsDesc->asSimpleArray()))   : $requestedModel;
-        $times     = ($requestedTime     == "all") ? join(" ",array_keys($timeDesc->asSimpleArray()))     : $requestedTime;
-
-        echo "<br>Scenarios ".$scenarios;
-        echo "<br>Models " .$models;
-        echo "<br>Times ".$times;
-
-
-        // check to see if zip already exists
-
-        // setup a command and submit it.
-
-        $pdc = new PackageDatafilesCommand();
-        $pdc->EmissionScenarioIDs($scenarios);
-        $pdc->ClimateModelIDs($models);
-        $pdc->TimeIDs($times);
-
-        CommandFactory::Queue($pdc);
-
-        $self = $_SERVER['PHP_SELF'];
-
-        // store ID in session as well - so if this page is realoaded we don't do it again.
-        Session::add("requestID", $pdc->ID());
-
-        // even just push to new URL
-
-        echo "<br><a href=\"$self?requestID={$pdc->ID()}\">Update page</a><br>Use this link to come back later and check progress<br>";
-
-    }
-
-
+    return str_replace($outputFolder, "", $archiveFilename);
 }
 
 
 
-function requestStatus($requestID)
-{
-
-    $cmd = CommandFactory::CommandFromQueue($requestID);
-
-    if (is_null($cmd))
-    {
-        $self = $_SERVER['PHP_SELF'];
-        echo "<br>Process with ID  $requestID does not exists anymore";
-        echo "<br><a href=\"$self?new=true\">New Request</a><br>"; // link to page again for download
-    }
-    else
-    {
-
-        if ($cmd->ExecutionFlag() == Command::$EXECUTION_FLAG_COMPLETE)
-        {
-
-            if ($cmd instanceof PackageDatafilesCommand)
-            {
-                $cmd instanceof PackageDatafilesCommand;
-
-                $toDownload = configuration::WebDownloadFolder().$cmd->PackageFilename();
-
-                echo "<br><a href=\"{$toDownload}\">Download</a><br>"; //
-            }
-
-            $O = OutputFactory::Find($cmd->Result());
-
-            if ($O instanceof Output)
-                echo $O->Content();
-            else
-                echo $O;
-
-            $self = $_SERVER['PHP_SELF'];
-            echo "<br><a href=\"$self?new=true\">New Request</a><br>"; // link to page again for download
-
-        }
-        else
-        {
-            echo "<br>Running ";
-            echo "<br>Execution Phase ".$cmd->ExecutionFlag();
-            echo "<br>Status:: ".$cmd->Status();
-            echo "<br>Last Server Update:: ".$cmd->LastUpdated();
-
-
-        }
-
-
-    }
-
-
-
-}
 ?>
 <html>
 <head>
@@ -240,111 +160,181 @@ function requestStatus($requestID)
 <link rel="stylesheet" type="text/css" href="Output/Descriptions.css" />
 <style type="text/css">
 
-    .FileSelection
+    body
     {
-
-
+        font-family: sans-serif;
     }
 
-    .SingleScenariosTable
+
+    .scenTable
     {
-         border-collapse: collapse;
-         border: 1ps solid red;
+        width: 100%;
+        
+        float: none;
+        clear: both;
+        overflow: hidden;
+        margin-bottom: 20px;
     }
 
-    .SingleScenario
+    .scenRow
     {
-      width: 100px;
-      height: 16pt;
-      padding: 5px;
-      border-radius: 5px;
-      background-color: lightgray;
-      border-right: 2px solid gray;
-      border-bottom: 2px solid gray;
-
-    }
-    .SingleScenario:hover
-    {
-        background-color: red;
+        width: 100px;
+        height: 30px;
+        float: left;        
+        margin: 2px;
+        background-color: #DDDDDD;
+        border-radius: 15px;
+        border-right: 2px solid black;
+        border-bottom: 2px solid black;
         
     }
 
-    .SingleScenario a
+    .scenRow:hover
     {
-        display: block;
-        text-decoration: none;
-        color:black;
-        text-align: center;
-        font-size: 14pt;
+        background-color: #AAAAAA;
+        color: white;
+    }
+
+
+    .scenCell
+    {
+        width: 100%;
+        height: 100%;
+        margin:5px;
+        padding-left:5px;
+    }
+
+    .scenCell a
+    {
+        color: black;
         font-weight: bold;
-    }
-
-    .SingleScenario a:hover
-    {
-      text-decoration: none;
-        color:white;
-    }
-
-
-
-    .SingleModelTable
-    {
-         border-collapse: collapse;
-         border: 1ps solid red;
-    }
-
-    .SingleModel
-    {
-      width: 100px;
-      height: 12pt;
-      padding: 5px;
-      border-radius: 5px;
-      background-color: lightgray;
-      border-right: 2px solid gray;
-      border-bottom: 2px solid gray;
-
-    }
-    .SingleModel:hover
-    {
-        background-color: red;
-
-    }
-
-    .SingleModel a
-    {
-        display: block;
         text-decoration: none;
-        color:black;
-        text-align: center;
-        font-size: 10pt;
-        font-weight: bold;
     }
 
-    .SingleModel a:hover
+
+
+
+    .modelTable
     {
-      text-decoration: none;
-        color:white;
+        width: 100%;
+        
+        float: none;
+        clear: both;
+            overflow: hidden;
+        margin-bottom: 20px;
+
     }
+
+    .modelRow
+    {
+        width: 150px;
+        height: 30px;
+        float: left;
+        margin: 2px;
+        background-color: #DDDDDD;
+        border-radius: 15px;
+        border-right: 2px solid black;
+        border-bottom: 2px solid black;
+
+    }
+
+    .modelRow:hover
+    {
+        background-color: #AAAAAA;
+        color: white;
+    }
+
+
+    .modelCell
+    {
+        width: 100%;
+        height: 100%;
+        margin:5px;
+        padding-left:5px;
+    }
+
+    .modelCell a
+    {
+        color: black;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+
+
+    .modelScenTable
+    {
+        width: 100% ;
+        float: none;
+        clear: both;
+        margin-bottom: 20px;
+    }
+
+    .modelScenRow
+    {
+        width: 100%;
+        height: 26px;
+        float: none;
+        clear: both;
+        margin: 2px;
+
+    }
+
+    .modelScenCell
+    {
+        width: 8%;
+        height: 100%;
+        margin: 5px;
+        padding-top:10px;
+        padding-left:10px;
+
+        float: left;
+        background-color: #DDDDDD;
+        border-radius: 15px;
+        border-right: 2px solid black;
+        border-bottom: 2px solid black;
+
+    }
+
+    .modelScenCell:hover
+    {
+        background-color: #AAAAAA;
+    }
+
+    .modelScenCell.rowHeader
+    {
+        
+        border-radius: 0px;
+        border-right: none;
+        border-bottom: none;
+        background-color: white;
+        font-size: 120%;
+        width: 10%;
+    }
+
+    .modelScenCell a
+    {
+        color: black;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+
+
 
 
 </style>
 </head>
 <body>
-<table>
+    <h1>Spatial Ecology Climate Change Data</h1>
+
 <?php
 
-    if (!is_null($requestID))
-        requestStatus($requestID);
+    if ($haveRequest)
+        echo downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime);
     else
-    {
-        if ($haveRequest)
-            downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime,$requestID);
-        else
-
-            echo selectionTable();
-    }
-
+        echo selectionTable();
 ?>
-</table>
+
 </body>
 </html>
