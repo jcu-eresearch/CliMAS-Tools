@@ -31,7 +31,7 @@ function selectionTable()
 
     $r2 = array();
     foreach ($modelDesc->asSimpleArray($f) as $modelKey => $modelInfo) $r2[$modelKey] = "{$self}?scenario=all&model={$modelKey}&time=all";
-    $result .= "\n"."Modelling data for one Climate model and all scenarios (~ XXX megabytes)<br>";
+    $result .= "\n"."Modelling data for one Climate model and all scenarios (~75 megabytes)<br>";
     $result .= "\n".htmlutil::TableByCSS($r2,"<a target=\"_dl\" href=\"{#value#}\">{#key#}</a>","modelTable", "modelRow","modelCell");
     $result .= "<br>";
 
@@ -50,10 +50,9 @@ function selectionTable()
 
     }
 
-    $result .= "\n"."Modelling data Individual Models and Emission Scenarios (~ YYYY megabytes)<br>";
+    $result .= "\n"."Modelling data Individual Models and Emission Scenarios (~37 megabytes)<br>";
     $result .= "\n".htmlutil::TableByCSS($r3,null,"modelScenTable", "modelScenRow","modelScenCell");
     $result .= "<br>";
-
 
     $result .= OutputFactory::Find($modelDesc->asSimpleArray($f));
 
