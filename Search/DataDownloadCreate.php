@@ -83,7 +83,7 @@ function zipFiles($requestedData)
     }
     else
     {
-        $DF = "/homes/jc165798/Climate/CIAS/Australia/5km/bioclim_asc";
+        $DF = "/local/climate_2012/data/";
         $outputFolder = "/local/climate_2012/output/";
     }
     
