@@ -17,7 +17,7 @@ foreach ($scenarioDesc->asSimpleArray() as $scenarioKey => $scenarioInfo)
 
     $archive = zipFiles($requestedData);
 
-    echo "Created $archive\n";
+    echo "Creating   $archive\n";
 
 }
 
@@ -32,7 +32,7 @@ foreach ($modelDesc->asSimpleArray() as $modelKey => $modelInfo)
 
     $archive = zipFiles($requestedData);
 
-    echo "Created $archive\n";
+    echo "Creating $archive\n";
 
 }
 
@@ -52,6 +52,8 @@ foreach ($modelDesc->asSimpleArray() as $modelKey => $modelInfo)
         $requestedData["Times"] = "all";
 
         $archive = zipFiles($requestedData);
+
+        echo "Creating $archive\n";
 
     }
 
@@ -83,8 +85,19 @@ function zipFiles($requestedData)
     }
     else
     {
-        $DF = "/local/climate_2012/data/";
-        $outputFolder = "/local/climate_2012/output/";
+
+        if (util::contains(util::hostname(), "login"))
+        {
+            $DF = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_asc/";
+            $outputFolder = "/home/jc166922/TDH-Tools/outputs/";
+        }
+        else
+        {
+            $DF = "/local/climate_2012/data/";
+            $outputFolder = "/local/climate_2012/output/";
+
+        }
+
     }
     
 
@@ -100,13 +113,17 @@ function zipFiles($requestedData)
     $archiveFilename .= "-".str_replace(" ","_",$requestedData["Times"])."";
     $archiveFilename .= ".zip";
 
-    $requestedData["Scenarios"] = ($requestedData["Scenarios"] == "all") ? join(" ",array_keys($scenarioDesc->asSimpleArray())) : $requestedData["Scenarios"];
-    $requestedData["Models"]    = ($requestedData["Models"]    == "all") ? join(" ",array_keys($modelsDesc->asSimpleArray()))   : $requestedData["Models"];
-    $requestedData["Times"]     = ($requestedData["Times"]     == "all") ? join(" ",array_keys($timeDesc->asSimpleArray()))     : $requestedData["Times"];
 
 
     if (!file_exists($archiveFilename))
     {
+
+        $requestedData["Scenarios"] = ($requestedData["Scenarios"] == "all") ? join(" ",array_keys($scenarioDesc->asSimpleArray())) : $requestedData["Scenarios"];
+        $requestedData["Models"]    = ($requestedData["Models"]    == "all") ? join(" ",array_keys($modelsDesc->asSimpleArray()))   : $requestedData["Models"];
+        $requestedData["Times"]     = ($requestedData["Times"]     == "all") ? join(" ",array_keys($timeDesc->asSimpleArray()))     : $requestedData["Times"];
+
+
+        $scr = "{$outputFolder}".uniqid().".sh";
 
         $scenarios = explode(" ",$requestedData["Scenarios"]);
         $models = explode(" ",$requestedData["Models"]);
@@ -122,14 +139,21 @@ function zipFiles($requestedData)
 
                     $prev_dir = trim(exec('pwd'));
 
+
                     $cmd  = "cd '{$DF}'; ";
                     $cmd .= "zip -0 $archiveFilename {$toStore}".";";
-                    $cmd .= "cd {$prev_dir}";
+                    $cmd .= "cd {$prev_dir}\n";
+                    
+                    file_put_contents($scr, $cmd,FILE_APPEND);
 
-                    exec("{$cmd}"); // add files to archive
 
                     $count++;
                 }
+
+
+
+        exec("qsub $scr"); // add files to archive
+
 
     }
 

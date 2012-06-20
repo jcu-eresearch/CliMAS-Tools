@@ -1,5 +1,5 @@
 <?php
-session_start();
+//session_start();
 include_once 'configuration.class.php';
 include_once configuration::UtilityClasses();
 include_once configuration::CommandClasses();

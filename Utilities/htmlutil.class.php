@@ -10,7 +10,7 @@ class htmlutil {
     * @param $showValue = true {
     * @return mixed
     */
-    public static function table($data, $showValue = true) {
+    public static function table($data, $showKey = true) {
 
 
         if (count($data) == 0) return "NO DATA<br>";
@@ -21,15 +21,31 @@ class htmlutil {
 
         foreach ($data as $key => $value)
         {
-            $result .= "\n"."<tr>";
-            if ($showValue) $result .= "\n"."<td class=\"rowheader\">$key</td>";
+            if (is_array($value))
+            {
 
-            if (substr($value,0,4) == "http")
-                $result .= "\n".'<td class="rowvalue"><a href="'.$value.'">'.$value.'</a></td>';
+                $row = array();
+                foreach ($value as $col_id => $cell) $row[] = "<td>$cell</td>";
+
+                $result .= "\n"."<tr>";
+                $result .= "\n".join("\n",$row);
+                $result .= "\n"."</tr>"."\n";
+            }
             else
-                $result .= "\n"."<td class=\"rowvalue\">$value</td>";
-            
-            $result .= "\n"."</tr>"."\n";
+            {
+                $result .= "\n"."<tr>";
+                if ($showKey) $result .= "\n"."<td class=\"rowheader\">$key</td>";
+
+                if (substr($value,0,4) == "http")
+                    $result .= "\n".'<td class="rowvalue"><a href="'.$value.'">'.$value.'</a></td>';
+                else
+                    $result .= "\n"."<td class=\"rowvalue\">$value</td>";
+
+                $result .= "\n"."</tr>"."\n";
+
+            }
+
+
         }
 
         $result .= "\n"."</table>"."\n";

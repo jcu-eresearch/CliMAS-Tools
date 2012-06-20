@@ -25,13 +25,13 @@ function selectionTable()
 
     $r1 = array();
     foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo) $r1[$scenarioKey] = "{$self}?scenario=$scenarioKey&model=all&time=all";
-    $result .= "\n"."Modelling data for one Emission Scenario & all models (~ 245 megabytes)<br>";
+    $result .= "\n"."<h2>Modelling data for one Emission Scenario & all models (~4GB)</h2>";
     $result .= "\n".htmlutil::TableByCSS($r1, "<a target=\"_dl\" href=\"{#value#}\">{#key#}</a>","scenTable", "scenRow","scenCell");
 
 
     $r2 = array();
     foreach ($modelDesc->asSimpleArray($f) as $modelKey => $modelInfo) $r2[$modelKey] = "{$self}?scenario=all&model={$modelKey}&time=all";
-    $result .= "\n"."Modelling data for one Climate model and all scenarios (~75 megabytes)<br>";
+    $result .= "\n"."<h2>Modelling data for one Climate model and all scenarios (~2GB)</h2>";
     $result .= "\n".htmlutil::TableByCSS($r2,"<a target=\"_dl\" href=\"{#value#}\">{#key#}</a>","modelTable", "modelRow","modelCell");
     $result .= "<br>";
 
@@ -44,14 +44,14 @@ function selectionTable()
         foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo)
         {
             $link = $self."?scenario={$scenarioKey}&model={$modelKey}&time=all";
-            $value = '<a target=\"_dl\" href="'.$link.'">'.$scenarioKey.'</a>';
+            $value = '<div class="scenModelCell" ><a target="_dl" href="'.$link.'">'.$scenarioKey.'</a></div>';
             $r3[$modelKey][$scenarioKey] = $value;
         }
 
     }
 
-    $result .= "\n"."Modelling data Individual Models and Emission Scenarios (~37 megabytes)<br>";
-    $result .= "\n".htmlutil::TableByCSS($r3,null,"modelScenTable", "modelScenRow","modelScenCell");
+    $result .= "\n"."<h2>Modelling data Individual Models and Emission Scenarios (~300MB)</h2>";
+    $result .= "\n".htmlutil::table($r3,false);
     $result .= "<br>";
 
     $result .= OutputFactory::Find($modelDesc->asSimpleArray($f));
@@ -176,7 +176,7 @@ function zipFiles($requestedData)
         font-family: sans-serif;
     }
 
-    .scenCell a, .modelScenCell a, .modelCell a {
+    .scenCell a, .scenModelCell a, .modelCell a {
         display: block; width: 100%; height: 100%;
     }
 
@@ -276,57 +276,21 @@ function zipFiles($requestedData)
 
 
 
-    .modelScenTable
+
+    .scenModelCell
     {
-        width: 100% ;
-        float: none;
-        clear: both;
-        margin-bottom: 20px;
-    }
-
-    .modelScenRow
-    {
-        width: 100%;
-        height: 26px;
-        float: none;
-        clear: both;
-        margin: 2px;
-
-    }
-
-    .modelScenCell
-    {
-        width: 8%;
-        height: 100%;
-        margin: 5px;
-        padding-top:10px;
-        padding-left:10px;
-
-        float: left;
+        display: block;
+        padding: 5px;
+        width: 100px;
         background-color: #DDDDDD;
         border-radius: 15px;
         border-right: 2px solid black;
         border-bottom: 2px solid black;
-
+        text-align: center;
+        margin-bottom: 5px;
     }
 
-    .modelScenCell:hover
-    {
-        background-color: #AAAAAA;
-    }
-
-    .modelScenCell.rowHeader
-    {
-        
-        border-radius: 0px;
-        border-right: none;
-        border-bottom: none;
-        background-color: white;
-        font-size: 120%;
-        width: 10%;
-    }
-
-    .modelScenCell a
+    .scenModelCell a
     {
         color: black;
         font-weight: bold;
@@ -334,6 +298,12 @@ function zipFiles($requestedData)
     }
 
 
+
+    .scenModelCell:hover
+    {
+        background-color: #AAAAAA;
+        color: white;
+    }
 
 
 
