@@ -1,5 +1,4 @@
 <?php
-
 class draw {
 
     public static function canvas($width = 500, $height = 500, $background = 'black')
@@ -136,7 +135,6 @@ class draw {
         $result[$max] = $color_ids[count($color_ids) -1];
         return $result;
     }
-
 
 }
 ?>

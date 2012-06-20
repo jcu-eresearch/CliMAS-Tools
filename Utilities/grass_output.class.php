@@ -1,5 +1,4 @@
 <?php
-
 class grass_output
 {
     
@@ -199,7 +198,5 @@ class grass_output
     }
     
 }
-
-
 
 ?>

@@ -1,6 +1,4 @@
 <?php
-
-
 class gnuplot 
 {
     
@@ -383,5 +381,4 @@ CMD;
     }
     
 }
-
 ?>

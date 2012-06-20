@@ -1,5 +1,4 @@
 <?php
-
 class color
 {
 
@@ -509,11 +508,5 @@ class color
     }
 
 
-
-
-
-
-
 }
-
 ?>

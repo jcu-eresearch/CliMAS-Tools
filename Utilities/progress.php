@@ -1,5 +1,4 @@
 <?php
-
 class progress {
 
 
@@ -66,6 +65,5 @@ class progress {
 
 
 }
-
 
 ?>

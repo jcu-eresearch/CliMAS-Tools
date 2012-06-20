@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Process Commands in Queue and do soemthig with them
  * Start, Status, Complete
@@ -37,10 +36,11 @@ class CommandProcessor
     public static $QSTAT_RUNNING = "R";
     public static $QSTAT_COMPLETED = "C";
 
-
     public static function ProcessQueue()
     {
 
+        echo "Queue Folder = ".configuration::CommandQueueFolder()."\n";
+        
         for ($index = 1; $index <= 20; $index++)
         {
             $files = file::find_files(configuration::CommandQueueFolder(),  configuration::CommandExtension()); // find command files to process

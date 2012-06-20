@@ -1,5 +1,4 @@
 <?php
-
 class location_coordinate {
 
 
@@ -160,6 +159,5 @@ class location_coordinate {
         $result = new location_coordinate("WGS84",$_lat,$_long);
         return $result;
     }
-
 }
 ?>

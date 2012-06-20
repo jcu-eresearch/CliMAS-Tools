@@ -1,5 +1,4 @@
 <?php
-session_start();
 include_once 'ParameterNames.class.php';
 include_once 'configuration.class.php';
 
@@ -180,6 +179,7 @@ if (stripos( $hostname, "wallaceinitiative.jcu.edu.au") !== FALSE)
     include_once $af.'Search/extras/extras.includes.php';
     include_once $af.'Search/MapServer/Mapserver.includes.php';
     include_once $af.'Search/CommandAction/Command.includes.php';
+    
     
     
 

@@ -1,5 +1,4 @@
 <?php
-
 class location {
     //put your code here
 
@@ -162,7 +161,6 @@ class location {
         return $result;
 
     }
-
 
 }
 ?>

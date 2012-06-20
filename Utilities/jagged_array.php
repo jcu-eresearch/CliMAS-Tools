@@ -1,5 +1,4 @@
 <?php
-
 class jagged_array 
 {
     
@@ -25,5 +24,4 @@ class jagged_array
     
     
 }
-
 ?>

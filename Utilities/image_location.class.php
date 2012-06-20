@@ -1,5 +1,4 @@
 <?php
-
 class image_location
 {
 
@@ -120,7 +119,6 @@ class image_location
         return $result;
 
     }
-
 
 }
 ?>

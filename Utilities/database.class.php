@@ -1,5 +1,4 @@
 <?php
-
 class database
 {
 
@@ -1577,9 +1576,6 @@ class database
         
         return  (($file_row_count - 1) == $row_count); //** return true if the number of rows in the file macthes the number of rows from the file.
     }
-    
-    
-    
     
     
 }

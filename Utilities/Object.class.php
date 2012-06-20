@@ -254,7 +254,5 @@ class Object  {
     public static $TRUE = "TRUE";
     public static $FALSE = "FALSE";
 
-
 }
-
 ?>

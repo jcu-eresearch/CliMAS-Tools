@@ -1,5 +1,4 @@
 <?php
-
 class matrix
 {
 
@@ -2171,9 +2170,6 @@ class matrix
 
         return $result;
     }
-
-
-
 
 }
 ?>

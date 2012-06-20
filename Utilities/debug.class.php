@@ -1,5 +1,4 @@
 <?php
-
 class debug
 {
     //**put your code here
