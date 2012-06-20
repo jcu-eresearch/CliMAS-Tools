@@ -1,12 +1,13 @@
 <?php
 include_once 'includes.php';
 
+// updated 
+
 $requestedScenario = array_util::Value($_GET, "scenario", null);
 $requestedModel = array_util::Value($_GET, "model", null);
 $requestedTime = array_util::Value($_GET, "time", null);
 
 $haveRequest = (!is_null($requestedScenario)) && (!is_null($requestedModel)) && (!is_null($requestedTime));
-
 
 function selectionTable()
 {

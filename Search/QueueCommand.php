@@ -5,20 +5,27 @@ $head = "";
 $title = "Queue Command";
 $content = "";
 
-$refreshSeconds = array_util::Value($_GET, "refresh", 5);
+$refreshSeconds = array_util::Value($_GET, "refresh", 30);
 
 $queueID = array_util::Value($_GET, "queueID", null);
+
 if (is_null($queueID))
 {
-    // first time in we don't have a queue id so execute the aqction and queue it
-    $A = FinderFactory::Action(array_util::Value($_GET, "a", null));
+    
+    $actionName = array_util::Value($_GET, "a", null);
+    
+    echo "actionName = $actionName<br>";
+    $A = FinderFactory::Action($actionName);  // first time in we don't have a queue id so execute the aqction and queue it
+    
+    
+    
     $O = OutputFactory::Find($A);
-
-
-    if ($A->Result() instanceof Command)
+    
+    
+    if ($A->Result() instanceof CommandAction)
     {
         $cmd = $A->Result();
-        $cmd instanceof Command;
+        $cmd instanceof SpeciesMaxentCommand;
 
         if (!is_null($O))
         {
@@ -31,24 +38,22 @@ if (is_null($queueID))
 
     }
     else
-    {
-        $content = "Can't queue anything other than a command, tried to queue ".get_class($A->Result());
-    }
+        $content = "Can't queue anything other than a CommandAction, tried to queue ".get_class($A->Result());
 
 }
 else
 {
-    $content = datetimeutil::now()." ... Watch queue for changes in ID {$queueID}<br>";
     $refreshTime = htmlutil::RefreshPageMetatag($refreshSeconds, $_SERVER['PHP_SELF']."?refresh={$refreshSeconds}&queueID={$queueID}");
 
-    $status = CommandFactory::QueueStatus($queueID);
-
-    $content .= "Status: ".OutputFactory::Find($status)."<br>";
-
-
+    $cmd = CommandUtil::GetCommandFromID($queueID);
+    
+    if (!is_null($cmd))
+    {
+        $toActionOutput = ($cmd->ExecutionFlag() == Command::$EXECUTION_FLAG_COMPLETE) ? $cmd->Result() : $cmd->Status();
+        $content = OutputFactory::Find($toActionOutput);
+    }
+    
 }
-
-
 
 ?>
 <html>

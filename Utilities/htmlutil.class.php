@@ -3,7 +3,6 @@
 class htmlutil {
 
 
-
     /*
     * @method table
     * @param $data

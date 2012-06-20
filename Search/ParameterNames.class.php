@@ -1,0 +1,33 @@
+<?php
+class Parameter 
+{
+    public static $APPLICATION_NAME     = "APPLICATION_NAME";
+    public static $APPLICATION_FOLDER   = "APPLICATION_FOLDER";
+    public static $UTILITIES_CLASSES    = "UTILITIES_CLASSES";
+    public static $DOWNLOAD_FOLDER_WEB  = "DOWNLOAD_FOLDER_WEB";
+    public static $DOWNLOAD_FOLDER_REAL = "DOWNLOAD_FOLDER_REAL";
+    
+    public static $COMMAND_QUEUE_LOG      = "COMMAND_QUEUE_LOG";
+    public static $COMMAND_QUEUE_FOLDER   = "COMMAND_QUEUE_FOLDER";
+    public static $COMMAND_SCRIPTS_FOLDER = "COMMAND_SCRIPTS_FOLDER";
+    public static $COMMAND_EXTENSION      = "COMMAND_EXTENSION";
+    public static $COMMAND_SCRIPTS_EXE    = "COMMAND_SCRIPTS_EXE";
+    public static $COMMAND_SCRIPTS_PREFIX = "COMMAND_SCRIPTS_PREFIX";
+    public static $COMMAND_SCRIPTS_SUFFIX = "COMMAND_SCRIPTS_SUFFIX";
+    
+    
+    public static $RESOURCES_FOLDER     = "RESOURCES_FOLDER";
+    
+    public static $ICONS_FOLDER         = "ICONS_FOLDER";
+    
+    public static $SOURCE_DATA_FOLDER   = "SOURCE_DATA_FOLDER";
+    
+    public static $Descriptions_ClimateModels     = "Descriptions_ClimateModels";
+    public static $Descriptions_EmissionScenarios = "Descriptions_EmissionScenarios";
+    public static $Descriptions_Years             = "Descriptions_Years";
+    
+    public static $PathDelimiter      = "PathDelimiter";
+    public static $ExtensionDelimiter = "ExtensionDelimiter";
+}
+
+?>

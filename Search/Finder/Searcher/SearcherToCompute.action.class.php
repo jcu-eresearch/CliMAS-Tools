@@ -32,8 +32,7 @@ class SearcherToCompute extends Action {
         else
         {
             // this should just create a command to be executed, and don't woirry abaout getting status back.'
-            $result = $this->getCommand();
-            CommandFactory::Queue($result);
+            CommandFactory::Queue($this->getCommand());
         }
 
 
@@ -48,7 +47,7 @@ class SearcherToCompute extends Action {
          * [MAP_EXTENT] => 124.05662341892 -22.264512887509 137.84288405521 -13.654570387491
          */
 
-        $speciesCommand = new SpeciesMaxentCommand();
+        $speciesCommand = new SpeciesMaxent();
         $speciesCommand->SpeciesIDs(FinderFactory::GetMethodResult("SpeciesFinder","SelectedSpeciesIDs"));
         $speciesCommand->EmissionScenarioIDs(Session::get("EmissionScenarioSearch", ""));
         $speciesCommand->ClimateModelIDs(Session::get("ClimateModelSearch", ""));
