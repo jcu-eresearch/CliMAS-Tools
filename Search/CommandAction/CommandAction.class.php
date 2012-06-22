@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  *
  *  
@@ -12,8 +11,10 @@ class CommandAction extends Object implements Serializable
     public function __construct() {        
         parent::__construct();
         $this->ActionName(__CLASS__);
-        $this->ExecutionFlag(Command::$EXECUTION_FLAG_READY);
+        $this->ExecutionFlag(self::$EXECUTION_FLAG_READY);
 
+        $this->initialised(false);
+        
     }
 
 
@@ -28,32 +29,14 @@ class CommandAction extends Object implements Serializable
     }
 
 
-    /**
-     * To check if the action has been completed - should do things like check files or other stuff
-     *
-     *
-     * @throws Exception
-     */
-    public function CompleteTest()
+    public function initialise()
     {
-        throw new Exception("COmmand Action CompleteTest has not been defined for ".$this->ActionName());
+        
+        
     }
 
 
-    public function Command(Command $cmd = null) {
-        if (is_null($cmd))
-        {
-            $result = $this->getProperty();
-            $result instanceof Command;
-            return $result;
-        }
-
-        $result = $this->setProperty($cmd);
-        $result instanceof Command;
-        return $result;
-    }
-
-    /**
+        /**
      * Name of this command, could be usefull for Logging
      * To be used as name of QSUB jobs
      *
@@ -65,7 +48,19 @@ class CommandAction extends Object implements Serializable
         return $this->setProperty(func_get_arg(0));
     }
 
+    /**
+     * Command has been initialised OK
+     * 
+     * @return type 
+     */
+    public function initialised() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
 
+    
+    
     /**
      * THis is where this command will be run,
      * From this we can figure out
@@ -98,7 +93,7 @@ class CommandAction extends Object implements Serializable
 
     public function unserialize($serialized) {
 
-        $data = unserialize($serialized) ;
+        $data = unserialize($serialized);
 
         foreach ($data as $name => $value)
                 $this->setPropertyByName($name, $value);
@@ -111,12 +106,6 @@ class CommandAction extends Object implements Serializable
         return $this->setProperty(func_get_arg(0));
     }
 
-    public function AttachedCommand()
-    {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
 
     public function Description() {
         if (func_num_args() == 0)
@@ -124,7 +113,6 @@ class CommandAction extends Object implements Serializable
         return $this->setProperty(func_get_arg(0));
 
     }
-
 
     /**
      * READY    -- Needs to be started - ie find action execute  Change ExecutionFlag to RUNNING
@@ -194,6 +182,10 @@ class CommandAction extends Object implements Serializable
     {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
+    }
+
+    public function AttachedCommand() {
+        
     }
 
 

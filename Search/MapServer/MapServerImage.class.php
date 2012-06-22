@@ -15,9 +15,8 @@ class MapServerImage extends Object {
     { 
         if (!file_exists($spatialFilename)) return null;
         $M = new MapServerImage();
-        $M->AddLayer($spatialFilename,$attributeColumnName,$layerType);  
-
         
+        $M->AddLayer($spatialFilename,$attributeColumnName,$layerType);  
         
         $M->save();
         return $M->MapImageLocation();
@@ -26,33 +25,35 @@ class MapServerImage extends Object {
 
     public static function RasterFromFile($spatialFilename) 
     { 
-        return self::FromFile($spatialFilename,null,MapServerLayer::$TYPE_RASTER);
+        return self::FromFile($spatialFilename,null,  MapServerConfiguration::$SPATIAL_TYPE_RASTER);
     }
 
     public static function VectorFromFile($spatialFilename,$attributeColumnName = null) 
     { 
-        return self::FromFile($spatialFilename,$attributeColumnName,MapServerLayer::$TYPE_LINE);
+        return self::FromFile($spatialFilename,$attributeColumnName,MapServerConfiguration::$SPATIAL_TYPE_LINE);
     }
 
     public static function PolylineFromFile($spatialFilename,$attributeColumnName = null) 
     { 
-        return self::FromFile($spatialFilename,$attributeColumnName,MapServerLayer::$TYPE_LINE);
+        return self::FromFile($spatialFilename,$attributeColumnName,MapServerConfiguration::$SPATIAL_TYPE_LINE);
     }
     
     public static function PolygonFromFile($spatialFilename,$attributeColumnName = null) 
     { 
-        return self::FromFile($spatialFilename,$attributeColumnName,MapServerLayer::$TYPE_POLYGON);
+        return self::FromFile($spatialFilename,$attributeColumnName,MapServerConfiguration::$SPATIAL_TYPE_POLYGON);
     }
     
     public static function PointsFromFile($spatialFilename,$attributeColumnName = null) 
     { 
-        return self::FromFile($spatialFilename,$attributeColumnName,MapServerLayer::$TYPE_POINT);
+        return self::FromFile($spatialFilename,$attributeColumnName,MapServerConfiguration::$SPATIAL_TYPE_POINT);
     }
     
     public static function RasterOnVector($backgroundSpatialFilename = null,$backgroundAttributeColumnName = null,$foregroundSpatialFilename = null,$extent = null) 
     { 
                 
         $MSI = new MapServerImage();
+        
+        
         $MSI->Extent($extent);
         
         
@@ -63,7 +64,7 @@ class MapServerImage extends Object {
         
         if (!is_null($backgroundSpatialFilename))
         {
-            $background = $MSI->AddLayer($backgroundSpatialFilename,$backgroundAttributeColumnName, MapServerLayer::$TYPE_LINE);
+            $background = $MSI->AddLayer($backgroundSpatialFilename,$backgroundAttributeColumnName,MapServerConfiguration::$SPATIAL_TYPE_LINE);
             $background instanceof MapServerLayerVector;
             $background->LabelItem(null);            
             $layerAdded = true;
@@ -71,7 +72,7 @@ class MapServerImage extends Object {
         
         if (!is_null($foregroundSpatialFilename))
         {
-            $MSI->AddLayer($foregroundSpatialFilename,null, MapServerLayer::$TYPE_RASTER);
+            $MSI->AddLayer($foregroundSpatialFilename,null, MapServerConfiguration::$SPATIAL_TYPE_RASTER);
             $layerAdded = true;
         }
         
@@ -101,9 +102,12 @@ class MapServerImage extends Object {
     {
         if (!file_exists($filename)) return null;
         
+        
         switch ($layerType) {
-            case MapServerLayer::$TYPE_RASTER:
+            case MapServerConfiguration::$SPATIAL_TYPE_RASTER:
+                
                 $current = $this->wrapper->Layers()->AddLayer($filename);
+                
                 $current instanceof MapServerLayerRaster;
                 $current->HistogramBuckets(10);
                 $current->ColorTableByStats(RGB::GradientYellowOrangeRed());
@@ -111,11 +115,26 @@ class MapServerImage extends Object {
                 break;
 
             default:
+                
                 $current = $this->wrapper->Layers()->AddLayer($filename,$attributeColumnName, $layerType);
-                $current instanceof MapServerLayerVector;
+                
+                if ($current instanceof MapServerLayerRaster)
+                {
+                    $current instanceof MapServerLayerRaster;
+                    $current->HistogramBuckets(10);
+                    $current->ColorTableByStats(RGB::GradientYellowOrangeRed());
+                    $current->ColorTableResetFirstElement();                                            
+                }
+                else
+                {
+                    $current instanceof MapServerLayerVector;    
+                }
+                
                 break;
         }
         
+        
+        $this->Extent($this->wrapper->Extent());
         
         
         return $current;
@@ -129,6 +148,7 @@ class MapServerImage extends Object {
         $this->wrapper->Caption($this->Caption());
         
         $MF = Mapfile::create($this->wrapper);
+        
         $MF->Extent($this->Extent());
         
         $mapfile = $MF->write();

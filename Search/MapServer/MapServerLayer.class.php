@@ -22,7 +22,7 @@ class MapServerLayer extends Object {
         if (is_null($LayerType)) 
         {
             if (spatial_util::isRaster($filename))
-                $LayerType = MapServerLayer::$TYPE_RASTER;
+                $LayerType = MapServerConfiguration::$SPATIAL_TYPE_RASTER;
             else
                 $LayerType = spatial_util::VectorType($filename);
         }

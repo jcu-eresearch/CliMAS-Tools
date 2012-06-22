@@ -126,21 +126,41 @@ class FinderFactory {
     public static function Action($actionClassname)
     {
 
-        if (is_null($actionClassname)) return null; // todo: log
+        if (is_null($actionClassname)) 
+        {
+            throw new Exception("actionClassname is null");
+            return null; // todo: log
+        }
+            
         
         $actionClassname = trim($actionClassname);
-        if ($actionClassname == "") return null; // todo: log
-
+        if ($actionClassname == "") 
+        {
+            throw new Exception("actionClassname is EMPTY");
+            return null; // todo: log
+        }
+            
 
         $actionFilename = array_util::Value(self::Actions(), $actionClassname, null);
 
-        if (is_null($actionFilename)) return null; // todo: log
+        if (is_null($actionFilename)) 
+        {
+            //throw new Exception("actionFilename is NULL");
+            return null; // todo: log
+        }
+            
 
         include_once $actionFilename;  // INCLUDE this action Class
 
         $result = new $actionClassname();
 
-        if (!($result instanceof iAction)) return null; //TODO: LOG
+        if (!( ($result instanceof iAction) || ($result instanceof CommandAction) ) ) 
+        {
+            throw new Exception("Included Action is NOT an Action");
+            
+            return null; //TODO: LOG
+        }
+            
 
         $result instanceof iAction;
 

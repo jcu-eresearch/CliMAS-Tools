@@ -39,7 +39,7 @@ class CommandUtil
      * @param bool $mustBeLatest - FALSE= if we have a ".previous" then read that one  TRUE =  must be absolute latest version of command (may cause conflicts) -
      * @return null|\iCommand
      */
-    public static function GetCommandFromID($lookupID,$delete = true,$mustBeLatest = false)
+    public static function GetCommandFromID($lookupID,$delete = false,$mustBeLatest = false)
     {
         
         // check to see if we have a previous versio  - only reason for this will be when 
@@ -114,12 +114,12 @@ class CommandUtil
 
         $fn = self::CommandFilename($command->ID());
         
-
+        
         // make previous version if we can 
         if (file_exists($fn))
         {
             @file::copy($fn, self::CommandFilenamePrevious($command->ID()), true);
-            exec('chmod o+rw '.self::CommandFilenamePrevious($command->ID()));
+            exec("chmod o+rw '".self::CommandFilenamePrevious($command->ID())."'" );
         }
         
 
@@ -127,9 +127,11 @@ class CommandUtil
 
         $command->LastUpdated(datetimeutil::now());
         $ser = serialize($command);
-        file_put_contents($fn,$ser);
+        
+        
+        file_put_contents($fn,$ser,LOCK_EX);
 
-        exec('chmod o+rw'.$fn);
+        exec("chmod o+rw '{$fn}'");
         
         // finished writing to command so we can remove previous
         file::Delete(self::CommandFilenamePrevious($command->ID()));
@@ -141,7 +143,6 @@ class CommandUtil
     public static function CommandFilename($commandID)
     {
         $fn = configuration::CommandQueueFolder().
-              configuration::osPathDelimiter().
               $commandID.
               configuration::CommandExtension();
 
@@ -153,7 +154,6 @@ class CommandUtil
     public static function CommandFilenamePrevious($commandID)
     {
         $fn = configuration::CommandQueueFolder().
-              configuration::osPathDelimiter().
               $commandID.
               configuration::CommandExtension().
               configuration::osExtensionDelimiter().
@@ -170,7 +170,11 @@ class CommandUtil
      */
     public static function Queue(CommandAction $command)
     {
-        CommandUtil::PutCommandToFile($command);
+        $queueFilename = CommandUtil::PutCommandToFile($command);
+        
+        if (is_null($queueFilename)) return null;
+        
+        return $command->ID();
     }
 
 
@@ -215,6 +219,33 @@ class CommandUtil
 
     }
 
+    public static function QueueUpdateExecutionFinalised(CommandAction $command)
+    {
+        return self::QueueUpdateExecutionFlag($command, CommandAction::$EXECUTION_FLAG_FINALISE);        
+    }
+    
+    
+    public static function QueueUpdateStatus(CommandAction $command, $status = null)
+    {
+
+        if (is_null($status)) $status = "Server Update at ".datetimeutil::NowDateTime();
+        
+        $updatedCommand = CommandUtil::GetCommandFromID($command->ID(),false); // Updated Command - something else will write and u[dated version of this object
+
+        if (is_null($updatedCommand)) 
+        {   
+            return null;
+        }
+
+        $updatedCommand instanceof CommandAction;
+
+        $updatedCommand->Status($status);
+
+        CommandUtil::PutCommandToFile($updatedCommand);
+
+        return $updatedCommand->Status();
+
+    }
 
 
 

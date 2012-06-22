@@ -121,8 +121,7 @@ class OutputFactory  {
 
         if (is_null($outputter))  // still could not find an outputter for this Object
         {
-            $outputter = new GenericOutput(); // otherwise return a Gneneric Outputtter
-            $outputter->IDs($src->IDs()); // pass any IDs from object to output object
+            $outputter = new GenericOutput(); // otherwise return a Gneneric Outputtter 
             $outputter->Source($src);
         }
 

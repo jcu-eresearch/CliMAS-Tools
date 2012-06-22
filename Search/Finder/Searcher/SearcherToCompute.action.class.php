@@ -32,9 +32,10 @@ class SearcherToCompute extends Action {
         else
         {
             // this should just create a command to be executed, and don't woirry abaout getting status back.'
-            CommandFactory::Queue($this->getCommand());
+            CommandUtil::Queue($this->getCommand());
         }
 
+        $result = "Command sent";
 
         $this->Result($result);
         return $result;
@@ -52,7 +53,6 @@ class SearcherToCompute extends Action {
         $speciesCommand->EmissionScenarioIDs(Session::get("EmissionScenarioSearch", ""));
         $speciesCommand->ClimateModelIDs(Session::get("ClimateModelSearch", ""));
         $speciesCommand->TimeIDs(Session::get("TimeSearch", ""));
-        $speciesCommand->ActionName(__CLASS__);
 
         $speciesCommand->Result("");
 

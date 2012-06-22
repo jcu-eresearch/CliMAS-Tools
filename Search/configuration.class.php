@@ -85,7 +85,7 @@ class configuration {
 
     public static function ContextSpatialLayersFolder()
     {
-        return self::SourceDataFolder() . "context" . self::osPathDelimiter();
+        return self::SourceDataFolder() . "/context" . self::osPathDelimiter();
     }
     
     public static function osPathDelimiter()      { 
@@ -132,8 +132,36 @@ class configuration {
         global $conf;
         return $conf[Parameter::$COMMAND_SCRIPTS_SUFFIX]; 
     }
+
+    public static function MaxentJar() { 
+        global $conf;
+        return $conf[Parameter::$MaxentJar]; 
+    }
+
+    public static function Maxent_Taining_Data_folder() { 
+        global $conf;
+        return $conf[Parameter::$Maxent_Taining_Data_folder]; 
+    }
+    
+    public static function Maxent_Future_Projection_Data_folder() { 
+        global $conf;
+        return $conf[Parameter::$Maxent_Future_Projection_Data_folder]; 
+    }
+    
+    public static function Maxent_Species_Data_folder() { 
+        global $conf;
+        return $conf[Parameter::$Maxent_Species_Data_folder]; 
+    }
+    
+    public static function Maxent_Species_Data_Output_Subfolder() { 
+        global $conf;
+        return $conf[Parameter::$Maxent_Species_Data_Output_Subfolder]; 
+    }
+    
+    public static function Maxent_Species_Data_Occurance_Filename() { 
+        global $conf;
+        return $conf[Parameter::$Maxent_Species_Data_Occurance_Filename]; 
+    }
     
 }
-    
-
 ?>

@@ -28,6 +28,18 @@ class Parameter
     
     public static $PathDelimiter      = "PathDelimiter";
     public static $ExtensionDelimiter = "ExtensionDelimiter";
+    
+    public static $MaxentJar = "MaxentJar";
+    
+    
+    public static $Maxent_Taining_Data_folder = "Maxent_Taining_Data_folder";
+    public static $Maxent_Future_Projection_Data_folder = "Maxent_Future_Porojection_Data_folder";
+    public static $Maxent_Species_Data_folder = "Maxent_Species_Data_folder";
+    public static $Maxent_Species_Data_Output_Subfolder = "Maxent_Species_Data_Output_Subfolder";
+    public static $Maxent_Species_Data_Occurance_Filename = "Maxent_Species_Data_Occurance_Filename";
+
+
+    
 }
 
 ?>
