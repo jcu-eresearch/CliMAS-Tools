@@ -6,6 +6,10 @@
  */
 class SpeciesMaxent extends CommandAction {
     
+    
+    public static $OCCURANCE_MINIMUM_LINES = 3;
+
+
 
     public function __construct() {
         parent::__construct();
@@ -21,6 +25,12 @@ class SpeciesMaxent extends CommandAction {
     }
 
     
+    
+    /**
+     * This is run from the web server side 
+     * - so NO processing here
+     *  
+     */
     public function initialise() 
     {
         
@@ -49,14 +59,35 @@ class SpeciesMaxent extends CommandAction {
         
     }
 
+    
+    /**
+     * Runnning on GRID 
+     * 
+     * - lots of processing can be done here.
+     * 
+     * @return type 
+     */
     public function Execute()
     {
         
         
         $this->SpeciesCombinations($this->buildCombinations());
         
+
+        $this->log("pre getOccurances ");
+        
+        $this->log(print_r($this->SpeciesCombinations(),true));
+        
+        
+        $this->getOccurances();
+        
+        $this->log("post getOccurances");
+        
+        
         $this->Result($this->progessResults());   // this will check to see if the outputs exists  
         CommandUtil::PutCommandToFile($this); // post any results we already have
+
+        //  make sure we have the occurance data for species   $this->SpeciesCombinations  gives use the list of species to look for
         
         
         // has this alredy been done ?
@@ -73,7 +104,7 @@ class SpeciesMaxent extends CommandAction {
         // check to see if we have the data they asked for ??
         
         
-        $this->getOccurances();
+        
             
         
         
@@ -122,6 +153,14 @@ class SpeciesMaxent extends CommandAction {
     }
 
     
+    private function log($msg)
+    {
+        file_put_contents("/tmp/afakes.log",$msg."\n\n", FILE_APPEND);
+        
+    }
+    
+    
+    
     private function getOccurances()
     {
         
@@ -130,12 +169,19 @@ class SpeciesMaxent extends CommandAction {
         foreach (array_keys($this->SpeciesCombinations()) as $speciesID) 
         {
             
+            $this->log("get  getOccurances  {$speciesID}");
+            
             if (! (is_null($speciesID) || $speciesID == ""))
             {
+                
+                file::mkdir_safe(configuration::Maxent_Species_Data_folder().$speciesID);                
+                
                 $occurFilename =  configuration::Maxent_Species_Data_folder()."{$speciesID}{$os_path}".configuration::Maxent_Species_Data_Occurance_Filename();
 
                 // check that this exists if not then - get data from Database / or ALA ??
 
+                $this->log("get  getOccurances  {$speciesID} filename = {$occurFilename}");
+                
                 echo "Check for $occurFilename\n";
 
                 if (!file_exists($occurFilename))
@@ -156,19 +202,28 @@ class SpeciesMaxent extends CommandAction {
     private function getOccurancesRecordsFor($speciesID,$occurFilename)
     {
         
+        $this->log("Get data for $occurFilename and place in $occurFilename\n");
+        
         echo "Get data for $occurFilename and place in $occurFilename\n";
         
+        CommandUtil::QueueUpdateStatus($this, "Getting Species Occourance data from Datasource for ".  urldecode($speciesID)); 
         
-        CommandUtil::QueueUpdateStatus($this, "Retriving Species Occourance data from Datasource" ); 
-        
+        $ok = true;
         if (!file_exists($occurFilename))
         {
-            $test_content = '"SPPCODE","LATDEC","LONGDEC"'."\n";
-            file_put_contents($occurFilename, $test_content);
+            $ok = SpeciesData::SpeciesOccuranceToFile($speciesID, $occurFilename); // get occuances from database
             
-            // POSTGRES Call to database Thru ToolsData
+            if (!$ok) return FALSE; // something  wrong
             
+            if (!file_exists($occurFilename)) return FALSE; // make sure file exists
         }
+
+        
+        // sanity check agains the occurance file - probably has atleast 3 rows - ie header and data row and empty last row ?   
+        $lineCount = file::lineCount($occurFilename);
+        if ($lineCount < self::$OCCURANCE_MINIMUM_LINES) return FALSE;;
+        
+        $this->log("data for $occurFilename  written to $occurFilename\n");
         
         
     }
@@ -383,12 +438,6 @@ class SpeciesMaxent extends CommandAction {
                     }
                         
         }
-
-        
-        echo "buildCombinations\n";
-        print_r($result);
-        echo "\n";
-        
 
         return $result;
         

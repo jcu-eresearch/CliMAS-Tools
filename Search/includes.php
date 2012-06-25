@@ -220,6 +220,7 @@ if (stripos( $hostname, "wallaceinitiative.jcu.edu.au") !== FALSE)
     include_once $af.'Search/DB/ToolsData.includes.php';
     include_once $af.'Search/Output/Output.includes.php';
     
+    include_once $af.'Search/Finder/Species/SpeciesMaxent.action.class.php';
     
     
 
