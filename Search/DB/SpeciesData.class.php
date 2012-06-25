@@ -189,6 +189,35 @@ class SpeciesData extends Object {
         
     }
     
+
+    
+    public static function SpeciesQuickInformation($speciesID) 
+    {
+        
+        $speciesID = trim(urldecode($speciesID));
+        
+        
+        // get id for occurrences table  related to  species.species_id
+        $speciesDatabaseQ = "select scientific_name,common_name from species where scientific_name = '{$speciesID}' limit 1";
+
+        $SD = new SpeciesData();
+        $speciesDatabaseResult = $SD->query($speciesDatabaseQ);
+        unset($SD);
+        
+        if (count($speciesDatabaseResult) == 0 ) 
+        {
+            // TODO log - message to user ?? / admnin
+            return null;  // could not find 
+        }
+        
+        $first = util::first_element($speciesDatabaseResult);
+        
+        $result = $first['common_name']." (".$first['scientific_name'].")";
+        
+        return $result;
+        
+    }
+    
     
     
     

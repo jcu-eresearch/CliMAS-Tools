@@ -32,12 +32,12 @@ function icon($name)
             <a href="#" class="Tool" id="ToolZoomOutLow"    onclick="SetZoom(this,-2.0);" ><?php icon("Zoom-Out-icon.png")?></a>&nbsp;&nbsp
             <a href="#" class="Tool" id="ToolCentre"        onclick="SetZoom(this,1.0)"  ><?php icon("pan.png")?></a>&nbsp&nbsp
             <a href="#" class="Tool" id="ToolZoomInLow"     onclick="SetZoom(this,2.0)"  ><?php icon("Zoom-In-icon.png")?></a>&nbsp;&nbsp
-            <a href="#" class="Tool" id="ToolZoomOutLow1"   onclick="zoomOut();" >Zoom Out1</a>&nbsp;&nbsp
+            <!-- <a href="#" class="Tool" id="ToolZoomOutLow1"   onclick="zoomOut();" >Zoom Out1</a>&nbsp;&nbsp -->
         </div>
         <iframe ID="GUI" src="SearchMap.php" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" ></iframe>
         <br style="clear:both;">
 
-        <iframe ID="DataSummary" src="" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" ></iframe>
+        <iframe ID="DataSummary" src="" width="900" height="600" frameBorder="0" border="0" style="overflow:scroll; float:left;" ></iframe>
     </div>
 
     <div ID="popup" >

@@ -54,60 +54,95 @@ class SpeciesMaxentOutput extends Output
         // this is where we build an output for for the user 
         // table of images ?
         
-        
+        if (!is_array($this->maxentResults)) return "Waiting for a response from the GRID"; 
+
         $result = array();
         
-        if (!is_array($this->maxentResults))
-        {
-            $result = "Waiting for server Grid<br>"; 
-        }
-        else
+        foreach ($this->maxentResults as $speciesID => $combintations) 
         {
 
-            foreach ($this->maxentResults as $speciesID => $combintations) 
+            foreach ($combintations as $combintation => $combintationFilename) 
             {
 
-                foreach ($combintations as $combintation => $combintationFilename) 
+                if (substr($combintationFilename,0,1) == configuration::osPathDelimiter())
                 {
+                    $localCombintationFilename = configuration::Maxent_Species_Data_folder().$combintationFilename;
 
-                    if (substr($combintationFilename,0,1) == configuration::osPathDelimiter())
+                    $localCombintationFilename = str_replace(configuration::osPathDelimiter().configuration::osPathDelimiter(),configuration::osPathDelimiter() , $localCombintationFilename);
+
+
+                    if ($combintationFilename == "")
                     {
-                        $localCombintationFilename = configuration::Maxent_Species_Data_folder().$combintationFilename;
-                        
-                        $localCombintationFilename = str_replace(configuration::osPathDelimiter().configuration::osPathDelimiter(),configuration::osPathDelimiter() , $localCombintationFilename);
-                        
-
-                        if ($combintationFilename == "")
-                        {
-                            $result[$speciesID][$combintation] = "Calculating ......";
-                        }
-                        else
-                        {
-                            
-                            $vis = $this->getVisualVersion($speciesID,$combintation,$localCombintationFilename);
-                            
-                            $result[$speciesID][$combintation] = $vis;
-                        }
-                        
+                        $result[$speciesID][$combintation] = "Calculating ......";
                     }
                     else
                     {
-                        $result[$speciesID][$combintation] = $combintationFilename;
+                        $vis = $this->getVisualVersion($speciesID,$combintation,$localCombintationFilename);
+                        $result[$speciesID][$combintation] = $vis;
                     }
 
-
                 }
+                else
+                {
+                    $result[$speciesID][$combintation] = $combintationFilename;
+                }
+
 
             }
 
-            $result = OutputFactory::Find($result) ;     
-            
         }
         
         
-       
+        $r = '<table width="100%" border="0">';
 
-       return $result;
+        
+        
+        foreach ($result as $speciesID => $combintations) 
+        {
+
+
+            $fk = util::first_key($combintations);
+            $fe = util::first_element($combintations);
+            
+            $r .= "\n".'<tr>';
+            $r .= "\n".'<td colspan="'.count($combintations).'">';
+            $r .= SpeciesData::SpeciesQuickInformation($speciesID);
+            $r .= "<br>".$fe;
+            $r .= '</td>';
+            $r .= "\n".'</tr>';
+            
+            
+            $r .= "\n".'<tr>';
+            
+            foreach ($combintations as $combintation => $visualElement) 
+            {
+                
+                if ($combintation == $fk) continue;
+                
+                $smt = explode("_",$combintation);
+                
+                $info = "";
+                if (count($smt) == 3)
+                {
+                    
+                    $info .= "<br>time: ".$smt[2];
+                    $info .= "<br>scenario: ".$smt[0];
+                    $info .= "<br>model: ".$smt[1];
+                }
+                
+                $r .= "\n".'<td>';
+                $r .= $visualElement;
+                $r .= '<div class="info">'.$info.'</div>' ;
+                $r .= '</td>';
+                
+            }
+            
+            $r .= "\n".'</tr>';
+            
+        }
+       $r .= "\n".'</table>';
+
+       return $r;
 
     }
 
@@ -147,7 +182,7 @@ class SpeciesMaxentOutput extends Output
         {
             // this is a calculated grid file
             $mapImage =   MapServerImage::FromFile($localCombintationFilename);
-            return '<div class="probabilityMapContainer"><img class="probabilityMap" src="'.$mapImage.'"></div>';
+            return '<img class="probabilityMap" src="'.$mapImage.'">';
         }
         
         

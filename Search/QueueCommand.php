@@ -7,7 +7,6 @@ $content = "";
 
 $pageRefresh = 3;
 
-
 $refreshSeconds = null;
 
 $queueID = array_util::Value($_GET, "queueID", null);
@@ -33,11 +32,12 @@ if (is_null($queueID))
 
             if (is_null($queueID))
             {
-                $content = "Could npot queue command for some reason ".$cmd->CommandName();
+                $content = "Could not queue command for some reason ".$cmd->CommandName();
             }
             else
             {
-                $content = "Queued ".$cmd->CommandName();    
+                $content  = $cmd->Description();
+                $content .= queueBookmark($queueID);
                 $refreshSeconds = $pageRefresh;
             }
             
@@ -72,6 +72,8 @@ else
             else
             {
                 $content .="<h3>Partial Results ".datetimeutil::NowDateTime()." </h3>";
+                $content .= queueBookmark($queueID);
+                
                 $refreshSeconds = $pageRefresh;
             }
             
@@ -92,12 +94,30 @@ else
         }
         else
         {
-            $content = "Waiting for Server Response";
+            $content  = "Waiting for Server Response";
+            $content .= queueBookmark($queueID);
         }
 
         
     }
 }
+
+
+/**
+ * Link to page that will alow future returns to see progress
+ * - send mail button ...
+ *  
+ */
+function queueBookmark($id,$text = "UPDATE QUEUE STATUS")
+{
+    
+    $link = $_SERVER['PHP_SELF']."?refresh=5&queueID={$id}";
+    
+    $result = '<a href= "'.$link.'">'.$text.'</a>';
+    
+    return $result;
+}
+
 
 ?>
 <html>

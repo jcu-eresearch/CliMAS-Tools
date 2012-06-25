@@ -173,11 +173,17 @@ root {
     width: 130px;
     height: 100px;
 }
-
+    
 .probabilityMap
 {
-    width: 100%;
-    height: 100%;
+    width: 140px;
+    height: 100px;
 }
 
+
+.info 
+{
+    font-size: 60%;
+
+}
 
