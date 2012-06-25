@@ -139,8 +139,8 @@ class Mapfile extends Object{
         for ($index = 1; $index < count($values); $index++) 
         {
             
-            $value1 = number_format( $values[$index - 1], 2, '.', '' );
-            $value2 = number_format( $values[$index]    , 2, '.', '' );
+            $value1 = number_format( $values[$index - 1], 5, '.', '' );
+            $value2 = number_format( $values[$index]    , 5, '.', '' );
             
             $rgb = $rgbs[$index - 1]; 
 

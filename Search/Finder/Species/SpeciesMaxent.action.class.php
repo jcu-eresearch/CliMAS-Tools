@@ -78,7 +78,6 @@ class SpeciesMaxent extends CommandAction {
         
         $this->log(print_r($this->SpeciesCombinations(),true));
         
-        
         $this->getOccurances();
         
         $this->log("post getOccurances");
@@ -155,10 +154,12 @@ class SpeciesMaxent extends CommandAction {
     
     private function log($msg)
     {
-        file_put_contents("/tmp/afakes.log",$msg."\n\n", FILE_APPEND);
+        $fn = "/home/jc166922/tmp.log";
+        
+        if (file_exists($fn))
+            file_put_contents("/home/jc166922/tmp.log",$msg."\n\n", FILE_APPEND);
         
     }
-    
     
     
     private function getOccurances()
@@ -251,8 +252,6 @@ class SpeciesMaxent extends CommandAction {
             
             $htmlFromMaxentLocal = configuration::Maxent_Species_Data_folder().$htmlFile;
             
-            echo "looking for HTML $htmlFromMaxentLocal\n";
-            
             if (!file_exists($htmlFromMaxentLocal))
             {
                 $result[$speciesID]['Current Condition'] = "Waiting to start computing ";
@@ -278,13 +277,9 @@ class SpeciesMaxent extends CommandAction {
         
                 // $outputfile only points to the path that is the same on both sides
                 
-                
-                echo "Does this exist ".configuration::Maxent_Species_Data_folder().$outputFilename."\n";
-                
                 $result[$speciesID][$combination] = ""; // empty mean it does not exist
                 if (file_exists(configuration::Maxent_Species_Data_folder().$outputFilename))
                 {                    
-                    echo "IT DOES  ".configuration::Maxent_Species_Data_folder().$outputFilename."\n";
                     $result[$speciesID][$combination] = configuration::osPathDelimiter().$outputFilename;
                 }
             }
