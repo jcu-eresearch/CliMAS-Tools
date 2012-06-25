@@ -77,6 +77,8 @@ class SpeciesMaxentOutput extends Output
                     }
                     else
                     {
+                        // echo "$localCombintationFilename<br>";
+                        
                         $vis = $this->getVisualVersion($speciesID,$combintation,$localCombintationFilename);
                         $result[$speciesID][$combintation] = $vis;
                     }

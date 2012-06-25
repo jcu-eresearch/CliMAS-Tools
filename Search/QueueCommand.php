@@ -23,29 +23,56 @@ if (is_null($queueID))
     {
         $cmd->initialise();
         
-        if ($cmd->initialised())  // here is where you can check to see if command init ok
+        if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE)
         {
+            // we are already done 
             
-            //print_r($cmd);
+            $refreshSeconds = null;
             
-            $queueID = CommandUtil::Queue($cmd);
-
-            if (is_null($queueID))
+            $O = OutputFactory::Find($cmd);
+            
+            if (!is_null($O))
             {
-                $content = "Could not queue command for some reason ".$cmd->CommandName();
+                $head = $O->Head();
+                $title = $O->Title();
+                $content .= $O->Content();
             }
             else
             {
-                $content  = $cmd->Description();
-                $content .= queueBookmark($queueID);
-                $refreshSeconds = $pageRefresh;
+                $content .= OutputFactory::Find($cmd->Result());   
             }
+            
             
         }
         else
         {
-            $content = "Could initialise command ".$cmd->CommandName();
+            if ($cmd->initialised())  // here is where you can check to see if command init ok
+            {
+
+                //print_r($cmd);
+
+                $queueID = CommandUtil::Queue($cmd);
+
+                if (is_null($queueID))
+                {
+                    $content = "Could not queue command for some reason ".$cmd->CommandName();
+                }
+                else
+                {
+                    $content  = $cmd->Description();
+                    $content .= queueBookmark($queueID);
+                    $refreshSeconds = $pageRefresh;
+                }
+
+            }
+            else
+            {
+                $content = "Could initialise command ".$cmd->CommandName();
+            }
+            
         }
+        
+        
         
     }
     else

@@ -54,6 +54,19 @@ class SpeciesMaxent extends CommandAction {
         
         
         $this->initialised(true);
+        
+        
+        // check to see if we really need to go to the GRID
+        $this->SpeciesCombinations($this->buildCombinations());
+        
+        $this->Result($this->progessResults());
+        $alreadyCompleted = $this->progressResultsComplete();
+
+        // if we already have the dat - no reason to go to the server
+        if ($alreadyCompleted)
+        {
+            $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);    
+        }
 
         
         
@@ -70,18 +83,9 @@ class SpeciesMaxent extends CommandAction {
     public function Execute()
     {
         
-        
         $this->SpeciesCombinations($this->buildCombinations());
         
-
-        $this->log("pre getOccurances ");
-        
-        $this->log(print_r($this->SpeciesCombinations(),true));
-        
         $this->getOccurances();
-        
-        $this->log("post getOccurances");
-        
         
         $this->Result($this->progessResults());   // this will check to see if the outputs exists  
         CommandUtil::PutCommandToFile($this); // post any results we already have
@@ -183,7 +187,7 @@ class SpeciesMaxent extends CommandAction {
 
                 $this->log("get  getOccurances  {$speciesID} filename = {$occurFilename}");
                 
-                echo "Check for $occurFilename\n";
+                // echo "Check for $occurFilename\n";
 
                 if (!file_exists($occurFilename))
                 {
@@ -324,24 +328,16 @@ class SpeciesMaxent extends CommandAction {
         
         $output_subfolder = configuration::Maxent_Species_Data_Output_Subfolder();
         
-        $maxentLog = configuration::Maxent_Species_Data_folder()."{$speciesID}{$output_subfolder}{$os_path}maxent.log";
+        $maxentLog = configuration::Maxent_Species_Data_folder()."{$speciesID}{$os_path}{$output_subfolder}{$os_path}maxent.log";
         
-        
-        echo "check that it excists maxentLog = $maxentLog\n";
         
         if (!file_exists($maxentLog)) return false;
 
-        
-        echo "Found maxentLog = $maxentLog\n";
-
         $lastLogLine = exec("tail -n1 '$maxentLog'");
-
-        echo "lastLogLine = $lastLogLine\n";
 
         if (util::contains($lastLogLine, "Ending"))  return true; // Maxent finished OK
         
-        
-        return false; // Maxtent did not fish OK
+        return false; // Maxtent did not finish OK
         
     }
     
