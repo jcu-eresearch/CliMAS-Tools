@@ -16,20 +16,15 @@ class ToolsDataConfiguration {
 
     public static function ALAFullTextSearchJSON() { return  "http://bie.ala.org.au/search.json?q=";}
 
+    
+    public static function Species_DB_Server()   { return "tdh-tools-2.hpc.jcu.edu.au"; }
+    public static function Species_DB_Port()     { return "5432"; }
+    public static function Species_DB_Username() { return "ap02"; }
+    public static function Species_DB_Password() { return "71a6e5db6b9cfda9f0af062254b5bfbe"; }
+    public static function Species_DB_Database() { return "ap02";}
+    
+    
 
-    //
-    // this is used
-    /**
-     * This file will hold all the names of the Modelling Layers
-     * the filenames in this file are in the form [scenario]_[gcm]_[year]
-     *
-     * @return string Fuill pathname to file that contains list of modeling filenames
-     *
-     */
-    public static function ClimateModellingSourceFilelistFilename()
-    {
-        return "/data/dmf/TDH/ClimateModellingFilelist.txt";
-    }
     
     
     /**
@@ -39,22 +34,8 @@ class ToolsDataConfiguration {
      */
     public static function ModelledSpeciesFolder()
     {
-        return "/data/dmf/TDH-Tools/source/species";
+        return configuration::Maxent_Species_Data_folder();
     }
-
-    /**
-     * Chnage this to the folder that will actaully hold the data accessible on the HPC
-     *
-     * most likley /home/jc165798/Climate/CIAS/Australia/5km/bioclim_asc/
-     *
-     * @return string
-     */
-    public static function BioclimSourceFolder()
-    {
-        return "/www/eresearch/TDH-Tools/source/bc/";
-    }
-
-
 
 
 }

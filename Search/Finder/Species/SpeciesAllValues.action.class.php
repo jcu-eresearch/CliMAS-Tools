@@ -18,11 +18,41 @@ class SpeciesAllValues extends Action {
     public function Execute()
     {
 
-        $result = ToolsData::ComputedSpecies();
+//        $descs = new Descriptions();
+//
+//        
+//        
+//        $desc = self::DescriptionForSpecies($key);
+//        $desc->Filename($folder);
+//        $descs->Add($desc);
+        
+        $descs = new Descriptions();
+        $descs instanceof Descriptions;
+        
+        
+        $sp = new SpeciesData();
+        $speciesSearchResult = $sp->speciesList("Mangrove");
+        unset($sp);
+        
+        
+        
+        foreach ($speciesSearchResult as $index => $row) 
+        {
+            $desc = new Description();
+            $desc->DataName(urlencode($row['scientific_name']));
+            $desc->Description($row['common_name']." ({$row['scientific_name']})");
+            
+            $desc->MoreInformation($row['common_name']." ({$row['scientific_name']})");
+            $desc->URI(ToolsDataConfiguration::ALAFullTextSearch().urlencode($row['scientific_name']) );
+
+            $descs->Add($desc);
+            
+        }
+        
 
 
-        $this->Result($result);
-        return $result;
+        $this->Result($descs);
+        return $descs;
     }
 
     private function checkLocal()

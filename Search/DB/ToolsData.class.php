@@ -73,7 +73,7 @@ class ToolsData extends Object {
     public static function ComputedSpecies()
     {
 
-        $folderNames = file::folder_folders(ToolsDataConfiguration::ModelledSpeciesFolder(), configuration::osPathDelimiter(), true);
+        $folderNames = file::folder_folders(configuration::Maxent_Species_Data_folder(), configuration::osPathDelimiter(), true);
 
         $descs = new Descriptions();
 
