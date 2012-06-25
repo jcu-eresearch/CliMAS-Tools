@@ -61,15 +61,15 @@ class MapServerLayerVector extends MapServerLayer {
         $result = "";
         switch ($type) {
             case "Line String":
-               $result = MapServerLayer::$TYPE_LINE;
+               $result = MapServerConfiguration::$SPATIAL_TYPE_LINE;
                 break;
 
             case "Polygon":
-                $result = MapServerLayer::$TYPE_POLYGON;
+                $result = MapServerConfiguration::$SPATIAL_TYPE_POLYGON;
                 break;
             
             case "Point":
-                $result = MapServerLayer::$TYPE_POINT;;
+                $result = MapServerConfiguration::$SPATIAL_TYPE_POINT;;
                 break;
 
             default:

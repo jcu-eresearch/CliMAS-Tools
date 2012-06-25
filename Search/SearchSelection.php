@@ -1,4 +1,5 @@
 <?php
+session_start();
 include_once 'includes.php';
 
 $variableNames = FinderFactory::Descriptions(FinderFactory::Result("SearcherNames"));
@@ -213,7 +214,8 @@ CT;
 
             function run()
             {
-                window.parent.run('SearcherToCompute');
+                
+                window.parent.run('SpeciesMaxent');
             }
 
 

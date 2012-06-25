@@ -38,8 +38,13 @@ $conf[Parameter::$COMMAND_EXTENSION      ] = $conf[Parameter::$ExtensionDelimite
 $conf[Parameter::$COMMAND_SCRIPTS_PREFIX ] = "command_";
 $conf[Parameter::$COMMAND_SCRIPTS_SUFFIX ] = $conf[Parameter::$ExtensionDelimiter]."sh";
 
+$conf[Parameter::$MaxentJar ] = "/app/maxent.jar";
 
-
+$conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975/";
+$conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe/";
+$conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/ctbccr/TDH/";
+$conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output/";
+$conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
 
 $hostname = trim(exec("hostname --fqdn"));
 
@@ -57,7 +62,7 @@ if (stripos( $hostname, "afakes-eresearch") !== FALSE)
     $conf[Parameter::$UTILITIES_CLASSES]     = "/www/eresearch/TDH-Tools/Utilities/includes.php";
     $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/www/eresearch/TDH-Tools/output/";
     $conf[Parameter::$RESOURCES_FOLDER]      = "/www/eresearch/TDH-Tools/Resources/";
-    $conf[Parameter::$SOURCE_DATA_FOLDER]    = "/www/eresearch/TDH-Tools/source/";
+    $conf[Parameter::$SOURCE_DATA_FOLDER]    = "/data/dmf/TDH-Tools/source";
 
     $conf[Parameter::$Descriptions_ClimateModels]      = "/www/eresearch/TDH-Tools/Resources/descriptions/gcm.csv";
     $conf[Parameter::$Descriptions_EmissionScenarios]  = "/www/eresearch/TDH-Tools/Resources/descriptions/scenario.csv";
@@ -71,6 +76,14 @@ if (stripos( $hostname, "afakes-eresearch") !== FALSE)
     $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = "/data/dmf/TDH-Tools/queue/";
     $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/data/dmf/TDH-Tools/scripts/";
     $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = "/www/eresearch/TDH-Tools/Search/CommandActionExecute.php";
+    
+    $conf[Parameter::$MaxentJar ] = "/data/dmf/TDH-Tools/Search/Finder/Species/maxent.jar";
+
+    $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
+    $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
+    $conf[Parameter::$Maxent_Species_Data_folder ]            = "/data/dmf/TDH-Tools/source/species/";
+    $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
+    $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
     
 }        
 
@@ -136,6 +149,15 @@ if (stripos( $hostname, "default.domain") !== FALSE)
     $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/home/jc166922/TDH-Tools/scripts/";
     $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = "/home/jc166922/TDH-Tools/Search/CommandActionExecute.php";
     
+    $conf[Parameter::$MaxentJar ] = "/home/jc166922/TDH-Tools/Search/Finder/Species/maxent.jar";
+    
+    $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
+    $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
+    $conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/jc166922/TDH-Tools/source/species/";
+    $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
+    $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
+    
+    
 }        
 
 /**
@@ -171,6 +193,15 @@ if (stripos( $hostname, "wallaceinitiative.jcu.edu.au") !== FALSE)
         $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/local/climate_2012/tdhtools/scripts/";
         $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = "/local/climate_2012/tdhtools/Search/CommandActionExecute.php";
         
+        $conf[Parameter::$MaxentJar ] = "/local/climate_2012/tdhtools/Search/Finder/Species/maxent.jar";
+        
+        $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
+        $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
+        $conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/ctbccr/TDH/";
+        $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
+        $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
+        
+        
         
     }    
     
@@ -194,6 +225,15 @@ if (stripos( $hostname, "wallaceinitiative.jcu.edu.au") !== FALSE)
         $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = "/local/climate_2012/demo/queue/";
         $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/local/climate_2012/demo/scripts/";
         $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = "/local/climate_2012/demo/Search/CommandActionExecute.php";
+
+        $conf[Parameter::$MaxentJar ] = "/local/climate_2012/demo/Search/Finder/Species/maxent.jar";
+        
+        $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
+        $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
+        $conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/ctbccr/TDH/";
+        $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
+        $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
+        
         
     }    
     
@@ -201,16 +241,17 @@ if (stripos( $hostname, "wallaceinitiative.jcu.edu.au") !== FALSE)
     
     $af = configuration::ApplicationFolder();
     include_once configuration::ApplicationFolder().'Utilities/includes.php';
-
+    
     include_once $af.'Search/Session.class.php';
+    include_once $af.'Search/CommandAction/Command.includes.php';
     include_once $af.'Search/Finder/Finder.includes.php';
     include_once $af.'Search/Data/Data.includes.php';
-    include_once $af.'Search/DB/ToolsData.includes.php';
-    include_once $af.'Search/Output/Output.includes.php';
     include_once $af.'Search/extras/extras.includes.php';
     include_once $af.'Search/MapServer/Mapserver.includes.php';
-    include_once $af.'Search/CommandAction/Command.includes.php';
+    include_once $af.'Search/DB/ToolsData.includes.php';
+    include_once $af.'Search/Output/Output.includes.php';
     
+    include_once $af.'Search/Finder/Species/SpeciesMaxent.action.class.php';
     
     
 

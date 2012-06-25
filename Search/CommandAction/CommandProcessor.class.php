@@ -66,7 +66,7 @@ class CommandProcessor
             return; // todo:: Log as exception /??
         }
 
-        // echo "\n".$command->ID()."  == ".$command->ExecutionFlag()." .. ".$command->Status();
+         echo "\n".$command->ID()."  == ".$command->ExecutionFlag()." .. ".$command->Status();
 
         if (!($command instanceof CommandAction))
         {
@@ -135,6 +135,8 @@ class CommandProcessor
 
         $queueID = $cmd->QueueID();
 
+            echo "Check ing $queueID \n";
+        
         $result = "Unknown";
         if (!is_null($queueID))
         {
@@ -245,19 +247,29 @@ class CommandProcessor
                            $cmd->ID().
                            configuration::CommandScriptsSuffix();
 
-
+        echo "script_filename = $script_filename\n";
+        
+        
+        
         $script .= "rm {$script_filename}\n"; // script will remove it self when done
 
         file_put_contents($script_filename, $script);  // write script to script_filename
-
+        
+        
         return $script_filename;
 
     }
 
     private static function executeScript($scriptFilename)
     {
-        exec("chmod u+x {$scriptFilename}"); // may not be needed
-        $qsub_id = exec("qsub {$scriptFilename}");  // will do QSUB exec and then get the return with the QSUB ID
+        
+        exec("chmod u+x '{$scriptFilename}'"); // may not be needed
+        
+        $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub {$scriptFilename}";
+        
+        echo "cmd {$cmd}\n";
+        
+        $qsub_id = exec($cmd);  // will do QSUB exec and then get the return with the QSUB ID
         return $qsub_id;
 
     }

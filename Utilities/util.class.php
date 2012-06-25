@@ -612,7 +612,7 @@ SQL;
     */
     public static function last_char($str)
     {
-        $lastChar = substr($str,count($toTrim) - 1,1);
+        $lastChar = substr($str,count($str) - 1,1);
         return $lastChar;
     }
 

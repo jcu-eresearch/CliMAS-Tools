@@ -1,4 +1,5 @@
 <?php 
+session_start();
 $LayerListField = "LayerList";
 include_once 'includes.php';
 

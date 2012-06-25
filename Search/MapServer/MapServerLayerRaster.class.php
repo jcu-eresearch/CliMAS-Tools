@@ -9,7 +9,7 @@ class MapServerLayerRaster extends MapServerLayer {
         $layer_name = file::filenameOnly($filename);
         parent::__construct($parent,$filename,$layer_name);
 
-        $this->setPropertyByName("LayerType", MapServerLayer::$TYPE_RASTER  );
+        $this->setPropertyByName("LayerType", MapServerConfiguration::$SPATIAL_TYPE_RASTER  );
 
         $this->setPropertyByName("isRaster", true);
         

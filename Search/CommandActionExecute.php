@@ -1,5 +1,5 @@
 <?php
-include_once 'CommandProcessor.class.php';
+include_once 'includes.php';
 
 // read argv and get ID of command that will be run here.
 $commandActionID = array_util::Value($argv, 1);

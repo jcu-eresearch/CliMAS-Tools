@@ -48,7 +48,11 @@ class SpeciesAllValuesOutput extends Output
 
         $result = "";
         $o = $this->speciesOutput();
-        $result = $o->Content();
+        
+        $result .= '<div id="AllSpecies">';
+        $result .= $o->Content();
+        $result .= "</div>";
+        
         return $result;
 
     }
@@ -59,13 +63,45 @@ class SpeciesAllValuesOutput extends Output
 
         $descs = $this->speciesAllValues()->Result();
         $descs instanceof Descriptions;
+        
 
         $o = OutputFactory::Find($descs);
+        $o instanceof DescriptionsOutput;
+        $o->Template($this->template());
 
         $this->speciesOutput($o);
 
     }
 
+    
+        private function template()
+{
+$tmp = <<<TEMPLATE
+<div id="{DataName}" class="DescriptionCell" >
+    <span class="DescriptionLink">{URI}</span>
+    <div class="DescriptionText">{Description}</div>
+    <div id="Selector{DataName}" class="DescriptionSelector" onclick="descriptionSelect('{DataName}');" ></div>
+    <div class="DescriptionMoreInformation">{MoreInformation}</div>
+</div>
+
+TEMPLATE;
+
+//$tmp = <<<TEMPLATE
+//<div id="{DataName}" class="DescriptionCell" >
+//    <span class="DescriptionLink">{URI}</span>
+//    <div class="DescriptionName">{DataName}</div>
+//    <div class="DescriptionText">{Description}</div>
+//    <div id="Selector{DataName}" class="DescriptionSelector" onclick="descriptionSelect('{DataName}');" ></div>
+//    <div class="DescriptionMoreInformation">{MoreInformation}</div>
+//</div>
+//
+//TEMPLATE;
+
+
+        return $tmp;
+    
+        }
+    
 
     private function speciesOutput() {
         if (func_num_args() == 0) return $this->getProperty();

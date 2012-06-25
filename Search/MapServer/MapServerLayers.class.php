@@ -143,25 +143,25 @@ class MapServerLayers extends Object {
 
     public function AddPoint($filename,$column_name = null)
     {        
-        $L = $this->AddLayer($filename, $column_name, MapServerLayer::$TYPE_POINT);
+        $L = $this->AddLayer($filename, $column_name, MapServerConfiguration::$SPATIAL_TYPE_POINT);
         return $L;
     }
 
     public function AddPolygon($filename,$column_name = null)
     {        
-        $L = $this->AddLayer($filename, $column_name, MapServerLayer::$TYPE_POLYGON);
+        $L = $this->AddLayer($filename, $column_name, MapServerConfiguration::$SPATIAL_TYPE_POLYGON);
         return $L;
     }
     
     public function AddPolyline($filename,$column_name = null)
     {        
-        $L = $this->AddLayer($filename, $column_name, MapServerLayer::$TYPE_LINE);
+        $L = $this->AddLayer($filename, $column_name, MapServerConfiguration::$SPATIAL_TYPE_LINE);
         return $L; 
     }
     
     public function AddRaster($filename)
     {        
-        $L = $this->AddLayer($filename, null, MapServerLayer::$TYPE_RASTER);
+        $L = $this->AddLayer($filename, null, MapServerConfiguration::$SPATIAL_TYPE_RASTER);
         return $L;
     }
     

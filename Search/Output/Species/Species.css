@@ -76,7 +76,7 @@ root {
   border-right: 2px solid black;
   border-radius: 10px;
   display: block;
-  width: 30%;
+  width: 90%;
   height: 20px;
   float: left;
   padding: 5px;
@@ -90,7 +90,7 @@ root {
 .DescriptionName
 {
   height: 12pt;
-  font-size: 12pt;
+  font-size: 10pt;
 /*  width: 30%;*/
   float: left;
   overflow-wrap: hyphenate;
@@ -165,5 +165,25 @@ root {
 .selected
 {
     background-color: red;
+}
+
+
+.probabilityMapContainer
+{
+    width: 130px;
+    height: 100px;
+}
+    
+.probabilityMap
+{
+    width: 140px;
+    height: 100px;
+}
+
+
+.info 
+{
+    font-size: 60%;
+
 }
 
