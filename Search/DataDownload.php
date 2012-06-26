@@ -443,17 +443,18 @@ function zipFiles($requestedData)
 </style>
 </head>
 <body>
-    <h1 class="pagehead">Climate Data Downloads</h1>
+    <h1 class="pagehead"><a href="DataDownload.php">Climate Data Downloads</a></h1>
     <div class="maincontent">
 <?php
 
-    if ($haveRequest)
+    if ($haveRequest) {
         echo downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime);
-    else
+    } else {
         echo "<div class='intro'>";
         include 'DataDownloadDesc.html';
         echo "</div>";
         echo selectionTable();
+    }
 ?>
     </div>
 
