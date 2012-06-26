@@ -46,7 +46,7 @@ h2 {
     padding: 2em 0 1em;
 }
 
-/* content box ----------------------------------------------- */
+/* content ----------------------------------------------------- */
 
 .maincontent {
     background: #efe6c5;
@@ -56,6 +56,62 @@ h2 {
 .intro {
     margin: 2em 0;
 }
+
+p, ul {
+    margin: 0.67em 0 0;
+}
+
+ul {
+    margin-left: 2em;
+}
+
+li {
+    margin: 0.33em 0;
+}
+
+.footer {
+    color: white;
+    text-align: center;
+}
+
+.footer a {
+    color: #abf;
+}
+
+/* hgide/show additionalcontent sections ----------------------- */
+
+.additionalcontent {
+    margin: 1em 0 2em;
+}
+
+.additionalcontent .opener {
+    display: block;
+    text-align: left;
+    padding: 0.1em 0.5em;
+    -moz-border-radius: 0.3em;
+    -webkit-border-radius: 0.3em;
+    border-radius: 0.3em;
+    cursor: pointer;
+}
+
+.additionalcontent .opener:hover {
+    background-color: rgba(255,255,255,0.5);
+}
+
+.additionalcontent .opener:after {
+    content: ' \bb';
+}
+
+.additionalcontent.open .opener:after {
+    content: ' \ab';
+}
+
+.additionalcontent .add {
+    margin-left: 1em;
+    padding-left: 1em;
+    border-left: 2px solid rgba(255,255,255,0.5);
+}
+
 
 /* links that look like buttons --------------------------------- */
 

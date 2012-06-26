@@ -473,6 +473,11 @@ function zipFiles($requestedData)
     </div>
 
     <div class="footer">
+        <p class="contact">
+            please contact Jeremy VanDerWal
+            (<a href="mailto:jjvanderwal@gmail.com">jjvanderwal@gmail.com</a>)
+            with any queries.
+        </p>
     </div>
 
     <!-- javascript is here at the bottom of the page, where it should be -->
@@ -481,7 +486,36 @@ function zipFiles($requestedData)
     <script>
         // javascript to set up the mode display buttons to hide/show the columns
         var modes = [<?php echo $modeListString; ?>];
+
         $( function() {
+            //
+            // stuff to run when the page is loaded
+            //
+
+            // prepare additionalcontent sections
+            additionals = $('.additionalcontent');
+            additionals.each( function(index, add) {
+                showhide = $(add);
+
+                var content = showhide.children('.add');
+                content.hide();
+
+                var opener = showhide.children('.opener');
+                opener.click( function(event) {
+                    if (content.filter(':visible').length > 0) {
+                        // ..then we're already open, so close
+                        showhide.removeClass('open');
+                        content.hide('blind');
+                    } else {
+                        // ..we're closed, so open up
+                        showhide.addClass('open');
+                        content.show('blind');
+                    }
+                });
+            });
+            
+
+            // hide/show some of the table columns so it fits on the page            
             if ($.browser.msie && $.browser.version <= 7) {
                 // can't hide and show table cells in old versions of IE. sorry.
             } else {
