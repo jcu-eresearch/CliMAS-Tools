@@ -1,0 +1,362 @@
+<!DOCTYPE html><html xmlns:date="http://exslt.org/dates-and-times" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+<meta charset="utf-8">
+<title>phpDocumentor » \CommandAction</title>
+<meta name="author" content="Mike van Riel">
+<meta name="description" content="">
+<link href="../css/template.css" rel="stylesheet" media="all">
+<script src="../js/jquery-1.7.1.min.js" type="text/javascript"></script><script src="../js/jquery-ui-1.8.2.custom.min.js" type="text/javascript"></script><script src="../js/jquery.mousewheel.min.js" type="text/javascript"></script><script src="../js/bootstrap.js" type="text/javascript"></script><script src="../js/template.js" type="text/javascript"></script><script src="../js/prettify/prettify.min.js" type="text/javascript"></script><link rel="shortcut icon" href="../img/favicon.ico">
+<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="72x72" href="../img/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="114x114" href="../img/apple-touch-icon-114x114.png">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+<div class="navbar-inner"><div class="container">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">phpDocumentor</a><div class="nav-collapse"><ul class="nav">
+<li class="dropdown">
+<a href="#api" class="dropdown-toggle" data-toggle="dropdown">
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a>Packages</a></li>
+<li><a href="../packages/CommandAction.html"><i class="icon-folder-open"></i> CommandAction</a></li>
+<li><a href="../packages/Default.html"><i class="icon-folder-open"></i> Default</a></li>
+<li><a href="../packages/Search.html"><i class="icon-folder-open"></i> Search</a></li>
+</ul>
+</li>
+<li class="dropdown" id="charts-menu">
+<a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
+                                    Charts <b class="caret"></b></a><ul class="dropdown-menu"><li><a href="../graph_class.html"><i class="icon-list-alt"></i> Class hierarchy diagram</a></li></ul>
+</li>
+<li class="dropdown" id="reports-menu">
+<a href="#reports" class="dropdown-toggle" data-toggle="dropdown">
+                                    Reports <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a href="../errors.html"><i class="icon-remove-sign"></i> Errors 
+                <span class="label label-info">986</span></a></li>
+<li><a href="../markers.html"><i class="icon-map-marker"></i> Markers 
+                <ul><li>todo 
+                <span class="label label-info">17</span>
+</li></ul></a></li>
+<li><a href="../deprecated.html"><i class="icon-stop"></i> Deprecated elements 
+                <span class="label label-info">0</span></a></li>
+</ul>
+</li>
+</ul></div>
+</div></div>
+<div class="go_to_top"><a href="#___" style="color: inherit">Back to top  <i class="icon-upload icon-white"></i></a></div>
+</div>
+<div id="___" class="container">
+<noscript><div class="alert alert-warning">
+                            Javascript is disabled; several features are only available
+                            if Javascript is enabled.
+                        </div></noscript>
+<div class="row">
+<div class="span4">
+<span class="btn-group visibility" data-toggle="buttons-checkbox"><button class="btn public active" title="Show public elements">Public</button><button class="btn protected" title="Show protected elements">Protected</button><button class="btn private" title="Show private elements">Private</button><button class="btn inherited active" title="Show inherited elements">Inherited</button></span><div class="btn-group view pull-right" data-toggle="buttons-radio">
+<button class="btn details" title="Show descriptions and method names"><i class="icon-list"></i></button><button class="btn simple" title="Show only method names"><i class="icon-align-justify"></i></button>
+</div>
+<ul class="side-nav nav nav-list">
+<li class="nav-header">
+<i class="icon-custom icon-method"></i> Methods</li>
+<li class="method public "><a href="#ActionName" title="ActionName :: "><span class="description">ActionName()
+        </span><pre>ActionName()</pre></a></li>
+<li class="method public "><a href="#AttachedCommand" title="AttachedCommand :: "><span class="description">AttachedCommand()
+        </span><pre>AttachedCommand()</pre></a></li>
+<li class="method public "><a href="#CommandName" title="CommandName :: Name of this command, could be usefull for Logging
+To be used as name of QSUB jobs"><span class="description">Name of this command, could be usefull for Logging
+To be used as name of QSUB jobs</span><pre>CommandName()</pre></a></li>
+<li class="method public "><a href="#Description" title="Description :: "><span class="description">Description()
+        </span><pre>Description()</pre></a></li>
+<li class="method public "><a href="#Execute" title="Execute :: "><span class="description">Execute()
+        </span><pre>Execute()</pre></a></li>
+<li class="method public "><a href="#ExecutionFlag" title="ExecutionFlag :: READY    -- Needs to be started - ie find action execute  Change ExecutionFlag to RUNNING
+RUNNING  -- Go and check QSUB status / status of action via its mechanisim - WIll Set to COMPLETE if it's all done
+TIMEOUT  -- Maybe ?   it's taken to long ?
+COMPLETE -- Has completed - results to be returned"><span class="description">READY    -- Needs to be started - ie find action execute  Change ExecutionFlag to RUNNING
+RUNNING  -- Go and check QSUB status / status of action via its mechanisim - WIll Set to COMPLETE if it's all done
+TIMEOUT  -- Maybe ?   it's taken to long ?
+COMPLETE -- Has completed - results to be returned</span><pre>ExecutionFlag()</pre></a></li>
+<li class="method public "><a href="#LastUpdated" title="LastUpdated :: Date and Time Command was Last Updated"><span class="description">Date and Time Command was Last Updated</span><pre>LastUpdated()</pre></a></li>
+<li class="method public "><a href="#LocationName" title="LocationName :: THis is where this command will be run,
+From this we can figure out
+ - how to get it there
+ - how to updates &amp; status
+ - how to return it"><span class="description">THis is where this command will be run,
+From this we can figure out
+ - how to get it there
+ - how to updates &amp; status
+ - how to return it</span><pre>LocationName()</pre></a></li>
+<li class="method public "><a href="#Parameters" title="Parameters :: Data from Issuing system"><span class="description">Data from Issuing system</span><pre>Parameters()</pre></a></li>
+<li class="method public "><a href="#QueueID" title="QueueID :: Holds the ID from QSUB
+- gets written to the command at the start of execution -
+ allows us to find the QSTAT details"><span class="description">Holds the ID from QSUB
+- gets written to the command at the start of execution -
+ allows us to find the QSTAT details</span><pre>QueueID()</pre></a></li>
+<li class="method public "><a href="#Result" title="Result :: "><span class="description">Result()
+        </span><pre>Result()</pre></a></li>
+<li class="method public "><a href="#Status" title="Status :: "><span class="description">Status()
+        </span><pre>Status()</pre></a></li>
+<li class="method public "><a href="#__construct" title="__construct :: "><span class="description">__construct()
+        </span><pre>__construct()</pre></a></li>
+<li class="method public "><a href="#__destruct" title="__destruct :: "><span class="description">__destruct()
+        </span><pre>__destruct()</pre></a></li>
+<li class="method public "><a href="#initialise" title="initialise :: "><span class="description">initialise()
+        </span><pre>initialise()</pre></a></li>
+<li class="method public "><a href="#initialised" title="initialised :: Command has been initialised OK"><span class="description">Command has been initialised OK</span><pre>initialised()</pre></a></li>
+<li class="method public "><a href="#serialize" title="serialize :: "><span class="description">serialize()
+        </span><pre>serialize()</pre></a></li>
+<li class="method public "><a href="#unserialize" title="unserialize :: "><span class="description">unserialize()
+        </span><pre>unserialize()</pre></a></li>
+<li class="nav-header">
+<i class="icon-custom icon-property"></i> Properties</li>
+<li class="property public "><a href="#%24EXECUTION_FLAG_COMPLETE" title="$EXECUTION_FLAG_COMPLETE :: COMPLETE -- Has completed - results to be returned"><span class="description">COMPLETE -- Has completed - results to be returned</span><pre>$EXECUTION_FLAG_COMPLETE</pre></a></li>
+<li class="property public "><a href="#%24EXECUTION_FLAG_FINALISE" title="$EXECUTION_FLAG_FINALISE :: FINALISE -- Has finished - but not yet complete"><span class="description">FINALISE -- Has finished - but not yet complete</span><pre>$EXECUTION_FLAG_FINALISE</pre></a></li>
+<li class="property public "><a href="#%24EXECUTION_FLAG_QUEUE_DONE" title="$EXECUTION_FLAG_QUEUE_DONE :: QUEUE_DONE -- Job has completed as far as the QSTAT is concered"><span class="description">QUEUE_DONE -- Job has completed as far as the QSTAT is concered</span><pre>$EXECUTION_FLAG_QUEUE_DONE</pre></a></li>
+<li class="property public "><a href="#%24EXECUTION_FLAG_READY" title="$EXECUTION_FLAG_READY :: READY    -- Needs to be started - ie find action execute  Change ExecutionFlag to RUNNING"><span class="description">READY    -- Needs to be started - ie find action execute  Change ExecutionFlag to RUNNING</span><pre>$EXECUTION_FLAG_READY</pre></a></li>
+<li class="property public "><a href="#%24EXECUTION_FLAG_RUNNING" title="$EXECUTION_FLAG_RUNNING :: RUNNING  -- Go and check QSUB status / status of action via its mechanisim - WIll Set to FINALISE if it's all done"><span class="description">RUNNING  -- Go and check QSUB status / status of action via its mechanisim - WIll Set to FINALISE if it's all done</span><pre>$EXECUTION_FLAG_RUNNING</pre></a></li>
+<li class="property public "><a href="#%24EXECUTION_FLAG_TIMEOUT" title="$EXECUTION_FLAG_TIMEOUT :: TIMEOUT  -- Maybe ?   it's taken to long ?"><span class="description">TIMEOUT  -- Maybe ?   it's taken to long ?</span><pre>$EXECUTION_FLAG_TIMEOUT</pre></a></li>
+</ul>
+</div>
+<div class="span8">
+<a name="%5CCommandAction" id="\CommandAction"></a><ul class="breadcrumb">
+<li>
+<a href="../index.html"><i class="icon-custom icon-class"></i></a><span class="divider">\</span>
+</li>
+<li><a href="../namespaces/default.html">default</a></li>
+<li class="active">
+<span class="divider">\</span><a href="../classes/CommandAction.html">CommandAction</a>
+</li>
+</ul>
+<div href="../classes/CommandAction.html" class="element class">
+<p class="short_description">Extend this class to create jobs / actions to run in the GRID
+- Allows you to create a action to run without having to worry about
+  the infrastucture of status check and passing data into and out of the HPC</p>
+<div class="details">
+<p class="long_description">Command Actions can be initialise, queued, executed and returned to the swebserver</p>
+<h3>
+<i class="icon-custom icon-method"></i> Methods</h3>
+<a name="ActionName" id="ActionName"></a><div class="element clickable method public ActionName" data-toggle="collapse" data-target=".ActionName .collapse">
+<h2>ActionName()
+        </h2>
+<pre>ActionName() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="AttachedCommand" id="AttachedCommand"></a><div class="element clickable method public AttachedCommand" data-toggle="collapse" data-target=".AttachedCommand .collapse">
+<h2>AttachedCommand()
+        </h2>
+<pre>AttachedCommand() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="CommandName" id="CommandName"></a><div class="element clickable method public CommandName" data-toggle="collapse" data-target=".CommandName .collapse">
+<h2>Name of this command, could be usefull for Logging
+To be used as name of QSUB jobs</h2>
+<pre>CommandName() : String</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>String</code>Command Name</div>
+</div></div>
+</div>
+<a name="Description" id="Description"></a><div class="element clickable method public Description" data-toggle="collapse" data-target=".Description .collapse">
+<h2>Description()
+        </h2>
+<pre>Description() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="Execute" id="Execute"></a><div class="element clickable method public Execute" data-toggle="collapse" data-target=".Execute .collapse">
+<h2>Execute()
+        </h2>
+<pre>Execute() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="ExecutionFlag" id="ExecutionFlag"></a><div class="element clickable method public ExecutionFlag" data-toggle="collapse" data-target=".ExecutionFlag .collapse">
+<h2>READY    -- Needs to be started - ie find action execute  Change ExecutionFlag to RUNNING
+RUNNING  -- Go and check QSUB status / status of action via its mechanisim - WIll Set to COMPLETE if it's all done
+TIMEOUT  -- Maybe ?   it's taken to long ?
+COMPLETE -- Has completed - results to be returned</h2>
+<pre>ExecutionFlag() : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>Execution phase</div>
+</div></div>
+</div>
+<a name="LastUpdated" id="LastUpdated"></a><div class="element clickable method public LastUpdated" data-toggle="collapse" data-target=".LastUpdated .collapse">
+<h2>Date and Time Command was Last Updated</h2>
+<pre>LastUpdated() : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>Updated Date & Time</div>
+</div></div>
+</div>
+<a name="LocationName" id="LocationName"></a><div class="element clickable method public LocationName" data-toggle="collapse" data-target=".LocationName .collapse">
+<h2>THis is where this command will be run,
+From this we can figure out
+ - how to get it there
+ - how to updates &amp; status
+ - how to return it</h2>
+<pre>LocationName() : String</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>String</code>Name of "Place" this command will be run</div>
+</div></div>
+</div>
+<a name="Parameters" id="Parameters"></a><div class="element clickable method public Parameters" data-toggle="collapse" data-target=".Parameters .collapse">
+<h2>Data from Issuing system</h2>
+<pre>Parameters() : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Parameters to be made avaiable to action</div>
+</div></div>
+</div>
+<a name="QueueID" id="QueueID"></a><div class="element clickable method public QueueID" data-toggle="collapse" data-target=".QueueID .collapse">
+<h2>Holds the ID from QSUB
+- gets written to the command at the start of execution -
+ allows us to find the QSTAT details</h2>
+<pre>QueueID() : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>QSUB ID</div>
+</div></div>
+</div>
+<a name="Result" id="Result"></a><div class="element clickable method public Result" data-toggle="collapse" data-target=".Result .collapse">
+<h2>Result()
+        </h2>
+<pre>Result() : mixed</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>mixed</code>will be the result of an Action</div>
+</div></div>
+</div>
+<a name="Status" id="Status"></a><div class="element clickable method public Status" data-toggle="collapse" data-target=".Status .collapse">
+<h2>Status()
+        </h2>
+<pre>Status() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="__construct" id="__construct"></a><div class="element clickable method public __construct" data-toggle="collapse" data-target=".__construct .collapse">
+<h2>__construct()
+        </h2>
+<pre>__construct() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="__destruct" id="__destruct"></a><div class="element clickable method public __destruct" data-toggle="collapse" data-target=".__destruct .collapse">
+<h2>__destruct()
+        </h2>
+<pre>__destruct() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="initialise" id="initialise"></a><div class="element clickable method public initialise" data-toggle="collapse" data-target=".initialise .collapse">
+<h2>initialise()
+        </h2>
+<pre>initialise() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="initialised" id="initialised"></a><div class="element clickable method public initialised" data-toggle="collapse" data-target=".initialised .collapse">
+<h2>Command has been initialised OK</h2>
+<pre>initialised() : \type</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Returns</h3>
+<div class="subelement response"><code>\type</code></div>
+</div></div>
+</div>
+<a name="serialize" id="serialize"></a><div class="element clickable method public serialize" data-toggle="collapse" data-target=".serialize .collapse">
+<h2>serialize()
+        </h2>
+<pre>serialize() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="unserialize" id="unserialize"></a><div class="element clickable method public unserialize" data-toggle="collapse" data-target=".unserialize .collapse">
+<h2>unserialize()
+        </h2>
+<pre>unserialize($serialized) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$serialized</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<h3>
+<i class="icon-custom icon-property"></i> Properties</h3>
+<a name="%24EXECUTION_FLAG_COMPLETE" id="$EXECUTION_FLAG_COMPLETE"> </a><div class="element clickable property public $EXECUTION_FLAG_COMPLETE" data-toggle="collapse" data-target=".$EXECUTION_FLAG_COMPLETE .collapse">
+<h2>COMPLETE -- Has completed - results to be returned</h2>
+<pre>$EXECUTION_FLAG_COMPLETE </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24EXECUTION_FLAG_FINALISE" id="$EXECUTION_FLAG_FINALISE"> </a><div class="element clickable property public $EXECUTION_FLAG_FINALISE" data-toggle="collapse" data-target=".$EXECUTION_FLAG_FINALISE .collapse">
+<h2>FINALISE -- Has finished - but not yet complete</h2>
+<pre>$EXECUTION_FLAG_FINALISE </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24EXECUTION_FLAG_QUEUE_DONE" id="$EXECUTION_FLAG_QUEUE_DONE"> </a><div class="element clickable property public $EXECUTION_FLAG_QUEUE_DONE" data-toggle="collapse" data-target=".$EXECUTION_FLAG_QUEUE_DONE .collapse">
+<h2>QUEUE_DONE -- Job has completed as far as the QSTAT is concered</h2>
+<pre>$EXECUTION_FLAG_QUEUE_DONE </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24EXECUTION_FLAG_READY" id="$EXECUTION_FLAG_READY"> </a><div class="element clickable property public $EXECUTION_FLAG_READY" data-toggle="collapse" data-target=".$EXECUTION_FLAG_READY .collapse">
+<h2>READY    -- Needs to be started - ie find action execute  Change ExecutionFlag to RUNNING</h2>
+<pre>$EXECUTION_FLAG_READY </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24EXECUTION_FLAG_RUNNING" id="$EXECUTION_FLAG_RUNNING"> </a><div class="element clickable property public $EXECUTION_FLAG_RUNNING" data-toggle="collapse" data-target=".$EXECUTION_FLAG_RUNNING .collapse">
+<h2>RUNNING  -- Go and check QSUB status / status of action via its mechanisim - WIll Set to FINALISE if it's all done</h2>
+<pre>$EXECUTION_FLAG_RUNNING </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24EXECUTION_FLAG_TIMEOUT" id="$EXECUTION_FLAG_TIMEOUT"> </a><div class="element clickable property public $EXECUTION_FLAG_TIMEOUT" data-toggle="collapse" data-target=".$EXECUTION_FLAG_TIMEOUT .collapse">
+<h2>TIMEOUT  -- Maybe ?   it's taken to long ?</h2>
+<pre>$EXECUTION_FLAG_TIMEOUT </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="row"><footer class="span12">
+            Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
+            Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a3</a> and<br>
+            generated on 2012-06-27T11:58:40+10:00.<br></footer></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,884 @@
+<!DOCTYPE html><html xmlns:date="http://exslt.org/dates-and-times" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+<meta charset="utf-8">
+<title>phpDocumentor » \ascii_grid</title>
+<meta name="author" content="Mike van Riel">
+<meta name="description" content="">
+<link href="../css/template.css" rel="stylesheet" media="all">
+<script src="../js/jquery-1.7.1.min.js" type="text/javascript"></script><script src="../js/jquery-ui-1.8.2.custom.min.js" type="text/javascript"></script><script src="../js/jquery.mousewheel.min.js" type="text/javascript"></script><script src="../js/bootstrap.js" type="text/javascript"></script><script src="../js/template.js" type="text/javascript"></script><script src="../js/prettify/prettify.min.js" type="text/javascript"></script><link rel="shortcut icon" href="../img/favicon.ico">
+<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="72x72" href="../img/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="114x114" href="../img/apple-touch-icon-114x114.png">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+<div class="navbar-inner"><div class="container">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">phpDocumentor</a><div class="nav-collapse"><ul class="nav">
+<li class="dropdown">
+<a href="#api" class="dropdown-toggle" data-toggle="dropdown">
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu"></ul>
+</li>
+<li class="dropdown" id="charts-menu">
+<a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
+                                    Charts <b class="caret"></b></a><ul class="dropdown-menu"><li><a href="../graph_class.html"><i class="icon-list-alt"></i> Class hierarchy diagram</a></li></ul>
+</li>
+<li class="dropdown" id="reports-menu">
+<a href="#reports" class="dropdown-toggle" data-toggle="dropdown">
+                                    Reports <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a href="../errors.html"><i class="icon-remove-sign"></i> Errors 
+                <span class="label label-info">806</span></a></li>
+<li><a href="../markers.html"><i class="icon-map-marker"></i> Markers 
+                <ul></ul></a></li>
+<li><a href="../deprecated.html"><i class="icon-stop"></i> Deprecated elements 
+                <span class="label label-info">0</span></a></li>
+</ul>
+</li>
+</ul></div>
+</div></div>
+<div class="go_to_top"><a href="#___" style="color: inherit">Back to top  <i class="icon-upload icon-white"></i></a></div>
+</div>
+<div id="___" class="container">
+<noscript><div class="alert alert-warning">
+                            Javascript is disabled; several features are only available
+                            if Javascript is enabled.
+                        </div></noscript>
+<div class="row">
+<div class="span4">
+<span class="btn-group visibility" data-toggle="buttons-checkbox"><button class="btn public active" title="Show public elements">Public</button><button class="btn protected" title="Show protected elements">Protected</button><button class="btn private" title="Show private elements">Private</button><button class="btn inherited active" title="Show inherited elements">Inherited</button></span><div class="btn-group view pull-right" data-toggle="buttons-radio">
+<button class="btn details" title="Show descriptions and method names"><i class="icon-list"></i></button><button class="btn simple" title="Show only method names"><i class="icon-align-justify"></i></button>
+</div>
+<ul class="side-nav nav nav-list">
+<li class="nav-header">
+<i class="icon-custom icon-method"></i> Methods</li>
+<li class="method public "><a href="#Area" title="Area :: "><span class="description">Area()
+        </span><pre>Area()</pre></a></li>
+<li class="method public "><a href="#CalculateGridDimesions" title="CalculateGridDimesions :: "><span class="description">CalculateGridDimesions()
+        </span><pre>CalculateGridDimesions()</pre></a></li>
+<li class="method public "><a href="#CellCount" title="CellCount :: "><span class="description">CellCount()
+        </span><pre>CellCount()</pre></a></li>
+<li class="method public "><a href="#ESRI_METADATA" title="ESRI_METADATA :: "><span class="description">ESRI_METADATA()
+        </span><pre>ESRI_METADATA()</pre></a></li>
+<li class="method public "><a href="#ESRI_STATS" title="ESRI_STATS :: "><span class="description">ESRI_STATS()
+        </span><pre>ESRI_STATS()</pre></a></li>
+<li class="method public "><a href="#FileContent" title="FileContent :: "><span class="description">FileContent()
+        </span><pre>FileContent()</pre></a></li>
+<li class="method public "><a href="#Filename" title="Filename :: "><span class="description">Filename()
+        </span><pre>Filename()</pre></a></li>
+<li class="method public "><a href="#FixedWidth" title="FixedWidth :: "><span class="description">FixedWidth()
+        </span><pre>FixedWidth()</pre></a></li>
+<li class="method public "><a href="#FooterRowsStart" title="FooterRowsStart :: "><span class="description">FooterRowsStart()
+        </span><pre>FooterRowsStart()</pre></a></li>
+<li class="method public "><a href="#GetGridInfo" title="GetGridInfo :: "><span class="description">GetGridInfo()
+        </span><pre>GetGridInfo()</pre></a></li>
+<li class="method public "><a href="#GridInfo" title="GridInfo :: "><span class="description">GridInfo()
+        </span><pre>GridInfo()</pre></a></li>
+<li class="method public "><a href="#Header" title="Header :: "><span class="description">Header()
+        </span><pre>Header()</pre></a></li>
+<li class="method public "><a href="#HeaderRowCount" title="HeaderRowCount :: "><span class="description">HeaderRowCount()
+        </span><pre>HeaderRowCount()</pre></a></li>
+<li class="method public "><a href="#ImportDelimimter" title="ImportDelimimter :: "><span class="description">ImportDelimimter()
+        </span><pre>ImportDelimimter()</pre></a></li>
+<li class="method public "><a href="#LatLon" title="LatLon :: "><span class="description">LatLon()
+        </span><pre>LatLon()</pre></a></li>
+<li class="method public "><a href="#LatLonKeyedArray2Grid" title="LatLonKeyedArray2Grid :: "><span class="description">LatLonKeyedArray2Grid()
+        </span><pre>LatLonKeyedArray2Grid()</pre></a></li>
+<li class="method public "><a href="#LineCount" title="LineCount :: "><span class="description">LineCount()
+        </span><pre>LineCount()</pre></a></li>
+<li class="method public "><a href="#MatrixColumn2Grid" title="MatrixColumn2Grid :: "><span class="description">MatrixColumn2Grid()
+        </span><pre>MatrixColumn2Grid()</pre></a></li>
+<li class="method public "><a href="#Maximum" title="Maximum :: "><span class="description">Maximum()
+        </span><pre>Maximum()</pre></a></li>
+<li class="method public "><a href="#Minimum" title="Minimum :: "><span class="description">Minimum()
+        </span><pre>Minimum()</pre></a></li>
+<li class="method public "><a href="#Name" title="Name :: "><span class="description">Name()
+        </span><pre>Name()</pre></a></li>
+<li class="method public "><a href="#PROJECTION_FILE_WGS84" title="PROJECTION_FILE_WGS84 :: "><span class="description">PROJECTION_FILE_WGS84()
+        </span><pre>PROJECTION_FILE_WGS84()</pre></a></li>
+<li class="method public "><a href="#ReplaceSpaceCount" title="ReplaceSpaceCount :: "><span class="description">ReplaceSpaceCount()
+        </span><pre>ReplaceSpaceCount()</pre></a></li>
+<li class="method public "><a href="#SaveFixedWidth" title="SaveFixedWidth :: "><span class="description">SaveFixedWidth()
+        </span><pre>SaveFixedWidth()</pre></a></li>
+<li class="method public "><a href="#Tag" title="Tag :: "><span class="description">Tag()
+        </span><pre>Tag()</pre></a></li>
+<li class="method public "><a href="#UniqueValues" title="UniqueValues :: "><span class="description">UniqueValues()
+        </span><pre>UniqueValues()</pre></a></li>
+<li class="method public "><a href="#__construct" title="__construct :: "><span class="description">__construct()
+        </span><pre>__construct()</pre></a></li>
+<li class="method public "><a href="#__destruct" title="__destruct :: "><span class="description">__destruct()
+        </span><pre>__destruct()</pre></a></li>
+<li class="method public "><a href="#calculateSpheroidGridArea" title="calculateSpheroidGridArea :: "><span class="description">calculateSpheroidGridArea()
+        </span><pre>calculateSpheroidGridArea()</pre></a></li>
+<li class="method public "><a href="#cellsize" title="cellsize :: "><span class="description">cellsize()
+        </span><pre>cellsize()</pre></a></li>
+<li class="method public "><a href="#display" title="display :: "><span class="description">display()
+        </span><pre>display()</pre></a></li>
+<li class="method public "><a href="#filterLatLong" title="filterLatLong :: "><span class="description">filterLatLong()
+        </span><pre>filterLatLong()</pre></a></li>
+<li class="method public "><a href="#folder2FixedWitdth" title="folder2FixedWitdth :: "><span class="description">folder2FixedWitdth()
+        </span><pre>folder2FixedWitdth()</pre></a></li>
+<li class="method public "><a href="#fromLatLongValue" title="fromLatLongValue :: "><span class="description">fromLatLongValue()
+        </span><pre>fromLatLongValue()</pre></a></li>
+<li class="method public "><a href="#measure_from" title="measure_from :: "><span class="description">measure_from()
+        </span><pre>measure_from()</pre></a></li>
+<li class="method public "><a href="#ncols" title="ncols :: "><span class="description">ncols()
+        </span><pre>ncols()</pre></a></li>
+<li class="method public "><a href="#nodata_value" title="nodata_value :: "><span class="description">nodata_value()
+        </span><pre>nodata_value()</pre></a></li>
+<li class="method public "><a href="#nrows" title="nrows :: "><span class="description">nrows()
+        </span><pre>nrows()</pre></a></li>
+<li class="method public "><a href="#toLatLonFile" title="toLatLonFile :: "><span class="description">toLatLonFile()
+        </span><pre>toLatLonFile()</pre></a></li>
+<li class="method public "><a href="#xll" title="xll :: "><span class="description">xll()
+        </span><pre>xll()</pre></a></li>
+<li class="method public "><a href="#xllcenter" title="xllcenter :: "><span class="description">xllcenter()
+        </span><pre>xllcenter()</pre></a></li>
+<li class="method public "><a href="#xllcorner" title="xllcorner :: "><span class="description">xllcorner()
+        </span><pre>xllcorner()</pre></a></li>
+<li class="method public "><a href="#yll" title="yll :: "><span class="description">yll()
+        </span><pre>yll()</pre></a></li>
+<li class="method public "><a href="#yllcenter" title="yllcenter :: "><span class="description">yllcenter()
+        </span><pre>yllcenter()</pre></a></li>
+<li class="method public "><a href="#yllcorner" title="yllcorner :: "><span class="description">yllcorner()
+        </span><pre>yllcorner()</pre></a></li>
+<li class="nav-header private">» Private</li>
+<li class="method private "><a href="#SaveFixedWidthBOMFooter" title="SaveFixedWidthBOMFooter :: "><span class="description">SaveFixedWidthBOMFooter()
+        </span><pre>SaveFixedWidthBOMFooter()</pre></a></li>
+<li class="method private "><a href="#SaveFixedWidthData" title="SaveFixedWidthData :: "><span class="description">SaveFixedWidthData()
+        </span><pre>SaveFixedWidthData()</pre></a></li>
+<li class="method private "><a href="#SaveFixedWidthHeader" title="SaveFixedWidthHeader :: "><span class="description">SaveFixedWidthHeader()
+        </span><pre>SaveFixedWidthHeader()</pre></a></li>
+<li class="method private "><a href="#asLatLongValue" title="asLatLongValue :: "><span class="description">asLatLongValue()
+        </span><pre>asLatLongValue()</pre></a></li>
+<li class="method private "><a href="#loadGrid" title="loadGrid :: "><span class="description">loadGrid()
+        </span><pre>loadGrid()</pre></a></li>
+<li class="nav-header">
+<i class="icon-custom icon-property"></i> Properties</li>
+<li class="property public "><a href="#%24LatLonDelim" title="$LatLonDelim :: "><span class="description">$LatLonDelim</span><pre>$LatLonDelim</pre></a></li>
+<li class="nav-header private">» Private</li>
+<li class="property private "><a href="#%24area" title="$area :: "><span class="description">$area</span><pre>$area</pre></a></li>
+<li class="property private "><a href="#%24fileContent" title="$fileContent :: "><span class="description">$fileContent</span><pre>$fileContent</pre></a></li>
+<li class="property private "><a href="#%24filename" title="$filename :: "><span class="description">$filename</span><pre>$filename</pre></a></li>
+<li class="property private "><a href="#%24fixedWidth" title="$fixedWidth :: "><span class="description">$fixedWidth</span><pre>$fixedWidth</pre></a></li>
+<li class="property private "><a href="#%24footerRowsStart" title="$footerRowsStart :: "><span class="description">$footerRowsStart</span><pre>$footerRowsStart</pre></a></li>
+<li class="property private "><a href="#%24gridInfo" title="$gridInfo :: "><span class="description">$gridInfo</span><pre>$gridInfo</pre></a></li>
+<li class="property private "><a href="#%24headerRowCount" title="$headerRowCount :: "><span class="description">$headerRowCount</span><pre>$headerRowCount</pre></a></li>
+<li class="property private "><a href="#%24importDelimimter" title="$importDelimimter :: "><span class="description">$importDelimimter</span><pre>$importDelimimter</pre></a></li>
+<li class="property private "><a href="#%24latLon" title="$latLon :: "><span class="description">$latLon</span><pre>$latLon</pre></a></li>
+<li class="property private "><a href="#%24maximum" title="$maximum :: "><span class="description">$maximum</span><pre>$maximum</pre></a></li>
+<li class="property private "><a href="#%24minimum" title="$minimum :: "><span class="description">$minimum</span><pre>$minimum</pre></a></li>
+<li class="property private "><a href="#%24replaceSpaceCount" title="$replaceSpaceCount :: "><span class="description">$replaceSpaceCount</span><pre>$replaceSpaceCount</pre></a></li>
+<li class="property private "><a href="#%24tag" title="$tag :: "><span class="description">$tag</span><pre>$tag</pre></a></li>
+<li class="property private "><a href="#%24uniqueValues" title="$uniqueValues :: "><span class="description">$uniqueValues</span><pre>$uniqueValues</pre></a></li>
+</ul>
+</div>
+<div class="span8">
+<a name="%5Cascii_grid" id="\ascii_grid"></a><ul class="breadcrumb">
+<li>
+<a href="../index.html"><i class="icon-custom icon-class"></i></a><span class="divider">\</span>
+</li>
+<li><a href="../namespaces/default.html">default</a></li>
+<li class="active">
+<span class="divider">\</span><a href="../classes/ascii_grid.html">ascii_grid</a>
+</li>
+</ul>
+<div href="../classes/ascii_grid.html" class="element class"><div class="details">
+<h3>
+<i class="icon-custom icon-method"></i> Methods</h3>
+<a name="Area" id="Area"></a><div class="element clickable method public Area" data-toggle="collapse" data-target=".Area .collapse">
+<h2>Area()
+        </h2>
+<pre>Area() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="CalculateGridDimesions" id="CalculateGridDimesions"></a><div class="element clickable method public CalculateGridDimesions" data-toggle="collapse" data-target=".CalculateGridDimesions .collapse">
+<h2>CalculateGridDimesions()
+        </h2>
+<pre>CalculateGridDimesions($keyedArray, $cell_size) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$keyedArray</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$cell_size</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="CellCount" id="CellCount"></a><div class="element clickable method public CellCount" data-toggle="collapse" data-target=".CellCount .collapse">
+<h2>CellCount()
+        </h2>
+<pre>CellCount() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="ESRI_METADATA" id="ESRI_METADATA"></a><div class="element clickable method public ESRI_METADATA" data-toggle="collapse" data-target=".ESRI_METADATA .collapse">
+<h2>ESRI_METADATA()
+        </h2>
+<pre>ESRI_METADATA($filename) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$filename</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="ESRI_STATS" id="ESRI_STATS"></a><div class="element clickable method public ESRI_STATS" data-toggle="collapse" data-target=".ESRI_STATS .collapse">
+<h2>ESRI_STATS()
+        </h2>
+<pre>ESRI_STATS($single_grid_src, $scale_factor, $null_value) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$single_grid_src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$scale_factor</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$null_value</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="FileContent" id="FileContent"></a><div class="element clickable method public FileContent" data-toggle="collapse" data-target=".FileContent .collapse">
+<h2>FileContent()
+        </h2>
+<pre>FileContent() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="Filename" id="Filename"></a><div class="element clickable method public Filename" data-toggle="collapse" data-target=".Filename .collapse">
+<h2>Filename()
+        </h2>
+<pre>Filename() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="FixedWidth" id="FixedWidth"></a><div class="element clickable method public FixedWidth" data-toggle="collapse" data-target=".FixedWidth .collapse">
+<h2>FixedWidth()
+        </h2>
+<pre>FixedWidth() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="FooterRowsStart" id="FooterRowsStart"></a><div class="element clickable method public FooterRowsStart" data-toggle="collapse" data-target=".FooterRowsStart .collapse">
+<h2>FooterRowsStart()
+        </h2>
+<pre>FooterRowsStart() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="GetGridInfo" id="GetGridInfo"></a><div class="element clickable method public GetGridInfo" data-toggle="collapse" data-target=".GetGridInfo .collapse">
+<h2>GetGridInfo()
+        </h2>
+<pre>GetGridInfo($filecontent, $headRows) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$filecontent</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$headRows</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="GridInfo" id="GridInfo"></a><div class="element clickable method public GridInfo" data-toggle="collapse" data-target=".GridInfo .collapse">
+<h2>GridInfo()
+        </h2>
+<pre>GridInfo() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="Header" id="Header"></a><div class="element clickable method public Header" data-toggle="collapse" data-target=".Header .collapse">
+<h2>Header()
+        </h2>
+<pre>Header($grid_dims) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$grid_dims</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="HeaderRowCount" id="HeaderRowCount"></a><div class="element clickable method public HeaderRowCount" data-toggle="collapse" data-target=".HeaderRowCount .collapse">
+<h2>HeaderRowCount()
+        </h2>
+<pre>HeaderRowCount() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="ImportDelimimter" id="ImportDelimimter"></a><div class="element clickable method public ImportDelimimter" data-toggle="collapse" data-target=".ImportDelimimter .collapse">
+<h2>ImportDelimimter()
+        </h2>
+<pre>ImportDelimimter() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="LatLon" id="LatLon"></a><div class="element clickable method public LatLon" data-toggle="collapse" data-target=".LatLon .collapse">
+<h2>LatLon()
+        </h2>
+<pre>LatLon() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="LatLonKeyedArray2Grid" id="LatLonKeyedArray2Grid"></a><div class="element clickable method public LatLonKeyedArray2Grid" data-toggle="collapse" data-target=".LatLonKeyedArray2Grid .collapse">
+<h2>LatLonKeyedArray2Grid()
+        </h2>
+<pre>LatLonKeyedArray2Grid($keyedArray, $null_value, $outputfilename, $scale_factor, $cellsize) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$keyedArray</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$null_value</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$outputfilename</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$scale_factor</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$cellsize</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="LineCount" id="LineCount"></a><div class="element clickable method public LineCount" data-toggle="collapse" data-target=".LineCount .collapse">
+<h2>LineCount()
+        </h2>
+<pre>LineCount() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="MatrixColumn2Grid" id="MatrixColumn2Grid"></a><div class="element clickable method public MatrixColumn2Grid" data-toggle="collapse" data-target=".MatrixColumn2Grid .collapse">
+<h2>MatrixColumn2Grid()
+        </h2>
+<pre>MatrixColumn2Grid($matrix, $column_name, $null_value, $outputfilename, $scale_factor, $cell_size) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$matrix</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$null_value</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$outputfilename</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$scale_factor</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$cell_size</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Maximum" id="Maximum"></a><div class="element clickable method public Maximum" data-toggle="collapse" data-target=".Maximum .collapse">
+<h2>Maximum()
+        </h2>
+<pre>Maximum() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="Minimum" id="Minimum"></a><div class="element clickable method public Minimum" data-toggle="collapse" data-target=".Minimum .collapse">
+<h2>Minimum()
+        </h2>
+<pre>Minimum() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="Name" id="Name"></a><div class="element clickable method public Name" data-toggle="collapse" data-target=".Name .collapse">
+<h2>Name()
+        </h2>
+<pre>Name() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="PROJECTION_FILE_WGS84" id="PROJECTION_FILE_WGS84"></a><div class="element clickable method public PROJECTION_FILE_WGS84" data-toggle="collapse" data-target=".PROJECTION_FILE_WGS84 .collapse">
+<h2>PROJECTION_FILE_WGS84()
+        </h2>
+<pre>PROJECTION_FILE_WGS84() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="ReplaceSpaceCount" id="ReplaceSpaceCount"></a><div class="element clickable method public ReplaceSpaceCount" data-toggle="collapse" data-target=".ReplaceSpaceCount .collapse">
+<h2>ReplaceSpaceCount()
+        </h2>
+<pre>ReplaceSpaceCount() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="SaveFixedWidth" id="SaveFixedWidth"></a><div class="element clickable method public SaveFixedWidth" data-toggle="collapse" data-target=".SaveFixedWidth .collapse">
+<h2>SaveFixedWidth()
+        </h2>
+<pre>SaveFixedWidth($filename) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$filename</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Tag" id="Tag"></a><div class="element clickable method public Tag" data-toggle="collapse" data-target=".Tag .collapse">
+<h2>Tag()
+        </h2>
+<pre>Tag() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="UniqueValues" id="UniqueValues"></a><div class="element clickable method public UniqueValues" data-toggle="collapse" data-target=".UniqueValues .collapse">
+<h2>UniqueValues()
+        </h2>
+<pre>UniqueValues($columnName) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$columnName</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="__construct" id="__construct"></a><div class="element clickable method public __construct" data-toggle="collapse" data-target=".__construct .collapse">
+<h2>__construct()
+        </h2>
+<pre>__construct($filename, $headRowCount, $delim, $fixed_width, $space_replace_count) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$filename</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$headRowCount</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$delim</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$fixed_width</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$space_replace_count</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="__destruct" id="__destruct"></a><div class="element clickable method public __destruct" data-toggle="collapse" data-target=".__destruct .collapse">
+<h2>__destruct()
+        </h2>
+<pre>__destruct() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="calculateSpheroidGridArea" id="calculateSpheroidGridArea"></a><div class="element clickable method public calculateSpheroidGridArea" data-toggle="collapse" data-target=".calculateSpheroidGridArea .collapse">
+<h2>calculateSpheroidGridArea()
+        </h2>
+<pre>calculateSpheroidGridArea($src, $gridSize, $limitLatLon) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$gridSize</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$limitLatLon</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="cellsize" id="cellsize"></a><div class="element clickable method public cellsize" data-toggle="collapse" data-target=".cellsize .collapse">
+<h2>cellsize()
+        </h2>
+<pre>cellsize() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="display" id="display"></a><div class="element clickable method public display" data-toggle="collapse" data-target=".display .collapse">
+<h2>display()
+        </h2>
+<pre>display($limitTo) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$limitTo</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="filterLatLong" id="filterLatLong"></a><div class="element clickable method public filterLatLong" data-toggle="collapse" data-target=".filterLatLong .collapse">
+<h2>filterLatLong()
+        </h2>
+<pre>filterLatLong($src, $find) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$find</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="folder2FixedWitdth" id="folder2FixedWitdth"></a><div class="element clickable method public folder2FixedWitdth" data-toggle="collapse" data-target=".folder2FixedWitdth .collapse">
+<h2>folder2FixedWitdth()
+        </h2>
+<pre>folder2FixedWitdth($folder) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$folder</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="fromLatLongValue" id="fromLatLongValue"></a><div class="element clickable method public fromLatLongValue" data-toggle="collapse" data-target=".fromLatLongValue .collapse">
+<h2>fromLatLongValue()
+        </h2>
+<pre>fromLatLongValue($llFilename, $delim, $numberFormat) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$llFilename</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$delim</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$numberFormat</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="measure_from" id="measure_from"></a><div class="element clickable method public measure_from" data-toggle="collapse" data-target=".measure_from .collapse">
+<h2>measure_from()
+        </h2>
+<pre>measure_from() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="ncols" id="ncols"></a><div class="element clickable method public ncols" data-toggle="collapse" data-target=".ncols .collapse">
+<h2>ncols()
+        </h2>
+<pre>ncols() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="nodata_value" id="nodata_value"></a><div class="element clickable method public nodata_value" data-toggle="collapse" data-target=".nodata_value .collapse">
+<h2>nodata_value()
+        </h2>
+<pre>nodata_value() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="nrows" id="nrows"></a><div class="element clickable method public nrows" data-toggle="collapse" data-target=".nrows .collapse">
+<h2>nrows()
+        </h2>
+<pre>nrows() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="toLatLonFile" id="toLatLonFile"></a><div class="element clickable method public toLatLonFile" data-toggle="collapse" data-target=".toLatLonFile .collapse">
+<h2>toLatLonFile()
+        </h2>
+<pre>toLatLonFile($ascii_filename, $output_filename, $header_rows, $remove_nulls, $file_header) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$ascii_filename</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$output_filename</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$header_rows</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$remove_nulls</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$file_header</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="xll" id="xll"></a><div class="element clickable method public xll" data-toggle="collapse" data-target=".xll .collapse">
+<h2>xll()
+        </h2>
+<pre>xll() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="xllcenter" id="xllcenter"></a><div class="element clickable method public xllcenter" data-toggle="collapse" data-target=".xllcenter .collapse">
+<h2>xllcenter()
+        </h2>
+<pre>xllcenter() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="xllcorner" id="xllcorner"></a><div class="element clickable method public xllcorner" data-toggle="collapse" data-target=".xllcorner .collapse">
+<h2>xllcorner()
+        </h2>
+<pre>xllcorner() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="yll" id="yll"></a><div class="element clickable method public yll" data-toggle="collapse" data-target=".yll .collapse">
+<h2>yll()
+        </h2>
+<pre>yll() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="yllcenter" id="yllcenter"></a><div class="element clickable method public yllcenter" data-toggle="collapse" data-target=".yllcenter .collapse">
+<h2>yllcenter()
+        </h2>
+<pre>yllcenter() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="yllcorner" id="yllcorner"></a><div class="element clickable method public yllcorner" data-toggle="collapse" data-target=".yllcorner .collapse">
+<h2>yllcorner()
+        </h2>
+<pre>yllcorner() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="SaveFixedWidthBOMFooter" id="SaveFixedWidthBOMFooter"></a><div class="element clickable method private SaveFixedWidthBOMFooter" data-toggle="collapse" data-target=".SaveFixedWidthBOMFooter .collapse">
+<h2>SaveFixedWidthBOMFooter()
+        </h2>
+<pre>SaveFixedWidthBOMFooter($file_handle) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$file_handle</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="SaveFixedWidthData" id="SaveFixedWidthData"></a><div class="element clickable method private SaveFixedWidthData" data-toggle="collapse" data-target=".SaveFixedWidthData .collapse">
+<h2>SaveFixedWidthData()
+        </h2>
+<pre>SaveFixedWidthData($file_handle) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$file_handle</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="SaveFixedWidthHeader" id="SaveFixedWidthHeader"></a><div class="element clickable method private SaveFixedWidthHeader" data-toggle="collapse" data-target=".SaveFixedWidthHeader .collapse">
+<h2>SaveFixedWidthHeader()
+        </h2>
+<pre>SaveFixedWidthHeader($file_handle) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$file_handle</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="asLatLongValue" id="asLatLongValue"></a><div class="element clickable method private asLatLongValue" data-toggle="collapse" data-target=".asLatLongValue .collapse">
+<h2>asLatLongValue()
+        </h2>
+<pre>asLatLongValue($decimalPlaces) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$decimalPlaces</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="loadGrid" id="loadGrid"></a><div class="element clickable method private loadGrid" data-toggle="collapse" data-target=".loadGrid .collapse">
+<h2>loadGrid()
+        </h2>
+<pre>loadGrid() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<h3>
+<i class="icon-custom icon-property"></i> Properties</h3>
+<a name="%24LatLonDelim" id="$LatLonDelim"> </a><div class="element clickable property public $LatLonDelim" data-toggle="collapse" data-target=".$LatLonDelim .collapse">
+<h2>$LatLonDelim</h2>
+<pre>$LatLonDelim </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24area" id="$area"> </a><div class="element clickable property private $area" data-toggle="collapse" data-target=".$area .collapse">
+<h2>$area</h2>
+<pre>$area </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24fileContent" id="$fileContent"> </a><div class="element clickable property private $fileContent" data-toggle="collapse" data-target=".$fileContent .collapse">
+<h2>$fileContent</h2>
+<pre>$fileContent </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24filename" id="$filename"> </a><div class="element clickable property private $filename" data-toggle="collapse" data-target=".$filename .collapse">
+<h2>$filename</h2>
+<pre>$filename </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24fixedWidth" id="$fixedWidth"> </a><div class="element clickable property private $fixedWidth" data-toggle="collapse" data-target=".$fixedWidth .collapse">
+<h2>$fixedWidth</h2>
+<pre>$fixedWidth </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24footerRowsStart" id="$footerRowsStart"> </a><div class="element clickable property private $footerRowsStart" data-toggle="collapse" data-target=".$footerRowsStart .collapse">
+<h2>$footerRowsStart</h2>
+<pre>$footerRowsStart </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24gridInfo" id="$gridInfo"> </a><div class="element clickable property private $gridInfo" data-toggle="collapse" data-target=".$gridInfo .collapse">
+<h2>$gridInfo</h2>
+<pre>$gridInfo </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24headerRowCount" id="$headerRowCount"> </a><div class="element clickable property private $headerRowCount" data-toggle="collapse" data-target=".$headerRowCount .collapse">
+<h2>$headerRowCount</h2>
+<pre>$headerRowCount </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24importDelimimter" id="$importDelimimter"> </a><div class="element clickable property private $importDelimimter" data-toggle="collapse" data-target=".$importDelimimter .collapse">
+<h2>$importDelimimter</h2>
+<pre>$importDelimimter </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24latLon" id="$latLon"> </a><div class="element clickable property private $latLon" data-toggle="collapse" data-target=".$latLon .collapse">
+<h2>$latLon</h2>
+<pre>$latLon </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24maximum" id="$maximum"> </a><div class="element clickable property private $maximum" data-toggle="collapse" data-target=".$maximum .collapse">
+<h2>$maximum</h2>
+<pre>$maximum </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24minimum" id="$minimum"> </a><div class="element clickable property private $minimum" data-toggle="collapse" data-target=".$minimum .collapse">
+<h2>$minimum</h2>
+<pre>$minimum </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24replaceSpaceCount" id="$replaceSpaceCount"> </a><div class="element clickable property private $replaceSpaceCount" data-toggle="collapse" data-target=".$replaceSpaceCount .collapse">
+<h2>$replaceSpaceCount</h2>
+<pre>$replaceSpaceCount </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24tag" id="$tag"> </a><div class="element clickable property private $tag" data-toggle="collapse" data-target=".$tag .collapse">
+<h2>$tag</h2>
+<pre>$tag </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="%24uniqueValues" id="$uniqueValues"> </a><div class="element clickable property private $uniqueValues" data-toggle="collapse" data-target=".$uniqueValues .collapse">
+<h2>$uniqueValues</h2>
+<pre>$uniqueValues </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="row"><footer class="span12">
+            Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
+            Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a3</a> and<br>
+            generated on 2012-06-27T11:58:43+10:00.<br></footer></div>
+</div>
+</body>
+</html>
