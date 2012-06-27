@@ -312,7 +312,7 @@ function zipFiles($requestedData)
 
     if ($haveRequest) {
         echo downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime);
-        echo "<a href='DataDownload.php'>&laquo; climate data downloads page</a>";
+        echo "<p><a href='DataDownload.php'>&laquo; climate data downloads page</a></p>";
         echo "<div class='intro'>";
         include 'DataDownloadDesc.html';
         echo "</div>";
