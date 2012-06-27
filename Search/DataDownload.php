@@ -215,7 +215,7 @@ function downloadRequestConfirmation($requestedScenario,$requestedModel,$request
     $result =  "";
     $result .= OutputFactory::Find($requestedData);
 
-    $result .= '<br>'.'<a href="http://'.$_SERVER['SERVER_NAME'].$WEB_FOLDER.$archive.'">DOWNLOAD</a>';
+    $result .= '<br>'.'<a class="downloadbtn" href="http://'.$_SERVER['SERVER_NAME'].$WEB_FOLDER.$archive.'">DOWNLOAD</a>';
 
     return $result ;
 
@@ -313,9 +313,6 @@ function zipFiles($requestedData)
     if ($haveRequest) {
         echo downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime);
         echo "<p><a href='DataDownload.php'>&laquo; climate data downloads page</a></p>";
-        echo "<div class='intro'>";
-        include 'DataDownloadDesc.html';
-        echo "</div>";
     } else {
         echo "<div class='intro'>";
         include 'DataDownloadDesc.html';
