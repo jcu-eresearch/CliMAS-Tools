@@ -1,0 +1,31 @@
+<p>
+Climate projections are available for download here at a ~5km resolution for Australia. The data associated with the future climate projections include:
+</p>
+<ul>
+    <li>18 GCMs for each emission scenario;</li>
+    <li>9 emission scenarios – 5 representing SRES scenarios and 4 representing RCP scenarios;</li>
+    <li>8 time points into the future (10 year intervals from 2015 to 2085); and</li>
+    <li>19 bioclimatic variables, including annual min, mean and max temperature, precipitation, sea surface temperatures, wet-day frequency, vapour pressure and cloud cover. Full list available at <a href="http://www.worldclim.org/bioclim">http://www.worldclim.org/bioclim</a>.</li>
+</ul>
+<p>
+With respect to the emission scenarios, Representative Concentration Pathways (RCPs) has been adopted by the IPCC to replace the Special Report on Emissions Scenarios (SRES) used in the AR4 report (Solomon, Qin et al. 2007); RCPs are to be used in the AR5 IPCC report due in 2014.
+</p>
+
+<div class="additionalcontent">
+    <span class="opener">Methods and data sources</span>
+    <div class="add">
+        <p>
+        Climate projections were sourced through a collaboration with Drs Rachel Warren and Jeff Price, Tyndall Centre, University of East Anglia, UK. This data is available on <a href="http://climascope.wwfus.org">http://climascope.wwfus.org</a>.
+        </p><p>
+        Although new GCM runs for RCPs have not been fully completed, several research groups have implemented methods to utilize knowledge gained from SRES predictions to recreate predictions for the new RCPs using AR4 GCMs (e.g., Meinshausen, Smith et al. 2011; Rogelj, Meinshausen et al. 2012). The methods used to generate the GCM predictions for the RCP emission scenarios are defined at <a href="http://climascope.wwfus.org">http://climascope.wwfus.org</a> and in associated publications (Mitchell and Jones 2005; Warren, de la Nava Santos et al. 2008; Meinshausen, Raper et al. 2011).
+        This data was downscaled to 0.05 degrees (~5km resolution) using a cubic spline of the anomalies; these anomalies were applied to a current climate baseline of 1976 to 2005 &ndash; climate of 1990 &ndash; generated from aggregating monthly data from Australia Water Availability Project (AWAP; <a href="http://www.bom.gov.au/jsp/awap/">http://www.bom.gov.au/jsp/awap/</a>). These monthly temperature and precipitation values user used to create 19 standard bioclimatic variables. These bioclimatic variables are listed at <a href="http://www.worldclim.org/bioclim">http://www.worldclim.org/bioclim</a>.
+        </p>
+        <p> 
+        All downscaling and bioclimatic variable creation was done using the climates package (VanDerWal, Beaumont et al. 2011) in R (<a href="http://www.r-project.org/">http://www.r-project.org/</a>).
+        </p>
+        <p>
+        In summary, 19 climate surfaces for each of 1297 projections (current + 9 emission scenarios &times; 18 GCMs &times; 8 time points) are available at a ~5km resolution for Australia. A recent paper looked at the climate projections under both the old SRES and the new RCPs (Rogelj, Meinshausen et al. 2012) which showed that 1) the RCP range mostly covered the range of SRES projected temperatures, and 2) the temperatures projected for the highest RCP (8.5) were fairly consistent with the highest SRES (A1FI).  From this work, and our own preliminary investigations, it appears that we will focus on the RCPs for all future projections, and will limit work done with SRES emission scenarios.
+        </p>
+    </div>
+</div>
+

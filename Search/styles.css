@@ -1,0 +1,319 @@
+
+/* general spacing reset and typography ------------------ */
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html, body {
+	padding: 0 0 1em;
+	color: #222;
+	font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Tahoma, sans-serif; /* facebook fontstack */
+	font-size: 100%;
+	line-height: 1.4;
+    background: #2d4048;
+}
+
+a {
+	color: #016;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+/* headings ------------------------------------------------- */
+
+h1 {
+	padding: 2em 0 1em;
+	text-align: left;
+	font-size: 200%;
+	text-shadow: 2px 2px 2px #000;
+}
+
+h1.pagehead {
+	height: 120px;
+	line-height: 120px;
+	padding: 45px 1.5em 0;
+	color: white;
+	background: #242732 url(../images/TDH_logo.png) no-repeat right;
+}
+
+.pagehead a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+h2 {
+    font-size: 150%;
+    padding: 2em 0 1em;
+}
+
+/* content ----------------------------------------------------- */
+
+.maincontent {
+    background: #efe6c5;
+    padding: 1em 3em 3em;
+}
+
+td, th {
+    padding: 0.5em;
+}
+
+.intro {
+    margin: 2em 0;
+}
+
+p, ul {
+    margin: 0.67em 0 0;
+}
+
+ul {
+    margin-left: 2em;
+}
+
+li {
+    margin: 0.33em 0;
+}
+
+.downloadbtn {
+    padding: 0.5em 1em;
+    margin: 1em 0 2em;
+}
+
+.footer {
+    color: white;
+    text-align: center;
+}
+
+.footer a {
+    color: #abf;
+}
+
+/* hgide/show additionalcontent sections ----------------------- */
+
+.additionalcontent {
+    margin: 1em 0 2em;
+}
+
+.additionalcontent .opener {
+    display: block;
+    text-align: left;
+    padding: 0.1em 0.5em;
+    -moz-border-radius: 0.3em;
+    -webkit-border-radius: 0.3em;
+    border-radius: 0.3em;
+    cursor: pointer;
+}
+
+.additionalcontent .opener:hover {
+    background-color: rgba(255,255,255,0.5);
+}
+
+.additionalcontent .opener:after {
+    content: ' \bb';
+}
+
+.additionalcontent.open .opener:after {
+    content: ' \ab';
+}
+
+.additionalcontent .add {
+    margin-left: 1em;
+    padding-left: 1em;
+    border-left: 2px solid rgba(255,255,255,0.5);
+}
+
+
+/* links that look like buttons --------------------------------- */
+
+.linkbuttons a {
+    display: inline-block;
+	zoom: 1; /* IE hack */
+	*display: inline; /* more IE hack */
+    color: inherit;
+    text-decoration: none;
+    padding: 0.2em 0.9em;
+    height: 1.4em;
+    line-height: 1.4em;
+    white-space: nowrap; 
+    -moz-border-radius: 0.4em;
+    -webkit-border-radius: 0.4em;
+    border-radius: 0.4em;
+    background-color: rgba(255,255,255,0.35);
+    border: 2px rgba(255,255,255,0.5) outset;
+}
+
+.linkbuttons a:hover {
+    text-decoration: none;
+    background-color: rgba(255,255,255,0.85);
+}
+
+.linkbuttons a.morelink {
+    font-size: 75%;
+    display: inline;
+    text-decoration: none;
+    padding: 0.1em 0.2em 0.1em 1em;
+    white-space: no-wrap;
+    background-color: transparent;
+    border: none;
+}
+
+.linkbuttons a.morelink:hover {
+    text-decoration: underline;
+    background-color: transparent;
+}
+
+/* links that look like tabs ----------------------------------- */
+
+.linktabs {
+    border-bottom: 4px rgba(255,255,255,1) groove;
+    padding-bottom: 0;
+    margin-bottom: 10px;
+}
+
+.linktabs a {
+    display: inline-block;
+    color: inherit;
+    cursor: pointer;
+    margin-bottom: -2px;
+	zoom: 1; /* IE hack */
+	*display: inline; /* more IE hack */
+    text-decoration: none;
+    padding: 0.4em 0.9em 0.6em;
+    height: 1.4em;
+    line-height: 1.4em;
+    white-space: nowrap; 
+    background-color: rgba(255,255,255,0.35);
+    border: 2px rgba(255,255,255,0.5) outset;
+    border-width: 2px 2px 0 2px;
+}
+
+.linktabs a.selected {
+    background-color: rgba(255,255,255,1);
+}
+
+.linktabs a:hover {
+    text-decoration: none;
+    background-color: rgba(255,255,255,0.85);
+}
+
+/* linktable  ------------------------------------------------ */
+
+.linktable {
+    text-align: center;
+}
+
+.linktable a {
+    display: block;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    /* width: 100%; specifying width breaks in IE */
+    height: 100%;
+}
+
+.linktable td:first-child, .linktable th:first-child {
+    padding-left: 3em;
+}
+
+.linktable td:last-child, .linktable th:last-child {
+    padding-right: 3em;
+}
+
+.linktable td, .linktable th {
+    padding: 1.25em .75em;
+    font-size: 90%;
+}
+
+.linktable .tophalf td, .linktable .tophalf th {
+    padding-bottom: 0.1em;
+}
+
+.linktable .bottomhalf td, .linktable .bottomhalf th {
+    padding-top: 0.1em;
+}
+
+.linktable .middle td, .linktable .middle th {
+    padding-top: 0.1em;
+    padding-bottom: 0.1em;
+}
+
+.modeselector {
+    display: none;
+}
+
+.linktable .hidden {
+    display: none;
+}
+
+.linktable .hidden.reallynothidden {
+    display: table-cell;
+}
+
+.linktable .rowcollabels {
+    position: relative;
+    /* no, maybe just leave out hte diagonal line
+    background: -moz-linear-gradient(60deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 49.5%, #000 50%, rgba(0,0,0,0) 50.5%, rgba(0,0,0,0), 100%);
+    background: -webkit-linear-gradient(60deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 49.5%, #000 50%, rgba(0,0,0,0) 50.5%, rgba(0,0,0,0) 100%);
+    background: linear-gradient(60deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 49.5%, #000 50%, rgba(0,0,0,0) 50.5%, rgba(0,0,0,0) 100%);
+    */
+}
+
+.linktable tr:nth-child(odd) {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,1)), color-stop(45px,rgba(0,0,0,0)));
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
+    background: -moz-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
+    background: -o-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
+    background: -ms-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
+    background: linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
+}
+
+.linktable .rightlabel, .linktable .downlabel {
+    font-weight: bold;
+    padding: 1.5em;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.linktable .rightlabel {
+    text-align: right;
+    bottom: 67%;
+    left: 33%;
+}
+
+.linktable .downlabel {
+    text-align: left;
+    top: 33%;
+    right: 33%;
+}
+
+/* footer and credits ----------------------------------------- */
+
+.footer {
+	margin: 0;
+	padding: 3em 1em;
+}
+
+.credits {
+	background: white;
+	padding: 1.5em 3em 2em;
+	text-align: center;
+	-webkit-box-shadow: inset 0 1em 1.5em -0.5em #000, inset 0 -0.8em 1.5em -0.5em #000;
+	-moz-box-shadow:    inset 0 1em 1.5em -0.5em #000, inset 0 -0.8em 1.5em -0.5em #000;
+	box-shadow:         inset 0 1em 1.5em -0.5em #000, inset 0 -0.8em 1.5em -0.5em #000;
+}   
+
+.credits a {
+	margin: 1em 2em;
+	display: inline-block; 
+}   
+	
+.credits img { border: none; }
+
+

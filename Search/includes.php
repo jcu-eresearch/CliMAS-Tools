@@ -89,6 +89,37 @@ if (stripos( $hostname, "afakes-eresearch") !== FALSE)
 
 /**
  *
+ *  Development values from workstation hostname "vbox-ubuntu" (Daniel's dev VM)
+ *  
+ */
+
+if (stripos( $hostname, "vbox-ubuntu") !== FALSE) 
+{
+    $pathprefix = "/home/daniel/projects/ap02";
+    
+    $conf[Parameter::$APPLICATION_FOLDER]    = $pathprefix . "/TDH-Tools/";
+    $conf[Parameter::$UTILITIES_CLASSES]     = $pathprefix . "/TDH-Tools/Utilities/includes.php";
+    $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = $pathprefix . "/TDH-Tools/output/";
+    $conf[Parameter::$RESOURCES_FOLDER]      = $pathprefix . "/TDH-Tools/Resources/";
+    $conf[Parameter::$SOURCE_DATA_FOLDER]    = $pathprefix . "/TDH-Tools/source/";
+
+    $conf[Parameter::$Descriptions_ClimateModels]      = $pathprefix . "/TDH-Tools/Resources/descriptions/gcm.csv";
+    $conf[Parameter::$Descriptions_EmissionScenarios]  = $pathprefix . "/TDH-Tools/Resources/descriptions/scenario.csv";
+    $conf[Parameter::$Descriptions_Years]              = $pathprefix . "/TDH-Tools/Resources/descriptions/year.txt";
+
+    $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://localhost/eresearch/TDH-Tools/output/";
+    $conf[Parameter::$ICONS_FOLDER]          = "http://localhost/eresearch/TDH-Tools/Resources/icons/";
+    
+    
+    $conf[Parameter::$COMMAND_QUEUE_LOG      ] = $pathprefix . "/TDH-Tools/logs/queue.log";
+    $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = $pathprefix . "/TDH-Tools/queue/";
+    $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = $pathprefix . "/TDH-Tools/scripts/";
+    $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = $pathprefix . "/TDH-Tools/Search/CommandActionExecute.php";
+    
+}   
+
+/**
+ *
  *  values if code running on HPC
  *  
  */

@@ -10,7 +10,6 @@ class htmlutil {
     */
     public static function table($data, $showKey = true) {
 
-
         if (count($data) == 0) return "NO DATA<br>";
 
         if (!is_array($data)) return str_replace ("\n", '<br/>', $data)."<br>";
@@ -21,11 +20,11 @@ class htmlutil {
         {
             if (is_array($value))
             {
-
                 $row = array();
                 foreach ($value as $col_id => $cell) $row[] = "<td>$cell</td>";
 
                 $result .= "\n"."<tr>";
+                if ($showKey) $result .= "\n"."<td class=\"rowheader\">$key</td>";
                 $result .= "\n".join("\n",$row);
                 $result .= "\n"."</tr>"."\n";
             }
