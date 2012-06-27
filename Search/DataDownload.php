@@ -301,159 +301,29 @@ function zipFiles($requestedData)
 
 <link href="styles.css" rel="stylesheet" type="text/css">
 
-<style type="text/css">
-
-/*
-    body
-    {
-        font-family: sans-serif;
-    }
-
-    .scenCell a, .scenModelCell a, .modelCell a {
-        display: block; width: 100%; height: 100%;
-    }
-
-    .scenTable
-    {
-        width: 100%;
-        
-        float: none;
-        clear: both;
-        overflow: hidden;
-        margin-bottom: 20px;
-    }
-
-    .scenRow
-    {
-        width: 100px;
-        height: 30px;
-        float: left;        
-        margin: 2px;
-        background-color: #DDDDDD;
-        border-radius: 15px;
-        border-right: 2px solid black;
-        border-bottom: 2px solid black;
-        
-    }
-
-    .scenRow:hover
-    {
-        background-color: #AAAAAA;
-        color: white;
-    }
-
-
-    .scenCell
-    {
-        width: 100%;
-        height: 100%;
-        margin:5px;
-        padding-left:5px;
-    }
-
-    .scenCell a
-    {
-        color: black;
-        font-weight: bold;
-        text-decoration: none;
-    }
-
-
-
-
-    .modelTable
-    {
-        width: 100%;
-        
-        float: none;
-        clear: both;
-            overflow: hidden;
-        margin-bottom: 20px;
-
-    }
-
-    .modelRow
-    {
-        width: 150px;
-        height: 30px;
-        float: left;
-        margin: 2px;
-        background-color: #DDDDDD;
-        border-radius: 15px;
-        border-right: 2px solid black;
-        border-bottom: 2px solid black;
-
-    }
-
-    .modelRow:hover
-    {
-        background-color: #AAAAAA;
-        color: white;
-    }
-
-
-    .modelCell
-    {
-        width: 100%;
-        height: 100%;
-        margin:5px;
-        padding-left:5px;
-    }
-
-    .modelCell a
-    {
-        color: black;
-        font-weight: bold;
-        text-decoration: none;
-    }
-
-
-
-
-    .scenModelCell
-    {
-        display: block;
-        padding: 5px;
-        width: 100px;
-        background-color: #DDDDDD;
-        border-radius: 15px;
-        border-right: 2px solid black;
-        border-bottom: 2px solid black;
-        text-align: center;
-        margin-bottom: 5px;
-    }
-
-    .scenModelCell a
-    {
-        color: black;
-        font-weight: bold;
-        text-decoration: none;
-    }
-
-
-
-    .scenModelCell:hover
-    {
-        background-color: #AAAAAA;
-        color: white;
-    }
-
-*/
-
-</style>
 </head>
 <body>
     <h1 class="pagehead"><a href="DataDownload.php">Climate Data Downloads</a></h1>
     <div class="maincontent">
 <?php
 
+    // this is used later in the javascript
+    $modeListString = '';
+
     if ($haveRequest) {
         echo downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime);
+        echo "<a href='DataDownload.php'>&laquo; climate data downloads page</a>";
+        echo "<div class='intro'>";
+        include 'DataDownloadDesc.html';
+        echo "</div>";
     } else {
         echo "<div class='intro'>";
         include 'DataDownloadDesc.html';
         echo "</div>";
         echo selectionTable();
+        
+        // here's where we put actual modes into this string
+        $modeListString = '"' . join(array_keys($modes), '", "') . '"';
     }
 ?>
     </div>
@@ -476,16 +346,17 @@ function zipFiles($requestedData)
     <div class="footer">
         <p class="contact">
             please contact Jeremy VanDerWal
-            (<a href="mailto:jjvanderwal@gmail.com">jjvanderwal@gmail.com</a>)
+            (<a href="mailto:jeremy.vanderwal@jcu.edu.au">jeremy.vanderwal@jcu.edu.au</a>)
             with any queries.
         </p>
     </div>
 
     <!-- javascript is here at the bottom of the page, where it should be -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <?php $modeListString = '"' . join(array_keys($modes), '", "') . '"'; ?>
     <script>
+
         // javascript to set up the mode display buttons to hide/show the columns
+        // $modeListString was set up earlier in a php portion of the page
         var modes = [<?php echo $modeListString; ?>];
 
         $( function() {
@@ -553,6 +424,19 @@ function zipFiles($requestedData)
                 $('#rcp').trigger(jQuery.Event('click', {srcElement: $('#rcp')}) );
             }
         });
+    </script>
+    
+    <!-- add google tracking info -->
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-16452055-7']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
     </script>
 </body>
 </html>

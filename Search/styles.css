@@ -58,6 +58,10 @@ h2 {
     padding: 1em 3em 3em;
 }
 
+td, th {
+    padding: 0.5em;
+}
+
 .intro {
     margin: 2em 0;
 }
@@ -254,12 +258,12 @@ li {
 }
 
 .linktable tr:nth-child(odd) {
-    background: -moz-linear-gradient(top,  rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,1)), color-stop(45px,rgba(0,0,0,0)));
-    background: -webkit-linear-gradient(top,  rgba(0,0,0,0.15) 0%,rgba(0,0,0,0) 45px);
-    background: -o-linear-gradient(top,  rgba(0,0,0,0.15) 0%,rgba(0,0,0,0) 45px);
-    background: -ms-linear-gradient(top,  rgba(0,0,0,0.15) 0%,rgba(0,0,0,0) 45px);
-    background: linear-gradient(top,  rgba(0,0,0,0.15) 0%,rgba(0,0,0,0) 45px);
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
+    background: -moz-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
+    background: -o-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
+    background: -ms-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
+    background: linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
 }
 
 .linktable .rightlabel, .linktable .downlabel {

@@ -89,7 +89,7 @@ if (stripos( $hostname, "afakes-eresearch") !== FALSE)
 
 /**
  *
- *  Develpopment values from workstation hostname  "vbox-ubuntu" (Daniel's dev VM)
+ *  Development values from workstation hostname "vbox-ubuntu" (Daniel's dev VM)
  *  
  */
 
@@ -111,10 +111,10 @@ if (stripos( $hostname, "vbox-ubuntu") !== FALSE)
     $conf[Parameter::$ICONS_FOLDER]          = "http://localhost/eresearch/TDH-Tools/Resources/icons/";
     
     
-    $conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/data/dmf/TDH-Tools/logs/queue.log";
-    $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = "/data/dmf/TDH-Tools/queue/";
-    $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/data/dmf/TDH-Tools/scripts/";
-    $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = "/www/eresearch/TDH-Tools/Search/CommandActionExecute.php";
+    $conf[Parameter::$COMMAND_QUEUE_LOG      ] = $pathprefix . "/TDH-Tools/logs/queue.log";
+    $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = $pathprefix . "/TDH-Tools/queue/";
+    $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = $pathprefix . "/TDH-Tools/scripts/";
+    $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = $pathprefix . "/TDH-Tools/Search/CommandActionExecute.php";
     
 }   
 
