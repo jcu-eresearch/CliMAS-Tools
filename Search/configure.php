@@ -128,6 +128,7 @@ if (!file_exists($incoming_sh))
     exit(1);
 }
 
+exec("chmod u+x '{$incoming_sh}'");
 
 echo "\nCRON (on host that will be processing the queue)";
 echo "\n";
