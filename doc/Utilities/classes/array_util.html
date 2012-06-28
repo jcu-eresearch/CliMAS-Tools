@@ -1,0 +1,1185 @@
+<!DOCTYPE html><html xmlns:date="http://exslt.org/dates-and-times" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+<meta charset="utf-8">
+<title>phpDocumentor » \array_util</title>
+<meta name="author" content="Mike van Riel">
+<meta name="description" content="">
+<link href="../css/template.css" rel="stylesheet" media="all">
+<script src="../js/jquery-1.7.1.min.js" type="text/javascript"></script><script src="../js/jquery-ui-1.8.2.custom.min.js" type="text/javascript"></script><script src="../js/jquery.mousewheel.min.js" type="text/javascript"></script><script src="../js/bootstrap.js" type="text/javascript"></script><script src="../js/template.js" type="text/javascript"></script><script src="../js/prettify/prettify.min.js" type="text/javascript"></script><link rel="shortcut icon" href="../img/favicon.ico">
+<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="72x72" href="../img/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="114x114" href="../img/apple-touch-icon-114x114.png">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+<div class="navbar-inner"><div class="container">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">phpDocumentor</a><div class="nav-collapse"><ul class="nav">
+<li class="dropdown">
+<a href="#api" class="dropdown-toggle" data-toggle="dropdown">
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu"></ul>
+</li>
+<li class="dropdown" id="charts-menu">
+<a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
+                                    Charts <b class="caret"></b></a><ul class="dropdown-menu"><li><a href="../graph_class.html"><i class="icon-list-alt"></i> Class hierarchy diagram</a></li></ul>
+</li>
+<li class="dropdown" id="reports-menu">
+<a href="#reports" class="dropdown-toggle" data-toggle="dropdown">
+                                    Reports <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a href="../errors.html"><i class="icon-remove-sign"></i> Errors 
+                <span class="label label-info">806</span></a></li>
+<li><a href="../markers.html"><i class="icon-map-marker"></i> Markers 
+                <ul></ul></a></li>
+<li><a href="../deprecated.html"><i class="icon-stop"></i> Deprecated elements 
+                <span class="label label-info">0</span></a></li>
+</ul>
+</li>
+</ul></div>
+</div></div>
+<div class="go_to_top"><a href="#___" style="color: inherit">Back to top  <i class="icon-upload icon-white"></i></a></div>
+</div>
+<div id="___" class="container">
+<noscript><div class="alert alert-warning">
+                            Javascript is disabled; several features are only available
+                            if Javascript is enabled.
+                        </div></noscript>
+<div class="row">
+<div class="span4">
+<span class="btn-group visibility" data-toggle="buttons-checkbox"><button class="btn public active" title="Show public elements">Public</button><button class="btn protected" title="Show protected elements">Protected</button><button class="btn private" title="Show private elements">Private</button><button class="btn inherited active" title="Show inherited elements">Inherited</button></span><div class="btn-group view pull-right" data-toggle="buttons-radio">
+<button class="btn details" title="Show descriptions and method names"><i class="icon-list"></i></button><button class="btn simple" title="Show only method names"><i class="icon-align-justify"></i></button>
+</div>
+<ul class="side-nav nav nav-list">
+<li class="nav-header">
+<i class="icon-custom icon-method"></i> Methods</li>
+<li class="method public "><a href="#ArrayKey" title="ArrayKey :: "><span class="description">ArrayKey()
+        </span><pre>ArrayKey()</pre></a></li>
+<li class="method public "><a href="#Average" title="Average :: "><span class="description">Average()
+        </span><pre>Average()</pre></a></li>
+<li class="method public "><a href="#AverageDistanceOfValues" title="AverageDistanceOfValues :: "><span class="description">AverageDistanceOfValues()
+        </span><pre>AverageDistanceOfValues()</pre></a></li>
+<li class="method public "><a href="#Column" title="Column :: "><span class="description">Column()
+        </span><pre>Column()</pre></a></li>
+<li class="method public "><a href="#Contains" title="Contains :: "><span class="description">Contains()
+        </span><pre>Contains()</pre></a></li>
+<li class="method public "><a href="#ConvertTags" title="ConvertTags :: "><span class="description">ConvertTags()
+        </span><pre>ConvertTags()</pre></a></li>
+<li class="method public "><a href="#CopyTo" title="CopyTo :: "><span class="description">CopyTo()
+        </span><pre>CopyTo()</pre></a></li>
+<li class="method public "><a href="#Count" title="Count :: "><span class="description">Count()
+        </span><pre>Count()</pre></a></li>
+<li class="method public "><a href="#CountAtDepth" title="CountAtDepth :: "><span class="description">CountAtDepth()
+        </span><pre>CountAtDepth()</pre></a></li>
+<li class="method public "><a href="#CountNotValue" title="CountNotValue :: "><span class="description">CountNotValue()
+        </span><pre>CountNotValue()</pre></a></li>
+<li class="method public "><a href="#CountOfValuesDistance" title="CountOfValuesDistance :: "><span class="description">CountOfValuesDistance()
+        </span><pre>CountOfValuesDistance()</pre></a></li>
+<li class="method public "><a href="#CountValue" title="CountValue :: "><span class="description">CountValue()
+        </span><pre>CountValue()</pre></a></li>
+<li class="method public "><a href="#DeviationFromMean" title="DeviationFromMean :: "><span class="description">DeviationFromMean()
+        </span><pre>DeviationFromMean()</pre></a></li>
+<li class="method public "><a href="#DisplayKeyedArray" title="DisplayKeyedArray :: "><span class="description">DisplayKeyedArray()
+        </span><pre>DisplayKeyedArray()</pre></a></li>
+<li class="method public "><a href="#DivideByScalar" title="DivideByScalar :: "><span class="description">DivideByScalar()
+        </span><pre>DivideByScalar()</pre></a></li>
+<li class="method public "><a href="#Elements" title="Elements :: "><span class="description">Elements()
+        </span><pre>Elements()</pre></a></li>
+<li class="method public "><a href="#ElementsThatContain" title="ElementsThatContain :: "><span class="description">ElementsThatContain()
+        </span><pre>ElementsThatContain()</pre></a></li>
+<li class="method public "><a href="#ExtractNullValues" title="ExtractNullValues :: "><span class="description">ExtractNullValues()
+        </span><pre>ExtractNullValues()</pre></a></li>
+<li class="method public "><a href="#FilterKeys" title="FilterKeys :: "><span class="description">FilterKeys()
+        </span><pre>FilterKeys()</pre></a></li>
+<li class="method public "><a href="#FirstElementsThatContain" title="FirstElementsThatContain :: "><span class="description">FirstElementsThatContain()
+        </span><pre>FirstElementsThatContain()</pre></a></li>
+<li class="method public "><a href="#FirstValueKey" title="FirstValueKey :: "><span class="description">FirstValueKey()
+        </span><pre>FirstValueKey()</pre></a></li>
+<li class="method public "><a href="#FromTemplate" title="FromTemplate :: $src = Bidimensional Array  $src[$row_id] = array($column_id =&gt; $column_value, $column_id =&gt; $column_value, ...    )"><span class="description">$src = Bidimensional Array  $src[$row_id] = array($column_id =&gt; $column_value, $column_id =&gt; $column_value, ...    )</span><pre>FromTemplate()</pre></a></li>
+<li class="method public "><a href="#GetKeyForValueContain" title="GetKeyForValueContain :: "><span class="description">GetKeyForValueContain()
+        </span><pre>GetKeyForValueContain()</pre></a></li>
+<li class="method public "><a href="#JoinKeys" title="JoinKeys :: "><span class="description">JoinKeys()
+        </span><pre>JoinKeys()</pre></a></li>
+<li class="method public "><a href="#KeyedArrayToString" title="KeyedArrayToString :: "><span class="description">KeyedArrayToString()
+        </span><pre>KeyedArrayToString()</pre></a></li>
+<li class="method public "><a href="#LastValueKey" title="LastValueKey :: "><span class="description">LastValueKey()
+        </span><pre>LastValueKey()</pre></a></li>
+<li class="method public "><a href="#Maximum" title="Maximum :: "><span class="description">Maximum()
+        </span><pre>Maximum()</pre></a></li>
+<li class="method public "><a href="#Merge" title="Merge :: "><span class="description">Merge()
+        </span><pre>Merge()</pre></a></li>
+<li class="method public "><a href="#Minimum" title="Minimum :: "><span class="description">Minimum()
+        </span><pre>Minimum()</pre></a></li>
+<li class="method public "><a href="#MultiplyByScalar" title="MultiplyByScalar :: "><span class="description">MultiplyByScalar()
+        </span><pre>MultiplyByScalar()</pre></a></li>
+<li class="method public "><a href="#MultiplyOnKeys" title="MultiplyOnKeys :: "><span class="description">MultiplyOnKeys()
+        </span><pre>MultiplyOnKeys()</pre></a></li>
+<li class="method public "><a href="#Normalise" title="Normalise :: "><span class="description">Normalise()
+        </span><pre>Normalise()</pre></a></li>
+<li class="method public "><a href="#Replace" title="Replace :: "><span class="description">Replace()
+        </span><pre>Replace()</pre></a></li>
+<li class="method public "><a href="#Round" title="Round :: "><span class="description">Round()
+        </span><pre>Round()</pre></a></li>
+<li class="method public "><a href="#RunningSum" title="RunningSum :: "><span class="description">RunningSum()
+        </span><pre>RunningSum()</pre></a></li>
+<li class="method public "><a href="#Search" title="Search :: "><span class="description">Search()
+        </span><pre>Search()</pre></a></li>
+<li class="method public "><a href="#ShowCount" title="ShowCount :: "><span class="description">ShowCount()
+        </span><pre>ShowCount()</pre></a></li>
+<li class="method public "><a href="#SortByLength" title="SortByLength :: "><span class="description">SortByLength()
+        </span><pre>SortByLength()</pre></a></li>
+<li class="method public "><a href="#StripTags" title="StripTags :: "><span class="description">StripTags()
+        </span><pre>StripTags()</pre></a></li>
+<li class="method public "><a href="#Sum" title="Sum :: "><span class="description">Sum()
+        </span><pre>Sum()</pre></a></li>
+<li class="method public "><a href="#Trim" title="Trim :: "><span class="description">Trim()
+        </span><pre>Trim()</pre></a></li>
+<li class="method public "><a href="#Unique" title="Unique :: "><span class="description">Unique()
+        </span><pre>Unique()</pre></a></li>
+<li class="method public "><a href="#UniqueValues" title="UniqueValues :: "><span class="description">UniqueValues()
+        </span><pre>UniqueValues()</pre></a></li>
+<li class="method public "><a href="#Value" title="Value :: "><span class="description">Value()
+        </span><pre>Value()</pre></a></li>
+<li class="method public "><a href="#ValueThatContain" title="ValueThatContain :: "><span class="description">ValueThatContain()
+        </span><pre>ValueThatContain()</pre></a></li>
+<li class="method public "><a href="#countdim" title="countdim :: "><span class="description">countdim()
+        </span><pre>countdim()</pre></a></li>
+<li class="method public "><a href="#dates2DecimalYear" title="dates2DecimalYear :: "><span class="description">dates2DecimalYear()
+        </span><pre>dates2DecimalYear()</pre></a></li>
+<li class="method public "><a href="#double_explode" title="double_explode :: "><span class="description">double_explode()
+        </span><pre>double_explode()</pre></a></li>
+<li class="method public "><a href="#explode" title="explode :: "><span class="description">explode()
+        </span><pre>explode()</pre></a></li>
+<li class="method public "><a href="#histogram" title="histogram :: "><span class="description">histogram()
+        </span><pre>histogram()</pre></a></li>
+<li class="method public "><a href="#html_entity_decode" title="html_entity_decode :: "><span class="description">html_entity_decode()
+        </span><pre>html_entity_decode()</pre></a></li>
+<li class="method public "><a href="#toArray" title="toArray :: "><span class="description">toArray()
+        </span><pre>toArray()</pre></a></li>
+<li class="method public "><a href="#urldecode" title="urldecode :: "><span class="description">urldecode()
+        </span><pre>urldecode()</pre></a></li>
+</ul>
+</div>
+<div class="span8">
+<a name="%5Carray_util" id="\array_util"></a><ul class="breadcrumb">
+<li>
+<a href="../index.html"><i class="icon-custom icon-class"></i></a><span class="divider">\</span>
+</li>
+<li><a href="../namespaces/default.html">default</a></li>
+<li class="active">
+<span class="divider">\</span><a href="../classes/array_util.html">array_util</a>
+</li>
+</ul>
+<div href="../classes/array_util.html" class="element class"><div class="details">
+<h3>
+<i class="icon-custom icon-method"></i> Methods</h3>
+<a name="ArrayKey" id="ArrayKey"></a><div class="element clickable method public ArrayKey" data-toggle="collapse" data-target=".ArrayKey .collapse">
+<h2>ArrayKey()
+        </h2>
+<pre>ArrayKey($findIn, $findValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$findIn</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$findValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Average" id="Average"></a><div class="element clickable method public Average" data-toggle="collapse" data-target=".Average .collapse">
+<h2>Average()
+        </h2>
+<pre>Average($src, $column_name, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="AverageDistanceOfValues" id="AverageDistanceOfValues"></a><div class="element clickable method public AverageDistanceOfValues" data-toggle="collapse" data-target=".AverageDistanceOfValues .collapse">
+<h2>AverageDistanceOfValues()
+        </h2>
+<pre>AverageDistanceOfValues($array) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Column" id="Column"></a><div class="element clickable method public Column" data-toggle="collapse" data-target=".Column .collapse">
+<h2>Column()
+        </h2>
+<pre>Column($src, $column_name) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Contains" id="Contains"></a><div class="element clickable method public Contains" data-toggle="collapse" data-target=".Contains .collapse">
+<h2>Contains()
+        </h2>
+<pre>Contains($array, $find) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$find</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="ConvertTags" id="ConvertTags"></a><div class="element clickable method public ConvertTags" data-toggle="collapse" data-target=".ConvertTags .collapse">
+<h2>ConvertTags()
+        </h2>
+<pre>ConvertTags($src, $tag, $to) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$tag</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$to</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="CopyTo" id="CopyTo"></a><div class="element clickable method public CopyTo" data-toggle="collapse" data-target=".CopyTo .collapse">
+<h2>CopyTo()
+        </h2>
+<pre>CopyTo($source, $dest, $these_keys_only) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$source</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$dest</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$these_keys_only</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Count" id="Count"></a><div class="element clickable method public Count" data-toggle="collapse" data-target=".Count .collapse">
+<h2>Count()
+        </h2>
+<pre>Count($src, $column_name, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="CountAtDepth" id="CountAtDepth"></a><div class="element clickable method public CountAtDepth" data-toggle="collapse" data-target=".CountAtDepth .collapse">
+<h2>CountAtDepth()
+        </h2>
+<pre>CountAtDepth($src) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="CountNotValue" id="CountNotValue"></a><div class="element clickable method public CountNotValue" data-toggle="collapse" data-target=".CountNotValue .collapse">
+<h2>CountNotValue()
+        </h2>
+<pre>CountNotValue($src, $toCount, $column_name) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$toCount</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="CountOfValuesDistance" id="CountOfValuesDistance"></a><div class="element clickable method public CountOfValuesDistance" data-toggle="collapse" data-target=".CountOfValuesDistance .collapse">
+<h2>CountOfValuesDistance()
+        </h2>
+<pre>CountOfValuesDistance($array) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="CountValue" id="CountValue"></a><div class="element clickable method public CountValue" data-toggle="collapse" data-target=".CountValue .collapse">
+<h2>CountValue()
+        </h2>
+<pre>CountValue($src, $toCount, $column_name) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$toCount</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="DeviationFromMean" id="DeviationFromMean"></a><div class="element clickable method public DeviationFromMean" data-toggle="collapse" data-target=".DeviationFromMean .collapse">
+<h2>DeviationFromMean()
+        </h2>
+<pre>DeviationFromMean($src, $column_name, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="DisplayKeyedArray" id="DisplayKeyedArray"></a><div class="element clickable method public DisplayKeyedArray" data-toggle="collapse" data-target=".DisplayKeyedArray .collapse">
+<h2>DisplayKeyedArray()
+        </h2>
+<pre>DisplayKeyedArray($array, $delim) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$delim</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="DivideByScalar" id="DivideByScalar"></a><div class="element clickable method public DivideByScalar" data-toggle="collapse" data-target=".DivideByScalar .collapse">
+<h2>DivideByScalar()
+        </h2>
+<pre>DivideByScalar($src, $scalar) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$scalar</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Elements" id="Elements"></a><div class="element clickable method public Elements" data-toggle="collapse" data-target=".Elements .collapse">
+<h2>Elements()
+        </h2>
+<pre>Elements($srcArr, $start, $end) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$srcArr</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$start</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$end</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="ElementsThatContain" id="ElementsThatContain"></a><div class="element clickable method public ElementsThatContain" data-toggle="collapse" data-target=".ElementsThatContain .collapse">
+<h2>ElementsThatContain()
+        </h2>
+<pre>ElementsThatContain($array, $find) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$find</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="ExtractNullValues" id="ExtractNullValues"></a><div class="element clickable method public ExtractNullValues" data-toggle="collapse" data-target=".ExtractNullValues .collapse">
+<h2>ExtractNullValues()
+        </h2>
+<pre>ExtractNullValues($src, $column_name, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="FilterKeys" id="FilterKeys"></a><div class="element clickable method public FilterKeys" data-toggle="collapse" data-target=".FilterKeys .collapse">
+<h2>FilterKeys()
+        </h2>
+<pre>FilterKeys($src, $find) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$find</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="FirstElementsThatContain" id="FirstElementsThatContain"></a><div class="element clickable method public FirstElementsThatContain" data-toggle="collapse" data-target=".FirstElementsThatContain .collapse">
+<h2>FirstElementsThatContain()
+        </h2>
+<pre>FirstElementsThatContain($array, $find) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$find</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="FirstValueKey" id="FirstValueKey"></a><div class="element clickable method public FirstValueKey" data-toggle="collapse" data-target=".FirstValueKey .collapse">
+<h2>FirstValueKey()
+        </h2>
+<pre>FirstValueKey($src, $column_name, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="FromTemplate" id="FromTemplate"></a><div class="element clickable method public FromTemplate" data-toggle="collapse" data-target=".FromTemplate .collapse">
+<h2>$src = Bidimensional Array  $src[$row_id] = array($column_id =&gt; $column_value, $column_id =&gt; $column_value, ...    )</h2>
+<pre>FromTemplate($src, $rowTemplate) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description">Loop thru each row in $src and process template for each row
+
+Special Templates
+ {#join, }  means a string = Key1,Value1 Key2,Value2 Key3,Value3
+ {#join|_}  means a string = Key1|Value1_Key2|Value2_Key3|Value3
+
+ {#ROW_ID#} = is the key to the row
+
+default template = {row_id}=[{#join, }]</p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$rowTemplate</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="GetKeyForValueContain" id="GetKeyForValueContain"></a><div class="element clickable method public GetKeyForValueContain" data-toggle="collapse" data-target=".GetKeyForValueContain .collapse">
+<h2>GetKeyForValueContain()
+        </h2>
+<pre>GetKeyForValueContain($array, $find) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$find</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="JoinKeys" id="JoinKeys"></a><div class="element clickable method public JoinKeys" data-toggle="collapse" data-target=".JoinKeys .collapse">
+<h2>JoinKeys()
+        </h2>
+<pre>JoinKeys($array, $delim) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$delim</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="KeyedArrayToString" id="KeyedArrayToString"></a><div class="element clickable method public KeyedArrayToString" data-toggle="collapse" data-target=".KeyedArrayToString .collapse">
+<h2>KeyedArrayToString()
+        </h2>
+<pre>KeyedArrayToString($array, $delim) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$delim</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="LastValueKey" id="LastValueKey"></a><div class="element clickable method public LastValueKey" data-toggle="collapse" data-target=".LastValueKey .collapse">
+<h2>LastValueKey()
+        </h2>
+<pre>LastValueKey($src, $column_name, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Maximum" id="Maximum"></a><div class="element clickable method public Maximum" data-toggle="collapse" data-target=".Maximum .collapse">
+<h2>Maximum()
+        </h2>
+<pre>Maximum($src, $column_name, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Merge" id="Merge"></a><div class="element clickable method public Merge" data-toggle="collapse" data-target=".Merge .collapse">
+<h2>Merge()
+        </h2>
+<pre>Merge($src, $mergeInto) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$mergeInto</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Minimum" id="Minimum"></a><div class="element clickable method public Minimum" data-toggle="collapse" data-target=".Minimum .collapse">
+<h2>Minimum()
+        </h2>
+<pre>Minimum($src, $column_name, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="MultiplyByScalar" id="MultiplyByScalar"></a><div class="element clickable method public MultiplyByScalar" data-toggle="collapse" data-target=".MultiplyByScalar .collapse">
+<h2>MultiplyByScalar()
+        </h2>
+<pre>MultiplyByScalar($src, $scalar) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$scalar</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="MultiplyOnKeys" id="MultiplyOnKeys"></a><div class="element clickable method public MultiplyOnKeys" data-toggle="collapse" data-target=".MultiplyOnKeys .collapse">
+<h2>MultiplyOnKeys()
+        </h2>
+<pre>MultiplyOnKeys($lhs, $rhs) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$lhs</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$rhs</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Normalise" id="Normalise"></a><div class="element clickable method public Normalise" data-toggle="collapse" data-target=".Normalise .collapse">
+<h2>Normalise()
+        </h2>
+<pre>Normalise($src, $columnName, $toMin, $toMax) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$columnName</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$toMin</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$toMax</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Replace" id="Replace"></a><div class="element clickable method public Replace" data-toggle="collapse" data-target=".Replace .collapse">
+<h2>Replace()
+        </h2>
+<pre>Replace($src, $search, $replace) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$search</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$replace</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Round" id="Round"></a><div class="element clickable method public Round" data-toggle="collapse" data-target=".Round .collapse">
+<h2>Round()
+        </h2>
+<pre>Round($src, $places) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$places</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="RunningSum" id="RunningSum"></a><div class="element clickable method public RunningSum" data-toggle="collapse" data-target=".RunningSum .collapse">
+<h2>RunningSum()
+        </h2>
+<pre>RunningSum($src, $column_name, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Search" id="Search"></a><div class="element clickable method public Search" data-toggle="collapse" data-target=".Search .collapse">
+<h2>Search()
+        </h2>
+<pre>Search($inArray, $find) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$inArray</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$find</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="ShowCount" id="ShowCount"></a><div class="element clickable method public ShowCount" data-toggle="collapse" data-target=".ShowCount .collapse">
+<h2>ShowCount()
+        </h2>
+<pre>ShowCount($src) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="SortByLength" id="SortByLength"></a><div class="element clickable method public SortByLength" data-toggle="collapse" data-target=".SortByLength .collapse">
+<h2>SortByLength()
+        </h2>
+<pre>SortByLength($src, $ascending) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$ascending</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="StripTags" id="StripTags"></a><div class="element clickable method public StripTags" data-toggle="collapse" data-target=".StripTags .collapse">
+<h2>StripTags()
+        </h2>
+<pre>StripTags($src, $allowed_tags) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$allowed_tags</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Sum" id="Sum"></a><div class="element clickable method public Sum" data-toggle="collapse" data-target=".Sum .collapse">
+<h2>Sum()
+        </h2>
+<pre>Sum($src, $column_name, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Trim" id="Trim"></a><div class="element clickable method public Trim" data-toggle="collapse" data-target=".Trim .collapse">
+<h2>Trim()
+        </h2>
+<pre>Trim($src) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Unique" id="Unique"></a><div class="element clickable method public Unique" data-toggle="collapse" data-target=".Unique .collapse">
+<h2>Unique()
+        </h2>
+<pre>Unique($src, $column_name) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="UniqueValues" id="UniqueValues"></a><div class="element clickable method public UniqueValues" data-toggle="collapse" data-target=".UniqueValues .collapse">
+<h2>UniqueValues()
+        </h2>
+<pre>UniqueValues($src, $columnName) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$columnName</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="Value" id="Value"></a><div class="element clickable method public Value" data-toggle="collapse" data-target=".Value .collapse">
+<h2>Value()
+        </h2>
+<pre>Value($array, $key, $default) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$key</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$default</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="ValueThatContain" id="ValueThatContain"></a><div class="element clickable method public ValueThatContain" data-toggle="collapse" data-target=".ValueThatContain .collapse">
+<h2>ValueThatContain()
+        </h2>
+<pre>ValueThatContain($array, $findIn) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$findIn</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="countdim" id="countdim"></a><div class="element clickable method public countdim" data-toggle="collapse" data-target=".countdim .collapse">
+<h2>countdim()
+        </h2>
+<pre>countdim($array) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="dates2DecimalYear" id="dates2DecimalYear"></a><div class="element clickable method public dates2DecimalYear" data-toggle="collapse" data-target=".dates2DecimalYear .collapse">
+<h2>dates2DecimalYear()
+        </h2>
+<pre>dates2DecimalYear($dates) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$dates</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="double_explode" id="double_explode"></a><div class="element clickable method public double_explode" data-toggle="collapse" data-target=".double_explode .collapse">
+<h2>double_explode()
+        </h2>
+<pre>double_explode($array, $delim_pairs, $delim_KeyValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$delim_pairs</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$delim_KeyValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="explode" id="explode"></a><div class="element clickable method public explode" data-toggle="collapse" data-target=".explode .collapse">
+<h2>explode()
+        </h2>
+<pre>explode($array, $delim) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$delim</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="histogram" id="histogram"></a><div class="element clickable method public histogram" data-toggle="collapse" data-target=".histogram .collapse">
+<h2>histogram()
+        </h2>
+<pre>histogram($array, $bucket_size) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$bucket_size</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="html_entity_decode" id="html_entity_decode"></a><div class="element clickable method public html_entity_decode" data-toggle="collapse" data-target=".html_entity_decode .collapse">
+<h2>html_entity_decode()
+        </h2>
+<pre>html_entity_decode($src) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="toArray" id="toArray"></a><div class="element clickable method public toArray" data-toggle="collapse" data-target=".toArray .collapse">
+<h2>toArray()
+        </h2>
+<pre>toArray($src) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="urldecode" id="urldecode"></a><div class="element clickable method public urldecode" data-toggle="collapse" data-target=".urldecode .collapse">
+<h2>urldecode()
+        </h2>
+<pre>urldecode($src) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="row"><footer class="span12">
+            Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
+            Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a3</a> and<br>
+            generated on 2012-06-27T11:58:43+10:00.<br></footer></div>
+</div>
+</body>
+</html>

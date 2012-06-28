@@ -1,0 +1,368 @@
+<!DOCTYPE html><html xmlns:date="http://exslt.org/dates-and-times" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+<meta charset="utf-8">
+<title>phpDocumentor » \stats</title>
+<meta name="author" content="Mike van Riel">
+<meta name="description" content="">
+<link href="../css/template.css" rel="stylesheet" media="all">
+<script src="../js/jquery-1.7.1.min.js" type="text/javascript"></script><script src="../js/jquery-ui-1.8.2.custom.min.js" type="text/javascript"></script><script src="../js/jquery.mousewheel.min.js" type="text/javascript"></script><script src="../js/bootstrap.js" type="text/javascript"></script><script src="../js/template.js" type="text/javascript"></script><script src="../js/prettify/prettify.min.js" type="text/javascript"></script><link rel="shortcut icon" href="../img/favicon.ico">
+<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="72x72" href="../img/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="114x114" href="../img/apple-touch-icon-114x114.png">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+<div class="navbar-inner"><div class="container">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">phpDocumentor</a><div class="nav-collapse"><ul class="nav">
+<li class="dropdown">
+<a href="#api" class="dropdown-toggle" data-toggle="dropdown">
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu"></ul>
+</li>
+<li class="dropdown" id="charts-menu">
+<a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
+                                    Charts <b class="caret"></b></a><ul class="dropdown-menu"><li><a href="../graph_class.html"><i class="icon-list-alt"></i> Class hierarchy diagram</a></li></ul>
+</li>
+<li class="dropdown" id="reports-menu">
+<a href="#reports" class="dropdown-toggle" data-toggle="dropdown">
+                                    Reports <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a href="../errors.html"><i class="icon-remove-sign"></i> Errors 
+                <span class="label label-info">806</span></a></li>
+<li><a href="../markers.html"><i class="icon-map-marker"></i> Markers 
+                <ul></ul></a></li>
+<li><a href="../deprecated.html"><i class="icon-stop"></i> Deprecated elements 
+                <span class="label label-info">0</span></a></li>
+</ul>
+</li>
+</ul></div>
+</div></div>
+<div class="go_to_top"><a href="#___" style="color: inherit">Back to top  <i class="icon-upload icon-white"></i></a></div>
+</div>
+<div id="___" class="container">
+<noscript><div class="alert alert-warning">
+                            Javascript is disabled; several features are only available
+                            if Javascript is enabled.
+                        </div></noscript>
+<div class="row">
+<div class="span4">
+<span class="btn-group visibility" data-toggle="buttons-checkbox"><button class="btn public active" title="Show public elements">Public</button><button class="btn protected" title="Show protected elements">Protected</button><button class="btn private" title="Show private elements">Private</button><button class="btn inherited active" title="Show inherited elements">Inherited</button></span><div class="btn-group view pull-right" data-toggle="buttons-radio">
+<button class="btn details" title="Show descriptions and method names"><i class="icon-list"></i></button><button class="btn simple" title="Show only method names"><i class="icon-align-justify"></i></button>
+</div>
+<ul class="side-nav nav nav-list">
+<li class="nav-header">
+<i class="icon-custom icon-method"></i> Methods</li>
+<li class="method public "><a href="#MatrixRow_linear_regression" title="MatrixRow_linear_regression :: "><span class="description">MatrixRow_linear_regression()
+        </span><pre>MatrixRow_linear_regression()</pre></a></li>
+<li class="method public "><a href="#MovingAverageAtMiddleWindow" title="MovingAverageAtMiddleWindow :: "><span class="description">MovingAverageAtMiddleWindow()
+        </span><pre>MovingAverageAtMiddleWindow()</pre></a></li>
+<li class="method public "><a href="#StandardDeviation" title="StandardDeviation :: "><span class="description">StandardDeviation()
+        </span><pre>StandardDeviation()</pre></a></li>
+<li class="method public "><a href="#find_histogram_bucket" title="find_histogram_bucket :: "><span class="description">find_histogram_bucket()
+        </span><pre>find_histogram_bucket()</pre></a></li>
+<li class="method public "><a href="#histogram_buckets" title="histogram_buckets :: "><span class="description">histogram_buckets()
+        </span><pre>histogram_buckets()</pre></a></li>
+<li class="method public "><a href="#linear_regression" title="linear_regression :: linear regression function"><span class="description">linear regression function</span><pre>linear_regression()</pre></a></li>
+<li class="method public "><a href="#linear_regression_R" title="linear_regression_R :: "><span class="description">linear_regression_R()
+        </span><pre>linear_regression_R()</pre></a></li>
+<li class="method public "><a href="#linear_regression_with_keys" title="linear_regression_with_keys :: "><span class="description">linear_regression_with_keys()
+        </span><pre>linear_regression_with_keys()</pre></a></li>
+<li class="method public "><a href="#median" title="median :: "><span class="description">median()
+        </span><pre>median()</pre></a></li>
+<li class="method public "><a href="#normal_distribution" title="normal_distribution :: "><span class="description">normal_distribution()
+        </span><pre>normal_distribution()</pre></a></li>
+<li class="method public "><a href="#sd" title="sd :: "><span class="description">sd()
+        </span><pre>sd()</pre></a></li>
+<li class="method public "><a href="#sd_square" title="sd_square :: "><span class="description">sd_square()
+        </span><pre>sd_square()</pre></a></li>
+<li class="nav-header private">» Private</li>
+<li class="method private "><a href="#normal" title="normal :: "><span class="description">normal()
+        </span><pre>normal()</pre></a></li>
+</ul>
+</div>
+<div class="span8">
+<a name="%5Cstats" id="\stats"></a><ul class="breadcrumb">
+<li>
+<a href="../index.html"><i class="icon-custom icon-class"></i></a><span class="divider">\</span>
+</li>
+<li><a href="../namespaces/default.html">default</a></li>
+<li class="active">
+<span class="divider">\</span><a href="../classes/stats.html">stats</a>
+</li>
+</ul>
+<div href="../classes/stats.html" class="element class"><div class="details">
+<h3>
+<i class="icon-custom icon-method"></i> Methods</h3>
+<a name="MatrixRow_linear_regression" id="MatrixRow_linear_regression"></a><div class="element clickable method public MatrixRow_linear_regression" data-toggle="collapse" data-target=".MatrixRow_linear_regression .collapse">
+<h2>MatrixRow_linear_regression()
+        </h2>
+<pre>MatrixRow_linear_regression($matrix, $x) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$matrix</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$x</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="MovingAverageAtMiddleWindow" id="MovingAverageAtMiddleWindow"></a><div class="element clickable method public MovingAverageAtMiddleWindow" data-toggle="collapse" data-target=".MovingAverageAtMiddleWindow .collapse">
+<h2>MovingAverageAtMiddleWindow()
+        </h2>
+<pre>MovingAverageAtMiddleWindow($src, $window, $null_value) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$window</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$null_value</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="StandardDeviation" id="StandardDeviation"></a><div class="element clickable method public StandardDeviation" data-toggle="collapse" data-target=".StandardDeviation .collapse">
+<h2>StandardDeviation()
+        </h2>
+<pre>StandardDeviation($src, $columnName, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$columnName</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="find_histogram_bucket" id="find_histogram_bucket"></a><div class="element clickable method public find_histogram_bucket" data-toggle="collapse" data-target=".find_histogram_bucket .collapse">
+<h2>find_histogram_bucket()
+        </h2>
+<pre>find_histogram_bucket($buckets, $value_to_place) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$buckets</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$value_to_place</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="histogram_buckets" id="histogram_buckets"></a><div class="element clickable method public histogram_buckets" data-toggle="collapse" data-target=".histogram_buckets .collapse">
+<h2>histogram_buckets()
+        </h2>
+<pre>histogram_buckets($min, $max, $bucket_size) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$min</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$max</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$bucket_size</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="linear_regression" id="linear_regression"></a><div class="element clickable method public linear_regression" data-toggle="collapse" data-target=".linear_regression .collapse">
+<h2>linear regression function</h2>
+<pre>linear_regression(\$x $x_values, \$y $y_values) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>returns</th>
+<td>array() m=&gt;slope, b=&gt;intercept
+linear_regression(array(1, 2, 3, 4), array(1.5, 1.6, 2.1, 3.0)) );
+REF: http://richardathome.wordpress.com/2006/01/25/a-php-linear-regression-function/</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$x_values</h4>
+<code>\$x</code><p>array x-coords</p>
+</div>
+<div class="subelement argument">
+<h4>$y_values</h4>
+<code>\$y</code><p>array y-coords</p>
+</div>
+</div></div>
+</div>
+<a name="linear_regression_R" id="linear_regression_R"></a><div class="element clickable method public linear_regression_R" data-toggle="collapse" data-target=".linear_regression_R .collapse">
+<h2>linear_regression_R()
+        </h2>
+<pre>linear_regression_R($x, $y) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$x</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$y</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="linear_regression_with_keys" id="linear_regression_with_keys"></a><div class="element clickable method public linear_regression_with_keys" data-toggle="collapse" data-target=".linear_regression_with_keys .collapse">
+<h2>linear_regression_with_keys()
+        </h2>
+<pre>linear_regression_with_keys($src, $null_value) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$null_value</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="median" id="median"></a><div class="element clickable method public median" data-toggle="collapse" data-target=".median .collapse">
+<h2>median()
+        </h2>
+<pre>median($src, $nullValue) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$src</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$nullValue</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="normal_distribution" id="normal_distribution"></a><div class="element clickable method public normal_distribution" data-toggle="collapse" data-target=".normal_distribution .collapse">
+<h2>normal_distribution()
+        </h2>
+<pre>normal_distribution($mean, $sd, $min, $max, $count) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$mean</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$sd</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$min</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$max</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$count</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="sd" id="sd"></a><div class="element clickable method public sd" data-toggle="collapse" data-target=".sd .collapse">
+<h2>sd()
+        </h2>
+<pre>sd($array) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="sd_square" id="sd_square"></a><div class="element clickable method public sd_square" data-toggle="collapse" data-target=".sd_square .collapse">
+<h2>sd_square()
+        </h2>
+<pre>sd_square($x, $mean) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$x</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$mean</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+<a name="normal" id="normal"></a><div class="element clickable method private normal" data-toggle="collapse" data-target=".normal .collapse">
+<h2>normal()
+        </h2>
+<pre>normal($x, $mean, $sd) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$x</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$mean</h4>
+<code></code>
+</div>
+<div class="subelement argument">
+<h4>$sd</h4>
+<code></code>
+</div>
+</div></div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="row"><footer class="span12">
+            Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
+            Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a3</a> and<br>
+            generated on 2012-06-27T11:58:43+10:00.<br></footer></div>
+</div>
+</body>
+</html>
