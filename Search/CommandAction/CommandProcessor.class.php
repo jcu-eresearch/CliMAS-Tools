@@ -36,6 +36,15 @@ class CommandProcessor
     public static $QSTAT_RUNNING = "R";
     public static $QSTAT_COMPLETED = "C";
 
+    
+    /** 
+     *
+     * - Read queue folder  configuration::CommandQueueFolder()
+     * - look for Commands to process  (Commands are PHPO serialized CommandAction objects)
+     * 
+     * 
+     *  
+     */
     public static function ProcessQueue()
     {
 
@@ -54,7 +63,16 @@ class CommandProcessor
 
     }
 
-
+    
+    
+    /**
+     *
+     * Read Single command file
+     * - unserailize and action command based on it's "state" ExecutionFlag (ref: CommandAction statics)
+     * 
+     * @param string $filepath
+     * @return null null
+     */
     private function processSingleQueueItem($filepath)
     {
 
@@ -70,7 +88,7 @@ class CommandProcessor
 
         if (!($command instanceof CommandAction))
         {
-            return; // todo:: Log as exception /??
+            return null; // todo:: Log as exception /??
         }
 
 
@@ -83,12 +101,8 @@ class CommandProcessor
                 self::Running($command);
                 break;
 
-            case CommandAction::$EXECUTION_FLAG_TIMEOUT:
-                self::Timeout($command);
-                break;
-
             case CommandAction::$EXECUTION_FLAG_QUEUE_DONE:
-                self::Finalise($command);   //  the Queue said it was completd
+                self::Finalise($command);   //  the QSUB Queue said it was completd
                 break;
 
             case CommandAction::$EXECUTION_FLAG_FINALISE:
@@ -96,7 +110,7 @@ class CommandProcessor
                 break;
 
             case CommandAction::$EXECUTION_FLAG_COMPLETE:
-                // Do nothing
+                // Do nothingfs
                 break;
 
         }
@@ -106,13 +120,12 @@ class CommandProcessor
     }
 
     /**
-     * Command eneters here should be at READY stage
+     * Command entes here at READY stage
      *
-     *
-     * @param iCommand $cmd
-     *
-     * @return mixed COmmand stage at RUNNING
-     *
+     * @param CommandAction $cmd
+     * 
+     * Changes ExecutionFlag  to  CommandAction::$EXECUTION_FLAG_RUNNING
+     * 
      */
     private static function Ready(CommandAction $cmd)
     {
@@ -120,9 +133,18 @@ class CommandProcessor
         self::scriptIt($cmd);
     }
 
+    
+    /**
+     * Check on Running job  $cmd->ExecutionFlag() ==  CommandAction::$EXECUTION_FLAG_RUNNING
+     * 
+     * Using ID check QSTAT to check in the job is still actually running 
+     * 
+     * Changes ExecutionFlag  to  CommandAction::$EXECUTION_FLAG_COMPLETE if Job is not in QSTAT 
+     * 
+     * @param CommandAction $cmd 
+     */
     private static function Running(CommandAction $cmd)
     {
-        // echo "Checking on Action ".$cmd->ActionName()."  ".$cmd->Status()."\n";
 
         // if you want to do something with a RUNNING JOB
         // DO IT HERE
@@ -167,16 +189,26 @@ class CommandProcessor
 
     }
 
+    /**
+     * Command will be in FINALISED state if the the process being set it.
+     * 
+     * Changes ExecutionFlag  to  CommandAction::$EXECUTION_FLAG_COMPLETE 
+     * 
+     * @param CommandAction $cmd 
+     */
     private static function Finalise(CommandAction $cmd)
     {
         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
     }
 
-    private static function Timeout(CommandAction $cmd)
-    {
 
-    }
-
+    /**
+     *
+     * For debugging to see progess and state of command as it flows thru
+     * 
+     * @param CommandAction $command
+     * @param type $msg 
+     */
     private static function Log(CommandAction $command,$msg)
     {
         $log  = $command->LastUpdated().",";
@@ -195,6 +227,14 @@ class CommandProcessor
     }
 
 
+    /**
+     * Generate script to be QSUB'ed 
+     * QSUB can handle simple command line arguments, but too complex and it overruns the line length
+     * 
+     * and send generated script to QSUB
+     * 
+     * @param CommandAction $cmd 
+     */
     private static function scriptIt(CommandAction $cmd)
     {
         $cmd->QueueID(self::executeScript( self::generateScript($cmd) ) ); // from executeScript
@@ -203,8 +243,11 @@ class CommandProcessor
 
 
     /**
-     * create shell script with  "CommandActionExecute.php  <command id>"
+     * Create TCSH script that will be written to the filesystem to be sent to the GRID
      *
+     * The actaul command be run is "CommandActionExecute.php  <command id>"
+     * 
+     * 
      * @param iCommand $cmd
      */
     private static function generateScript(CommandAction $cmd)
@@ -249,8 +292,6 @@ class CommandProcessor
 
         echo "script_filename = $script_filename\n";
         
-        
-        
         $script .= "rm {$script_filename}\n"; // script will remove it self when done
 
         file_put_contents($script_filename, $script);  // write script to script_filename
@@ -260,6 +301,13 @@ class CommandProcessor
 
     }
 
+    /**
+     * Execute script 
+     * i.e. push script into QSUB queue and return qsub ID
+     * 
+     * @param string $scriptFilename
+     * @return string Queue ID from QSTAT
+     */
     private static function executeScript($scriptFilename)
     {
         

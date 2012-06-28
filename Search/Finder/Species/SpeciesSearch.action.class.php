@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * 
+ * @package Search\Species\SpeciesSearch
+ * 
+ * Finds Actions that are capable of finding Species 
+ * also returns list of currently selected spieces
+ * 
+ *  
+ */
+
 class SpeciesSearch extends Action implements iAction {
 
     public function __construct() {

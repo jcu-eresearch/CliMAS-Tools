@@ -1,8 +1,12 @@
 <?php
 
 /**
- *
- *  
+ * Extend this class to create jobs / actions to run in the GRID 
+ * - Allows you to create a action to run without having to worry about 
+ *   the infrastucture of status check and passing data into and out of the HPC 
+ * 
+ * 
+ * Command Actions can be initialise, queued, executed and returned to the swebserver
  *  
  */
 class CommandAction extends Object implements Serializable
@@ -23,20 +27,39 @@ class CommandAction extends Object implements Serializable
     }
 
 
+    /**
+     * If the subclass does define then it will be obvious as the system will throw an Exception
+     * - 
+     * Override this method to makethe CommandAction do what you need to to do
+     * 
+     * 
+     * @throws Exception 
+     */
     public function Execute()
     {
         throw new Exception("COmmand Action has not been defined for ".$this->ActionName());
     }
 
 
+    
+    
+    /**
+     * Override on subclass to allow inbound initialisation 
+     * usually from web server to set-up object before sending to the grid.
+     * 
+     * - Here you can also check to see if the job really needs to be submitted
+     * 
+     * 
+     * @throws Exception 
+     */
     public function initialise()
     {
-        
+        // after succesfull initialisation - $this->initialised(true);
+        throw new Exception("COmmand Action has not been defined for ".$this->ActionName());
         
     }
 
-
-        /**
+    /**
      * Name of this command, could be usefull for Logging
      * To be used as name of QSUB jobs
      *
@@ -77,6 +100,13 @@ class CommandAction extends Object implements Serializable
     }
 
 
+    /**
+     *
+     * How to convert Object to a form that can be transmitted to another system
+     * Uses startd PHP serialisation, (this could also be XML, or JSON)
+     * 
+     * @return type 
+     */
     public function serialize() {
 
         $result = array();
@@ -91,6 +121,11 @@ class CommandAction extends Object implements Serializable
 
     }
 
+    /**
+     *Return object property states after be sent
+     * 
+     * @param type $serialized 
+     */
     public function unserialize($serialized) {
 
         $data = unserialize($serialized);
@@ -100,6 +135,10 @@ class CommandAction extends Object implements Serializable
 
     }
 
+    /**
+     * Action name 
+     * @return type 
+     */
     public function ActionName()
     {
         if (func_num_args() == 0) return $this->getProperty();
@@ -107,6 +146,12 @@ class CommandAction extends Object implements Serializable
     }
 
 
+    /**
+     * What does thi action do an why?
+     * - could be used to store human readable information - to be displayed or written to reports
+     *
+     * @return type 
+     */
     public function Description() {
         if (func_num_args() == 0)
         return $this->getProperty();
@@ -115,11 +160,8 @@ class CommandAction extends Object implements Serializable
     }
 
     /**
-     * READY    -- Needs to be started - ie find action execute  Change ExecutionFlag to RUNNING
-     * RUNNING  -- Go and check QSUB status / status of action via its mechanisim - WIll Set to COMPLETE if it's all done
-     * TIMEOUT  -- Maybe ?   it's taken to long ?
-     * COMPLETE -- Has completed - results to be returned
-     *
+     * Refer to Sstatic variables  self::$EXECUTION_FLAG_
+     * 
      * @return string Execution phase
      */
     public function ExecutionFlag()
@@ -141,7 +183,8 @@ class CommandAction extends Object implements Serializable
     }
 
     /**
-     *
+     * Where partial & complete output froms Obect will be placed.
+     * - this is read by the Output system to be displayed / written
      *
      * @return mixed will be the result of an Action
      */
@@ -153,6 +196,11 @@ class CommandAction extends Object implements Serializable
 
 
 
+    /**
+     * Human readable status to send back to user.
+     * 
+     * @return type 
+     */
     public function Status() {
         if (func_num_args() == 0)
         return $this->getProperty();
@@ -160,6 +208,8 @@ class CommandAction extends Object implements Serializable
     }
 
     /**
+     * CommandProcessor updates this each time it puts the command back to disk
+     * 
      * Date and Time Command was Last Updated
      * @return string Updated Date & Time
      */
@@ -184,11 +234,7 @@ class CommandAction extends Object implements Serializable
         return $this->setProperty(func_get_arg(0));
     }
 
-    public function AttachedCommand() {
-        
-    }
-
-
+    
 
      /**
       * READY    -- Needs to be started - ie find action execute  Change ExecutionFlag to RUNNING
