@@ -9,8 +9,6 @@
 if (stripos( $hostname, ".default.domain") !== FALSE) 
 {
 
-    
-    
     if (stripos( __FILE__, "tdh2/TDH-Tools") !== FALSE)
     {
 
@@ -22,7 +20,7 @@ if (stripos( $hostname, ".default.domain") !== FALSE)
     $conf[Parameter::$UTILITIES_CLASSES]     = "/scratch/jc166922/tdh2/TDH-Tools/Utilities/includes.php";
     $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/scratch/jc166922/tdh2/output/";
     $conf[Parameter::$RESOURCES_FOLDER]      = "/scratch/jc166922/tdh2/TDH-Tools/Resources/";
-    $conf[Parameter::$SOURCE_DATA_FOLDER]    = "/scratch/jc166922/tdh2/TDH-Tools/source/";
+    $conf[Parameter::$SOURCE_DATA_FOLDER]    = "/scratch/jc166922/tdh2/source/";
 
     $conf[Parameter::$Descriptions_ClimateModels]      = "/scratch/jc166922/tdh2/TDH-Tools/Resources/descriptions/gcm.csv";
     $conf[Parameter::$Descriptions_EmissionScenarios]  = "/scratch/jc166922/tdh2/TDH-Tools/Resources/descriptions/scenario.csv";
