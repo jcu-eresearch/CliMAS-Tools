@@ -30,16 +30,16 @@ if (stripos( $hostname, ".default.domain") !== FALSE)
     $conf[Parameter::$ICONS_FOLDER]          = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/TDH-Tools/Resources/icons/";
     
     
-    $conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/scratch/jc166922/tdh2/TDH-Tools/logs/queue.log";
-    $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = "/scratch/jc166922/tdh2/TDH-Tools/queue/";
-    $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/scratch/jc166922/tdh2/TDH-Tools/scripts/";
+    $conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/scratch/jc166922/tdh2/logs/queue.log";
+    $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = "/scratch/jc166922/tdh2/queue/";
+    $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/scratch/jc166922/tdh2/scripts/";
     $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = "/scratch/jc166922/tdh2/TDH-Tools/Search/CommandActionExecute.php";
     
     $conf[Parameter::$MaxentJar ] = "/scratch/jc166922/tdh2/TDH-Tools/Search/Finder/Species/maxent.jar";
 
     $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
     $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
-    $conf[Parameter::$Maxent_Species_Data_folder ]            = "/scratch/jc166922/tdh2/TDH-Tools/source/species/";
+    $conf[Parameter::$Maxent_Species_Data_folder ]            = "/scratch/jc166922/tdh2/source/species/";
     $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
     $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
     
