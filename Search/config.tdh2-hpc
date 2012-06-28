@@ -9,9 +9,13 @@
 if (stripos( $hostname, ".default.domain") !== FALSE) 
 {
 
+    
+    
     if (stripos( __FILE__, "tdh2/TDH-Tools") !== FALSE)
     {
-    
+
+    $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." tdh2/TDH-Tools  default.domain";        
+        
     $conf[Parameter::$TempFolder]    = "/scratch/jc166922/tdh2/tmp/";
         
     $conf[Parameter::$APPLICATION_FOLDER]    = "/scratch/jc166922/tdh2/TDH-Tools/";

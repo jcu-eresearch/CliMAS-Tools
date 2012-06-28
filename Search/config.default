@@ -6,6 +6,8 @@
  *  
  */
 
+$conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." default";
+
 $conf[Parameter::$TempFolder ] = "/tmp/";
 
 $conf[Parameter::$PathDelimiter]       = "/";

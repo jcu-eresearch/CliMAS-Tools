@@ -8,6 +8,8 @@
 if (stripos( $hostname, "default.domain") !== FALSE) 
 {
     
+    $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." hpc default.domain";
+    
     $conf[Parameter::$TempFolder ] = "/home/jc166922/tmp/";
     
     $conf[Parameter::$APPLICATION_FOLDER]    = "/home/jc166922/TDH-Tools/";

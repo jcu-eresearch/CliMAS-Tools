@@ -8,6 +8,9 @@
 
 if (stripos( $hostname, "vbox-ubuntu") !== FALSE) 
 {
+    
+    $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." vbox-ubuntu";
+    
     $pathprefix = "/home/daniel/projects/ap02";
     
     $conf[Parameter::$TempFolder]            = $pathprefix . "/tmp/";

@@ -9,6 +9,8 @@
 if (stripos( $hostname, "afakes-eresearch") !== FALSE) 
 {
     
+    $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." afakes-eresearch";
+    
     $conf[Parameter::$TempFolder]            = "/www/eresearch/tmp/";
     
     $conf[Parameter::$APPLICATION_FOLDER]    = "/www/eresearch/TDH-Tools/";

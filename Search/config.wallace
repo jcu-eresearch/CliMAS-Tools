@@ -13,6 +13,8 @@ if (stripos( $hostname, "wallaceinitiative.jcu.edu.au") !== FALSE)
     
     if (stripos( __FILE__, "climate_2012/tdhtools") !== FALSE)
     {
+     
+        $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." climate_2012/tdhtools  wallaceinitiative.jcu.edu.au";
         
         $conf[Parameter::$TempFolder]            = "/local/climate_2012/tmp/";
         
@@ -50,6 +52,9 @@ if (stripos( $hostname, "wallaceinitiative.jcu.edu.au") !== FALSE)
     
     if (stripos( __FILE__, "climate_2012/demo") !== FALSE)         
     {
+        
+        $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." climate_2012/demo  wallaceinitiative.jcu.edu.au";
+        
         $conf[Parameter::$APPLICATION_FOLDER]    = "/local/climate_2012/demo/";
         $conf[Parameter::$UTILITIES_CLASSES]     = "/local/climate_2012/demo/Utilities/includes.php";
         $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/local/climate_2012/demo/output/";
