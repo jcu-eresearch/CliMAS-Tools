@@ -8534,47 +8534,47 @@ these will then be replaced with the actual property values]]></long-description
       <name>util.class.php</name>
     </include>
   </file>
-  <file path="htmlutil.class.php" hash="8a096aaf36cbd37f68ade527dfd73d78" package="Default">
+  <file path="htmlutil.class.php" hash="70d44b991df5d77f5b1df3eaf215d33e" package="Default">
     <parse_markers>
       <error line="11" code="50010">No DocBlock was found for method table()</error>
-      <error line="55" code="50012">No short description for method TableRowTemplate()</error>
-      <error line="55" code="50015">Argument $data is missing from the Docblock of TableRowTemplate()</error>
-      <error line="55" code="50015">Argument $template is missing from the Docblock of TableRowTemplate()</error>
-      <error line="55" code="50015">Argument $horizontal is missing from the Docblock of TableRowTemplate()</error>
-      <error line="55" code="50015">Argument $pre_first_row is missing from the Docblock of TableRowTemplate()</error>
-      <error line="55" code="50015">Argument $class is missing from the Docblock of TableRowTemplate()</error>
-      <error line="55" code="50015">Argument $caption is missing from the Docblock of TableRowTemplate()</error>
-      <error line="175" code="50015">Argument $rowHeader is missing from the Docblock of TableByCSS()</error>
-      <notice line="175" code="50017">The type for the @param tag in TableByCSS() is "type"; isn't this an IDE default?</notice>
-      <notice line="175" code="50017">The type for the @param tag in TableByCSS() is "type"; isn't this an IDE default?</notice>
-      <notice line="175" code="50017">The type for the @param tag in TableByCSS() is "type"; isn't this an IDE default?</notice>
-      <notice line="175" code="50017">The type for the @param tag in TableByCSS() is "type"; isn't this an IDE default?</notice>
-      <notice line="175" code="50017">The type for the @param tag in TableByCSS() is "type"; isn't this an IDE default?</notice>
-      <error line="347" code="50010">No DocBlock was found for method img()</error>
-      <error line="367" code="50010">No DocBlock was found for method imgArray()</error>
-      <error line="389" code="50010">No DocBlock was found for method imgClick()</error>
-      <error line="418" code="50010">No DocBlock was found for method imgHref()</error>
-      <error line="445" code="50010">No DocBlock was found for method href()</error>
-      <error line="465" code="50010">No DocBlock was found for method hrefArray()</error>
-      <error line="487" code="50010">No DocBlock was found for method div()</error>
-      <error line="509" code="50010">No DocBlock was found for method br()</error>
-      <error line="525" code="50010">No DocBlock was found for method brRowBreak()</error>
-      <error line="538" code="50010">No DocBlock was found for method browser_info()</error>
-      <error line="567" code="50010">No DocBlock was found for method KMLPlacemarker()</error>
-      <error line="597" code="50010">No DocBlock was found for method KMLHeader()</error>
-      <error line="639" code="50010">No DocBlock was found for method KMLFooter()</error>
-      <error line="646" code="50010">No DocBlock was found for method KMLPhotoHeader()</error>
-      <error line="658" code="50010">No DocBlock was found for method KMLPhotoSingle()</error>
-      <error line="714" code="50010">No DocBlock was found for method KMLPhotoFooter()</error>
-      <error line="723" code="50010">No DocBlock was found for method locate()</error>
-      <error line="767" code="50010">No DocBlock was found for method toFile()</error>
-      <error line="784" code="50010">No DocBlock was found for method CSS()</error>
-      <error line="790" code="50010">No DocBlock was found for method javascript()</error>
-      <error line="797" code="50015">Argument $pathDelim is missing from the Docblock of includeLocalHeadCode()</error>
-      <notice line="797" code="50017">The type for the @param tag in includeLocalHeadCode() is "type"; isn't this an IDE default?</notice>
-      <error line="818" code="50010">No DocBlock was found for method includeLocalHeadCodeFromPathPrefix()</error>
-      <notice line="830" code="50017">The type for the @param tag in RefreshPageMetatag() is "type"; isn't this an IDE default?</notice>
-      <notice line="830" code="50017">The type for the @param tag in RefreshPageMetatag() is "type"; isn't this an IDE default?</notice>
+      <error line="54" code="50012">No short description for method TableRowTemplate()</error>
+      <error line="54" code="50015">Argument $data is missing from the Docblock of TableRowTemplate()</error>
+      <error line="54" code="50015">Argument $template is missing from the Docblock of TableRowTemplate()</error>
+      <error line="54" code="50015">Argument $horizontal is missing from the Docblock of TableRowTemplate()</error>
+      <error line="54" code="50015">Argument $pre_first_row is missing from the Docblock of TableRowTemplate()</error>
+      <error line="54" code="50015">Argument $class is missing from the Docblock of TableRowTemplate()</error>
+      <error line="54" code="50015">Argument $caption is missing from the Docblock of TableRowTemplate()</error>
+      <error line="174" code="50015">Argument $rowHeader is missing from the Docblock of TableByCSS()</error>
+      <notice line="174" code="50017">The type for the @param tag in TableByCSS() is "type"; isn't this an IDE default?</notice>
+      <notice line="174" code="50017">The type for the @param tag in TableByCSS() is "type"; isn't this an IDE default?</notice>
+      <notice line="174" code="50017">The type for the @param tag in TableByCSS() is "type"; isn't this an IDE default?</notice>
+      <notice line="174" code="50017">The type for the @param tag in TableByCSS() is "type"; isn't this an IDE default?</notice>
+      <notice line="174" code="50017">The type for the @param tag in TableByCSS() is "type"; isn't this an IDE default?</notice>
+      <error line="346" code="50010">No DocBlock was found for method img()</error>
+      <error line="366" code="50010">No DocBlock was found for method imgArray()</error>
+      <error line="388" code="50010">No DocBlock was found for method imgClick()</error>
+      <error line="417" code="50010">No DocBlock was found for method imgHref()</error>
+      <error line="444" code="50010">No DocBlock was found for method href()</error>
+      <error line="464" code="50010">No DocBlock was found for method hrefArray()</error>
+      <error line="486" code="50010">No DocBlock was found for method div()</error>
+      <error line="508" code="50010">No DocBlock was found for method br()</error>
+      <error line="524" code="50010">No DocBlock was found for method brRowBreak()</error>
+      <error line="537" code="50010">No DocBlock was found for method browser_info()</error>
+      <error line="566" code="50010">No DocBlock was found for method KMLPlacemarker()</error>
+      <error line="596" code="50010">No DocBlock was found for method KMLHeader()</error>
+      <error line="638" code="50010">No DocBlock was found for method KMLFooter()</error>
+      <error line="645" code="50010">No DocBlock was found for method KMLPhotoHeader()</error>
+      <error line="657" code="50010">No DocBlock was found for method KMLPhotoSingle()</error>
+      <error line="713" code="50010">No DocBlock was found for method KMLPhotoFooter()</error>
+      <error line="722" code="50010">No DocBlock was found for method locate()</error>
+      <error line="766" code="50010">No DocBlock was found for method toFile()</error>
+      <error line="783" code="50010">No DocBlock was found for method CSS()</error>
+      <error line="789" code="50010">No DocBlock was found for method javascript()</error>
+      <error line="796" code="50015">Argument $pathDelim is missing from the Docblock of includeLocalHeadCode()</error>
+      <notice line="796" code="50017">The type for the @param tag in includeLocalHeadCode() is "type"; isn't this an IDE default?</notice>
+      <error line="817" code="50010">No DocBlock was found for method includeLocalHeadCodeFromPathPrefix()</error>
+      <notice line="829" code="50017">The type for the @param tag in RefreshPageMetatag() is "type"; isn't this an IDE default?</notice>
+      <notice line="829" code="50017">The type for the @param tag in RefreshPageMetatag() is "type"; isn't this an IDE default?</notice>
       <error line="2" code="50000">No DocBlock was found for htmlutil</error>
       <error line="1" code="50007">No page-level DocBlock was found in file htmlutil.class.php</error>
     </parse_markers>
@@ -8596,480 +8596,480 @@ these will then be replaced with the actual property values]]></long-description
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="58" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="57" package="">
         <name>TableRowTemplate</name>
         <type>function</type>
-        <docblock line="55">
+        <docblock line="54">
           <description><![CDATA[]]></description>
           <long-description><![CDATA[]]></long-description>
         </docblock>
-        <argument line="58">
+        <argument line="57">
           <name>$data</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="58">
+        <argument line="57">
           <name>$template</name>
           <default><![CDATA[null]]></default>
           <type/>
         </argument>
-        <argument line="58">
+        <argument line="57">
           <name>$horizontal</name>
           <default><![CDATA[false]]></default>
           <type/>
         </argument>
-        <argument line="58">
+        <argument line="57">
           <name>$pre_first_row</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
-        <argument line="58">
+        <argument line="57">
           <name>$class</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
-        <argument line="58">
+        <argument line="57">
           <name>$caption</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="186" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="185" package="">
         <name>TableByCSS</name>
         <type>function</type>
-        <docblock line="175">
+        <docblock line="174">
           <description><![CDATA[CReta e "Table" from css]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="175" name="param" description="array of data used" type="\type" variable="$data">
+          <tag line="174" name="param" description="array of data used" type="\type" variable="$data">
             <type by_reference="false">\type</type>
           </tag>
-          <tag line="175" name="param" description="- template to be warpped arounf Cell data" type="\type" variable="$cellTemplate">
+          <tag line="174" name="param" description="- template to be warpped arounf Cell data" type="\type" variable="$cellTemplate">
             <type by_reference="false">\type</type>
           </tag>
-          <tag line="175" name="param" description="- class wrapped around table" type="\type" variable="$tableClass">
+          <tag line="174" name="param" description="- class wrapped around table" type="\type" variable="$tableClass">
             <type by_reference="false">\type</type>
           </tag>
-          <tag line="175" name="param" description="- class wrapped around row" type="\type" variable="$rowClass">
+          <tag line="174" name="param" description="- class wrapped around row" type="\type" variable="$rowClass">
             <type by_reference="false">\type</type>
           </tag>
-          <tag line="175" name="param" description="- class wrapped around cell" type="\type" variable="$cellClass">
+          <tag line="174" name="param" description="- class wrapped around cell" type="\type" variable="$cellClass">
             <type by_reference="false">\type</type>
           </tag>
-          <tag line="175" name="return" description="complete HTML" type="string">
+          <tag line="174" name="return" description="complete HTML" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="186">
+        <argument line="185">
           <name>$data</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="186">
+        <argument line="185">
           <name>$cellTemplate</name>
           <default><![CDATA[null]]></default>
           <type/>
         </argument>
-        <argument line="186">
+        <argument line="185">
           <name>$tableClass</name>
           <default><![CDATA["aTable"]]></default>
           <type/>
         </argument>
-        <argument line="186">
+        <argument line="185">
           <name>$rowClass</name>
           <default><![CDATA["aRow"]]></default>
           <type/>
         </argument>
-        <argument line="186">
+        <argument line="185">
           <name>$cellClass</name>
           <default><![CDATA["aCell"]]></default>
           <type/>
         </argument>
-        <argument line="186">
+        <argument line="185">
           <name>$rowHeader</name>
           <default><![CDATA[false]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="347" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="346" package="">
         <name>img</name>
         <type>function</type>
-        <argument line="347">
+        <argument line="346">
           <name>$data</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="347">
+        <argument line="346">
           <name>$height</name>
           <default><![CDATA[100]]></default>
           <type/>
         </argument>
-        <argument line="347">
+        <argument line="346">
           <name>$width</name>
           <default><![CDATA[100]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="367" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="366" package="">
         <name>imgArray</name>
         <type>function</type>
-        <argument line="367">
+        <argument line="366">
           <name>$array</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="367">
+        <argument line="366">
           <name>$height</name>
           <default><![CDATA[100]]></default>
           <type/>
         </argument>
-        <argument line="367">
+        <argument line="366">
           <name>$width</name>
           <default><![CDATA[100]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="389" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="388" package="">
         <name>imgClick</name>
         <type>function</type>
-        <argument line="389">
+        <argument line="388">
           <name>$imageFilename</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="389">
+        <argument line="388">
           <name>$height</name>
           <default><![CDATA[100]]></default>
           <type/>
         </argument>
-        <argument line="389">
+        <argument line="388">
           <name>$width</name>
           <default><![CDATA[100]]></default>
           <type/>
         </argument>
-        <argument line="389">
+        <argument line="388">
           <name>$hrefPrefix</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
-        <argument line="389">
+        <argument line="388">
           <name>$caption</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="418" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="417" package="">
         <name>imgHref</name>
         <type>function</type>
-        <argument line="418">
+        <argument line="417">
           <name>$imageFilename</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="418">
+        <argument line="417">
           <name>$height</name>
           <default><![CDATA[100]]></default>
           <type/>
         </argument>
-        <argument line="418">
+        <argument line="417">
           <name>$width</name>
           <default><![CDATA[100]]></default>
           <type/>
         </argument>
-        <argument line="418">
+        <argument line="417">
           <name>$href</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="445" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="444" package="">
         <name>href</name>
         <type>function</type>
-        <argument line="445">
+        <argument line="444">
           <name>$data</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="445">
+        <argument line="444">
           <name>$linkText</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
-        <argument line="445">
+        <argument line="444">
           <name>$target</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="465" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="464" package="">
         <name>hrefArray</name>
         <type>function</type>
-        <argument line="465">
+        <argument line="464">
           <name>$array</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="487" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="486" package="">
         <name>div</name>
         <type>function</type>
-        <argument line="487">
+        <argument line="486">
           <name>$data</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="487">
+        <argument line="486">
           <name>$class</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
-        <argument line="487">
+        <argument line="486">
           <name>$style</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
-        <argument line="487">
+        <argument line="486">
           <name>$alt</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
-        <argument line="487">
+        <argument line="486">
           <name>$title</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="509" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="508" package="">
         <name>br</name>
         <type>function</type>
-        <argument line="509">
+        <argument line="508">
           <name>$class</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
-        <argument line="509">
+        <argument line="508">
           <name>$style</name>
           <default><![CDATA[""]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="525" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="524" package="">
         <name>brRowBreak</name>
         <type>function</type>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="default" line="538" package="">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="default" line="537" package="">
         <name>browser_info</name>
         <type>function</type>
-        <argument line="538">
+        <argument line="537">
           <name>$agent</name>
           <default><![CDATA[null]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="567" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="566" package="">
         <name>KMLPlacemarker</name>
         <type>function</type>
-        <argument line="567">
+        <argument line="566">
           <name>$name</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="567">
+        <argument line="566">
           <name>$desc</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="567">
+        <argument line="566">
           <name>$lat</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="567">
+        <argument line="566">
           <name>$lon</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="567">
+        <argument line="566">
           <name>$alt</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="597" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="596" package="">
         <name>KMLHeader</name>
         <type>function</type>
-        <argument line="597">
+        <argument line="596">
           <name>$documentName</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="639" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="638" package="">
         <name>KMLFooter</name>
         <type>function</type>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="646" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="645" package="">
         <name>KMLPhotoHeader</name>
         <type>function</type>
-        <argument line="646">
+        <argument line="645">
           <name>$name</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="658" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="657" package="">
         <name>KMLPhotoSingle</name>
         <type>function</type>
-        <argument line="658">
+        <argument line="657">
           <name>$filename</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="658">
+        <argument line="657">
           <name>$lat</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="658">
+        <argument line="657">
           <name>$lon</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="658">
+        <argument line="657">
           <name>$alt</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="658">
+        <argument line="657">
           <name>$href</name>
           <default><![CDATA[NULL]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="714" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="713" package="">
         <name>KMLPhotoFooter</name>
         <type>function</type>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="723" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="722" package="">
         <name>locate</name>
         <type>function</type>
-        <argument line="723">
+        <argument line="722">
           <name>$find</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="723">
+        <argument line="722">
           <name>$contains</name>
           <default><![CDATA[null]]></default>
           <type/>
         </argument>
-        <argument line="723">
+        <argument line="722">
           <name>$drive_letter</name>
           <default><![CDATA[null]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="767" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="766" package="">
         <name>toFile</name>
         <type>function</type>
-        <argument line="767">
+        <argument line="766">
           <name>$html</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="767">
+        <argument line="766">
           <name>$filename</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="784" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="783" package="">
         <name>CSS</name>
         <type>function</type>
-        <argument line="784">
+        <argument line="783">
           <name>$filename</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="790" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="789" package="">
         <name>javascript</name>
         <type>function</type>
-        <argument line="790">
+        <argument line="789">
           <name>$filename</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="806" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="805" package="">
         <name>includeLocalHeadCode</name>
         <type>function</type>
-        <docblock line="797">
+        <docblock line="796">
           <description><![CDATA[Include CSS and JS in same folder as calling script that hase the same basename]]></description>
           <long-description><![CDATA[e.g.    $filename = /code/fred.html
 
 would try to include  CSS from fred.css and javascript from fred.js]]></long-description>
-          <tag line="797" name="param" description="" type="\type" variable="$filename">
+          <tag line="796" name="param" description="" type="\type" variable="$filename">
             <type by_reference="false">\type</type>
           </tag>
         </docblock>
-        <argument line="806">
+        <argument line="805">
           <name>$filename</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="806">
+        <argument line="805">
           <name>$pathDelim</name>
           <default><![CDATA["/"]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="818" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="817" package="">
         <name>includeLocalHeadCodeFromPathPrefix</name>
         <type>function</type>
-        <argument line="818">
+        <argument line="817">
           <name>$folder</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="818">
+        <argument line="817">
           <name>$prefix</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="818">
+        <argument line="817">
           <name>$pathDelim</name>
           <default><![CDATA["/"]]></default>
           <type/>
         </argument>
-        <argument line="818">
+        <argument line="817">
           <name>$osExtensionSep</name>
           <default><![CDATA["."]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="839" package="">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="default" line="838" package="">
         <name>RefreshPageMetatag</name>
         <type>function</type>
-        <docblock line="830">
+        <docblock line="829">
           <description><![CDATA[Return HTML string for Page refresh via metatag  only if time is not null
 - if timne is null return "" empty string]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="830" name="param" description="" type="\type" variable="$time">
+          <tag line="829" name="param" description="" type="\type" variable="$time">
             <type by_reference="false">\type</type>
           </tag>
-          <tag line="830" name="param" description="" type="\type" variable="$url">
+          <tag line="829" name="param" description="" type="\type" variable="$url">
             <type by_reference="false">\type</type>
           </tag>
-          <tag line="830" name="return" description="[HTML tag for refresh] || [empty string]" type="string">
+          <tag line="829" name="return" description="[HTML tag for refresh] || [empty string]" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="839">
+        <argument line="838">
           <name>$time</name>
           <default><![CDATA[null]]></default>
           <type/>
         </argument>
-        <argument line="839">
+        <argument line="838">
           <name>$url</name>
           <default><![CDATA[null]]></default>
           <type/>

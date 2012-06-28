@@ -18,8 +18,8 @@ if (stripos( $hostname, "tdh-tools-2") !== FALSE)
     $conf[Parameter::$Descriptions_EmissionScenarios]  = "/www/html/eresearch/TDH-Tools/Resources/descriptions/scenario.csv";
     $conf[Parameter::$Descriptions_Years]              = "/www/html/eresearch/TDH-Tools/Resources/descriptions/year.txt";
 
-    $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://tdh-tools-2.hpc.jcu.edu.au/eresearch/TDH-Tools/output/";
-    $conf[Parameter::$ICONS_FOLDER]          = "http://tdh-tools-2.hpc.jcu.edu.au/eresearch/TDH-Tools/Resources/icons/";
+    $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/TDH-Tools/output/";
+    $conf[Parameter::$ICONS_FOLDER]          = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/TDH-Tools/Resources/icons/";
     
     
     $conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/scratch/jc166922/tdh2/logs/queue.log";
