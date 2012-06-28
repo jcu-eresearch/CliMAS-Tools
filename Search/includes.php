@@ -6,11 +6,13 @@ $conf = array();
 
 $hostname = trim(exec("hostname --fqdn"));
 
-include_once 'config.default';
-include_once 'config.afakes';
-include_once 'config.daniel';
-include_once 'config.hpc';
-include_once 'config.wallace';
+if (file_exists("config.default"))  include_once 'config.default';
+if (file_exists("config.afakes"))   include_once 'config.afakes';
+if (file_exists("config.daniel"))   include_once 'config.daniel';
+if (file_exists("config.hpc"))      include_once 'config.hpc';
+if (file_exists("config.wallace"))  include_once 'config.wallace';
+if (file_exists("config.tdh2"))     include_once 'config.tdh2';
+if (file_exists("config.tdh2-hpc")) include_once 'config.tdh2-hpc';
 
     
     $af = configuration::ApplicationFolder();
