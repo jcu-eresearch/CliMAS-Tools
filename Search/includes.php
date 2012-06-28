@@ -17,7 +17,8 @@ if (file_exists("config.afakes"))   include_once 'config.afakes';
 
     
 $af = configuration::ApplicationFolder();
-include_once configuration::ApplicationFolder().'Utilities/includes.php';
+
+include_once configuration::UtilityClasses();
 
 include_once $af.'Search/Session.class.php';
 include_once $af.'Search/CommandAction/Command.includes.php';

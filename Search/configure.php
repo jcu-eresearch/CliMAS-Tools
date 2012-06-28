@@ -120,7 +120,7 @@ echo "\nCRON (on host that will be processing the queue)";
 echo "\n";
 echo "\n  command:   crontab -e   (i  ) \n";
 echo "\n  (for Vi)   i = insert \n";
-echo "\n             paste  [ * * * * * ".configuration::ApplicationFolder()."Search/Incoming.php  ]";
+echo "\n             paste  [ * * * * * php -q ".configuration::ApplicationFolder()."Search/Incoming.php  ]";
 echo "\n             ESC";
 echo "\n             :w<enter>";
 echo "\n             ESC";
