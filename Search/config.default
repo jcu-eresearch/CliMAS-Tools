@@ -5,6 +5,9 @@
  *  DEFAULT VALUES FOR CONFIG VARIABLES
  *  
  */
+
+$conf[Parameter::$TempFolder ] = "/tmp/";
+
 $conf[Parameter::$PathDelimiter]       = "/";
 $conf[Parameter::$ExtensionDelimiter]  = ".";
 
@@ -41,6 +44,8 @@ $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Clim
 $conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/ctbccr/TDH/";
 $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output/";
 $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
+
+
 
 
 

@@ -13,6 +13,9 @@ if (stripos( $hostname, "wallaceinitiative.jcu.edu.au") !== FALSE)
     
     if (stripos( __FILE__, "climate_2012/tdhtools") !== FALSE)
     {
+        
+        $conf[Parameter::$TempFolder]            = "/local/climate_2012/tmp/";
+        
         $conf[Parameter::$APPLICATION_FOLDER]    = "/local/climate_2012/tdhtools/";
         $conf[Parameter::$UTILITIES_CLASSES]     = "/local/climate_2012/tdhtools/Utilities/includes.php";
         $conf[Parameter::$RESOURCES_FOLDER]      = "/local/climate_2012/tdhtools/Resources/";

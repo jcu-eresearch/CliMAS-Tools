@@ -8,6 +8,8 @@
 if (stripos( $hostname, "default.domain") !== FALSE) 
 {
     
+    $conf[Parameter::$TempFolder ] = "/home/jc166922/tmp/";
+    
     $conf[Parameter::$APPLICATION_FOLDER]    = "/home/jc166922/TDH-Tools/";
     
     $conf[Parameter::$UTILITIES_CLASSES]     = "/home/jc166922/TDH-Tools/Utilities/includes.php";

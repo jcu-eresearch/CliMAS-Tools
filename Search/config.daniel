@@ -10,6 +10,7 @@ if (stripos( $hostname, "vbox-ubuntu") !== FALSE)
 {
     $pathprefix = "/home/daniel/projects/ap02";
     
+    $conf[Parameter::$TempFolder]            = $pathprefix . "/tmp/";
     $conf[Parameter::$APPLICATION_FOLDER]    = $pathprefix . "/TDH-Tools/";
     $conf[Parameter::$UTILITIES_CLASSES]     = $pathprefix . "/TDH-Tools/Utilities/includes.php";
     $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = $pathprefix . "/TDH-Tools/output/";

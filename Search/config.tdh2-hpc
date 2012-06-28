@@ -12,6 +12,8 @@ if (stripos( $hostname, ".default.domain") !== FALSE)
     if (stripos( __FILE__, "tdh2/TDH-Tools") !== FALSE)
     {
     
+    $conf[Parameter::$TempFolder]    = "/scratch/jc166922/tdh2/tmp/";
+        
     $conf[Parameter::$APPLICATION_FOLDER]    = "/scratch/jc166922/tdh2/TDH-Tools/";
     $conf[Parameter::$UTILITIES_CLASSES]     = "/scratch/jc166922/tdh2/TDH-Tools/Utilities/includes.php";
     $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/scratch/jc166922/tdh2/TDH-Tools/output/";
@@ -38,7 +40,6 @@ if (stripos( $hostname, ".default.domain") !== FALSE)
     $conf[Parameter::$Maxent_Species_Data_folder ]            = "/scratch/jc166922/tdh2/TDH-Tools/source/species/";
     $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
     $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
-    
     
     }
 

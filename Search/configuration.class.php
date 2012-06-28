@@ -163,6 +163,12 @@ class configuration {
         global $conf;
         return $conf[Parameter::$Maxent_Species_Data_Occurance_Filename]; 
     }
+
+    public static function TempFolder() { 
+        global $conf;
+        return $conf[Parameter::$TempFolder]; 
+    }
+    
     
 }
 ?>

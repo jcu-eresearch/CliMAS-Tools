@@ -38,7 +38,11 @@ class Parameter
     public static $Maxent_Species_Data_Output_Subfolder = "Maxent_Species_Data_Output_Subfolder";
     public static $Maxent_Species_Data_Occurance_Filename = "Maxent_Species_Data_Occurance_Filename";
 
+    
+    public static $TempFolder = "TempFolder";
 
+    
+    
     
 }
 
