@@ -115,8 +115,14 @@ if (!is_dir(configuration::Maxent_Species_Data_folder()  ))
     
 echo "=====================================================================================\n";  
 echo "Check on database access here\n";
+echo "\n";
+echo "\nCRON (on host that will be processing the queue)";
+echo "\n";
+echo "\n  command: crontab -e \n";
+echo "\n           * * * * * ".configuration::ApplicationFolder()."Search/Incoming.php";
+echo "\n";
+echo "\n";
 echo "=====================================================================================\n";
-
 echo "Seems to be OK, check warnings if any\n";
 echo "\n";
 
