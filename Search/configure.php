@@ -112,23 +112,39 @@ if (!is_dir(configuration::Maxent_Species_Data_folder()  ))
     echo "WARNING:: Maxent_Species_Data_folder() does not exist: ".configuration::Maxent_Species_Data_folder()."\n";
 }
 
+$incoming_sh = configuration::ApplicationFolder()."Search/Incoming.sh";
     
 echo "=====================================================================================\n";  
 echo "Check on database access here\n";
 echo "\n";
+echo "Create CRON script {$incoming_sh} \n";
+echo "\n";
+
+file_put_contents($incoming_sh, "php -q ".configuration::ApplicationFolder()."Search/Incoming.php");
+
+if (!file_exists($incoming_sh))
+{
+    echo "FAILED: to create CRON script {$incoming_sh} \n";
+    exit(1);
+}
+
+
 echo "\nCRON (on host that will be processing the queue)";
 echo "\n";
-echo "\n  command:   crontab -e   (i  ) \n";
-echo "\n  (for Vi)   i = insert \n";
-echo "\n             paste  [ * * * * * php -q ".configuration::ApplicationFolder()."Search/Incoming.php  ]";
-echo "\n             ESC";
-echo "\n             :w<enter>";
-echo "\n             ESC";
-echo "\n             :q<enter>";
+echo "\n  copy |* * * * * {$incoming_sh}|";
+echo "\n  crontab -e\n";
+echo "\n  i = insert\n";
+echo "\n  paste";
+echo "\n  ESC";
+echo "\n  :w<enter>";
+echo "\n  ESC";
+echo "\n  :q<enter>";
 echo "\n";
 echo "=====================================================================================\n";
 echo "Seems to be OK, check warnings if any\n";
 echo "\n";
+
+
 
 
 ?>
