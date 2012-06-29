@@ -1,4 +1,8 @@
 <?php
+// set_include_path(get_include_path() . PATH_SEPARATOR . );
+
+echo "Where is this ".__FILE__."\n";
+
 include_once 'includes.php';
 
 
