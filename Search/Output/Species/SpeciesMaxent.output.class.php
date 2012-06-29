@@ -182,15 +182,21 @@ class SpeciesMaxentOutput extends Output
         
         if ( util::endsWith(strtolower($localCombintationFilename), "asc") )
         {
-            // this is a calculated grid file
-            $mapImage =   MapServerImage::FromFile($localCombintationFilename);
+            if (!file_exists($localCombintationFilename))
+            {
+                $mapImage =   configuration::IconSource()."wait.gif";
+            }
+            else
+            {
+                $mapImage =   MapServerImage::FromFile($localCombintationFilename);     // this is a calculated grid file
+            }
+            
+            
             return '<img class="probabilityMap" src="'.$mapImage.'">';
         }
         
         
-        
         //$vis
-        
         
     }
     
