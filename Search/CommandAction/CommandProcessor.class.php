@@ -290,7 +290,7 @@ class CommandProcessor
 
         echo "script_filename = $script_filename\n";
         
-        $script .= "rm {$script_filename}\n"; // script will remove it self when done
+        // $script .= "rm {$script_filename}\n"; // script will remove it self when done
 
         file_put_contents($script_filename, $script);  // write script to script_filename
         
@@ -311,7 +311,7 @@ class CommandProcessor
         
         // exec("chmod u+x '{$scriptFilename}'"); // may not be needed
         
-        $cmd = "cd ".configuration::ApplicationFolder()." ;  qsub {$scriptFilename}";
+        $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub {$scriptFilename}";
         
         echo "cmd {$cmd}\n";
         
