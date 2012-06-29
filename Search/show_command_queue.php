@@ -1,11 +1,18 @@
 <?php
 include_once 'includes.php';
 
-foreach (PG::CommandActionListIDs() as $commandID) 
+
+$idList = PG::CommandActionListIDs();
+
+if (is_array($idList))
 {
-    $ca = PG::ReadCommandAction($commandID);
-    $ca instanceof CommandAction;
-    $ca->Debug();
+    foreach (PG::CommandActionListIDs() as $commandID) 
+    {
+        $ca = PG::ReadCommandAction($commandID);
+        $ca instanceof CommandAction;
+        $ca->Debug();
+    }
+    
 }
 
 
