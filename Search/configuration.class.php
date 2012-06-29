@@ -87,7 +87,7 @@ class configuration {
 
     public static function ContextSpatialLayersFolder()
     {
-        return self::SourceDataFolder() . "/context" . self::osPathDelimiter();
+        return self::SourceDataFolder() . "context" . self::osPathDelimiter();
     }
     
     public static function osPathDelimiter()      { 
