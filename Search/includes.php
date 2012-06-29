@@ -18,7 +18,7 @@ include_once dirname(__FILE__).'/configuration.class.php';
 
 $af = dirname(__FILE__).'/';
 
-include_once configuration::UtilityClasses();
+include_once $af."../Utilities/includes.php";
 
 include_once $af.'Session.class.php';
 include_once $af.'CommandAction/Command.includes.php';
