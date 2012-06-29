@@ -22,7 +22,6 @@ if (stripos( $hostname, "default.domain") !== FALSE)
     $conf[Parameter::$Descriptions_ClimateModels]      = "/home/jc166922/TDH-Tools/Resources/descriptions/gcm.csv";
     $conf[Parameter::$Descriptions_EmissionScenarios]  = "/home/jc166922/TDH-Tools/Resources/descriptions/scenario.csv";
     $conf[Parameter::$Descriptions_Years]              = "/home/jc166922/TDH-Tools/Resources/descriptions/year.txt";
-
     
     $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://localhost/eresearch/TDH-Tools/output/";
     $conf[Parameter::$ICONS_FOLDER]          = "http://localhost/eresearch/TDH-Tools/Resources/icons/";
@@ -40,7 +39,6 @@ if (stripos( $hostname, "default.domain") !== FALSE)
     $conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/jc166922/TDH-Tools/source/species/";
     $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
     $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
-    
     
 }        
 

@@ -311,7 +311,7 @@ class CommandProcessor
         
         // exec("chmod u+x '{$scriptFilename}'"); // may not be needed
         
-        $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub {$scriptFilename}";
+        $cmd = "cd ".configuration::ApplicationFolder()." ;  qsub {$scriptFilename}";
         
         echo "cmd {$cmd}\n";
         
