@@ -51,9 +51,8 @@ class SpeciesMaxent extends CommandAction {
         $this->ClimateModelIDs(trim($this->ClimateModelIDs()));
         $this->TimeIDs(trim($this->TimeIDs()));
         
-        
         //for testing if null or empty
-        if (is_null($this->SpeciesIDs()) || $this->SpeciesIDs() == "") $this->SpeciesIDs("CASSOWARY");
+        if (is_null($this->SpeciesIDs()) || $this->SpeciesIDs() == "") $this->SpeciesIDs("Halcyon+senegaloides");
         if (is_null($this->EmissionScenarioIDs()) || $this->EmissionScenarioIDs() == "") $this->EmissionScenarioIDs("RCP3PD");
         if (is_null($this->ClimateModelIDs()) || $this->ClimateModelIDs() == "") $this->ClimateModelIDs("cccma-cgcm31");
         if (is_null($this->TimeIDs())  || $this->TimeIDs() == "") $this->TimeIDs("2015 2025 2035 2045 2055 2065 2075 2085");

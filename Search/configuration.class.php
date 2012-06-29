@@ -82,7 +82,13 @@ class configuration {
 
     public static function SourceDataFolder() {
         global $conf;
-        return $conf[Parameter::$SOURCE_DATA_FOLDER]; 
+        
+        $df = $conf[Parameter::$SOURCE_DATA_FOLDER];
+        if (substr($df,-1,1) != self::osPathDelimiter());
+        
+        $df .= self::osPathDelimiter();
+        
+        return $df; 
     }
 
     public static function ContextSpatialLayersFolder()

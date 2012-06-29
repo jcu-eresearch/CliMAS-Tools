@@ -20,6 +20,7 @@ class CommandUtil
         if (is_null($ca)) return "Failed to Read Command back from Server during GetCommandFromID";  // todo: log
         $ca instanceof CommandAction;
         
+        
         if (!method_exists($ca, "ExecutionFlag"))
         {
             return null;

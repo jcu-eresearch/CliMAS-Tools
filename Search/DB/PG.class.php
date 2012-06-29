@@ -101,6 +101,8 @@ class PG extends Object {
         
         // we don't have Postgress SQL php addin so  this is the way query works - thru sending to file and readin file.
         
+        $sql .= " select LASTVAL();";
+        
         $cmd  = " ";
         $cmd .= "export PGHOST="    .ToolsDataConfiguration::Species_DB_Server()  ." ; ";
         $cmd .= "export PGPORT="    .ToolsDataConfiguration::Species_DB_Port()    ." ; ";
@@ -112,9 +114,11 @@ class PG extends Object {
         $result = array();
         exec($cmd,$result);
         
-        if (!util::contains($result[0], "INSERT")) return null; // ttodo return better error value ?? 
+        print_r($result);
         
-        $lastId = trim($result[3]);
+        if (!util::contains($result[0], "lastval")) return null; // ttodo return better error value ?? 
+        
+        $lastId = trim($result[1]);
         
         return $lastId;
         
@@ -179,8 +183,12 @@ class PG extends Object {
         else
         {
             // insert
-            $q = "INSERT INTO ap02_command_action (queueid,objectid, data,status,execution_flag) VALUES ('{$qid}','{$id}', '{$data}','{$cmd->Status()}','{$cmd->ExecutionFlag()}'); select LASTVAL();"; 
+            $q = "INSERT INTO ap02_command_action (queueid,objectid, data,status,execution_flag) VALUES ('{$qid}','{$id}', '{$data}','{$cmd->Status()}','{$cmd->ExecutionFlag()}');"; 
+            //echo "<br>$q <br>";
             $result = $db->insert($q); 
+            
+            print_r($result);
+            
         }
         
         

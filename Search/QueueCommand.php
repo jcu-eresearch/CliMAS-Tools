@@ -55,7 +55,7 @@ if (is_null($queueID))
 
                 if (is_null($queueID))
                 {
-                    $content = "Could not queue command for some reason ".$cmd->CommandName();
+                    $content = "Could not queue command for some reason ".$cmd->CommandName()."  queueID = $queueID";
                 }
                 else
                 {
