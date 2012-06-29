@@ -119,6 +119,9 @@ class Session {
      */
     public static function get($key,$default = null)
     {
+        if (!isset($_SESSION)) return null;
+        
+        
         if (!self::has($key)) return $default;
 
         $session_data = self::AppSession();

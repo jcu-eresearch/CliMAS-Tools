@@ -116,6 +116,20 @@ $incoming_sh = configuration::ApplicationFolder()."Search/Incoming.sh";
     
 echo "=====================================================================================\n";  
 echo "Check on database access here\n";
+
+//DROP TABLE IF EXISTS ap02_command_action;
+//CREATE TABLE ap02_command_action 
+//(
+//    id SERIAL NOT NULL PRIMARY KEY,
+//    objectID VARCHAR(50) NOT NULL, -- objectID 
+//    data text, -- php serialised object
+//    update_datetime TIMESTAMP NULL -- the last time data was updated
+//);
+//
+//GRANT SELECT, UPDATE, INSERT ON ap02_command_action TO ap02;
+
+
+
 echo "\n";
 echo "Create CRON script {$incoming_sh} \n";
 echo "\n";
@@ -128,7 +142,8 @@ if (!file_exists($incoming_sh))
     exit(1);
 }
 
-exec("chmod u+x '{$incoming_sh}'");
+echo "\n make executable  chmod u+x {$incoming_sh}";
+echo "\n";
 
 echo "\nCRON (on host that will be processing the queue)";
 echo "\n";

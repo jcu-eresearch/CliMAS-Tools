@@ -39,6 +39,7 @@ class SpeciesMaxent extends CommandAction {
     public function initialise() 
     {
         
+        
         $this->SpeciesIDs(FinderFactory::GetMethodResult("SpeciesFinder","SelectedSpeciesIDs"));
         $this->EmissionScenarioIDs(Session::get("EmissionScenarioSearch", ""));
         $this->ClimateModelIDs(Session::get("ClimateModelSearch", ""));
