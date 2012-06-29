@@ -279,8 +279,12 @@ class CommandProcessor
         $script .= "# \n";
         $script .= "# datetime script written:".datetimeutil::NowDateTime()."\n";
         $script .= "\n";
+ 
+        $custom_include = configuration::ApplicationFolder().  configuration::osPathDelimiter()."Search/";
+        
+        $script .= "\nexport INCPATH=\"`php -i | grep include_path | awk 'BEGIN{ FS=\" => \" }{ printf($NF) }'`:{$custom_include}\"";
+        $script .= "\nphp -d include_path=$INCPATH ".configuration::CommandScriptsExecutor()."'  {$cmd->ID()}";
 
-        $script .= "php '".configuration::CommandScriptsExecutor()."'  {$cmd->ID()}";
         $script .= "\n";
 
         $script_filename = configuration::CommandScriptsFolder().
