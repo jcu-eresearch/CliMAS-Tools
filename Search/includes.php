@@ -1,22 +1,23 @@
 <?php
 include_once dirname(__FILE__).'/ParameterNames.class.php';
 
+$af = dirname(__FILE__).'/';
+
 $conf = array();
 
 $hostname = trim(exec("hostname --fqdn"));
 
-if (file_exists("config.default"))  include_once 'config.default';
+if (file_exists("{$af}config.default"))  include_once $af.'config.default';
 
-if (file_exists("config.daniel"))   include_once 'config.daniel';
-if (file_exists("config.hpc"))      include_once 'config.hpc';
-if (file_exists("config.wallace"))  include_once 'config.wallace';
-if (file_exists("config.tdh2"))     include_once 'config.tdh2';
-if (file_exists("config.tdh2-hpc")) include_once 'config.tdh2-hpc';
-if (file_exists("config.afakes"))   include_once 'config.afakes';
+if (file_exists("{$af}config.daniel"))   include_once $af.'config.daniel';
+if (file_exists("{$af}config.hpc"))      include_once $af.'config.hpc';
+if (file_exists("{$af}config.wallace"))  include_once $af.'config.wallace';
+if (file_exists("{$af}config.tdh2"))     include_once $af.'config.tdh2';
+if (file_exists("{$af}config.tdh2-hpc")) include_once $af.'config.tdh2-hpc';
+if (file_exists("{$af}config.afakes"))   include_once $af.'config.afakes';
 
 include_once dirname(__FILE__).'/configuration.class.php';
 
-$af = dirname(__FILE__).'/';
 
 include_once $af."../Utilities/includes.php";
 
