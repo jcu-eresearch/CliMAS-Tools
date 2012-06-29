@@ -129,7 +129,7 @@ class SpeciesMaxent extends CommandAction {
         $this->getOccurances();
         
         $this->Result($this->progessResults());   // this will check to see if the outputs exists  
-        CommandUtil::PutCommandToFile($this); // post any results we already have
+        CommandUtil::PutCommand($this); // post any results we already have
 
         //  make sure we have the occurance data for species   $this->SpeciesCombinations  gives use the list of species to look for
         
@@ -141,7 +141,7 @@ class SpeciesMaxent extends CommandAction {
         {            
             $this->Status("ALL DONE");
             $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
-            CommandUtil::PutCommandToFile($this); // update the status and interim results            
+            CommandUtil::PutCommand($this); // update the status and interim results            
             return $this->Result();   // we are done 
         }
         
@@ -172,7 +172,7 @@ class SpeciesMaxent extends CommandAction {
 
                 $this->Status("We have ".count($jobList)."of ".$this->QsubJobCount()." sub jobs left ");
                 $this->Result($this->progessResults());
-                CommandUtil::PutCommandToFile($this); // update the status and interim results
+                CommandUtil::PutCommand($this); // update the status and interim results
 
                 sleep(5);
                 $jobList = $this->qsubJobs();
@@ -184,7 +184,7 @@ class SpeciesMaxent extends CommandAction {
         
         
         $this->Result($this->progessResults());
-        CommandUtil::PutCommandToFile($this); // update the status and interim results
+        CommandUtil::PutCommand($this); // update the status and interim results
 
         return $this->Result();
 
@@ -578,7 +578,7 @@ AAA;
         if ($script != "")
         {
             file_put_contents($scriptFilename, $script);
-            exec("chmod u+x '{$scriptFilename}'");
+            // exec("chmod u+x '{$scriptFilename}'");
             
             return $scriptFilename;   // we have something to RUN so return the filename
             

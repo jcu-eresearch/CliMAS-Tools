@@ -17,6 +17,7 @@ class Parameter
     public static $COMMAND_SCRIPTS_EXE    = "COMMAND_SCRIPTS_EXE";
     public static $COMMAND_SCRIPTS_PREFIX = "COMMAND_SCRIPTS_PREFIX";
     public static $COMMAND_SCRIPTS_SUFFIX = "COMMAND_SCRIPTS_SUFFIX";
+    public static $COMMAND_QUEUE_ID       = "COMMAND_QUEUE_ID";
     
     
     public static $RESOURCES_FOLDER     = "RESOURCES_FOLDER";

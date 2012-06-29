@@ -27,7 +27,7 @@ if (stripos( $hostname, "default.domain") !== FALSE)
     $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://localhost/eresearch/TDH-Tools/output/";
     $conf[Parameter::$ICONS_FOLDER]          = "http://localhost/eresearch/TDH-Tools/Resources/icons/";
     
-    
+    $conf[Parameter::$COMMAND_QUEUE_ID       ] = "afakes_queue";
     $conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/home/jc166922/TDH-Tools/logs/queue.log";
     $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = "/home/jc166922/TDH-Tools/queue/";
     $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/home/jc166922/TDH-Tools/scripts/";

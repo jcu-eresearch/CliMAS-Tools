@@ -47,16 +47,13 @@ class CommandProcessor
      */
     public static function ProcessQueue()
     {
-
-        echo "Queue Folder = ".configuration::CommandQueueFolder()."\n";
+        
+        echo "Reading queue for ".configuration::CommandQueueID()."\n";
         
         for ($index = 1; $index <= 20; $index++)
         {
-            $files = file::find_files(configuration::CommandQueueFolder(),  configuration::CommandExtension()); // find command files to process
-            $files = file::arrayFilterOut($files, "previous"); // if there are previous files here ignore them
-
-            foreach ($files as $filepath)
-                self::processSingleQueueItem($filepath);
+            foreach (PG::CommandActionListIDs() as $commandID) 
+                self::processSingleQueueItem($commandID);
             
             sleep(3);
         }
@@ -73,10 +70,10 @@ class CommandProcessor
      * @param string $filepath
      * @return null null
      */
-    private function processSingleQueueItem($filepath)
+    private function processSingleQueueItem($commandID)
     {
 
-        $command = CommandUtil::GetCommandFromFile($filepath,false);
+        $command = CommandUtil::GetCommandFromID($commandID);
 
         if (is_null($command))
         {
@@ -90,7 +87,6 @@ class CommandProcessor
         {
             return null; // todo:: Log as exception /??
         }
-
 
         switch ($command->ExecutionFlag()) {
             case CommandAction::$EXECUTION_FLAG_READY:
@@ -115,7 +111,7 @@ class CommandProcessor
 
         }
 
-        CommandUtil::PutCommandToFile($command);
+        
 
     }
 
@@ -131,6 +127,7 @@ class CommandProcessor
     {
         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_RUNNING);
         self::scriptIt($cmd);
+        CommandUtil::PutCommand($cmd);
     }
 
     
@@ -176,7 +173,8 @@ class CommandProcessor
                     if (trim($split[1]) == self::$QSTAT_COMPLETED)
                     {
                         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
-
+                        CommandUtil::PutCommand($cmd);
+                        
                         // echo "\nQueue said job is finished= \n".$result."\n\n";
                     }
                     
@@ -199,6 +197,7 @@ class CommandProcessor
     private static function Finalise(CommandAction $cmd)
     {
         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
+        CommandUtil::PutCommand($cmd);
     }
 
 
@@ -238,7 +237,7 @@ class CommandProcessor
     private static function scriptIt(CommandAction $cmd)
     {
         $cmd->QueueID(self::executeScript( self::generateScript($cmd) ) ); // from executeScript
-
+        
     }
 
 
@@ -257,7 +256,6 @@ class CommandProcessor
         $script  = "";
         $script .= "# QSUB script from ".configuration::ApplicationName()."\n";
         $script .= "# Written to execute Command Action with id {$cmd->ID()} \n";
-        $script .= "# this file will usually only exist if it's associated command exists (".CommandUtil::CommandFilename($cmd->ID()).")\n";
 
 
         // echo "cmd is class ".get_class($cmd)."\n";
@@ -311,7 +309,7 @@ class CommandProcessor
     private static function executeScript($scriptFilename)
     {
         
-        exec("chmod u+x '{$scriptFilename}'"); // may not be needed
+        // exec("chmod u+x '{$scriptFilename}'"); // may not be needed
         
         $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub {$scriptFilename}";
         

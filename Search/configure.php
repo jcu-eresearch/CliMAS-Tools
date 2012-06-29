@@ -117,16 +117,26 @@ $incoming_sh = configuration::ApplicationFolder()."Search/Incoming.sh";
 echo "=====================================================================================\n";  
 echo "Check on database access here\n";
 
-//DROP TABLE IF EXISTS ap02_command_action;
-//CREATE TABLE ap02_command_action 
-//(
-//    id SERIAL NOT NULL PRIMARY KEY,
-//    objectID VARCHAR(50) NOT NULL, -- objectID 
-//    data text, -- php serialised object
-//    update_datetime TIMESTAMP NULL -- the last time data was updated
-//);
-//
-//GRANT SELECT, UPDATE, INSERT ON ap02_command_action TO ap02;
+
+/*
+
+DROP TABLE IF EXISTS ap02_command_action;
+CREATE TABLE ap02_command_action 
+(
+    id SERIAL NOT NULL PRIMARY KEY,
+    objectID VARCHAR(50) NOT NULL, -- objectID 
+    data text, -- php serialised object
+    execution_flag varchar(50), -- execution state
+    status varchar(200), -- current status
+    queueid varchar(50), -- to identify where this job cam from, allows multiple environments to use same queue
+    update_datetime TIMESTAMP NULL -- the last time data was updated
+);
+
+GRANT ALL PRIVILEGES ON ap02_command_action TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE ap02_command_action_id_seq TO ap02;
+
+
+ */
 
 
 

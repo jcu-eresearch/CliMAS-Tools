@@ -30,6 +30,7 @@ if (stripos( $hostname, ".default.domain") !== FALSE)
     $conf[Parameter::$ICONS_FOLDER]          = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/TDH-Tools/Resources/icons/";
     
     
+    $conf[Parameter::$COMMAND_QUEUE_ID       ]= "tdh2";
     $conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/scratch/jc166922/tdh2/logs/queue.log";
     $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = "/scratch/jc166922/tdh2/queue/";
     $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/scratch/jc166922/tdh2/scripts/";

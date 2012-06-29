@@ -29,6 +29,7 @@ $conf[Parameter::$Descriptions_ClimateModels]      = "/app/Resources/description
 $conf[Parameter::$Descriptions_EmissionScenarios]  = "/app/Resources/descriptions/scenario.csv";
 $conf[Parameter::$Descriptions_Years]              = "/app/Resources/descriptions/year.txt";
 
+$conf[Parameter::$COMMAND_QUEUE_ID       ] = "default_queue_id";
 $conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/app/logs/queue.log";
 $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = "/app/queue/";
 $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/app/scripts/";

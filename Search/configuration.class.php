@@ -100,6 +100,11 @@ class configuration {
         return $conf[Parameter::$ExtensionDelimiter]; 
     }
 
+    public static function CommandQueueID() { 
+        global $conf;
+        return $conf[Parameter::$COMMAND_QUEUE_ID]; 
+    }
+    
     public static function CommandQueueLog() { 
         global $conf;
         return $conf[Parameter::$COMMAND_QUEUE_LOG]; 
