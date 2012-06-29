@@ -1,9 +1,7 @@
 <?php
-// set_include_path(get_include_path() . PATH_SEPARATOR . );
+set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
 
-echo "Where is this ".__FILE__."\n";
-
-include_once 'includes.php';
+include_once dirname(__FILE__).'/includes.php';
 
 
 // read argv and get ID of command that will be run here.
