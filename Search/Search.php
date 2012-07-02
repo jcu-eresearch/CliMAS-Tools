@@ -3,6 +3,8 @@ session_start();
 include_once 'includes.php';
 Session::clear();
 
+// test change 
+
 function icon($name)
 {
     echo '<img title="'.$name.'" style="height: 30px; width: 30px;" border="0" src="'.configuration::IconSource().$name.'" />';
