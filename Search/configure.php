@@ -118,6 +118,8 @@ echo "==========================================================================
 echo "Check on database access here\n";
 
 
+
+
 /*
 
 DROP TABLE IF EXISTS ap02_command_action;
@@ -139,12 +141,11 @@ GRANT USAGE, SELECT ON SEQUENCE ap02_command_action_id_seq TO ap02;
  */
 
 
-
 echo "\n";
 echo "Create CRON script {$incoming_sh} \n";
 echo "\n";
 
-file_put_contents($incoming_sh, "php -q ".configuration::ApplicationFolder()."Search/Incoming.php");
+file_put_contents($incoming_sh, "cd ".configuration::ApplicationFolder()."; php -q ".configuration::ApplicationFolder()."Search/Incoming.php\n");
 
 if (!file_exists($incoming_sh))
 {
@@ -153,6 +154,8 @@ if (!file_exists($incoming_sh))
 }
 
 echo "\n make executable  chmod u+x {$incoming_sh}";
+exec("chmod u+x {$incoming_sh}");
+
 echo "\n";
 
 echo "\nCRON (on host that will be processing the queue)";
@@ -169,8 +172,6 @@ echo "\n";
 echo "=====================================================================================\n";
 echo "Seems to be OK, check warnings if any\n";
 echo "\n";
-
-
 
 
 ?>
