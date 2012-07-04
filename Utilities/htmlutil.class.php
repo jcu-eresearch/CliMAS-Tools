@@ -2,6 +2,53 @@
 class htmlutil {
 
 
+    public static function AsJavaScriptSimpleVariable($src,$variableName)
+    {
+        return "var {$variableName} = '{$src}';\n";
+    }    
+    
+    
+    public static function AsJavaScriptArray($src,$variableName)
+    {
+
+        $values = array();
+        foreach ($src as $value) $values[] = '"'.$value.'"';
+        $result = "var {$variableName} = [".join(",",$values)."];";
+        unset($values);
+        return $result;
+    }
+
+    
+    /**
+     * 
+     * 
+     * @param type $src - BiDimensiaonal array 
+     * @param type $keyColumn - name of column to use as key
+     * @param type $valueColumn - name of column to use as value
+     * @return string Javascript arra of objectes
+     */
+    public static function AsJavaScriptObjectArray($src,$keyColumn,$valueColumn,$variableName)
+    {
+
+        //[ { label: "Choice1", value: "value1" }, ... ]
+        
+        $values = array();
+        foreach ($src as $index => $row) 
+        {
+            $label = $row[$keyColumn];
+            $value = $row[$valueColumn];
+            
+            $values[] = "{ label: \"{$label}\", value: \"{$value}\" }";
+        }
+            
+        $result = "var {$variableName} = [".join(",",$values)."];";
+        unset($values);
+        return $result;
+    }
+    
+    
+    
+    
     /*
     * @method table
     * @param $data

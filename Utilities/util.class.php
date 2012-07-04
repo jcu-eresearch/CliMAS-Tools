@@ -1,6 +1,16 @@
 <?php
 class util {
 
+    
+    /**
+     * Characters that are not letters or numbers 
+     * - may not be wanted in inputs
+     * 
+     * @var type 
+     */
+    public static $EXTRA_CHARS = '@##$%^&*()_+-={}[]\|:";\'\\<>,.?/`~';
+
+
     /**
     * @method isWebBrowser
     * @return mixed
@@ -666,6 +676,8 @@ SQL;
     */
     public static function first_element($array)
     {
+        if (!is_array($array)) return null;
+        
         $vals = array_values($array);
 
         return $vals[0];
@@ -1011,10 +1023,23 @@ SQL;
         return $b[1];
     }
 
+    /**
+     *
+     * Remove "Extra chacters from streing"
+     * 
+     * @param type $str
+     * @param type $delim if it's just a simple clean out of delims. i.e. replace with empty char
+     * @param string|array $otherChars  Charcaters you want to replace in string
+     * @param type $replace_wtih what to replace them with (only a simgle replace string for all chars)
+     * @return type 
+     */
     public static function CleanStr($str,$delim = NULL,$otherChars = NULL,$replace_wtih = "_")
     {
         if (!is_null($delim))
+        {
             $str = str_replace($delim ,'',$str);
+        }
+            
 
         $str = str_replace(chr(10),'',$str);
         $str = str_replace(chr(13),'',$str);
