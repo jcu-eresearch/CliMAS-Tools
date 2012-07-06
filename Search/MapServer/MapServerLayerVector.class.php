@@ -1,6 +1,5 @@
 <?php
 include_once 'MapServerLayer.class.php';
-
 class MapServerLayerVector extends MapServerLayer {
     
     
@@ -121,5 +120,4 @@ class MapServerLayerVector extends MapServerLayer {
     
     
 }
-
 ?>

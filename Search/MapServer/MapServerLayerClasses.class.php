@@ -74,5 +74,4 @@ class MapServerLayerClasses extends Object {
     }
     
 }
-
 ?>

@@ -1,5 +1,4 @@
 <?php
-
 class Session {
     
     private static $ActionsToBeMapped = "ActionsToBeMapped";
@@ -203,7 +202,4 @@ class Session {
 
 
 }
-
-
-
 ?>

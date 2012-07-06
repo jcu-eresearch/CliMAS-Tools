@@ -107,15 +107,20 @@ class SpeciesData extends Object {
     }
 
     
-    public function speciesList($pattern = "%") 
+    public static function speciesList($pattern = "%") 
     {
+        
+        $db = new self();
+        
         $pattern = str_replace("*", "%", $pattern);
         
         if (util::last_char($pattern) != "%") $pattern .= "%";
         
         $q = "select id as species_id, scientific_name, common_name from species where common_name LIKE '{$pattern}'";
 
-        $result = $this->query($q);
+        $result = $db->query($q);
+        
+        unset($db);
         
         return $result;
         

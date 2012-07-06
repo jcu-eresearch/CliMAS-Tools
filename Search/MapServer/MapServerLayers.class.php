@@ -197,5 +197,4 @@ class MapServerLayers extends Object {
     }    
     
 }
-
 ?>

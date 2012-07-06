@@ -2,7 +2,6 @@
 class CommandUtil
 {
 
-
     /**
      * Read command back from File
      * - 
@@ -117,5 +116,4 @@ class CommandUtil
     
     
 }
-
 ?>

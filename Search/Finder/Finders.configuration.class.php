@@ -9,10 +9,5 @@ class FindersConfiguration
     public static $CLASS_NAME_SUFFIX_FINDER = "Finder";
     public static $CLASS_NAME_SUFFIX_ACTION = "Action";
     public static $SESSION_NAME = "TDH_SEARCH";
-
-
 }
-
 ?>
-
-

@@ -48,8 +48,4 @@ $conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/ctbccr/TDH/";
 $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output/";
 $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
 
-
-
-
-
 ?>

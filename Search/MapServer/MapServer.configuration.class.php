@@ -1,12 +1,10 @@
 <?php
-
 /**
  * Description of MapServer
  *
  * @author Adam Fakes (James Cook University)
  */
 class MapServerConfiguration {
-
 
     //** This folder must be configured to be accessible by the Apache
     public static function pathToMapfiles()   
@@ -76,5 +74,4 @@ class MapServerConfiguration {
 
 
 }
-
 ?>

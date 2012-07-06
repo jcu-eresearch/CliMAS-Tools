@@ -37,5 +37,4 @@ class MapServerLayerClassStyle extends Object {
     
     
 }
-
 ?>

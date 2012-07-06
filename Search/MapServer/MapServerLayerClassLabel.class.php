@@ -1,5 +1,4 @@
 <?php
-
 /***
  *        
  * 
@@ -223,6 +222,4 @@ class MapServerLayerClassLabel extends Object {
     
     
 }
-
 ?>
-

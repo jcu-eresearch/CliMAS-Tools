@@ -9,7 +9,7 @@
 if (stripos( $hostname, ".default.domain") !== FALSE) 
 {
 
-    if (stripos( __FILE__, "tdh2/TDH-Tools") !== FALSE)
+    if (stripos( __FILE__, "tdh2/tdhtools") !== FALSE)
     {
 
     $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." tdh2/TDH-Tools  default.domain";        
@@ -46,7 +46,5 @@ if (stripos( $hostname, ".default.domain") !== FALSE)
     
     }
 
-    
 }        
-
 ?>

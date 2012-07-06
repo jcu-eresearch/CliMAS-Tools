@@ -1,6 +1,5 @@
 <?php
 include_once 'Mapserver.includes.php';
-
 /**
  * Description of SpatialExtent
  *
@@ -9,7 +8,6 @@ include_once 'Mapserver.includes.php';
  * 
  * @author Adam Fakes (James Cook University)
  */
-
 class MapServerLayer extends Object {
     
     public static function create(MapServerLayers $parent, $filename,$column_name = null,$LayerType = null)
@@ -207,5 +205,4 @@ class MapServerLayer extends Object {
     
     
 }
-
 ?>

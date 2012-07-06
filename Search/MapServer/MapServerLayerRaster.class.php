@@ -1,6 +1,5 @@
 <?php
 include_once 'MapServerLayer.class.php';
-
 class MapServerLayerRaster extends MapServerLayer {
     
     
@@ -162,5 +161,4 @@ class MapServerLayerRaster extends MapServerLayer {
     
     
 }
-
 ?>

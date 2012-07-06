@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CLASS: Use to "run" for GUI page 
  *        
@@ -219,8 +218,4 @@ class MapserverGUI extends Object {
 
     
 }
-
 ?>
-
-
- 

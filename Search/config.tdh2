@@ -1,5 +1,4 @@
 <?php
-
 /**
  *
  *  Develpopment values from workstation hostname  "tdh-tools-2" webserver
@@ -39,7 +38,6 @@ if (stripos( $hostname, "tdh-tools-2") !== FALSE)
     $conf[Parameter::$Maxent_Species_Data_folder ]            = "/scratch/jc166922/tdh2/source/species/";
     $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
     $conf[Parameter::$Maxent_Species_Data_Occurance_Filename] = "occur.csv";
-    
+   
 }        
-
 ?>

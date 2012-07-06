@@ -1,10 +1,77 @@
 <?php
+include_once dirname(__FILE__).'/includes.php';
+//db_access_images();
+//db_access_images()
+ //fileStorage();
+fileStream();
+function fileStream()
+{
+    
+    // to be call ed by Web Browser
+    
+    // push jpg to database
+    // and then display 
+    
+    $filename = "/home/jc166922/data/projects/brooklyn/images/images/May2010/DSC_5177.JPG";
 
-include_once 'includes.php';
+    $p = new PGDB();
+    
+    $file_id = $p->InsertFile($filename,'Brooklyn Image');
+    
+    //$out_filename = $p->ReadFile2Filesystem($file_id,'/home/jc166922/brook.jpg') ;
+    
+    header('Content-Type: '.$p->ReadFileMimeType($file_id));
+    
+    $p->ReadFile2Stream($file_id);
+    
+    $p->RemoveFile($file_id);
+    
+}
 
+function fileStorage()
+{
+ 
+    $filename = "/home/jc166922/Documents/aus_elevation.tif";
 
-db_access_images();
-
+    $p = new PGDB();
+    
+    $file_id = $p->InsertFile($filename,$filename);
+    
+    echo "Stored File as $file_id\n";
+    
+    echo "Read back File as $file_id\n";
+    
+    
+    $out_file  = '/home/jc166922/fred.tif' ;
+    
+    file::Delete($out_file);    
+    
+    $filename = $p->ReadFile2Filesystem($file_id,$out_file) ;
+    
+    if (filesize($filename) != filesize($out_file))
+    {
+        echo "ERROR:: input file and output file sizes do not match\n";
+        exit(1);
+    }
+    
+    $mimetype = $p->ReadFileMimeType($file_id);
+    
+    echo "mimetype = $mimetype\n";
+    
+    // exec("display {$out_file}&");
+    
+    echo "Remove File\n";
+    
+    echo "preremove = ".$p->CountFile($file_id)."\n";
+    
+    $p->RemoveFile($file_id);
+        
+    echo "postremove = ".$p->CountFile($file_id)."\n";
+    
+    
+    unset($p);
+    
+}
 
 function db_access()
 {
@@ -54,10 +121,8 @@ $r = $DB->query($q,'id');
 print_r($r);
 
 unset($DB);
-
     
 }
-
 
 function db_access_images()
 {
@@ -102,20 +167,8 @@ function db_access_images()
     
     echo "Result of Count Image  for $test_lookup    === {$hasImage} \n";
     
-    
-
-    
-    
-    
     unset($DB);
     
 
 }
-
-
-
-
-
-
-
 ?>

@@ -1,7 +1,6 @@
 <?php
 include_once 'Mapfile.class.php';
 include_once 'MapserverGUI.class.php';
-
 /**
  * CLASS: 
  *        
@@ -208,5 +207,4 @@ class MapServerImage extends Object {
     }
 
 }
-
 ?>

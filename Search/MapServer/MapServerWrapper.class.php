@@ -1,6 +1,5 @@
 <?php
 include_once 'MapServerLayers.class.php';
-
 class MapServerWrapper extends Object {
     
     private $layers = null;
@@ -167,5 +166,4 @@ class MapServerWrapper extends Object {
     
     
 }
-
 ?>

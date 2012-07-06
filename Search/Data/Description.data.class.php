@@ -89,7 +89,5 @@ class Description extends Data {
         return $this->setProperty(func_get_arg(0));
     }
 
-
 }
-
 ?>

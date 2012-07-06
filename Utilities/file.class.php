@@ -1,8 +1,5 @@
 <?php
-
 class file {
-
-
     /*
     * @method getTitleTagValue
     * @param $filename
@@ -999,8 +996,6 @@ class file {
 
         return $result;
     }
-
-
 
 }
 ?>

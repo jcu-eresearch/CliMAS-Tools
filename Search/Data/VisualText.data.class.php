@@ -74,6 +74,4 @@ class VisualText extends Data {
     
     
 }
-
 ?>
-

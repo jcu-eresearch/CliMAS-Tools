@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 
  *        
@@ -43,5 +42,4 @@ class SpatialDescription extends Description {
     
     
 }
-
 ?>

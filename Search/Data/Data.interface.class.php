@@ -102,8 +102,4 @@ class Data extends Object implements iData{
 
     
 }
-
-
-
 ?>
-
