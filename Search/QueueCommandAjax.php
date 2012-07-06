@@ -1,170 +1,98 @@
 <?php
 session_start();
-include_once 'includes.php';
-$head = "";
-$title = "Queue Command";
-$content = "";
+include_once dirname(__FILE__).'/includes.php';
 
-$pageRefresh = 3;
+$result = array();
 
-$refreshSeconds = null;
+foreach ($_POST as $key => $value) 
+    Session::add($key, $value);
 
-$queueID = array_util::Value($_GET, "queueID", null);
 
-if (is_null($queueID))
+$action = array_util::Value($_POST, "cmdaction", null);
+
+
+
+$cmd = FinderFactory::Action($action);  
+
+if ( !($cmd instanceof CommandAction) )
 {
-    $action = array_util::Value($_GET, "a", null);
     
+    $result['msg'] = "ERROR:: Action is unknown {$action}";
+    echo json_encode($result);
+    return;
+}
+
+$initResult = $cmd->initialise();
+
+if ($initResult instanceof Exception)
+{
+    $result['msg'] = "ERROR:: Action is did not initalised {$action}";
+    echo json_encode($result);
+    return;  
+}
+
+
+if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE)
+{
     
-    // queue the action
-    $cmd = FinderFactory::Action($action);  // first time in we don't have a queue id so execute the aqction and queue it
+    $O = OutputFactory::Find($cmd);
     
-    if ($cmd instanceof CommandAction)
+    $result['head'] = $O->Head();
+    $result['title'] = $O->Title();
+    $result['content'] = $O->Content();
+    
+    $result['status'] = $cmd->Status();
+    
+    echo json_encode($result);
+    return;   // will stop here and return if we have all results requested.
+}
+
+
+
+
+if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_READY)
+{
+    
+    $O = OutputFactory::Find($cmd);
+    
+    if ($O instanceof Output)
     {
-        $cmd->initialise();
-        
-        if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE)
-        {
-            // we are already done 
-            
-            $refreshSeconds = null;
-            
-            $O = OutputFactory::Find($cmd);
-            
-            if (!is_null($O))
-            {
-                $head = $O->Head();
-                $title = $O->Title();
-                $content .= $O->Content();
-            }
-            else
-            {
-                $content .= OutputFactory::Find($cmd->Result());   
-            }
-            
-            
-        }
-        else
-        {
-            if ($cmd->initialised())  // here is where you can check to see if command init ok
-            {
-
-                //print_r($cmd);
-
-                $queueID = CommandUtil::Queue($cmd);
-
-                if (is_null($queueID))
-                {
-                    $content = "Could not queue command for some reason ".$cmd->CommandName()."  queueID = $queueID";
-                }
-                else
-                {
-                    $content  = $cmd->Description();
-                    $content .= queueBookmark($queueID);
-                    $refreshSeconds = $pageRefresh;
-                }
-
-            }
-            else
-            {
-                $content = "Could initialise command ".$cmd->CommandName();
-            }
-            
-        }
-        
-        
-        
+        $result['content'] = $O->Content();
+        $result['status'] = $cmd->Status();        
     }
     else
     {
-            $content = "Can't queue anything other than a CommandAction, tried to queue ".get_class($cmd);
+        $result['content'] = $O;
     }
+    
+    $result['msg'] = "Working here 3";
+    echo json_encode($result);
+    return;  // queue the command and then return any results re already have and 
 
-}
-else
-{
     
-    $cmd = CommandUtil::GetCommandFromID($queueID);
+    $queueID = CommandUtil::Queue($cmd);  
     
-    if (is_null($cmd))
+    if ($queueID instanceof Exception)
     {
-        $content = "tried to read queue and it's null???";
+        $result['queueID'] =  -1;
+        $result['msg'] = $queueID->getMessage();
     }
     else
     {
-        if ($cmd instanceof CommandAction)
-        {
-            if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE) 
-                $refreshSeconds = null; // stop refreshing page    
-            else
-            {
-                $content .="<h3>Partial Results ".datetimeutil::NowDateTime()." </h3>";
-                $content .= queueBookmark($queueID);
-                
-                $refreshSeconds = $pageRefresh;
-            }
-            
-            
-            $O = OutputFactory::Find($cmd);
-            
-            if (!is_null($O))
-            {
-                $head = $O->Head();
-                $title = $O->Title();
-                $content .= $O->Content();
-            }
-            else
-            {
-                $content .= OutputFactory::Find($cmd->Result());   
-            }
-
-        }
-        else
-        {
-            $content  = "Waiting for Server Response";
-            $content .= queueBookmark($queueID);
-        }
-
-        
+        $result['queueID'] = $queueID;
+        $result['msg'] = "Ready to go";
     }
+    
+    
+    echo json_encode($result);
+    return;  // queue the command and then return any results re already have and 
 }
 
 
-/**
- * Link to page that will alow future returns to see progress
- * - send mail button ...
- *  
- */
-function queueBookmark($id,$text = "UPDATE QUEUE STATUS")
-{
-    
-    $link = $_SERVER['PHP_SELF']."?refresh=5&queueID={$id}";
-    
-    $result = '<a href= "'.$link.'">'.$text.'</a>';
-    
-    return $result;
-}
+
+$result['msg'] = "somtjing else {$action}";
+
+echo json_encode($result);
 
 
 ?>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <?php 
-            
-            $refreshTime = htmlutil::RefreshPageMetatag($refreshSeconds, $_SERVER['PHP_SELF']."?refresh={$refreshSeconds}&queueID={$queueID}");
-        
-            echo $head."\n".$refreshTime."\n"; 
-        
-        ?>
-        <title><?php echo $title;?></title>
-    </head>
-    <body>
-        <?php 
-        
-            $content = trim($content);
-            if ($content == "") $content = "Waiting on update from Cluster<br>" ;
-        echo $content;
-        ?>
-    </body>
-</html>

@@ -186,11 +186,11 @@ function postRun(data)
 function startProcess()
 {
     var jData = { 
-        CommandAction: 'SpeciesMaxent',
-        species:       $('#species-result').html(),
-        model:         $('#model-result').html(),
-        scenario:      $('#scenario-result').html(),
-        time:          $('#time-result').html()
+        cmdaction: 'SpeciesMaxent',
+        species:   $('#species-result').html(),
+        model:     $('#model-result').html(),
+        scenario:  $('#scenario-result').html(),
+        time:      $('#time-result').html()
     }
             
             

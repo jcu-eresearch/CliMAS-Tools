@@ -156,24 +156,24 @@ GRANT USAGE, SELECT ON SEQUENCE images_id_seq TO ap02;
 
 
 
-DROP TABLE IF EXISTS ModelledSpeciesData;
-CREATE TABLE ModelledSpeciesData 
+DROP TABLE IF EXISTS modelled_species_data;
+CREATE TABLE modelled_species_data 
 (
   id SERIAL NOT NULL PRIMARY KEY
-    ,scientific_name  varchar(300)
-    ,common_name      varchar(300)
-    ,model_name       varchar(50)
-    ,scenario_name    varchar(50)
-    ,time_name        varchar(10)
-    ,data_category    varchar(100)
-    ,get_data_query   varchar(999)
-    ,MaxentThreshold  varchar(50)
-    ,files_data_id    SERIAL
-    ,update_datetime  timestamp without time zone 
+    ,scientific_name   varchar(300)
+    ,common_name       varchar(300)
+    ,model_name        varchar(50)
+    ,scenario_name     varchar(50)
+    ,time_name         varchar(10)
+    ,data_category     varchar(100)
+    ,get_data_query    varchar(999)
+    ,maxent_threshold  varchar(50)
+    ,files_id          varchar(100)
+    ,update_datetime   timestamp without time zone 
 );
 
-GRANT ALL PRIVILEGES ON ModelledSpeciesData TO ap02;
-GRANT USAGE, SELECT ON SEQUENCE ModelledSpeciesData_id_seq TO ap02;
+GRANT ALL PRIVILEGES ON modelled_species_data TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE modelled_species_data_id_seq TO ap02;
 
 
 DROP TABLE IF EXISTS files_data;
