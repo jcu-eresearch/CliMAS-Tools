@@ -5,12 +5,20 @@ $head = "";
 $title = "Queue Command";
 $content = "";
 
-$pageRefresh = 3;
-
-$refreshSeconds = null;
-
 $queueID = array_util::Value($_GET, "queueID", null);
 
+$result = array();
+
+$result['queueID'] = $queueID;
+$result['msg'] = "gety update ".datetimeutil::NowDateTime();
+
+
+    
+echo json_encode($result);
+return;  // queue the command and then return any results re already have and 
+
+/*
+ * 
 if (is_null($queueID))
 {
     $action = array_util::Value($_GET, "a", null);
@@ -129,6 +137,8 @@ else
     }
 }
 
+ */
+
 
 /**
  * Link to page that will alow future returns to see progress
@@ -145,26 +155,4 @@ function queueBookmark($id,$text = "UPDATE QUEUE STATUS")
     return $result;
 }
 
-
 ?>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <?php 
-            
-            $refreshTime = htmlutil::RefreshPageMetatag($refreshSeconds, $_SERVER['PHP_SELF']."?refresh={$refreshSeconds}&queueID={$queueID}");
-        
-            echo $head."\n".$refreshTime."\n"; 
-        
-        ?>
-        <title><?php echo $title;?></title>
-    </head>
-    <body>
-        <?php 
-        
-            $content = trim($content);
-            if ($content == "") $content = "Waiting on update from Cluster<br>" ;
-        echo $content;
-        ?>
-    </body>
-</html>

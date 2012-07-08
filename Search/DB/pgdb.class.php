@@ -8,42 +8,70 @@
  */
 class PGDB extends Object {
 
+    
     private $DB = null;
 
-    public function __construct($connect = true) {
+    /*
+     * @param $via_commandline  True = Force use of Command Line for Database access
+     * 
+     */
+    public function __construct($via_commandline = false) {
         parent::__construct();
         
-        if ($connect) $this->connect ();
+        $this->ViaCommandLine($via_commandline);
+        
+        $this->connect();
         
     }
 
     public function connect()
     {
         
-        $conString = "";
-        $conString .= "host="    .ToolsDataConfiguration::Species_DB_Server()." ";
-        $conString .= "port="    .ToolsDataConfiguration::Species_DB_Port()." ";        
-        $conString .= "dbname="  .ToolsDataConfiguration::Species_DB_Database()." ";
-        $conString .= "user="    .ToolsDataConfiguration::Species_DB_Username()." ";
-        $conString .= "password=".ToolsDataConfiguration::Species_DB_Password()." ";
-        
-        $this->DB = pg_connect($conString );
-        
-        if ($this->DB === FALSE) $this->DB = null;
+        if ($this->ViaCommandLine())
+        {
+            // check to see if we can connect with pg_ functions if not set to make sure we use command line
+            
+            if (!function_exists('pg_connect'))  
+                $this->ViaCommandLine(true); 
+        }
+            
+        if (!$this->ViaCommandLine())
+        {
+            $conString = "";
+            $conString .= "host="    .ToolsDataConfiguration::Species_DB_Server()." ";
+            $conString .= "port="    .ToolsDataConfiguration::Species_DB_Port()." ";        
+            $conString .= "dbname="  .ToolsDataConfiguration::Species_DB_Database()." ";
+            $conString .= "user="    .ToolsDataConfiguration::Species_DB_Username()." ";
+            $conString .= "password=".ToolsDataConfiguration::Species_DB_Password()." ";
 
+            $this->DB = pg_connect($conString);
+
+            if ($this->DB === FALSE) 
+            {
+                $this->ViaCommandLine(true);
+            }
+        }
+
+        
         $this->ImageTableName('images');
         $this->FilesTableName('files_data');
-
+        $this->ActionsTableName('ap02_command_action');
+        
+        $this->QueueID(configuration::CommandQueueID());
+        
+        
     }
-
-    
     
     public function __destruct() {
         
+        
         if (!is_null($this->DB))
         {
-            pg_close($this->DB);
-            unset($this->DB);
+            if (function_exists('pg_close'))
+            {
+                pg_close($this->DB);
+                unset($this->DB);
+            }            
         }
 
         parent::__destruct();
@@ -52,6 +80,9 @@ class PGDB extends Object {
     
     public function query($sql,$keyColumn = null) 
     {
+
+        if ($this->ViaCommandLine()) return $this->queryByCommandLine($sql,$keyColumn);
+        
         
         if (is_null($this->DB)) return null; //TODO: fail nicely needs to handle
         
@@ -87,9 +118,93 @@ class PGDB extends Object {
         
     }
     
+    
+    /**
+     * Used when pg_connect does not exist - 
+     * 
+     * @param type $sql
+     * @return null 
+     */
+    private function queryByCommandLine($sql,$keyColumn = null) 
+    {
+        
+        // 
+        // we don't have Postgress SQL php addin so  this is the way query works - thru sending to file and readin file.
+        //
+        $sql = str_replace('"', '\"', $sql);
+
+        echo "\n\nQuery By Command Line \n{$sql}\n";
+        
+        
+        $resultFilename = file::random_filename();
+        
+        $cmd  = " ";
+        $cmd .= "export PGHOST="    .ToolsDataConfiguration::Species_DB_Server()  ." ; ";
+        $cmd .= "export PGPORT="    .ToolsDataConfiguration::Species_DB_Port()    ." ; ";
+        $cmd .= "export PGDATABASE=".ToolsDataConfiguration::Species_DB_Database()." ; ";
+        $cmd .= "export PGUSER="    .ToolsDataConfiguration::Species_DB_Username()." ; ";
+        $cmd .= "export PGPASSWORD=".ToolsDataConfiguration::Species_DB_Password()." ; ";
+        $cmd .= 'psql  --quiet --no-align -c "'.$sql.'" --output '.$resultFilename;
+        
+        echo "resultFilename = $resultFilename\n";
+        
+        exec($cmd);
+        
+        if (!file_exists($resultFilename)) return null;
+        
+        $row = 0;
+        $result = array();
+
+        $keyColumnIndex = -1;
+        
+        $handle = fopen($resultFilename, "r");        
+        if ($handle !== FALSE) 
+        {
+            $headers = fgetcsv($handle, 0, "|");
+            
+            if (!is_null($keyColumn))
+                $keyColumnIndex = array_util::ArrayKey($headers, $keyColumn);
+            
+            while (($data = fgetcsv($handle, 0, "|")) !== FALSE) 
+            {
+            
+                if (count($data) == count($headers)) // this should stop any odd lines and the last line (nnnn rows)
+                {
+                    for ($c=0; $c < count($data); $c++) 
+                    {
+                        
+                        if (is_null($keyColumn))
+                        {
+                            $result[$row][$headers[$c]] = trim($data[$c]);    
+                        }
+                        else
+                        {
+                            $result[trim($data[$keyColumnIndex])][$headers[$c]] = trim($data[$c]); 
+                        }
+                        
+                        
+                    }
+                }
+                
+                $row++;
+            }
+            fclose($handle);
+            
+        }
+
+        
+        return $result;
+        
+    }
+    
+    
+    
     public function insert($sql) 
     {
 
+        if ($this->ViaCommandLine()) return $this->insertByCommandLine($sql);
+        
+        
         $sql = str_replace(";", '', $sql);
         
         $sql .= "; select LASTVAL();";
@@ -106,122 +221,124 @@ class PGDB extends Object {
         
     }
 
+    
+    private function insertByCommandLine($sql) 
+    {
+        
+        // we don't have Postgress SQL php addin so  this is the way query works - thru sending to file and readin file.
+        $sql = trim($sql);
+        $sql = util::trim_end($sql, ';');
+        
+        $sql .= "; select LASTVAL();";
+        
+        $cmd  = " ";
+        $cmd .= "export PGHOST="    .ToolsDataConfiguration::Species_DB_Server()  ." ; ";
+        $cmd .= "export PGPORT="    .ToolsDataConfiguration::Species_DB_Port()    ." ; ";
+        $cmd .= "export PGDATABASE=".ToolsDataConfiguration::Species_DB_Database()." ; ";
+        $cmd .= "export PGUSER="    .ToolsDataConfiguration::Species_DB_Username()." ; ";
+        $cmd .= "export PGPASSWORD=".ToolsDataConfiguration::Species_DB_Password()." ; ";
+        $cmd .= "psql  --quiet --no-align -c \"$sql\" ";
+        
+        $result = array();
+        exec($cmd,$result);
+        
+        if (!util::contains($result[0], "lastval")) return null; // ttodo return better error value ?? 
+        
+        $lastId = trim($result[1]);
+        
+        return $lastId;
+        
+    }
+    
+    
+    
+    
     public function update($sql) 
     {
+        
+        if ($this->ViaCommandLine()) return $this->updateByCommandLine($sql);
+        
         $result = pg_exec($this->DB, $sql);
         return pg_affected_rows($result);
     }
 
     
+    private function updateByCommandLine($sql) 
+    {
+        
+        // we don't have Postgress SQL php addin so  this is the way query works - thru sending to file and readin file.
+        
+        $cmd  = " ";
+        $cmd .= "export PGHOST="    .ToolsDataConfiguration::Species_DB_Server()  ." ; ";
+        $cmd .= "export PGPORT="    .ToolsDataConfiguration::Species_DB_Port()    ." ; ";
+        $cmd .= "export PGDATABASE=".ToolsDataConfiguration::Species_DB_Database()." ; ";
+        $cmd .= "export PGUSER="    .ToolsDataConfiguration::Species_DB_Username()." ; ";
+        $cmd .= "export PGPASSWORD=".ToolsDataConfiguration::Species_DB_Password()." ; ";
+        $cmd .= "psql --no-align -c \"$sql\" ";
+        
+        echo "$cmd\n";
+        
+        $result = array();
+        $ins = exec($cmd,$result);
+        
+        if (!util::contains($ins, "UPDATE")) return null;
+
+        $split = explode(" ",$ins);
+        $count = trim($split[1]);
+        
+        return  $count; // update count
+        
+    }
+    
+    
+    
     public function delete($table,$where) 
     {
+        if ($this->ViaCommandLine()) return $this->updateByCommandLine($sql);
+        
         $result =  pg_exec($this->DB, "delete from {$table} where {$where};");
         return pg_affected_rows($result);   
     }
     
-    public function InsertImage($srcFilename,$lookup,$encoder = "base64_encode",$decoder = "base64_decode") 
-    {
-        
-        $assoc_array = array();
-        
-        $assoc_array['lookup'] = $lookup;
-        $assoc_array['encoder'] = $encoder;
-        $assoc_array['decoder'] = $decoder;        
-        $assoc_array['filesize'] = filesize($srcFilename);
-        $assoc_array['mimetype'] = mime_content_type($srcFilename);
-        
-        $assoc_array['data'] =  $encoder(file_get_contents($srcFilename)) ;
 
-        $insertResult = pg_insert($this->DB, $this->ImageTableName(),$assoc_array );
-        
-        if ($insertResult === FALSE) return null;
-        
-        return $this->last_insert();
-        
-    }
-
-
-    
     public function last_insert()
     {
-        
-        $lastval_result = pg_exec($this->DB, "select LASTVAL();");
-
-        $insert_result = pg_fetch_array($lastval_result, 0,PGSQL_ASSOC);
-        
-        $lastid = array_util::Value($insert_result,'lastval',null);
-        
-        return $lastid;
-        
-    }
-    
-    
-    
-    public function HasImage($lookup) 
-    {
-        
-        $q = "select count(*) image_count from {$this->ImageTableName()} where lookup = '{$lookup}'";
-        
-        $result = $this->query($q);
-        
-        if (is_null($result)) return false;
-        if (count($result) <= 0 ) return false;
-        
-        $first = util::first_element($result);
-        
-        
-        $count = array_util::Value($first,'image_count' , false);
-        
-        return $count;
-        
-    }
-    
-    public function GetImage($lookup,$filename) 
-    {
-
-        $assoc_array = array();
-        $assoc_array['lookup'] = $lookup;
-        
-        $pg_result = pg_select($this->DB, $this->ImageTableName(), $assoc_array);
-        
-        if (count($pg_result) <= 0) 
-        {
-            unset($pg_result);
-            return null;
-        }
-        
-        $row = util::first_element($pg_result);
-        
-        $decoder = $row['decoder'];
-        
-        file_put_contents($filename, $decoder($row['data']) );
-        
-        if (!file_exists($filename)) 
-        {
-            unset($pg_result);
-            return null;
-        }
-        
-        return $row['id'];
-        
+        $sql = " select LASTVAL();";
+        $lastval_result = $this->query($sql);        
+        $first = util::first_element($lastval_result);
+        $lastid = array_util::Value($first,'lastval',null);
+        return $lastid;   
     }
 
 
-    public function InsertFile($srcFilename,$lookup) 
+    public function HasImage($file_unique_id) 
+    {
+        $count =  count($this->CountFile($file_unique_id));
+        return $count > 0;
+    }
+    
+    
+    public function InsertImage($srcFilename,$description) 
+    {
+        return $this->InsertFile($srcFilename, $description,'image');
+    }
+    
+    public function GetImage($file_unique_id,$dest_filename) 
+    {
+        $imageResult = $this->ReadFile2Filesystem($file_unique_id, $dest_filename);
+        return  $imageResult;
+    }
+
+    
+    public function InsertFile($srcFilename,$description,$category = 'file') 
     {
         
-        /**
-         *Array of part id's fir this file - will be in order of adding to database. 
-         * 
-         */
-        $parts = array();
+        if ($this->ViaCommandLine()) return $this->InsertFileByCommandLine($srcFilename, $description, $category);
         
         $chunck_size = 40000;
 
         $total_filesize = filesize($srcFilename);
         $totalparts = ceil($total_filesize / $chunck_size);
-
-        //echo "Expect to be {$totalparts} rows in Table\n";
         
         $mimetype = mime_content_type($srcFilename);
         
@@ -238,10 +355,11 @@ class PGDB extends Object {
             $assoc_array['file_unique_id'] = $file_unique_id;
             $assoc_array['mimetype'] = $mimetype;
             $assoc_array['partnum'] = $partnum;
-            $assoc_array['file_description'] = $lookup;
+            $assoc_array['file_description'] = $description;
             $assoc_array['totalparts'] = $totalparts;
             $assoc_array['total_filesize'] = $total_filesize;
             $assoc_array['data'] = base64_encode($contents);
+            $assoc_array['category'] = $category;
             
             $insertResult = pg_insert($this->DB, $this->FilesTableName(),$assoc_array );
             
@@ -249,21 +367,63 @@ class PGDB extends Object {
             {
                 throw new Exception("FAILED:: to insert file in to DB {$srcFilename} with description {$lookup} at part {$partnum}");
             }
-
-            //echo "Just written part {$partnum} / {$totalparts} rows in Table\n";
-            
-            $parts[] = $this->last_insert();
             
             $partnum++;
             
         }        
         
         
+        return $file_unique_id;
+        
+    }
+    
+
+    
+    private function InsertFileByCommandLine($srcFilename,$description,$category = 'file') 
+    {
+        
+        $chunck_size = 20000;
+
+        $total_filesize = filesize($srcFilename);
+        $totalparts = ceil($total_filesize / $chunck_size);
+        
+        $mimetype = mime_content_type($srcFilename);
+        
+        $file_unique_id =  uniqid();
+        
+        $partnum = 0;
+        $handle = fopen($srcFilename, "rb");
+        
+        
+        while (!feof($handle)) {
+
+            $contents = fread($handle, $chunck_size);
+            $data = base64_encode($contents);
+
+            $sql  = "insert into {$this->FilesTableName()} ";
+            $sql .=  "(file_unique_id,mimetype,partnum,file_description,totalparts,total_filesize,data,category)";
+            $sql .=  " values ";
+            $sql .=  "('{$file_unique_id}','{$mimetype}',{$partnum},'{$description}',{$totalparts},{$total_filesize},'{$data}','{$category}')";
+            $insertResult = $this->insert($sql);    
+            
+            // echo "insertResult = $insertResult\n";
+            
+            if (!is_numeric($insertResult) || $insertResult == -1) 
+            {
+                throw new Exception("FAILED:: to insert file in to DB {$srcFilename} with description {$description} at part {$partnum} using a comand line call");
+            }
+            
+            $partnum++;
+
+            
+            
+        }        
+        
         
         return $file_unique_id;
         
     }
-
+    
     
     
     
@@ -276,50 +436,53 @@ class PGDB extends Object {
      * @return string|null  -  string - Binary string of file<br> or Null on error
      *  
      */
-    public function ReadFile($unique_id,$echo_data = false,$collect_data = true) 
+    public function ReadFile($file_unique_id,$echo_data = false,$collect_data = true) 
     {
         
-        if (is_null($this->DB)) return null; //TODO: fail nicely needs to handle
+        $sql = "select data from {$this->FilesTableName()} where file_unique_id = '{$file_unique_id}' order by partnum;";
         
-        $sql = "select * from {$this->FilesTableName()} where file_unique_id = '{$unique_id}' order by partnum;";
+        echo "Read File here  {$sql} \n";
         
-        $pg_result = pg_exec($this->DB, $sql);
+        $query_result = $this->query($sql);
         
-        $numrows = pg_numrows($pg_result);
+        if(is_null($query_result)) return null;
         
-        if ($numrows <= 0) return null;
+        if (count($query_result) <= 0) return null;
         
-        $result_file = '';
-        for($ri = 0; $ri < $numrows; $ri++) 
-        {
-            $row = pg_fetch_array($pg_result, $ri,PGSQL_ASSOC);
+        if ($collect_data) $result_file = '';
+        foreach ($query_result as $row) 
+        {    
             $datapart =  base64_decode($row['data']);
             
             if ($collect_data) $result_file .= $datapart;
             
             if ($echo_data) echo $datapart;
-            
+
         }
-        unset($row);
-        unset($pg_result);        
         
-        if ($collect_data)  return $result_file;
+        unset($row);
+        unset($query_result);        
+        
+        if ($collect_data) return $result_file;
         
         return true;
         
     }
 
     
-    public function ReadFile2Filesystem($unique_id,$dest_filename) 
+    public function ReadFile2Filesystem($file_unique_id,$dest_filename) 
     {
         
-        $result_file =  $this->ReadFile($unique_id);
+        $result_file =  $this->ReadFile($file_unique_id);
+        
+        echo "strlen(result_file) = ".strlen($result_file)."\n";
+        
+        if (is_null($result_file)) return null;
         
         file_put_contents($dest_filename, $result_file);
 
         if (!file_exists($dest_filename)) 
         {
-            echo "Error rewriting file back from $unique_id  to $dest_filename";
             return null;
         }
         
@@ -327,14 +490,14 @@ class PGDB extends Object {
         
     }
     
-    public function ReadFile2Stream($unique_id) 
+    public function ReadFile2Stream($file_unique_id) 
     {        
-        $this->ReadFile($unique_id,true,false);  // read file stream and dont collect data - ignore return varaibales
+        $this->ReadFile($file_unique_id,true,false);  // read file stream and dont collect data - ignore return varaibales
     }
     
-    public function ReadFileMimeType($unique_id) 
+    public function ReadFileMimeType($file_unique_id) 
     {        
-        $sql = "select mimetype from {$this->FilesTableName()} where file_unique_id = '{$unique_id}' limit 1";
+        $sql = "select mimetype from {$this->FilesTableName()} where file_unique_id = '{$file_unique_id}' limit 1";
         
         $mimetype_result = $this->query($sql);
         $first = util::first_element($mimetype_result);
@@ -345,27 +508,25 @@ class PGDB extends Object {
     
 
     
-    public function RemoveFile($unique_id) 
+    public function RemoveFile($file_unique_id) 
     {        
         
-        $sql = "delete from {$this->FilesTableName()} where file_unique_id = '{$unique_id}'";
+        $sql = "delete from {$this->FilesTableName()} where file_unique_id = '{$file_unique_id}'";
         $this->update($sql);        
-        
-        $postremove = $this->Count($this->FilesTableName(), "file_unique_id = '{$unique_id}'");
 
-        if ($postremove > 0) return false;
+        if ($this->CountFile($file_unique_id) > 0)   // check to see if there are any rows left with this id
+            return false; 
         
         return true;
         
     }
 
 
-    public function CountFile($unique_id) 
+    public function CountFile($file_unique_id) 
     {        
-        $filecount = self::Count($this->FilesTableName(),"file_unique_id = '{$unique_id}'");
-        return $filecount;
+        $count =  $this->CountUnique($this->FilesTableName(), 'file_unique_id', "file_unique_id = {$file_unique_id}");
+        return $count;
     }
-    
     
     
     public function Count($table,$where) 
@@ -383,9 +544,174 @@ class PGDB extends Object {
         
         return $count;
         
+    }
+
+    public function Unique($table,$field,$where = null) 
+    {        
+        if (!is_null($where)) $where = " where {$where} " ;
+        
+        $sql = "select $field from $table $where group by $field order by $field";
+        
+        $result = $this->query($sql);
+        if (is_null($result)) return null;
+        return $result;
+    }
+
+    public function CountUnique($table,$field,$where = null) 
+    {        
+        return count($this->Unique($table, $field,$where));
+    }
+    
+    /**
+     * Add new Action to queue or update the current action
+     * 
+     * @param CommandAction $cmd
+     * @return null 
+     */
+    public static function CommandActionQueue(CommandAction $cmd) 
+    {
+        
+        $cmd instanceof CommandAction;
+
+        $db = new PGDB();
+        
+        $data = base64_encode(serialize($cmd));
+        
+        $command_id = $cmd->ID();
+        
+        // check to see if we already have it.
+        $count = $db->Count($this->ActionsTableName(), "queueid = '{$this->QueueID()}' and objectid = '{ $command_id}'");
+        if ($count > 0)
+        {
+            // update 
+            $q = "update {$this->ActionsTableName()} set data = '{$data}',status='{$cmd->Status()}',execution_flag='{$cmd->ExecutionFlag()}' where objectid = '{$command_id }';"; 
+            
+            $updateCount = $db->update($q);    
+            if ($updateCount != 1 ) return null;
+            
+        }
+        else
+        {
+            // insert
+            $q = "INSERT INTO {$this->ActionsTableName()} (queueid,objectid, data,status,execution_flag) VALUES ('{$this->QueueID()}','{ $command_id}', '{$data}','{$cmd->Status()}','{$cmd->ExecutionFlag()}');"; 
+            if (is_null($db->insert($q))) return null; 
+            
+        }
+        
+        unset($db);
+        
+        return  $command_id; // will hold the row id of the object that was just updated.
         
     }
     
+    
+    public static function CommandActionStatus($src) 
+    {
+        
+        if (is_null($src))  return null;
+        
+        $id = ($src instanceof CommandAction) ? $id->ID() : $src;
+        
+        $q = "select objectid,status from {$this->ActionsTableName()} where queueid='{$this->QueueID()}' and objectid = '{$id}'"; 
+        
+        $db = new PGDB();
+        
+        $result = $db->query($q,'objectid');
+        if (count($result) <= 0 ) return null;
+        
+        $first_row = util::first_element($result);
+        
+        $status = array_util::Value($first_row, 'status', null);
+        
+        return $status;
+        
+    }
+    
+    public static function CommandActionRead($commandID) 
+    {
+
+        $db = new PGDB();
+        
+        $q = "select data from {$this->ActionsTableName()} where queueid='{$this->QueueID()}' and objectid = '{$commandID}';";
+        $result = $db->query($q,'objectid');
+        if (count($result) <= 0 ) return null;
+        
+        $first_row = util::first_element($result);
+        
+        $data = array_util::Value($first_row, 'data', null);
+        if (is_null($data)) return null;
+        
+        $serString = base64_decode($data);
+        
+        $object = unserialize($serString);
+        $object instanceof CommandAction;
+        
+        return  $object;
+        
+    }
+    
+    
+    
+    /**
+     * Pass true into this function to really do it.
+     * 
+     * @param type $really
+     * @return null 
+     */
+    public static function CommandActionRemoveAll($really = false) 
+    {
+        if (!$really) return;
+        $qid = configuration::CommandQueueID();
+        
+        $db = new PGDB();
+        $num_removed = $db->update("delete from {$this->ActionsTableName()} where queueid='{$this->QueueID()}';");
+        unset($db);
+        
+        return  $num_removed;
+        
+    }
+    
+    
+    public static function CommandActionRemove($commandID) 
+    {
+
+        $db = new PGDB();
+        $num_removed = $db->update("delete from {$this->ActionsTableName()} where queueid='{$this->QueueID()}' and objectid = '{$commandID}' ;");
+        unset($db);
+        
+        return  $num_removed;
+        
+    }
+    
+    
+    public static function CommandActionListIDs() 
+    {
+        $db = new PGDB();
+        $result = $db->query("select objectid from {$this->ActionsTableName()} where queueid='{$this->QueueID()}';",'objectid');
+        if (count($result) <= 0 ) return null;
+        
+        unset($db);
+        
+        return array_keys($result);
+        
+    }
+    
+    
+    public static function CommandActionExecutionFlag($commandID) 
+    {
+        
+        $db = new PGDB();
+        $q = "select objectid,execution_flag from {$this->ActionsTableName()} where queueid='{$this->QueueID()}' and objectid = '{$commandID}'"; 
+        $result = $db->query($q,'objectid');
+        if (count($result) <= 0 ) return null;
+        
+        $first_row = util::first_element($result);
+        
+        $status = array_util::Value($first_row, 'execution_flag', null);
+        
+        return $status;
+        
+    }
     
     
     
@@ -395,6 +721,21 @@ class PGDB extends Object {
     }
     
     public function FilesTableName() {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    public function ActionsTableName() {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    public function ViaCommandLine() {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    public function QueueID() {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }

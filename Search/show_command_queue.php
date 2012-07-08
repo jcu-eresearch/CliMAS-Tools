@@ -2,13 +2,13 @@
 include_once 'includes.php';
 
 
-$idList = PG::CommandActionListIDs();
+$idList = pgdb::CommandActionListIDs();
 
 if (is_array($idList))
 {
-    foreach (PG::CommandActionListIDs() as $commandID) 
+    foreach ($idList as $commandID) 
     {
-        $ca = PG::ReadCommandAction($commandID);
+        $ca = pgdb::CommandActionRead($commandID);
         $ca instanceof CommandAction;
         $ca->Debug();
     }

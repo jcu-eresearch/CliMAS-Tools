@@ -138,23 +138,6 @@ GRANT ALL PRIVILEGES ON ap02_command_action TO ap02;
 GRANT USAGE, SELECT ON SEQUENCE ap02_command_action_id_seq TO ap02;
 
 
-DROP TABLE IF EXISTS images;
-CREATE TABLE images 
-(
-  id SERIAL NOT NULL PRIMARY KEY
-    ,lookup          varchar(300) not null
-    ,data            text
-    ,filesize        float
-    ,mimetype        varchar(100)
-    ,encoder         varchar(50)
-    ,decoder         varchar(50)
-    ,update_datetime  timestamp without time zone 
-);
-
-GRANT ALL PRIVILEGES ON images TO ap02;
-GRANT USAGE, SELECT ON SEQUENCE images_id_seq TO ap02;
-
-
 
 DROP TABLE IF EXISTS modelled_species_data;
 CREATE TABLE modelled_species_data 
@@ -183,6 +166,7 @@ CREATE TABLE files_data
     ,file_unique_id   varchar(60)
     ,mimetype         varchar(100)
     ,file_description varchar(500)
+    ,category         varchar(100)
     ,partnum          float
     ,totalparts       float
     ,total_filesize   float

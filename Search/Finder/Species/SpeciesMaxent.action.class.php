@@ -29,37 +29,28 @@ class SpeciesMaxent extends CommandAction {
     }
 
     
-    
     /**
      * This is run from the web server side 
      * - so NO processing here 
      * - check to see if this has already been run / outputs or other items have already been processed 
      * 
      */
-    public function initialise() 
+    public function initialise($_post = null) 
     {
         
+        if (is_null($_post)) return null;
         
-        $this->SpeciesIDs(FinderFactory::GetMethodResult("SpeciesFinder","SelectedSpeciesIDs"));
-        $this->EmissionScenarioIDs(Session::get("EmissionScenarioSearch", ""));
-        $this->ClimateModelIDs(Session::get("ClimateModelSearch", ""));
-        $this->TimeIDs(Session::get("TimeSearch", ""));
-
+        $this->SpeciesIDs($_post['species']);
+        $this->EmissionScenarioIDs($_post['scenario']);
+        $this->ClimateModelIDs($_post['model']);
+        $this->TimeIDs($_post['time']);
         
         $this->SpeciesIDs(trim($this->SpeciesIDs()));
         $this->EmissionScenarioIDs(trim($this->EmissionScenarioIDs()));
         $this->ClimateModelIDs(trim($this->ClimateModelIDs()));
         $this->TimeIDs(trim($this->TimeIDs()));
         
-        //for testing if null or empty
-        if (is_null($this->SpeciesIDs()) || $this->SpeciesIDs() == "") $this->SpeciesIDs("Lichenostomus+%28Gavicalis%29+fasciogularis");
-        if (is_null($this->EmissionScenarioIDs()) || $this->EmissionScenarioIDs() == "") $this->EmissionScenarioIDs("RCP3PD");
-        if (is_null($this->ClimateModelIDs()) || $this->ClimateModelIDs() == "") $this->ClimateModelIDs("cccma-cgcm31");
-        if (is_null($this->TimeIDs())  || $this->TimeIDs() == "") $this->TimeIDs("2015 2025 2035 2045 2055 2065 2075 2085");
-        
-        
         $this->initialised(true);
-        
         
         // check to see if we really need to go to the GRID
         $this->SpeciesCombinations($this->buildCombinations());
@@ -72,6 +63,9 @@ class SpeciesMaxent extends CommandAction {
         {
             $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);    
         }
+        
+        
+        return print_r($this->SpeciesCombinations(),true);
         
         
     }
@@ -90,6 +84,8 @@ class SpeciesMaxent extends CommandAction {
         $result = array();
         foreach ($species as $speciesID)
         {
+            $speciesID =  str_replace("_", " ", $speciesID);
+            
             $result[$speciesID] = array();
             foreach ($scenarios as $scenarioID)
                 foreach ($models  as $modelID)

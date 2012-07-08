@@ -1,40 +1,6 @@
 <?php
 class CommandUtil
 {
-
-    /**
-     * Read command back from File
-     * - 
-     *
-     * @param string $lookupID
-     * @param bool $delete
-     * @param bool $mustBeLatest - FALSE= if we have a ".previous" then read that one  TRUE =  must be absolute latest version of command (may cause conflicts) -
-     * @return null|\iCommand
-     */
-    public static function GetCommandFromID($lookupID)
-    {
-        
-        $ca = PG::ReadCommandAction($lookupID);
-        
-        if (is_null($ca)) return "Failed to Read Command back from Server during GetCommandFromID";  // todo: log
-        $ca instanceof CommandAction;
-        
-        
-        if (!method_exists($ca, "ExecutionFlag"))
-        {
-            return null;
-        }
-        
-        return $ca;
-        
-    }
-
-
-    public static function PutCommand(CommandAction $command)
-    {
-        return self::Queue($command);
-    }
-
     
     /**
      * Called from Webserver to Queue a command
@@ -43,13 +9,29 @@ class CommandUtil
      */
     public static function Queue(CommandAction $command)
     {
-        
-        $writeID = PG::WriteCommandAction($command);
-        if (is_null($writeID)) return null;
-        
-        return $command->ID();
+        return PGDB::CommandActionQueue($command);
     }
 
+
+    public static function CommandFromQueue($id)
+    {
+        return PGDB::CommandActionRead($id);
+    }
+    
+    
+    public static function QueueUpdateExecutionFlag(CommandAction $command, $flag)
+    {
+        $command->ExecutionFlag($flag);
+        return PGDB::CommandActionQueue($command);
+    }
+
+    
+    public static function QueueUpdateExecutionFinalised(CommandAction $command)
+    {
+        return self::QueueUpdateExecutionFlag($command, CommandAction::$EXECUTION_FLAG_FINALISE);        
+    }
+    
+    
 
     /**
      * Used by Webserver  to get Current values of Object while it's out of Webserver control
@@ -62,56 +44,17 @@ class CommandUtil
      */
     public static function QueueStatus($command)
     {
-        return PG::CommandActionStatus($command->ID());;
+        return PGDB::CommandActionStatus($command);
     }
-
-
-    public static function QueueUpdateExecutionFlag(CommandAction $command, $flag)
-    {
-        $command->ExecutionFlag($flag);
-
-        $write = self::PutCommand($command);
-        if (is_null($write)) return "Failed to write Command back to Server, trying to update execution flag";  // todo: log
-
-        return $ca->ExecutionFlag();
-
-    }
-
-    public static function QueueUpdateExecutionFinalised(CommandAction $command)
-    {
-        return self::QueueUpdateExecutionFlag($command, CommandAction::$EXECUTION_FLAG_FINALISE);        
-    }
+    
     
     
     public static function QueueUpdateStatus(CommandAction $command, $status = null)
     {
-
         $command->Status($status);
-
-        $write = self::PutCommand($command);
-        if (is_null($write)) return "Failed to Rwrite Command back to Server, trying to QueueUpdateStatus";  // todo: log
-
-        return $command->Status();
-
+        return PGDB::QueueCommandAction($command);        
     }
 
-
-
-    public static function CommandFromQueue($command)
-    {
-        
-        $ca = PG::ReadCommandAction($command->ID());
-        if (is_null($ca)) return "Failed to Read Command back from Server";  // todo: log
-        $ca instanceof CommandAction;
-        
-        if (!method_exists($ca, "ExecutionFlag"))
-        {
-            return null;
-        }
-        
-        return $ca;
-
-    }
 
     
     

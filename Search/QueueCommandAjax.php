@@ -7,12 +7,10 @@ $result = array();
 foreach ($_POST as $key => $value) 
     Session::add($key, $value);
 
-
 $action = array_util::Value($_POST, "cmdaction", null);
 
-
-
 $cmd = FinderFactory::Action($action);  
+
 
 if ( !($cmd instanceof CommandAction) )
 {
@@ -22,7 +20,9 @@ if ( !($cmd instanceof CommandAction) )
     return;
 }
 
-$initResult = $cmd->initialise();
+
+$initResult = $cmd->initialise($_POST);
+
 
 if ($initResult instanceof Exception)
 {
@@ -48,12 +48,11 @@ if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE)
 }
 
 
-
-
 if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_READY)
 {
     
     $O = OutputFactory::Find($cmd);
+    
     
     if ($O instanceof Output)
     {
@@ -65,12 +64,7 @@ if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_READY)
         $result['content'] = $O;
     }
     
-    $result['msg'] = "Working here 3";
-    echo json_encode($result);
-    return;  // queue the command and then return any results re already have and 
-
-    
-    $queueID = CommandUtil::Queue($cmd);  
+    $queueID = CommandUtil::Queue($cmd);
     
     if ($queueID instanceof Exception)
     {
@@ -87,6 +81,11 @@ if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_READY)
     echo json_encode($result);
     return;  // queue the command and then return any results re already have and 
 }
+
+
+    $result['redy?'] = "after ready ....";
+    echo json_encode($result);
+    return;
 
 
 

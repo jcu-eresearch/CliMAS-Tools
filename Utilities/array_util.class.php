@@ -607,9 +607,10 @@ class array_util
     }
 
 
-        // return key where valuein array matches $findValue
-
     /*
+     * 
+     * return key where value in array matches $findValue
+     * 
     * @method findArrayKey
     * @param $findIn
     * @param $findValue

@@ -35,7 +35,6 @@ class CommandProcessor
 {
     public static $QSTAT_RUNNING = "R";
     public static $QSTAT_COMPLETED = "C";
-
     
     /** 
      *
@@ -52,14 +51,13 @@ class CommandProcessor
         
         for ($index = 1; $index <= 20; $index++)
         {
-            foreach (PG::CommandActionListIDs() as $commandID) 
+            foreach (PGDB::CommandActionListIDs() as $commandID) 
                 self::processSingleQueueItem($commandID);
             
             sleep(3);
         }
 
     }
-
     
     
     /**
@@ -73,7 +71,7 @@ class CommandProcessor
     private function processSingleQueueItem($commandID)
     {
 
-        $command = CommandUtil::GetCommandFromID($commandID);
+        $command =  pgdb::CommandActionRead($commandID) ;
 
         if (is_null($command))
         {
@@ -127,7 +125,7 @@ class CommandProcessor
     {
         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_RUNNING);
         self::scriptIt($cmd);
-        CommandUtil::PutCommand($cmd);
+        CommandUtil::Queue($cmd);
     }
 
     
@@ -153,15 +151,13 @@ class CommandProcessor
         // if so then move JOB to FINALISED
 
         $queueID = $cmd->QueueID();
-
-            echo "Check ing $queueID \n";
+        
         
         $result = "Unknown";
         if (!is_null($queueID))
         {
             
-            $firstBit = util::leftStr($queueID, ".");
-            $result = exec("qstat -f $firstBit | grep -e job_state");
+            $result = exec("qstat -f {$cmd->QueueID()} | grep -e job_state");
 
             if (util::contains($result, "job_state"))
             {
@@ -289,12 +285,10 @@ class CommandProcessor
                            $cmd->ID().
                            configuration::CommandScriptsSuffix();
 
-        echo "script_filename = $script_filename\n";
         
         // $script .= "rm {$script_filename}\n"; // script will remove it self when done
 
         file_put_contents($script_filename, $script);  // write script to script_filename
-        
         
         return $script_filename;
 
@@ -309,16 +303,12 @@ class CommandProcessor
      */
     private static function executeScript($scriptFilename)
     {
-        
-        // exec("chmod u+x '{$scriptFilename}'"); // may not be needed
-        
         $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub {$scriptFilename}";
-        
-        echo "cmd {$cmd}\n";
-        
         $qsub_id = exec($cmd);  // will do QSUB exec and then get the return with the QSUB ID
-        return $qsub_id;
-
+        
+        $firstBit = util::leftStr($qsub_id, ".");
+        
+        return $firstBit; // return job id - the rest is domain name
     }
 
 
