@@ -7,26 +7,48 @@ include_once 'includes.php';
  * - needs to be command line as we are going to run this after generationm on the HPC nodes
  * 
  */
+$prog = array_util::Value( $argv, 0);
+$species = array_util::Value( $argv, 1);
+$filename = array_util::Value($argv, 2);
 
+if (is_null($species)) usage($prog);
+if (is_null($filename)) usage($prog);
 
+if (!file_exists($filename))
+{
+    echo "{$prog}:: File not found: $filename\n";
+    exit(1);
+}
 
-$filename = '/home/jc166922/test/RCP3PD_gfdl-cm20_2015.asc';
+function usage($prog)
+{
+   echo "usage: {$prog} species MaxentOutputFilename\n" ;
+   exit(1);
+}
 
-
+// MAIN
+// --------------------------------------------------------------
 $db = new PGDB();
 
-$file_id = $db->InsertFile(SpeciesMaxent::CreateQuickLookImage($filename), "fred_RCP3PD_gfdl-cm20_2015", "QuickLook");
-
-$temp_file = $db->ReadFile2Filesystem($file_id);
+$quicklook_image_filename = SpeciesMaxent::CreateQuickLookImage($filename);
 
 
-
-$db->RemoveFile($file_id);
+$file_id = $db->InsertFile($quicklook_image_filename, $species."_".str_replace('.asc','',basename($filename)), "QuickLook");
 
 unset($db);
 
-exec("display {$temp_file} &");
+if (is_null($file_id)) 
+    echo "{$prog}: FAILED to insert file from grid file: {$filename}\n";
+    
 
+file::Delete($quicklook_image_filename);
+
+echo "{$prog}:{$file_id}\n";
+
+list($scenario, $model, $time) =  explode("_",str_replace('.asc','',basename($filename)));    
+SpeciesMaxent::InsertModelledData($species,$scenario, $model, $time,$file_id);
+
+//echo "{$prog}: insert_result {$insert_result}\n";
 
 
 ?>

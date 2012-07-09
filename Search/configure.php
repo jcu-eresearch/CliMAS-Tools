@@ -142,7 +142,8 @@ GRANT USAGE, SELECT ON SEQUENCE ap02_command_action_id_seq TO ap02;
 DROP TABLE IF EXISTS modelled_species_data;
 CREATE TABLE modelled_species_data 
 (
-  id SERIAL NOT NULL PRIMARY KEY
+    id SERIAL NOT NULL PRIMARY KEY
+    ,species_id        integer
     ,scientific_name   varchar(300)
     ,common_name       varchar(300)
     ,model_name        varchar(50)
@@ -151,7 +152,7 @@ CREATE TABLE modelled_species_data
     ,data_category     varchar(100)
     ,get_data_query    varchar(999)
     ,maxent_threshold  varchar(50)
-    ,files_id          varchar(100)
+    ,file_id           varchar(100)
     ,update_datetime   timestamp without time zone 
 );
 

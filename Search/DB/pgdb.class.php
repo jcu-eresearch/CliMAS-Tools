@@ -59,7 +59,12 @@ class PGDB extends Object {
         $this->FilesTableName('files_data');
         $this->ActionsTableName('ap02_command_action');
         
+        $this->ModelledDataTableName('modelled_species_data');
+        
         $this->QueueID(configuration::CommandQueueID());
+        
+        
+        
         
         
     }
@@ -757,6 +762,14 @@ class PGDB extends Object {
         return $this->setProperty(func_get_arg(0));
     }
     
+    public function ModelledDataTableName() {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+        
+    
+    
+    
     public function ViaCommandLine() {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
@@ -765,6 +778,31 @@ class PGDB extends Object {
     public function QueueID() {
         if (func_num_args() == 0) return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
+    }
+    
+    
+    public function InsertModelledData($species,$scenario, $model, $time,$file_id)
+    {
+        
+        $sql  = "insert into {$this->ModelledDataTableName()} (scientific_name,  model_name, scenario_name, time_name, data_category, maxent_threshold, file_id) values ";
+        $sql .= "(";
+        $sql .= "'{$species}',";
+        $sql .= "'{$model}',";
+        $sql .= "'{$scenario}',";
+        $sql .= "'{$time}',";
+        $sql .= "'QuickLook',";
+        $sql .= "'',";
+        $sql .= "'{$file_id}'";
+        $sql .= ")";
+        
+        //echo "insert sql = $sql";
+        
+        $insert_id = $this->insert($sql);
+        
+        //echo "insert_id = $insert_id";
+        
+        return $insert_id;
+        
     }
     
     

@@ -653,6 +653,11 @@ AAA;
             $script .= "java -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x\n";    
             $script .= "\n";
             
+            $clean_species_name = str_replace(" ", "_", $speciesID);
+            
+            $script .= "php -q ".configuration::ApplicationFolder()."Search/MaxentQuickLookInsert.php '$clean_species_name' '$future_projection_output'";
+            $script .= "\n";
+            
         }
         
         
@@ -902,7 +907,7 @@ AAA;
 
         // might be better here to convert to a tmp image
         // and then copy back to the $output_image_filename
-
+        
 
         file::Delete($colour_txt);
         file::Delete($colour_png);
@@ -913,12 +918,24 @@ AAA;
 
         if (!file_exists($output_image_filename)) return null;
 
+        
+        
 
         return $output_image_filename; // filename of png that can be used - is in temp folder
 
     }
 
 
+    public static function InsertModelledData($species,$scenario, $model, $time,$file_id)
+    {
+        // $scenario, $model, $time
+        $db = new PGDB();
+        $result = $db->InsertModelledData($species, $scenario, $model, $time, $file_id);
+        unset($db);
+        
+        return $result;
+    }
+            
     
     
     
