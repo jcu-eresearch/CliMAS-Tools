@@ -166,7 +166,7 @@ class RGB extends Object {
 
     public function asHex()
     {
-        return sprintf("%02X%02X%02X%02X", $this->Red(), $this->Green(), $this->Blue());
+        return sprintf("%02X%02X%02X", $this->Red(), $this->Green(), $this->Blue());
     }
 
 

@@ -22,6 +22,16 @@ class file {
         return $title;
     }
 
+    
+    public static function mime2extension($mimetype)
+    {
+        // http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
+        
+        
+        
+    }
+
+
 
 
     /*

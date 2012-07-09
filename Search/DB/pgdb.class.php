@@ -24,6 +24,12 @@ class PGDB extends Object {
         
     }
 
+    public function q($str)
+    {
+        return "'".$str."'";
+    }
+    
+    
     public function connect()
     {
 
@@ -198,22 +204,21 @@ class PGDB extends Object {
     public function insert($sql) 
     {
 
-        if ($this->ViaCommandLine()) return $this->insertByCommandLine($sql);
+        return $this->insertByCommandLine($sql);
         
-        
-        $sql = str_replace(";", '', $sql);
-        
-        $sql .= "; select LASTVAL();";
-        
-        $pg_result = pg_exec($this->DB, $sql);
-
-        $insert_result = pg_fetch_array($pg_result, 0,PGSQL_ASSOC);
-        
-        $lastid = array_util::Value($insert_result,'lastval',null);
-        
-        if (is_null($lastid)) return null; // TODO: Better Error ??
-        
-        return $lastid;
+//        $sql = str_replace(";", '', $sql);
+//        
+//        $sql .= "; select LASTVAL();";
+//        
+//        $pg_result = pg_exec($this->DB, $sql);
+//
+//        $insert_result = pg_fetch_array($pg_result, 0,PGSQL_ASSOC);
+//        
+//        $lastid = array_util::Value($insert_result,'lastval',null);
+//        
+//        if (is_null($lastid)) return null; // TODO: Better Error ??
+//        
+//        return $lastid;
         
     }
 
@@ -358,62 +363,28 @@ class PGDB extends Object {
     }
     
     
+    /**
+     *
+     * @param type $srcFilename Path to file to insert ito DB
+     * @param type $description Some string that can be used to lookup the file later
+     * @param type $category    Category of the file e.g. Image, html ...
+     * @return string unique_file_id - use this id to get file backl from database;
+     * @throws Exception 
+     */
     public function InsertFile($srcFilename,$description,$category = 'file') 
     {
-        
-        if ($this->ViaCommandLine()) return $this->InsertFileByCommandLine($srcFilename, $description, $category);
-        
-        $chunck_size = 40000;
-
-        $total_filesize = filesize($srcFilename);
-        $totalparts = ceil($total_filesize / $chunck_size);
-        
-        $mimetype = mime_content_type($srcFilename);
-        
-        $file_unique_id =  uniqid();
-        
-        $partnum = 0;
-        $handle = fopen($srcFilename, "rb");
-        
-        
-        $total_read = 0;
-        
-        while (!feof($handle)) {
-
-            $contents = fread($handle, $chunck_size);
-        
-            $total_read += strlen($contents);
-            
-            $assoc_array = array();
-            $assoc_array['file_unique_id'] = $file_unique_id;
-            $assoc_array['mimetype'] = $mimetype;
-            $assoc_array['partnum'] = $partnum;
-            $assoc_array['file_description'] = $description;
-            $assoc_array['totalparts'] = $totalparts;
-            $assoc_array['total_filesize'] = $total_filesize;
-            $assoc_array['data'] = base64_encode($contents);
-            $assoc_array['category'] = $category;
-            
-            $insertResult = pg_insert($this->DB, $this->FilesTableName(),$assoc_array );
-            
-            if ($insertResult === FALSE) 
-            {
-                throw new Exception("FAILED:: to insert file in to DB {$srcFilename} with description {$lookup} at part {$partnum}");
-            }
-            
-            $partnum++;
-            
-        }        
-        
-        $this->update("update {$this->FilesTableName()} set total_filesize = {$total_read} where file_unique_id = '{$file_unique_id}'");
-        
-        
-        return $file_unique_id;
-        
+        return $this->InsertFileByCommandLine($srcFilename, $description, $category);
     }
     
 
-    
+    /**
+     *
+     * @param type $srcFilename
+     * @param type $description
+     * @param type $category
+     * @return type
+     * @throws Exception 
+     */
     private function InsertFileByCommandLine($srcFilename,$description,$category = 'file') 
     {
         
@@ -444,7 +415,9 @@ class PGDB extends Object {
             $sql .=  "('{$file_unique_id}','{$mimetype}',{$partnum},'{$description}',{$totalparts},$total_filesize,'{$data}','{$category}')";
             $insertResult = $this->insert($sql);    
             
-            // echo "insertResult = $insertResult\n";
+            //echo "sql = $sql\n";
+            
+             // echo "insertResult = $insertResult   total_read = $total_read of {$total_filesize}\n";
             
             if (!is_numeric($insertResult) || $insertResult == -1) 
             {
@@ -461,6 +434,12 @@ class PGDB extends Object {
         
     }
     
+    
+    public function HasFile($file_unique_id) 
+    {
+        $count =  count($this->CountFile($file_unique_id));
+        return $count > 0;
+    }
     
     
     
@@ -507,8 +486,10 @@ class PGDB extends Object {
     }
 
     
-    public function ReadFile2Filesystem($file_unique_id,$dest_filename) 
+    public function ReadFile2Filesystem($file_unique_id,$dest_filename = null) 
     {
+        
+        if (is_null($dest_filename)) $dest_filename = file::random_filename(); // 
         
         $result_file =  $this->ReadFile($file_unique_id);
         
@@ -520,7 +501,6 @@ class PGDB extends Object {
         fwrite($fw,$result_file,$info['total_filesize']);
         fclose($fw);
         
-        //file_put_contents($dest_filename, $result_file);
 
         if (!file_exists($dest_filename)) 
         {
@@ -565,7 +545,7 @@ class PGDB extends Object {
 
     public function CountFile($file_unique_id) 
     {        
-        $count =  $this->CountUnique($this->FilesTableName(), 'file_unique_id', "file_unique_id = {$file_unique_id}");
+        $count =  $this->CountUnique($this->FilesTableName(), 'file_unique_id', "file_unique_id = '{$file_unique_id}'");
         return $count;
     }
     
