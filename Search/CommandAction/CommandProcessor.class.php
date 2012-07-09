@@ -169,8 +169,7 @@ class CommandProcessor
                     if (trim($split[1]) == self::$QSTAT_COMPLETED)
                     {
                         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
-                        CommandUtil::PutCommand($cmd);
-                        
+                        pgdb::CommandActionQueue($cmd);
                         // echo "\nQueue said job is finished= \n".$result."\n\n";
                     }
                     
@@ -193,7 +192,7 @@ class CommandProcessor
     private static function Finalise(CommandAction $cmd)
     {
         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
-        CommandUtil::PutCommand($cmd);
+        pgdb::CommandActionQueue($cmd);
     }
 
 
@@ -217,7 +216,7 @@ class CommandProcessor
 
         file_put_contents(configuration::CommandQueueLog(),$log , FILE_APPEND);
 
-        echo "$log";
+        //echo "$log";
 
     }
 
@@ -303,7 +302,7 @@ class CommandProcessor
      */
     private static function executeScript($scriptFilename)
     {
-        $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub {$scriptFilename}";
+        $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub '{$scriptFilename}'";
         $qsub_id = exec($cmd);  // will do QSUB exec and then get the return with the QSUB ID
         
         $firstBit = util::leftStr($qsub_id, ".");

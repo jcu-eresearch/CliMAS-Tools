@@ -177,6 +177,20 @@ CREATE TABLE files_data
 GRANT ALL PRIVILEGES ON files_data TO ap02;
 GRANT USAGE, SELECT ON SEQUENCE files_data_id_seq TO ap02;
 
+// Build species occurence_count lookup
+create table species_occurence as  select species_id,count(*) from occurrences group by species_id;
+
+GRANT ALL PRIVILEGES ON species_occurence TO ap02;
+
+
+
+
+// get species name for a spoecies that has occurances
+select s.id as species_id ,s.scientific_name,s.common_name,sp.count as occurance_count from species s, species_occurence sp  where s.id=sp.species_id and sp.count > 0 and scientific_name like '%Lethrinus lentjan%'
+
+
+- Query for get Spewcies list where they have Occurances
+select s.id as species_id ,s.scientific_name,s.common_name,sp.count as occurance_count from species s, species_occurence sp  where s.id=sp.species_id and sp.count > 0
 
 
  */

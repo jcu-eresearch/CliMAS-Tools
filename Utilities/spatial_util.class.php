@@ -108,13 +108,14 @@ class spatial_util
         $sd_raw = array_util::FirstElementsThatContain($result, "STATISTICS_STDDEV");
         if (is_null($sd_raw)) return null;
         $sd = trim(util::fromLastChar($sd_raw,"="));
+        
+        $out = array();
+        $out[self::$STAT_MINIMUM] = $min;
+        $out[self::$STAT_MAXIMUM] = $max;
+        $out[self::$STAT_MEAN]    = $mean;
+        $out[self::$STAT_STDDEV]  = $sd;
 
-        $result[self::$STAT_MINIMUM] = $min;
-        $result[self::$STAT_MAXIMUM] = $max;
-        $result[self::$STAT_MEAN]    = $mean;
-        $result[self::$STAT_STDDEV]  = $sd;
-
-        return $result;
+        return $out;
 
     }
 
@@ -142,12 +143,13 @@ class spatial_util
 
         $key_values = array_util::explode(explode(",",$stats_line_raw), "=");
 
-        $result[self::$STAT_MINIMUM] = array_util::Value($key_values, "Minimum", null);
-        $result[self::$STAT_MAXIMUM] = array_util::Value($key_values, "Maximum", null);
-        $result[self::$STAT_MEAN]    = array_util::Value($key_values, "Mean"   , null);
-        $result[self::$STAT_STDDEV]  = array_util::Value($key_values, "StdDev" , null);
-
-        return $result;
+        $out = array();  //   just stats
+        $out[self::$STAT_MINIMUM] = array_util::Value($key_values, "Minimum", null);
+        $out[self::$STAT_MAXIMUM] = array_util::Value($key_values, "Maximum", null);
+        $out[self::$STAT_MEAN]    = array_util::Value($key_values, "Mean"   , null);
+        $out[self::$STAT_STDDEV]  = array_util::Value($key_values, "StdDev" , null);
+        
+        return $out;
 
     }
 

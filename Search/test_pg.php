@@ -16,41 +16,41 @@ echo "\n";
 
 
 
-//echo "START TEST:  db_access with PG_ functions\n";
-//echo "==========================================================\n";
-//$ok = db_access(false);
-//if (!$ok)   
-//{
-//    echo "FAILED::  \n";
-//    echo "FAILED:: db_access with PG_ functions \n";
-//    echo "FAILED::  \n";
-//    exit(1);
-//}
-//
-//
-//
-//echo "START TEST:  db_access with Command Line calls\n";
-//echo "==========================================================\n";
-//$ok = db_access(true);
-//if (!$ok)   
-//{
-//    echo "FAILED::  \n";
-//    echo "FAILED:: db_access With Command Line calls\n";
-//    echo "FAILED::  \n";
-//    exit(1);
-//}
-//
-//
-//
-//echo "START TEST:  fileStorage with PG_ functions \n";
-//echo "==========================================================\n";
-//$ok = fileStorage(false);
-//if (!$ok)
-//{
-//    echo "FAILED:: fileStorage with PG_ functions \n";
-//    exit(1);
-//}
-//
+echo "START TEST:  db_access with PG_ functions\n";
+echo "==========================================================\n";
+$ok = db_access(false);
+if (!$ok)   
+{
+    echo "FAILED::  \n";
+    echo "FAILED:: db_access with PG_ functions \n";
+    echo "FAILED::  \n";
+    exit(1);
+}
+
+
+
+echo "START TEST:  db_access with Command Line calls\n";
+echo "==========================================================\n";
+$ok = db_access(true);
+if (!$ok)   
+{
+    echo "FAILED::  \n";
+    echo "FAILED:: db_access With Command Line calls\n";
+    echo "FAILED::  \n";
+    exit(1);
+}
+
+
+
+echo "START TEST:  fileStorage with PG_ functions \n";
+echo "==========================================================\n";
+$ok = fileStorage(false);
+if (!$ok)
+{
+    echo "FAILED:: fileStorage with PG_ functions \n";
+    exit(1);
+}
+
 
 echo "START TEST:  fileStorage with Command Line \n";
 echo "==========================================================\n";
@@ -60,15 +60,12 @@ if (!$ok)
     echo "FAILED:: fileStorage with Command Line \n";
     exit(1);
 }
- 
-
 
 //fileStream();
 
-
-
 function db_access($viaCommandLine)
 {
+    
     
     if (!$viaCommandLine)
         echo "TESTING:: db_access with native 'pg_' functions\n";
@@ -213,11 +210,6 @@ function fileStorage($viaCommandLine)
     
     echo "\n via Command Line {$p->ViaCommandLine()}\n" ;
     
-    $filesize = filesize($filename);
-    
-    echo "\nFILE SIZE:: {$filesize}\n" ;
-    
-    
     echo "INSERT FILE:: \n";
     echo "---------------------------------------------------------------------------------------------\n";
     echo "EXPECTED:: File ID - Unique value   e.g. 4ff926ac5a8169.41673632\n";
@@ -237,13 +229,11 @@ function fileStorage($viaCommandLine)
     echo "READ FILE and write to filesystem:: \n";
     echo "---------------------------------------------------------------------------------------------\n";
     echo "EXPECTED:: get file from databse with id {$file_id}\n";
-    echo "EXPECTED:: and result size =  {$filesize}\n";
     
     $save_to_filename = configuration::SourceDataFolder()."aus_elevation_new.tif";    
-    echo "EXPECTED:: new file to exist with same size {$save_to_filename}\n";
+    echo "EXPECTED:: new file to exist with same number of bytes read into to database {$save_to_filename}\n";
     
     file::Delete($save_to_filename);
-    
     
     $filename_back = $p->ReadFile2Filesystem($file_id,$save_to_filename) ;    
 
@@ -252,17 +242,18 @@ function fileStorage($viaCommandLine)
         echo "FAILED:: filename_back  is NULL \n";
         return false;        
     }
-
     
     if (!file_exists($filename_back))
     {
         echo "FAILED:: to file from {$file_id} to $filename_back  does not exist\n";
         return false;        
     }
-    
-    echo "ACTUAL:: Filesize of {$filename_back} = ".  filesize($filename_back)." ?= {$filesize}\n";
 
-    if (filesize($filename_back) != $filesize)
+    $info = $p->FileInfo($file_id);
+    
+    echo "ACTUAL:: Filesize of {$filename_back} = ".  filesize($filename_back)." ?= {$info['total_filesize']}\n";
+
+    if (filesize($filename_back) != $info['total_filesize'])
     {
         echo "FAILED:: writing proper sized file to  $filename_back \n";
         return false;        

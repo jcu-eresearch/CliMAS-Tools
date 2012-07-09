@@ -103,10 +103,17 @@ class file {
     * @param $pathname
     * @return mixed
     */
-    public static function mkdir_safe($pathname)
+    public static function mkdir_safe($pathname,$replace_space = null)
     {
+        if (!is_null($replace_space))
+            $pathname = str_replace (" ", $replace_space, $pathname);
+        
         if (is_dir($pathname)) return; // if it already exists then don't do it
         @mkdir($pathname,0777,true);
+        
+        if (!is_dir($pathname)) return null;
+        
+        return $pathname;
     }
 
 
@@ -558,6 +565,8 @@ class file {
 
     public static function lineCount($filename)
     {
+        if (!file_exists($filename)) return null;
+        
         $result = trim(util::leftStr(trim(exec("wc '$filename'")), ' ')) ;
         return $result;
     }

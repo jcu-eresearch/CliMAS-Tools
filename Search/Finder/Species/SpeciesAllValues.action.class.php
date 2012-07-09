@@ -23,16 +23,11 @@ class SpeciesAllValues extends Action {
 
     public function Execute()
     {
-
         
         $descs = new Descriptions();
         $descs instanceof Descriptions;
         
-        
-        $sp = new SpeciesData();
-        $speciesSearchResult = $sp->speciesList("Mangrove");
-        unset($sp);
-        
+        $speciesSearchResult = SpeciesData::SpeciesList("");
         
         foreach ($speciesSearchResult as $index => $row) 
         {

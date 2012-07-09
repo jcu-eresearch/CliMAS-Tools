@@ -26,14 +26,10 @@ class PGDB extends Object {
 
     public function connect()
     {
-        
-        if ($this->ViaCommandLine())
-        {
-            // check to see if we can connect with pg_ functions if not set to make sure we use command line
-            
-            if (!function_exists('pg_connect'))  
+
+        if (!function_exists('pg_connect'))  
                 $this->ViaCommandLine(true); 
-        }
+        
             
         if (!$this->ViaCommandLine())
         {
@@ -133,7 +129,7 @@ class PGDB extends Object {
         //
         $sql = str_replace('"', '\"', $sql);
 
-        echo "\n\nQuery By Command Line \n{$sql}\n";
+        //echo "\n\nQuery By Command Line \n{$sql}\n";
         
         
         $resultFilename = file::random_filename();
@@ -146,7 +142,7 @@ class PGDB extends Object {
         $cmd .= "export PGPASSWORD=".ToolsDataConfiguration::Species_DB_Password()." ; ";
         $cmd .= 'psql  --quiet --no-align -c "'.$sql.'" --output '.$resultFilename;
         
-        echo "resultFilename = $resultFilename\n";
+        //echo "resultFilename = $resultFilename\n";
         
         exec($cmd);
         
@@ -276,7 +272,7 @@ class PGDB extends Object {
         $cmd .= "export PGPASSWORD=".ToolsDataConfiguration::Species_DB_Password()." ; ";
         $cmd .= "psql --no-align -c \"$sql\" ";
         
-        echo "$cmd\n";
+        //echo "$cmd\n";
         
         $result = array();
         $ins = exec($cmd,$result);
@@ -330,6 +326,38 @@ class PGDB extends Object {
     }
 
     
+    /**
+     * 
+     * Read File info for a File ID 
+     * 
+     * Array Keys
+     * 
+     * file_unique_id    
+        mimetype         
+        file_description 
+        category         
+        totalparts       
+        total_filesize   
+     * 
+     */
+    public function FileInfo($file_unique_id) 
+    {
+        
+        $q = "select * from {$this->FilesTableName()} where file_unique_id = '{$file_unique_id}' limit 1";
+        $result = $this->query($q);
+        
+        $first = util::first_element($result);
+        
+        unset($first['data']);    // this is incomplete
+        unset($first['id']);      // is the database id of the data row and is not useful
+        unset($first['partnum']); // partnum not needed
+        
+        
+        return $first;
+        
+    }
+    
+    
     public function InsertFile($srcFilename,$description,$category = 'file') 
     {
         
@@ -347,9 +375,14 @@ class PGDB extends Object {
         $partnum = 0;
         $handle = fopen($srcFilename, "rb");
         
+        
+        $total_read = 0;
+        
         while (!feof($handle)) {
 
             $contents = fread($handle, $chunck_size);
+        
+            $total_read += strlen($contents);
             
             $assoc_array = array();
             $assoc_array['file_unique_id'] = $file_unique_id;
@@ -371,6 +404,8 @@ class PGDB extends Object {
             $partnum++;
             
         }        
+        
+        $this->update("update {$this->FilesTableName()} set total_filesize = {$total_read} where file_unique_id = '{$file_unique_id}'");
         
         
         return $file_unique_id;
@@ -394,16 +429,19 @@ class PGDB extends Object {
         $partnum = 0;
         $handle = fopen($srcFilename, "rb");
         
-        
+        $total_read = 0;
         while (!feof($handle)) {
 
             $contents = fread($handle, $chunck_size);
+            
+            $total_read += strlen($contents);
+            
             $data = base64_encode($contents);
 
             $sql  = "insert into {$this->FilesTableName()} ";
             $sql .=  "(file_unique_id,mimetype,partnum,file_description,totalparts,total_filesize,data,category)";
             $sql .=  " values ";
-            $sql .=  "('{$file_unique_id}','{$mimetype}',{$partnum},'{$description}',{$totalparts},{$total_filesize},'{$data}','{$category}')";
+            $sql .=  "('{$file_unique_id}','{$mimetype}',{$partnum},'{$description}',{$totalparts},$total_filesize,'{$data}','{$category}')";
             $insertResult = $this->insert($sql);    
             
             // echo "insertResult = $insertResult\n";
@@ -414,10 +452,9 @@ class PGDB extends Object {
             }
             
             $partnum++;
-
-            
-            
         }        
+
+        //$this->update("update {$this->FilesTableName()} set total_filesize = {$total_read} where file_unique_id = '{$file_unique_id}'");
         
         
         return $file_unique_id;
@@ -441,7 +478,7 @@ class PGDB extends Object {
         
         $sql = "select data from {$this->FilesTableName()} where file_unique_id = '{$file_unique_id}' order by partnum;";
         
-        echo "Read File here  {$sql} \n";
+        //echo "Read File here  {$sql} \n";
         
         $query_result = $this->query($sql);
         
@@ -475,11 +512,15 @@ class PGDB extends Object {
         
         $result_file =  $this->ReadFile($file_unique_id);
         
-        echo "strlen(result_file) = ".strlen($result_file)."\n";
-        
         if (is_null($result_file)) return null;
         
-        file_put_contents($dest_filename, $result_file);
+        $info = $this->FileInfo($file_unique_id);
+        
+        $fw = fopen($dest_filename,'wb');
+        fwrite($fw,$result_file,$info['total_filesize']);
+        fclose($fw);
+        
+        //file_put_contents($dest_filename, $result_file);
 
         if (!file_exists($dest_filename)) 
         {
@@ -580,11 +621,11 @@ class PGDB extends Object {
         $command_id = $cmd->ID();
         
         // check to see if we already have it.
-        $count = $db->Count($this->ActionsTableName(), "queueid = '{$this->QueueID()}' and objectid = '{ $command_id}'");
+        $count = $db->Count($db->ActionsTableName(), "queueid = '{$db->QueueID()}' and objectid = '{$command_id}'");
         if ($count > 0)
         {
             // update 
-            $q = "update {$this->ActionsTableName()} set data = '{$data}',status='{$cmd->Status()}',execution_flag='{$cmd->ExecutionFlag()}' where objectid = '{$command_id }';"; 
+            $q = "update {$db->ActionsTableName()} set data = '{$data}',status='{$cmd->Status()}',execution_flag='{$cmd->ExecutionFlag()}' where objectid = '{$command_id }';"; 
             
             $updateCount = $db->update($q);    
             if ($updateCount != 1 ) return null;
@@ -593,7 +634,7 @@ class PGDB extends Object {
         else
         {
             // insert
-            $q = "INSERT INTO {$this->ActionsTableName()} (queueid,objectid, data,status,execution_flag) VALUES ('{$this->QueueID()}','{ $command_id}', '{$data}','{$cmd->Status()}','{$cmd->ExecutionFlag()}');"; 
+            $q = "INSERT INTO {$db->ActionsTableName()} (queueid,objectid, data,status,execution_flag) VALUES ('{$db->QueueID()}','{$command_id}', '{$data}','{$cmd->Status()}','{$cmd->ExecutionFlag()}');"; 
             if (is_null($db->insert($q))) return null; 
             
         }
@@ -612,9 +653,9 @@ class PGDB extends Object {
         
         $id = ($src instanceof CommandAction) ? $id->ID() : $src;
         
-        $q = "select objectid,status from {$this->ActionsTableName()} where queueid='{$this->QueueID()}' and objectid = '{$id}'"; 
-        
         $db = new PGDB();
+
+        $q = "select objectid,status from {$db->ActionsTableName()} where queueid='{$db->QueueID()}' and objectid = '{$id}'"; 
         
         $result = $db->query($q,'objectid');
         if (count($result) <= 0 ) return null;
@@ -632,9 +673,15 @@ class PGDB extends Object {
 
         $db = new PGDB();
         
-        $q = "select data from {$this->ActionsTableName()} where queueid='{$this->QueueID()}' and objectid = '{$commandID}';";
+        $q = "select data from {$db->ActionsTableName()} where queueid='{$db->QueueID()}' and objectid = '{$commandID}';";
+        
         $result = $db->query($q,'objectid');
-        if (count($result) <= 0 ) return null;
+        
+        
+        if (count($result) <= 0 ) 
+        {
+            return null;
+        }
         
         $first_row = util::first_element($result);
         
@@ -664,7 +711,7 @@ class PGDB extends Object {
         $qid = configuration::CommandQueueID();
         
         $db = new PGDB();
-        $num_removed = $db->update("delete from {$this->ActionsTableName()} where queueid='{$this->QueueID()}';");
+        $num_removed = $db->update("delete from {$db->ActionsTableName()} where queueid='{$db->QueueID()}';");
         unset($db);
         
         return  $num_removed;
@@ -676,7 +723,7 @@ class PGDB extends Object {
     {
 
         $db = new PGDB();
-        $num_removed = $db->update("delete from {$this->ActionsTableName()} where queueid='{$this->QueueID()}' and objectid = '{$commandID}' ;");
+        $num_removed = $db->update("delete from {$db->ActionsTableName()} where queueid='{$db->QueueID()}' and objectid = '{$commandID}' ;");
         unset($db);
         
         return  $num_removed;
@@ -687,7 +734,7 @@ class PGDB extends Object {
     public static function CommandActionListIDs() 
     {
         $db = new PGDB();
-        $result = $db->query("select objectid from {$this->ActionsTableName()} where queueid='{$this->QueueID()}';",'objectid');
+        $result = $db->query("select objectid from {$db->ActionsTableName()} where queueid='{$db->QueueID()}';",'objectid');
         if (count($result) <= 0 ) return null;
         
         unset($db);
@@ -701,15 +748,15 @@ class PGDB extends Object {
     {
         
         $db = new PGDB();
-        $q = "select objectid,execution_flag from {$this->ActionsTableName()} where queueid='{$this->QueueID()}' and objectid = '{$commandID}'"; 
+        $q = "select objectid,execution_flag from {$db->ActionsTableName()} where queueid='{$db->QueueID()}' and objectid = '{$commandID}'"; 
         $result = $db->query($q,'objectid');
         if (count($result) <= 0 ) return null;
         
         $first_row = util::first_element($result);
         
-        $status = array_util::Value($first_row, 'execution_flag', null);
+        $value = array_util::Value($first_row, 'execution_flag', null);
         
-        return $status;
+        return $value;
         
     }
     

@@ -81,7 +81,7 @@ $times instanceof Descriptions;
 
 <?php 
 
-echo htmlutil::AsJavaScriptObjectArray(SpeciesData::speciesList("Kingfisher"),"full_name","scientific_name","availableSpecies");    
+echo htmlutil::AsJavaScriptObjectArray(SpeciesData::speciesList(),"full_name","scientific_name","availableSpecies");    
 
 ?>
 
@@ -121,7 +121,7 @@ function setTestData()
     selectSelectableElement(jQuery("#selectable_time"), $("#2085"),false);
     
 
-    var value = "Artamus insignis";
+    var value = "Lethrinus lentjan";
     var valueID = value.replace(" ","_");
     var li = $("<li id=\""+valueID+"\"  class=\"ui-widget-content\" >"+value+"</li>");
     $('#selectable_species').append(li);

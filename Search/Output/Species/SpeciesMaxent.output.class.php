@@ -108,7 +108,7 @@ class SpeciesMaxentOutput extends Output
             
             $r .= "\n".'<tr>';
             $r .= "\n".'<td colspan="'.count($combintations).'">';
-            $r .= SpeciesData::SpeciesQuickInformation($speciesID);
+            $r .= SpeciesData::SpeciesQuickInformation(str_replace("_"," ",$speciesID));
             $r .= "<br>".$fe;
             $r .= '</td>';
             $r .= "\n".'</tr>';
