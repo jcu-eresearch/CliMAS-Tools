@@ -91,7 +91,7 @@ class MapServerLayers extends Object {
 
                 if (is_null($L))
                 {
-                    echo "<br>Failed to load layer filename [{$src}]";
+                  //  echo "<br>Failed to load layer filename [{$src}]";
                     return null;
                 }
 
@@ -119,14 +119,14 @@ class MapServerLayers extends Object {
 
         if (!file_exists($filename))
         {
-            echo "<br>File does not exist Failed to load layer filename [{$filename}] "; //**TODO:: logg
+           // echo "<br>File does not exist Failed to load layer filename [{$filename}] "; //**TODO:: logg
             return null;
         }
 
         $L = MapServerLayer::create($this, $filename,$attribute,$SpatialDatatype);
         if (is_null($L))
         {
-            echo "<br>Failed to load layer from Object " .$src;
+            //echo "<br>Failed to load layer from Object " .$src;
             return null;
         }
 

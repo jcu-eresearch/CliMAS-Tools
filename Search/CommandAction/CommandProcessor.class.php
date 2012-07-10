@@ -47,11 +47,16 @@ class CommandProcessor
     public static function ProcessQueue()
     {
         
-        echo "Reading queue for ".configuration::CommandQueueID()."\n";
+       echo "Reading queue for ".configuration::CommandQueueID()."\n";
         
-        for ($index = 1; $index <= 20; $index++)
+        for ($index = 1; $index <= 200; $index++)
         {
-            foreach (PGDB::CommandActionListIDs() as $commandID) 
+            
+            $commands = PGDB::CommandActionListIDs();
+            
+            if (is_null($commands))  continue;
+            
+            foreach ($commands as $commandID) 
                 self::processSingleQueueItem($commandID);
             
             sleep(3);
@@ -79,7 +84,7 @@ class CommandProcessor
             return; // todo:: Log as exception /??
         }
 
-         echo "\n".$command->ID()."  == ".$command->ExecutionFlag()." .. ".$command->Status();
+        // echo "\n".$command->ID()."  == ".$command->ExecutionFlag()." .. ".$command->Status();
 
         if (!($command instanceof CommandAction))
         {
@@ -304,9 +309,9 @@ class CommandProcessor
     {
         $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub '{$scriptFilename}'";
         
-        echo "Should do : $cmd\n";
+      //  echo "Should do : $cmd\n";
         
-        //$qsub_id = exec($cmd);  // will do QSUB exec and then get the return with the QSUB ID
+        $qsub_id = exec($cmd);  // will do QSUB exec and then get the return with the QSUB ID
         
         $firstBit = util::leftStr($qsub_id, ".");
         

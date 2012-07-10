@@ -181,7 +181,7 @@ class FinderFactory {
         $A = self::Action($actionClassname);
         if (is_null($A))
         {
-            echo "FAILED: Execute {$actionClassname}";  //TODO: logg
+            //echo "FAILED: Execute {$actionClassname}";  //TODO: logg
             return null;   // Return Null
         }
 
@@ -204,7 +204,7 @@ class FinderFactory {
         $A = self::Execute($actionClassname);
         if (is_null($A))
         {
-            echo "FAILED: Result {$actionClassname}";  //TODO: logg
+           // echo "FAILED: Result {$actionClassname}";  //TODO: logg
             return null;   // Return Null
         }
 

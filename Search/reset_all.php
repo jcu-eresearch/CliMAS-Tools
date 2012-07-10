@@ -36,6 +36,14 @@ $cmd = "rm -r " . configuration::FilesDownloadFolder()."*";
 echo "Remove all TEMP data $cmd \n";
 if (!is_null($doit)) exec($cmd);
 
+$cmd = "rm -r /home/jc166922/4*.e4*";
+echo "Remove from home folder $cmd \n";
+if (!is_null($doit)) exec($cmd);
+
+$cmd = "rm -r /home/jc166922/4*.o4*";
+echo "Remove from home folder $cmd \n";
+if (!is_null($doit)) exec($cmd);
+
 
 unset($db);
 echo "\n";

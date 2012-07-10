@@ -16,7 +16,9 @@ if (stripos( $hostname, ".default.domain") !== FALSE)
         
     $conf[Parameter::$TempFolder]    = "/scratch/jc166922/tdh2/tmp/";
         
-    $conf[Parameter::$APPLICATION_FOLDER]    = "/scratch/jc166922/tdh2/tdhtools/";
+    $conf[Parameter::$APPLICATION_FOLDER]        = "/scratch/jc166922/tdh2/tdhtools/";
+    $conf[Parameter::$APPLICATION_FOLDER_WEB]    = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/tdhtools/";    
+    
     $conf[Parameter::$UTILITIES_CLASSES]     = "/scratch/jc166922/tdh2/tdhtools/Utilities/includes.php";
     $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/scratch/jc166922/tdh2/output/";
     $conf[Parameter::$RESOURCES_FOLDER]      = "/scratch/jc166922/tdh2/tdhtools/Resources/";

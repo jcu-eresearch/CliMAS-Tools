@@ -4,8 +4,10 @@ include_once dirname(__FILE__).'/includes.php';
 
 $result = array();
 
+
 foreach ($_POST as $key => $value) 
     Session::add($key, $value);
+
 
 $action = array_util::Value($_POST, "cmdaction", null);
 
@@ -24,6 +26,7 @@ if ( !($cmd instanceof CommandAction) )
 $initResult = $cmd->initialise($_POST);
 
 
+
 if ($initResult instanceof Exception)
 {
     $result['msg'] = "ERROR:: Action is did not initalised {$action}";
@@ -37,15 +40,24 @@ if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE)
     
     $O = OutputFactory::Find($cmd);
     
-    $result['head'] = $O->Head();
-    $result['title'] = $O->Title();
-    $result['content'] = $O->Content();
+    if ($O instanceof Output)
+    {
+        $result['content'] = $O->Content();
+        $result['status'] = $cmd->Status();    
+        
+    }
+    else
+    {
+        $result['content'] = $O;
+    }
     
-    $result['status'] = $cmd->Status();
+    $result['ExecutionFlag'] = $cmd->ExecutionFlag();    
     
     echo json_encode($result);
     return;   // will stop here and return if we have all results requested.
 }
+
+
 
 
 if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_READY)
@@ -77,19 +89,13 @@ if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_READY)
         $result['msg'] = "Ready to go";
     }
     
+    $result['ExecutionFlag'] = $cmd->ExecutionFlag();    
     
     echo json_encode($result);
     return;  // queue the command and then return any results re already have and 
 }
 
-
-    $result['redy?'] = "after ready ....";
-    echo json_encode($result);
-    return;
-
-
-
-$result['msg'] = "somtjing else {$action}";
+$result['msg'] = "somthing else {$action}";
 
 echo json_encode($result);
 

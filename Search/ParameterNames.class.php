@@ -5,7 +5,10 @@ class Parameter
     public static $CONFIGURATION_SOURCE = "CONFIGURATION_SOURCE";
 
     public static $APPLICATION_NAME     = "APPLICATION_NAME";
-    public static $APPLICATION_FOLDER   = "APPLICATION_FOLDER";
+
+    public static $APPLICATION_FOLDER     = "APPLICATION_FOLDER";
+    public static $APPLICATION_FOLDER_WEB = "APPLICATION_FOLDER_WEB";
+    
     public static $UTILITIES_CLASSES    = "UTILITIES_CLASSES";
     public static $DOWNLOAD_FOLDER_WEB  = "DOWNLOAD_FOLDER_WEB";
     public static $DOWNLOAD_FOLDER_REAL = "DOWNLOAD_FOLDER_REAL";

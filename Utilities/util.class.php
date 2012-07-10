@@ -55,11 +55,11 @@ class util {
 
         for ($index = 0; $index <= $seconds; $index++)
         {
-            echo "$index ";
+            //echo "$index ";
             sleep(1);
         }
 
-        echo "\n";
+       // echo "\n";
     }
 
     /**
@@ -114,7 +114,7 @@ class util {
         // go thru each cell value for each column if this column does not have the value then add it.,
 
         if (!is_array( util::first_element($src) ))
-        {
+        {//
             echo "##Error util::uniqueColumnNames  src does not look like a matrix\n";
             return NULL;
         }

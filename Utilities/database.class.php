@@ -32,16 +32,6 @@ class database
         $this->connect();
         
     }
-
-    public function connection_info() 
-    {
-        logger::text("DB = {$this->db}");
-        logger::text("host = {$this->host}");
-        logger::text("id = {$this->userID}");
-        logger::text("pass = {$this->pwd}");
-
-    }
-    
     
     public function DB()
     {
@@ -1055,7 +1045,7 @@ class database
 
             $cleanName = $this->cleanColumnName($rawColumnName,$numeric_prefix);
 
-            echo "$cleanName\n";
+            //echo "$cleanName\n";
             
             if ($cleanName == "") continue;
 

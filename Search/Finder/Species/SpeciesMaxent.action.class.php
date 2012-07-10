@@ -36,28 +36,14 @@ class SpeciesMaxent extends CommandAction {
         
         if (is_null($_post)) return null;
         
-        $this->msg(__METHOD__,"Data From post");
-        $this->msg(__METHOD__,$_post);
-        
-        
         $this->SpeciesCombinations(null);
         $this->ResultsComplete(false);
         $this->ScriptsToRun();
-        
         
                  $this->SpeciesIDs(array_util::Value($_post,'species',null,true));
         $this->EmissionScenarioIDs(array_util::Value($_post,'scenario',null,true));
             $this->ClimateModelIDs(array_util::Value($_post,'model',null,true));
                     $this->TimeIDs(array_util::Value($_post,'time',null,true));
-        
-
-        $this->msg(__METHOD__,"Data got from post");
-        $this->msg(__METHOD__,$this->SpeciesIDs());
-        $this->msg(__METHOD__,$this->EmissionScenarioIDs());
-        $this->msg(__METHOD__,$this->ClimateModelIDs());
-        $this->msg(__METHOD__,$this->TimeIDs());
-                    
-                    
                     
         // check here to see if we are missing some data
         
@@ -65,19 +51,10 @@ class SpeciesMaxent extends CommandAction {
         
         $this->buildCombinations(); 
         
-        $this->msg(__METHOD__,$this->SpeciesCombinations());
-        
-        
         $this->GetResults();  // then populates the combinations with anything that has already been done
-
-        $this->msg(__METHOD__,"After GetResults()");
-        $this->msg(__METHOD__,$this->SpeciesCombinations());
-        
         
         if ($this->ResultsComplete())
         {
-            $this->msg(__METHOD__,"Check ResultsComplete()");
-            
             $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);      // if we already have the dat - no reason to go to the server
             pgdb::CommandActionQueue($this);
             return $this->Result();   // we are done 
@@ -91,9 +68,9 @@ class SpeciesMaxent extends CommandAction {
     private function msg($from,$str)
     {
         
-        $fn = configuration::TempFolder()."/SpeciesMaxent_".$this->ID().".log";
+        $fn = "/tmp/SpeciesMaxent.log";
         
-        $logStr = "\n".str_repeat("-", 50);
+        $logStr = "\n".str_repeat("-", 50)."\n";
         
         if (is_array($str) || is_object($str))
         {
@@ -105,7 +82,7 @@ class SpeciesMaxent extends CommandAction {
         $logStr .= str_repeat("-", 50);
         
         
-        file_put_contents($fn,$logStr , FILE_APPEND);
+        //file_put_contents($fn,$logStr."\n" , FILE_APPEND);
         
         echo $logStr;
     }
@@ -120,6 +97,7 @@ class SpeciesMaxent extends CommandAction {
         $models    = explode(" ",$this->ClimateModelIDs());
         $times     = explode(" ",$this->TimeIDs());
         
+        $full_count =1;
         $result = array();
         foreach ($species as $speciesID)
         {
@@ -128,14 +106,17 @@ class SpeciesMaxent extends CommandAction {
                 foreach ($models  as $modelID)
                     foreach ($times as $timeID)
                     {
-                        $this->msg(__METHOD__,'build  Combo for  '. $this->clean_species_name($speciesID)."{$scenarioID}_{$modelID}_{$timeID}");
                         $result[$this->clean_species_name($speciesID)]["{$scenarioID}_{$modelID}_{$timeID}"] = null;
+                        $full_count++;
                     }
+                        
                         
                         
         }
 
         $this->SpeciesCombinations($result); // sets up the default empty result set
+        
+        $this->ResultsFullCountString($full_count);
         
         
     }
@@ -153,6 +134,8 @@ class SpeciesMaxent extends CommandAction {
      */
     public function Execute()
     {
+        
+        $this->QsubCollectionID(substr(uniqid(),0,10));
         
         // rebuild combos i we don't have them
         if (is_null($this->SpeciesCombinations()) ||  count($this->SpeciesCombinations()) == 0  )  $this->buildCombinations();
@@ -242,9 +225,9 @@ class SpeciesMaxent extends CommandAction {
         }
 
         $this->Status("All GRID jobs have been completed ");
+        $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
         $this->GetResults();
         pgdb::CommandActionQueue($this); // update the status and final results
-        
 
     }
     
@@ -257,7 +240,11 @@ class SpeciesMaxent extends CommandAction {
     private function qsubJobs()
     {
         $lines = array();
-        exec("qstat | grep {$this->ID()}",$lines);
+        exec("qstat | grep '{$this->QsubCollectionID()}'",$lines);
+        
+        $this->msg(__METHOD__,"qsubJobs");
+        $this->msg(__METHOD__,$lines);
+        
         return $lines;
     }
 
@@ -273,13 +260,19 @@ class SpeciesMaxent extends CommandAction {
     {
         
         $this->msg(__METHOD__,"start - keys for species are ");
-        $this->msg(__METHOD__,array_keys($this->SpeciesCombinations()));
         
-        foreach (array_keys($this->SpeciesCombinations()) as $speciesID) 
+        $speciesIDs = array_keys($this->SpeciesCombinations());
+
+        $this->msg(__METHOD__,"marker 1");
+
+        
+        $this->msg(__METHOD__,$speciesIDs);
+        
+        foreach ($speciesIDs as $speciesID) 
         {
             if (is_null($speciesID)) continue;
-            if ($speciesID == "" ) continue;
             
+            if ($speciesID == "" ) continue;
             
             $this->msg(__METHOD__,"species data folder = ".$this->speciesDataFolder($speciesID));
             
@@ -416,11 +409,10 @@ class SpeciesMaxent extends CommandAction {
     private function GetResults()
     {
         
-        $this->msg(__METHOD__,"Pre GetResults");
-
-        
         $result = array();
         $complete = true;
+        
+        $done_count = 0;
         foreach ($this->SpeciesCombinations() as $speciesID => $combinations) 
         {
             
@@ -430,17 +422,15 @@ class SpeciesMaxent extends CommandAction {
                 
                 // since the maxent log does not exiosts we want to 
                 // just copy the current results over
-                foreach ($combinations as $combination  => $file_id) 
+                foreach ($combinations as $combination => $file_id) 
                     $result[$this->clean_species_name($speciesID)][$combination] = $file_id;
                 
                 continue;      
                 // don't check outputs when we don't have a complete maxent log
             }
-                
             
             
-            
-            foreach ($combinations as $combination  => $file_id) 
+            foreach ($combinations as $combination => $file_id) 
             {
                 
                 $result[$this->clean_species_name($speciesID)][$combination] = $file_id; // copy current value
@@ -458,21 +448,21 @@ class SpeciesMaxent extends CommandAction {
                     
                 }
                 
+                if (!is_null($file_id)) $done_count++; // count what ahs been done
+                
             }
                         
         }
-
-        
-        $this->msg(__METHOD__,"post GetResults   current condition of SpeciesCombinations  (Result)complete = $complete");
-        
-        $this->msg(__METHOD__,$result);
-        
         
         $this->SpeciesCombinations($result);
 
         $this->Result($result);
         
         $this->ResultsComplete($complete);
+        
+        $this->ResultsDoneCountString($done_count);
+        
+        $this->Status("Items processed ".$this->ResultsDoneCountString()." of ".$this->ResultsFullCountString() );
         
     }
     
@@ -543,9 +533,9 @@ class SpeciesMaxent extends CommandAction {
         {
             if (!is_null($scriptname))
             {
-                $cmd = "qsub -N{$this->ID()} '{$scriptname}'";
+                $cmd = "qsub -N{$this->QsubCollectionID()} '{$scriptname}'";
                 
-                $this->msg(__METHOD__,"exewc $cmd");
+                $this->msg(__METHOD__,"exec $cmd");
                 
                 exec($cmd);  /// QSUB JOBS Submitted here
             }
@@ -624,15 +614,17 @@ class SpeciesMaxent extends CommandAction {
         
         foreach ($this->futureProjectionScripts($speciesID,$combinations) as $singleFutureScriptFilename) 
         {
-            $script .= "qsub -N{$this->ID()} '{$singleFutureScriptFilename}'";          // this is the line need to qsub this script
+            $script .= "\nqsub -N{$this->QsubCollectionID()} '{$singleFutureScriptFilename}'";          // this is the line need to qsub this script
         }
         
         $script = trim($script);
         if ($script == "") null;
         
         // TODO for testing uncomment this line
+        $script .=  "\n";
         $script .= "\n#rm {$maxent_single_species_script_filename}\n"; // remove itself after execution
-
+        $script .=  "\n";
+        
         
         $this->msg(__METHOD__,"Maxent Script is");
         $this->msg(__METHOD__,$script);
@@ -700,7 +692,7 @@ class SpeciesMaxent extends CommandAction {
     private function maxentScript($speciesID)
     {
         
-        if ($this->MaxentLogDone()) return ""; // if we already have the maxent data then don't run this part 
+        if ($this->MaxentLogDone($speciesID)) return ""; // if we already have the maxent data then don't run this part 
         
         $clean_species_name = str_replace(" ", "_", $speciesID);        
         
@@ -756,13 +748,15 @@ AAA;
     private function futureProjectionScripts($speciesID,$combinations)
     {
         
-        $this->GetResults(); // make sure we only create for what we don't have
+        //$this->GetResults(); // make sure we only create for what we don't have
         
         $future_projection_scripts = array();
         foreach ($combinations as $combination => $file_id)
         {
             if (!is_null($file_id)) continue;  // we already have this combination
 
+            $this->msg(__METHOD__," getting future_projection_scripts[$combination]");
+            
             $future_projection_scripts[$combination] = $this->singleCombinationScript($speciesID,$combination); // script that will be used to execute just a single combo
 
         }
@@ -794,13 +788,14 @@ AAA;
 
         $proj =     configuration::Maxent_Future_Projection_Data_folder().
                     configuration::osPathDelimiter().
-                    $combination.
+                    $combination;
         
 
         $future_projection_output = configuration::Maxent_Species_Data_folder().
                                     $clean_species_name.
                                     configuration::osPathDelimiter().
                                     configuration::Maxent_Species_Data_Output_Subfolder().
+                                    configuration::osPathDelimiter().
                                     $combination.
                                     ".asc";
 
@@ -811,8 +806,30 @@ AAA;
                             $this->ID().'_'.$combination.
                             configuration::CommandScriptsSuffix();
         
+        $script  = "#!/bin/tcsh"; 
+        $script .= "\n#combination              = {$combination}";
+        $script .= "\n#clean_species_name       = {$clean_species_name}";
+        $script .= "\n#script_folder            = {$script_folder}";
+        $script .= "\n#maxent                   = {$maxent}";
+        $script .= "\n#lambdas                  = {$lambdas}";
+        $script .= "\n#proj                     = {$proj}";
+        $script .= "\n#future_projection_output = {$future_projection_output}";
+        $script .= "\n#scriptFilename           = {$scriptFilename}";
+        $script .= "\n#";
+        
+        $script .= "\n#Hwere is this script running?";
+        $script .= "\nhostname --fqdn";
+        
+        $script .= "\n";
+        $script .= "\n#Java Version";
+        $script .= "\njava -version";
+        $script .= "\n";
 
-        $script .= "#!/bin/tcsh";
+        $script .= "\n";
+        $script .= "\n#Module Command";
+        $script .= "\nmodule -V";
+        $script .= "\n";
+        
         $script .= "\nmodule load java";
         $script .= "\ncd {$script_folder}";
 
@@ -840,6 +857,7 @@ AAA;
                     $this->clean_species_name($speciesID).
                     configuration::osPathDelimiter().
                     configuration::Maxent_Species_Data_Output_Subfolder().
+                    configuration::osPathDelimiter().
                     $this->clean_species_name($speciesID).
                     ".lambdas";
         
@@ -919,6 +937,20 @@ AAA;
         return $this->setProperty(func_get_arg(0));
     }
     
+
+    public function ResultsDoneCountString() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+
+    public function ResultsFullCountString() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
     
     public function AttachedCommand() 
     {
@@ -930,7 +962,7 @@ AAA;
     {
         
         $occurFilename =    configuration::Maxent_Species_Data_folder().
-                            $this->speciesDataFolder($speciesID).
+                            $this->clean_species_name($speciesID).
                             configuration::osPathDelimiter().
                             configuration::Maxent_Species_Data_Occurance_Filename();
         
@@ -944,7 +976,7 @@ AAA;
     {
         
         $species_data_folder =  configuration::Maxent_Species_Data_folder().
-                                $this->speciesDataFolder($speciesID).
+                                $this->clean_species_name($speciesID).
                                 configuration::osPathDelimiter();
         
         return $species_data_folder;

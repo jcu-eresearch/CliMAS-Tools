@@ -48,7 +48,38 @@ class SpeciesMaxentOutput extends Output
     public function Content()
     {
         
-       $result = OutputFactory::Find($this->speciesMaxent());
+        $result = "";
+        
+        foreach ($this->speciesMaxent()->Result() as $speciesID => $combinations) 
+        {
+            foreach ($combinations as $combination => $file_id) 
+            {
+                
+                if (!is_null($file_id))
+                {
+                    $image_url = configuration::ApplicationFolderWeb()."Search/file.php?id={$file_id}";
+                    $result .= '<div class="SpeciesRangeImageContainer" id="'.$speciesID.':'.$combination.'"><img class="SpeciesRangeImage" src="'.$image_url.'" /></div>';                    
+                }
+                else
+                {
+                    $image_url = configuration::IconSource()."wait.gif";                    
+                    $result .= '<div class="SpeciesRangeImageContainer" id="'.$speciesID.':'.$combination.'"><img class="SpeciesRangeImage" src="'.$image_url.'" /></div>';
+                }
+                
+            }
+                        
+        }
+        
+        $result .= '<script>';
+        $result .= '$(\'input[name^="'.$speciesID.'"]\').appendTo("display-tabs-1")';
+        $result .= '</script>';
+        
+        //$result .= '<hr style="clear: both; float: none;">';
+        
+        //$result .= "Date from server = ".datetimeutil::NowDateTime()."<br>";
+        
+        //$result .= print_r($this->speciesMaxent()->Result(),true);
+        
         
        return $result;
 

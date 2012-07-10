@@ -749,7 +749,7 @@ class array_util
     {
         if (is_null($array))
         {
-            echo "##ERROR: array_util::DisplayKeyedArray array passed is NULL\n";
+            //echo "##ERROR: array_util::DisplayKeyedArray array passed is NULL\n";
             return NULL;
         }
 

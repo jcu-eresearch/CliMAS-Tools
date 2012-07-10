@@ -75,11 +75,33 @@ $times instanceof Descriptions;
     
 }
 
+.SpeciesRangeImageContainer
+{
+    width: 240px;
+    height: 200px;
+    float: left;
+}
+
+.SpeciesRangeImage
+{
+    width: 100%;
+    height: 100%;
+    
+}
+
+
+#demo-frame > div.slide_display { padding: 10px !important; }
+
+
+
 
 </style>
 <script>
 
 <?php 
+
+echo htmlutil::AsJavaScriptSimpleVariable(CommandAction::$EXECUTION_FLAG_RUNNING,'EXECUTION_FLAG_RUNNING');
+echo htmlutil::AsJavaScriptSimpleVariable(CommandAction::$EXECUTION_FLAG_COMPLETE,'EXECUTION_FLAG_COMPLETE');
 
 echo htmlutil::AsJavaScriptObjectArray(SpeciesData::speciesList(),"full_name","scientific_name","availableSpecies");    
 
@@ -156,6 +178,19 @@ function postRun(data)
                 $('#remote-content').html(data[d]); // content passed back
             break;
 
+            // if job has completed then set button back so they can run another 
+            case "ExecutionFlag":
+                var execution_flag = data[d];
+                if (execution_flag == EXECUTION_FLAG_COMPLETE)
+                {
+                    $('#run_process').html('<span class="ui-button-text">RUN</span>');
+                    $('#run_process').button();
+                    $('#run_process').unbind('click');
+                    $('#run_process').click ( function() { startProcess(); return false;} );                        
+                }
+                
+            break;
+
             default:
                 disp += ", " + d + " = " + data[d];
         }        
@@ -192,15 +227,26 @@ function startProcess()
         scenario:  $('#scenario-result').html(),
         time:      $('#time-result').html()
     }
-            
+   
+   
+//        alert(jData.cmdaction + "\n" +
+//        jData.species + "\n" +
+//        jData.model + "\n" +
+//        jData.scenario + "\n" +
+//        jData.time);
+
             
    $.post("QueueCommandAjax.php", jData , function(data) { postRun(data); },"json");
+   
+   
 }
 
 function updateProcess()
 {
 
    var jData = { queueID: $('#remote-queue-id').html()}
+   
+  
    $.post("UpdateCommandAjax.php", jData , function(data) { postRun(data); },"json");
 }
 
@@ -312,6 +358,7 @@ $(document).ready(function(){
 		<li><a href="#tabs-3">Emission Scenario</a></li>
 		<li><a href="#tabs-4">Time</a></li>
 		<li><a href="#tabs-5">process</a></li>
+                <li><a href="#tabs-6">display</a></li>
 	</ul>
 	<div id="tabs-1">
         
@@ -392,10 +439,57 @@ $(document).ready(function(){
         
         
 	</div>
-    
-</div>
+	<div id="tabs-6">
+        
+            <script>
+            $(function() {
+                    $( "#display-tabs" ).tabs({
+                            select: function( event, ui ) {
+                                    $( "#display-slider" ).slider( "value", ui.index );
+                            }
+                    });
+                    $( "#display-slider" ).slider({
+                            min: 0,
+                            max: $( "#display-tabs" ).tabs( "length" ) - 1,
+                            slide: function( event, ui ) {
+                                    $( "#display-tabs" ).tabs( "select", ui.value );
+                            }
+                    });
+            });
+            </script>
 
-</div><!-- End demo -->    
+
+
+            <div class="slide-display">
+
+            <div id="display-slider" style="width:100px"></div>
+
+            <div id="display-tabs">
+                    <ul>
+                            <li><a href="#display-tabs-1">Nunc tincidunt</a></li>
+                            <li><a href="#display-tabs-2">Proin dolor</a></li>
+                            <li><a href="#display-tabs-3">Aenean lacinia</a></li>
+                    </ul>
+                    <div id="display-tabs-1">
+                            <p>Displ;ay Tab 1</p>
+                    </div>
+                    <div id="display-tabs-2">
+                            <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
+                    </div>
+                    <div id="display-tabs-3">
+                            <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
+                            <p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+                    </div>
+            </div>
+
+            </div><!-- End demo -->
+
+
+	</div>
+    
+        </div>
+
+</div>
     
     
 </div>

@@ -76,7 +76,7 @@ class PGDB extends Object {
         {
             if (function_exists('pg_close'))
             {
-                pg_close($this->DB);
+                @pg_close($this->DB);
                 unset($this->DB);
             }            
         }
@@ -828,24 +828,28 @@ class PGDB extends Object {
     public function GetModelledData($species,$scenario, $model, $time)
     {
         
+        $species = str_replace("_", " ", $species);
+        
         $sql  = "select file_id,data_category, maxent_threshold from {$this->ModelledDataTableName()}   ";
-        $sql .= "where species  = '{$species}'";
-        $sql .= "  and scenario = '{$scenario}'";
-        $sql .= "  and model    = '{$model}'";
-        $sql .= "  and time     = '{$time}'";
-        $sql .= "order by species,scenario,model,time";
+        $sql .= "where scientific_name = '{$species}' ";
+        $sql .= "  and scenario_name = '{$scenario}' ";
+        $sql .= "  and model_name    = '{$model}' ";
+        $sql .= "  and time_name     = '{$time}' ";
+        $sql .= "order by scientific_name,scenario_name,model_name,time_name";
         
-        $result = $this->query($sql,'file_id');
+        $result = $this->query($sql);
         
-        if (is_null($result)) return null;
+        if (is_null($result)) return "Result is null";
         
-        $file_ids = array_keys($result);
+        if (count($result) == 0) return null; 
         
-        if (count($file_ids) == 0) return null;
+        $first = util::first_element($result);
         
-        if (count($file_ids) == 1) return $file_ids[0];
+        $file_id = array_util::Value($first, 'file_id');
         
-        return $file_ids;
+        if (count($result) == 0) return "no column called $file_id";
+        
+        return $file_id;
         
     }
     
@@ -866,7 +870,7 @@ class PGDB extends Object {
         
         $q = "select id,scientific_name,common_name from species where scientific_name = '{$species_scientific_name}'";
 
-        echo "SpeciesOccurance ID q = $q\n";
+       // echo "SpeciesOccurance ID q = $q\n";
         
         $db_result = $db->query($q, 'scientific_name');
         
@@ -880,7 +884,7 @@ class PGDB extends Object {
 
         $q = "SELECT ST_X(location) AS longitude, ST_Y(location) AS latitude FROM occurrences where species_id = $databaseIDForSpecies";
         
-        echo "SpeciesOccurance data q = $q\n";
+      //  echo "SpeciesOccurance data q = $q\n";
         
         $speciesOccuranceResult = $db->query($q);
         

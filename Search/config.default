@@ -16,6 +16,9 @@ $conf[Parameter::$ExtensionDelimiter]  = ".";
 $conf[Parameter::$APPLICATION_NAME]      = "TDH-TOOLS";
 
 $conf[Parameter::$APPLICATION_FOLDER]    = "/app/";
+
+$conf[Parameter::$APPLICATION_FOLDER_WEB] = "http://localhost/app/";
+
 $conf[Parameter::$UTILITIES_CLASSES]     = "/app/Utilities/includes.php";
 
 $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://SomeServer/eresearch/TDH-Tools/output/";

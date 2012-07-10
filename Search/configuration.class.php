@@ -22,6 +22,12 @@ class configuration {
         return $conf[Parameter::$APPLICATION_FOLDER]; 
     }
 
+    public static function ApplicationFolderWeb()
+    {
+        global $conf;
+        return $conf[Parameter::$APPLICATION_FOLDER_WEB]; 
+    }
+
 
     public static function UtilityClasses() 
     {
