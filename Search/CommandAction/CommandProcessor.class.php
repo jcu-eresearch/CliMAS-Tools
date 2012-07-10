@@ -303,7 +303,10 @@ class CommandProcessor
     private static function executeScript($scriptFilename)
     {
         $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub '{$scriptFilename}'";
-        $qsub_id = exec($cmd);  // will do QSUB exec and then get the return with the QSUB ID
+        
+        echo "Should do : $cmd\n";
+        
+        //$qsub_id = exec($cmd);  // will do QSUB exec and then get the return with the QSUB ID
         
         $firstBit = util::leftStr($qsub_id, ".");
         

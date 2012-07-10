@@ -20,7 +20,6 @@ class SpeciesMaxent extends CommandAction {
         
     }
 
-
     public function __destruct() {
         parent::__destruct();
     }
@@ -37,66 +36,107 @@ class SpeciesMaxent extends CommandAction {
         
         if (is_null($_post)) return null;
         
-        $this->SpeciesIDs($_post['species']);
-        $this->EmissionScenarioIDs($_post['scenario']);
-        $this->ClimateModelIDs($_post['model']);
-        $this->TimeIDs($_post['time']);
+        $this->msg(__METHOD__,"Data From post");
+        $this->msg(__METHOD__,$_post);
         
-        $this->SpeciesIDs(trim($this->SpeciesIDs()));
-        $this->EmissionScenarioIDs(trim($this->EmissionScenarioIDs()));
-        $this->ClimateModelIDs(trim($this->ClimateModelIDs()));
-        $this->TimeIDs(trim($this->TimeIDs()));
+        
+        $this->SpeciesCombinations(null);
+        $this->ResultsComplete(false);
+        $this->ScriptsToRun();
+        
+        
+                 $this->SpeciesIDs(array_util::Value($_post,'species',null,true));
+        $this->EmissionScenarioIDs(array_util::Value($_post,'scenario',null,true));
+            $this->ClimateModelIDs(array_util::Value($_post,'model',null,true));
+                    $this->TimeIDs(array_util::Value($_post,'time',null,true));
+        
+
+        $this->msg(__METHOD__,"Data got from post");
+        $this->msg(__METHOD__,$this->SpeciesIDs());
+        $this->msg(__METHOD__,$this->EmissionScenarioIDs());
+        $this->msg(__METHOD__,$this->ClimateModelIDs());
+        $this->msg(__METHOD__,$this->TimeIDs());
+                    
+                    
+                    
+        // check here to see if we are missing some data
         
         $this->initialised(true);
         
-        // check to see if we really need to go to the GRID
-        $this->SpeciesCombinations($this->buildCombinations());
+        $this->buildCombinations(); 
         
-        $this->Result($this->progessResults());
-        $alreadyCompleted = $this->progressResultsComplete();
+        $this->msg(__METHOD__,$this->SpeciesCombinations());
+        
+        
+        $this->GetResults();  // then populates the combinations with anything that has already been done
 
-        // if we already have the dat - no reason to go to the server
-        if ($alreadyCompleted)
+        $this->msg(__METHOD__,"After GetResults()");
+        $this->msg(__METHOD__,$this->SpeciesCombinations());
+        
+        
+        if ($this->ResultsComplete())
         {
-            $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);    
+            $this->msg(__METHOD__,"Check ResultsComplete()");
+            
+            $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);      // if we already have the dat - no reason to go to the server
+            pgdb::CommandActionQueue($this);
+            return $this->Result();   // we are done 
         }
         
-        
-        return print_r($this->SpeciesCombinations(),true);
-        
+        return true;
         
     }
 
+    
+    private function msg($from,$str)
+    {
+        
+        $fn = configuration::TempFolder()."/SpeciesMaxent_".$this->ID().".log";
+        
+        $logStr = "\n".str_repeat("-", 50);
+        
+        if (is_array($str) || is_object($str))
+        {
+            $logStr .= datetimeutil::NowDateTime()." ".$from."\n".print_r($str,true)."\n";    
+        }
+        else
+            $logStr .= datetimeutil::NowDateTime()." ".$from." ".$str."\n";
+        
+        $logStr .= str_repeat("-", 50);
+        
+        
+        file_put_contents($fn,$logStr , FILE_APPEND);
+        
+        echo $logStr;
+    }
+    
+    /**
+     * 
+     */
     private function buildCombinations()
     {
         $species   = explode(" ",$this->SpeciesIDs());
         $scenarios = explode(" ",$this->EmissionScenarioIDs());
         $models    = explode(" ",$this->ClimateModelIDs());
         $times     = explode(" ",$this->TimeIDs());
-
-        $os_path = configuration::osPathDelimiter();
-        $os_dot = configuration::osExtensionDelimiter();
-        
         
         $result = array();
         foreach ($species as $speciesID)
         {
-            
-            $result[str_replace(" ", "_", $speciesID)] = array();
+            $result[$this->clean_species_name($speciesID)] = array();
             foreach ($scenarios as $scenarioID)
                 foreach ($models  as $modelID)
                     foreach ($times as $timeID)
                     {
-                
-                        $combo = "{$scenarioID}_{$modelID}_{$timeID}";
-                        $future_projection_output = str_replace(" ", "_", $speciesID)."{$os_path}".configuration::Maxent_Species_Data_Output_Subfolder()."{$os_path}{$combo}{$os_dot}asc";
-                        $result[str_replace(" ", "_", $speciesID)][$combo] = $future_projection_output;
-                        
+                        $this->msg(__METHOD__,'build  Combo for  '. $this->clean_species_name($speciesID)."{$scenarioID}_{$modelID}_{$timeID}");
+                        $result[$this->clean_species_name($speciesID)]["{$scenarioID}_{$modelID}_{$timeID}"] = null;
                     }
+                        
                         
         }
 
-        return $result;
+        $this->SpeciesCombinations($result); // sets up the default empty result set
+        
         
     }
     
@@ -104,7 +144,7 @@ class SpeciesMaxent extends CommandAction {
     
     /**
      * Runnning on GRID 
-     * - Look at initialiaseation variables 
+     * - Look at inititalisation variables 
      * - get Species occurances for any species that we don't have
      * - get current progress, if other process have already done parts of this call.
      * - launch other jobs thru QSUB that will be able to run paralell jobs for maxent i.e. Future Projections
@@ -115,70 +155,113 @@ class SpeciesMaxent extends CommandAction {
     {
         
         // rebuild combos i we don't have them
-        if (count($this->SpeciesCombinations()) == 0 ) $this->SpeciesCombinations($this->buildCombinations());
+        if (is_null($this->SpeciesCombinations()) ||  count($this->SpeciesCombinations()) == 0  )  $this->buildCombinations();
         
-        $this->getOccurances();
-        
-        $this->Result($this->progessResults());   // this will check to see if the outputs exists  
-        
-        pgdb::CommandActionQueue($this);
+        $this->GetResults();
 
-        //  make sure we have the occurance data for species   $this->SpeciesCombinations  gives use the list of species to look for
+        $this->msg(__METHOD__,"Check after GetResults()");
+        $this->msg(__METHOD__,$this->SpeciesCombinations());
         
-        // has this alredy been done ?
-        $alreadyCompleted = $this->progressResultsComplete();
         
-        if ($alreadyCompleted) 
+        /**
+         * check now to see if we have to  call the GRID
+         */
+        if ($this->ResultsComplete()) 
         {            
+            
+            $this->msg(__METHOD__,"we already have all so finiosh quick");
+            
             $this->Status("ALL DONE");
             $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
-            pgdb::CommandActionQueue($this);; // update the status and interim results            
+            pgdb::CommandActionQueue($this);; // update the status and interim results 
             return $this->Result();   // we are done 
         }
+
+        //
+        // We have to call the grid because at least one outyput is missing
+        //
+
+        $this->msg(__METHOD__,"Started Model Execution on GRID");
         
-        // check to see if we have the data they asked for ??
-        
-        
-        $this->Status('Started');
+        $this->Status("Started Model Execution on GRID");
         pgdb::CommandActionQueue($this);
         
-        $this->QsubCollectionID(substr(uniqid(),0,13)); // setup unique ID so we can track all jobs asscoiated with this call
         
-        $jobsCount = $this->ComputeSelectedSpecies(); // will start QSUB jobs if any 
+        $this->msg(__METHOD__,"pre getOccurances()");
         
-        if ($jobsCount == 0)
+        $this->getOccurances();
+
+        $this->msg(__METHOD__,"post getOccurances()");
+        
+        $this->msg(__METHOD__,"pre ComputeSelectedSpecies");
+        $this->ComputeSelectedSpecies();
+        $this->msg(__METHOD__,"post ComputeSelectedSpecies");
+        
+        $this->msg(__METHOD__,"Scripts to run");
+        $this->msg(__METHOD__,$this->ScriptsToRun());
+        
+        
+        
+        if (count($this->ScriptsToRun()) == 0)
         {
-            $this->Status("All data has already been computed");
-            $this->Result($this->progessResults());
+            $this->msg(__METHOD__,"No Scripts to run  shpuld be complete");
+            
+            $this->Status("Completed");  // or error ?
+            $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
+            $this->GetResults();
+            
+            $this->msg(__METHOD__,"Current Result");
+            $this->msg(__METHOD__,$this->Result());
+            
             pgdb::CommandActionQueue($this);   // update the status and last results
             return $this->Result();
-            
         }
         
         sleep(10); // wait for Qstat to catch up - before we start poling it
 
+        
+        $this->msg(__METHOD__,"Current QSTAT job list");
         $jobList = $this->qsubJobs(); // get current number of qsub jobs actually running now
 
-        $this->QsubJobCount(count($jobList));
-
+        $this->msg(__METHOD__,$jobList);
+        
         while (count($jobList) > 0)
         {
             // check on jobs and get their progress
 
+             $this->msg(__METHOD__,"Job list count = ".count($jobList));
+            
             $this->Status("Processing data on grid, waiting ".count($jobList)." jobs");
-            $this->Result($this->progessResults());
+            $this->GetResults();
             pgdb::CommandActionQueue($this); // update the status and interim results
 
+            
             sleep(10);
             $jobList = $this->qsubJobs();
-            $this->QsubJobCount(count($jobList));
             
         }
 
-        $this->Result($this->progessResults());
-        pgdb::CommandActionQueue($this); // update the status and interim results
+        $this->Status("All GRID jobs have been completed ");
+        $this->GetResults();
+        pgdb::CommandActionQueue($this); // update the status and final results
+        
 
     }
+    
+    
+    /**
+     * 
+     * @return array QSTAT output for all jobs with the same CollectionID 
+     * 
+     */
+    private function qsubJobs()
+    {
+        $lines = array();
+        exec("qstat | grep {$this->ID()}",$lines);
+        return $lines;
+    }
+
+    
     
     
     /**
@@ -189,23 +272,36 @@ class SpeciesMaxent extends CommandAction {
     private function getOccurances()
     {
         
+        $this->msg(__METHOD__,"start - keys for species are ");
+        $this->msg(__METHOD__,array_keys($this->SpeciesCombinations()));
+        
         foreach (array_keys($this->SpeciesCombinations()) as $speciesID) 
         {
             if (is_null($speciesID)) continue;
             if ($speciesID == "" ) continue;
             
-            $species_data_folder = file::mkdir_safe(configuration::Maxent_Species_Data_folder().str_replace(" ", "_", $speciesID));
             
-            $occurFilename =  $species_data_folder.configuration::osPathDelimiter().configuration::Maxent_Species_Data_Occurance_Filename();
-
-            if (!file_exists($occurFilename))  // check that this exists if not then - get data from Database 
-                $this->getOccurancesRecordsFor($speciesID,$occurFilename);
+            $this->msg(__METHOD__,"species data folder = ".$this->speciesDataFolder($speciesID));
+            
+            file::mkdir_safe($this->speciesDataFolder($speciesID));
+            
+            $getOccurResult = $this->getOccurancesRecordsFor($speciesID);
+            
+            $this->msg(__METHOD__,"getOccurResult");
+            $this->msg(__METHOD__,$getOccurResult);
+            
+            
+            if (is_null($getOccurResult)) return new Exception ("Error getting Occurence data for ".$this->clean_species_name($speciesID)."\n");
             
         }
         
-        // at this point all Occurrances files will exist (ie for each species)
+        // at this point all Occurrances files will exist (ie for each species)        
+        return true;
         
     }
+    
+    
+    
     
     
     /**
@@ -214,60 +310,92 @@ class SpeciesMaxent extends CommandAction {
      * @param type $occurFilename - Where to write datafrom database
      * @return boolean 
      */
-    private function getOccurancesRecordsFor($speciesID,$occurFilename)
+    private function getOccurancesRecordsFor($speciesID)
     {
+     
+        $occurFilename = $this->species_occurence_filename($speciesID);
+     
+        $this->msg(__METHOD__,"occurFilename = $occurFilename");
         
+        
+        // check the validity of the file - a "good" number of lines
         if (file_exists($occurFilename))
         {
             $line_count = file::lineCount($occurFilename);
-            if ($line_count <= self::$OCCURANCE_MINIMUM_LINES) file::Delete($occurFilename); // not big enough
+            
+            $this->msg(__METHOD__,"Occur file exists line_count = $line_count");
+            
+            if ($line_count <= self::$OCCURANCE_MINIMUM_LINES) 
+                file::Delete($occurFilename); // not big enough
         }
         
         
-        $ok = true;
         if (!file_exists($occurFilename))
         {
-                                                     // reverese the space replacement
-            $ok = $this->SpeciesOccuranceToFile($speciesID, $occurFilename); // get occuances from database
+                                      
+            $this->msg(__METHOD__,"Occur file does not exists  pre get SpeciesOccuranceToFile");
             
-            if (is_null($ok)) return null; // something  wrong
+            $file_result = $this->SpeciesOccuranceToFile($speciesID); // get occuances from database
+            
+            $this->msg(__METHOD__,"post SpeciesOccuranceToFile   file_result = $file_result");
+
+            
+            if (is_null($file_result)) return null; // something  wrong
             
             if (!file_exists($occurFilename)) return null; // make sure file exists
+
+
+            // check the validity of the file - a "good" number of lines
+            $lineCount = file::lineCount($occurFilename);
+            if ($lineCount < self::$OCCURANCE_MINIMUM_LINES) 
+            {
+                file::Delete($occurFilename);
+                return null;
+            }
+            
+            
+            $this->msg(__METHOD__," after gettoing amd checking line count lineCount = $lineCount");
+            
+            
         }
         
-        // sanity check agains the occurance file - probably has atleast 3 rows - ie header and data row and empty last row ?   
-        $lineCount = file::lineCount($occurFilename);
-        if ($lineCount < self::$OCCURANCE_MINIMUM_LINES) return FALSE;;
+        // sanity check again the occurance file - probably has atleast N rows - ie header and data row and empty last row ?   
+        if (!file_exists($occurFilename)) return null; // make sure file exists
+        
+        
+        return true;
         
     }
     
     
-    public function SpeciesOccuranceToFile($speciesID,$filename) 
+    public function SpeciesOccuranceToFile($speciesID) 
     {
         
-        $result = SpeciesData::SpeciesOccurance(str_replace("_", " ", $speciesID));
+        $occurFilename = $this->species_occurence_filename($speciesID);
         
-        if (count($result) <= self::$OCCURANCE_MINIMUM_LINES )
-        {
-            echo "SpeciesOccuranceToFile: too Few Results\n";
-            return null;
-        }
+        $this->msg(__METHOD__," occurFilename = $occurFilename");
+        
+        $result = pgdb::SpeciesOccurance(str_replace("_", " ", $speciesID));
+        
+        $this->msg(__METHOD__,"post pgdb::SpeciesOccurance");
+        $this->msg(__METHOD__,$result);
+        
+        if (count($result) < self::$OCCURANCE_MINIMUM_LINES) return null;
+        
         
         $file = '"SPPCODE","LATDEC","LONGDEC"'."\n";  // headers specific to Maxent JAR
         foreach ($result as $row) 
-            $file .= str_replace(" ","_",$speciesID).",".$row['latitude'].",".$row['longitude']."\n";
+            $file .= $this->clean_species_name($speciesID).",".$row['latitude'].",".$row['longitude']."\n";
         
         
-        file_put_contents($filename, $file);
+        file_put_contents($occurFilename, $file);
         
-        if (!file_exists($filename)) return null;
+        if (!file_exists($occurFilename)) return null;
         
-        
-        $lineCount = file::lineCount($filename);
-        if ($lineCount < self::$OCCURANCE_MINIMUM_LINES) return null;
+        if (file::lineCount($occurFilename) < self::$OCCURANCE_MINIMUM_LINES) return null;
 
-        echo "SpeciesOccuranceToFile: row count in $filename  ($lineCount)\n";
-
+        $this->msg(__METHOD__,"Check contents of occurFilename = $occurFilename");
+        
         
         unset($result);
         unset($file);
@@ -285,84 +413,70 @@ class SpeciesMaxent extends CommandAction {
      * 
      * @return type 
      */
-    private function progessResults()
+    private function GetResults()
     {
         
+        $this->msg(__METHOD__,"Pre GetResults");
+
+        
         $result = array();
+        $complete = true;
         foreach ($this->SpeciesCombinations() as $speciesID => $combinations) 
         {
             
-            // check for this species that the HTML file is greater than 0
-            // if not then 
-            //$result[$speciesID]["current"] = ""
-
-            $htmlFile = str_replace(" ","_",$speciesID).configuration::osPathDelimiter().configuration::Maxent_Species_Data_Output_Subfolder().configuration::osPathDelimiter().str_replace(" ","_",$speciesID).".html";
-            
-            $htmlFromMaxentLocal = configuration::Maxent_Species_Data_folder().$htmlFile;
-            
-            if (!file_exists($htmlFromMaxentLocal))
+            if (!$this->MaxentLogDone($speciesID)) 
             {
-                $result[$speciesID]['Current Condition'] = "Waiting to start computing ";
+                $complete = false;
+                
+                // since the maxent log does not exiosts we want to 
+                // just copy the current results over
+                foreach ($combinations as $combination  => $file_id) 
+                    $result[$this->clean_species_name($speciesID)][$combination] = $file_id;
+                
+                continue;      
+                // don't check outputs when we don't have a complete maxent log
             }
-            else
+                
+            
+            
+            
+            foreach ($combinations as $combination  => $file_id) 
             {
-                if (filesize($htmlFromMaxentLocal) == 0)
+                
+                $result[$this->clean_species_name($speciesID)][$combination] = $file_id; // copy current value
+                
+                if (is_null($file_id))
                 {
-                    $result[str_replace(" ","_",$speciesID)]['Current Condition'] = "Computing ..... ";
-                }
-                else
-                {
-                    $result[str_replace(" ","_",$speciesID)]['Current Condition'] = configuration::osPathDelimiter()."{$htmlFile}";
+                    list($scenarioID, $modelID, $timeID) = explode("_",$combination);    
+                    
+                    // we don't know if we have data for this comnination so go acheck
+                    $file_id = self::GetModelledData($speciesID, $scenarioID, $modelID, $timeID);
+                    
+                    $result[$this->clean_species_name($speciesID)][$combination] = $file_id;
+                    
+                    if (is_null($file_id)) $complete = false;
+                    
                 }
                 
             }
-            
-            
-            foreach ($combinations as $combination  => $outputFilename) 
-            {
-                // check to see if the file for this species combination exists
-                // on hpc check to see if the file exists 
-        
-                // $outputfile only points to the path that is the same on both sides
-                
-                $result[str_replace(" ","_",$speciesID)][$combination] = ""; // empty mean it does not exist
-                if (file_exists(configuration::Maxent_Species_Data_folder().$outputFilename))
-                {                    
-                    $result[str_replace(" ","_",$speciesID)][$combination] = configuration::osPathDelimiter().$outputFilename;
-                }
-            }
-            
+                        
         }
+
         
-        return $result;
+        $this->msg(__METHOD__,"post GetResults   current condition of SpeciesCombinations  (Result)complete = $complete");
+        
+        $this->msg(__METHOD__,$result);
+        
+        
+        $this->SpeciesCombinations($result);
+
+        $this->Result($result);
+        
+        $this->ResultsComplete($complete);
         
     }
     
 
-    /** 
-     * Test to see if we have a full complement ie all data we requested exists now.
-     * @return bool 
-     */
-    private function progressResultsComplete()
-    {
-        
-        foreach ($this->SpeciesCombinations() as $speciesID => $combinations) 
-        {
-            
-            if (!$this->maxentLogDone(str_replace(" ","_",$speciesID))) return false;
-            
-            foreach ($combinations as $comboFilename) 
-            {
-                if (!file_exists(configuration::Maxent_Species_Data_folder().$comboFilename))  // $localComboFilename
-                    return false;
-            
-            }
-            
-        }
-            
-        return true;
-        
-    }
     
     
     /**
@@ -372,14 +486,10 @@ class SpeciesMaxent extends CommandAction {
      * @param type $speciesID
      * @return boolean 
      */
-    private function maxentLogDone($speciesID)
+    private function MaxentLogDone($speciesID)
     {
         
-        $os_path = configuration::osPathDelimiter();
-        
-        $output_subfolder = configuration::Maxent_Species_Data_Output_Subfolder();
-        
-        $maxentLog = configuration::Maxent_Species_Data_folder().str_replace(" ","_",$speciesID)."{$os_path}{$output_subfolder}{$os_path}maxent.log";
+        $maxentLog = $this->maxentLogFilename($speciesID);
         
         if (!file_exists($maxentLog)) return false;
 
@@ -390,20 +500,21 @@ class SpeciesMaxent extends CommandAction {
         return false; // Maxtent did not finish OK
         
     }
-    
-    
-    /**
-     * 
-     * @return array QSTAT output for all jobs with the same CollectionID 
-     * 
-     */
-    private function qsubJobs()
-    {
-        $lines = array();
-        exec("qstat | grep {$this->QsubCollectionID()}",$lines);
-        return $lines;
-    }
 
+    private function maxentLogFilename($speciesID)
+    {
+        
+        $maxentLog =    configuration::Maxent_Species_Data_folder().
+                        $this->clean_species_name($speciesID).
+                        configuration::osPathDelimiter().
+                        configuration::Maxent_Species_Data_Output_Subfolder().
+                        configuration::osPathDelimiter().
+                        "maxent.log";
+        
+        return $maxentLog;
+        
+    }
+    
     
 
     /**
@@ -417,44 +528,63 @@ class SpeciesMaxent extends CommandAction {
     private  function ComputeSelectedSpecies()
     {
         
-        $jobCount = 0;
+        $this->msg(__METHOD__,"Pre ");
         
-        $scriptsToRun = $this->writeMaxentSpeciesProjectionScriptFile(); 
         
-        if (count($scriptsToRun) > 0)
+        $this->writeScriptFiles();  // array of script path names
+        
+        if (is_null($this->ScriptsToRun())) return null;
+        
+        $this->msg(__METHOD__,"ScriptsToRun()");
+        $this->msg(__METHOD__,$this->ScriptsToRun());
+        
+        
+        foreach ($this->ScriptsToRun() as $scriptname) 
         {
-            foreach ($scriptsToRun as $scriptname) 
-                exec("qsub -N{$this->QsubCollectionID()} '{$scriptname}'");  
-            
-            $jobCount = $scriptsToRun;
+            if (!is_null($scriptname))
+            {
+                $cmd = "qsub -N{$this->ID()} '{$scriptname}'";
+                
+                $this->msg(__METHOD__,"exewc $cmd");
+                
+                exec($cmd);  /// QSUB JOBS Submitted here
+            }
         }
         
-        return $jobCount;
+        $this->msg(__METHOD__,"post ");
         
     }
-
     
     
     /*
      * Script file used to run maxent.jar and all projectections state in combinations
      * 
      */
-    private function writeMaxentSpeciesProjectionScriptFile()
+    private function writeScriptFiles()
     {
         
         // for each species we need to run all the combinations (or check to see if thay have been run)
+        $this->msg(__METHOD__,"pre ");
+        
         $scripts = array();
         foreach ($this->SpeciesCombinations() as $speciesID => $combinations)
         {
-            file::mkdir_safe(configuration::CommandScriptsFolder().str_replace(" ", "_", $speciesID));
+            $singleScript = $this->writeMaxentSingleSpeciesProjectionScriptFile($speciesID,$combinations); // all combinations for a single species
             
-            $singleScript = self::writeMaxentSingleSpeciesProjectionScriptFile($speciesID,$combinations); // all combinations for a single species
+            $this->msg(__METHOD__,"singleScript = [$singleScript] ");
             
             if ($singleScript != "") 
-                $scripts[str_replace(" ","_",$speciesID)] = $singleScript;
+            {
+                
+                $scripts[$speciesID] = $singleScript;
+            }
+                
+            
         }
 
-        return $scripts;
+        $this->ScriptsToRun($scripts);
+        
+        $this->msg(__METHOD__,"post ");
 
     }
 
@@ -468,138 +598,181 @@ class SpeciesMaxent extends CommandAction {
      */
     private function writeMaxentSingleSpeciesProjectionScriptFile($speciesID,$combinations)
     {
+        
+        $this->msg(__METHOD__,"pre");
+        
+        
+        file::mkdir_safe($this->species_scripts_folder($speciesID));
 
-        $scriptFilename = configuration::CommandScriptsFolder().str_replace(" ", "_", $speciesID).configuration::osPathDelimiter().str_replace(" ", "_", $speciesID).'_root'.configuration::CommandScriptsSuffix();
+        file::mkdir_safe($this->species_data_folder($speciesID));
+
+        file::mkdir_safe($this->species_output_folder($speciesID));
         
-        $maxent = configuration::MaxentJar();
+        $this->msg(__METHOD__,"this->species_scripts_folder(speciesID) ".$this->species_scripts_folder($speciesID));
+        $this->msg(__METHOD__,"this->species_data_folder(speciesID) ".$this->species_data_folder($speciesID));
+        $this->msg(__METHOD__,"this->species_output_folder(speciesID) ".$this->species_output_folder($speciesID));
         
-        $train = configuration::Maxent_Taining_Data_folder();
+        $maxent_single_species_script_filename = $this->maxent_single_species_script_filename($speciesID);
+        
+        $this->msg(__METHOD__,"$maxent_single_species_script_filename ".$maxent_single_species_script_filename);
+        
+
+        // create combinration script files here
+        
+        $script = "";
+        $script .= $this->maxentScript($speciesID);
+        
+        foreach ($this->futureProjectionScripts($speciesID,$combinations) as $singleFutureScriptFilename) 
+        {
+            $script .= "qsub -N{$this->ID()} '{$singleFutureScriptFilename}'";          // this is the line need to qsub this script
+        }
+        
+        $script = trim($script);
+        if ($script == "") null;
+        
+        // TODO for testing uncomment this line
+        $script .= "\n#rm {$maxent_single_species_script_filename}\n"; // remove itself after execution
+
+        
+        $this->msg(__METHOD__,"Maxent Script is");
+        $this->msg(__METHOD__,$script);
+        
+        
+        file_put_contents($maxent_single_species_script_filename, $script);
+        
+        if (!file_exists($maxent_single_species_script_filename))  return null;
+        
+        $this->msg(__METHOD__,"return {$maxent_single_species_script_filename}");
+        
+        return $maxent_single_species_script_filename;   // we have something to RUN so return the filename
+        
+    }
+
+    
+    private function species_scripts_folder($speciesID)
+    {
+        $scripts_folder =  configuration::CommandScriptsFolder().
+                           $this->clean_species_name($speciesID).
+                           configuration::osPathDelimiter();
+
+        return $scripts_folder;
+        
+    }
+    
+
+    private function species_data_folder($speciesID)
+    {
+        $data_folder    =   configuration::Maxent_Species_Data_folder().
+                            $this->clean_species_name($speciesID).
+                            configuration::osPathDelimiter();
+
+        return $data_folder;
+        
+    }
+    
+
+    private function species_output_folder($speciesID)
+    {
+        $output_folder  =   configuration::Maxent_Species_Data_folder().
+                            $this->clean_species_name($speciesID).
+                            configuration::osPathDelimiter().
+                            configuration::Maxent_Species_Data_Output_Subfolder();
+
+        return $output_folder;
+        
+    }
+
+    
+    private function maxent_single_species_script_filename($speciesID)
+    {
+        $scriptFilename =   configuration::CommandScriptsFolder().
+                            $this->clean_species_name($speciesID).
+                            configuration::osPathDelimiter().
+                            $this->clean_species_name($speciesID).'_root'.
+                            configuration::CommandScriptsSuffix();
+
+        return $scriptFilename;
+        
+    }
+
+    
+    
+    private function maxentScript($speciesID)
+    {
+        
+        if ($this->MaxentLogDone()) return ""; // if we already have the maxent data then don't run this part 
+        
+        $clean_species_name = str_replace(" ", "_", $speciesID);        
+        
+        $species_folder = $this->species_data_folder($speciesID);
+        
+        
+         $maxent = configuration::MaxentJar();
+          $train = configuration::Maxent_Taining_Data_folder();
         $project = configuration::Maxent_Future_Projection_Data_folder();
-        $data_folder = configuration::Maxent_Species_Data_folder();
+          $occur = configuration::Maxent_Species_Data_Occurance_Filename();
+        
+        $output_folder  =  $this->species_output_folder($speciesID);
+        
+        $occur =  $this->species_occurence_filename($speciesID);
 
-        $output_subfolder = configuration::Maxent_Species_Data_Output_Subfolder();
-        $occur = configuration::Maxent_Species_Data_Occurance_Filename();
-
-        $os_path = configuration::osPathDelimiter();
-
-        $species_folder = "{$data_folder}".str_replace(" ", "_", $speciesID)."{$os_path}";
-        $output_folder  = "{$data_folder}".str_replace(" ", "_", $speciesID)."{$os_path}{$output_subfolder}";
-
-        $occur =  "{$data_folder}".str_replace(" ", "_", $speciesID)."{$os_path}{$occur}";
         
         
 $maxent_script = <<<AAA
 #!/bin/tcsh
-# speciesID = {$speciesID} 
-# Scenarios = {$this->EmissionScenarioIDs()}
-# Models    = {$this->ClimateModelIDs()} 
-# Times     = {$this->TimeIDs()}
-#        
-if (! -e "{$species_folder}" ) then  
-  echo "Folder for {$speciesID} does not exist  ({$species_folder})"
-  exit
-endif
+#
+# execute maxent for  ({$clean_species_name})
+# ==================================================================================
+#
+# speciesID      = {$speciesID} 
+# Scenarios      = {$this->EmissionScenarioIDs()}
+# Models         = {$this->ClimateModelIDs()} 
+# Times          = {$this->TimeIDs()}
+# Species Folder = {$species_folder}
+# file locations
+# MAXENT         = {$maxent}
+# TRAINCLIMATE   = {$train}
+# PROJECTCLIMATE = {$project}
+s OCCUR          = {$occur}
 
-#define file locations
 set MAXENT={$maxent}
 set TRAINCLIMATE={$train}
 set PROJECTCLIMATE={$project}
 set OCCUR={$occur}
 
-#load the java module for the HPC
 module load java
-
-mkdir '{$output_folder}'
-
-echo execute model for {$speciesID}
 
 #model the species distribution
 java -mx2048m -jar {$maxent} environmentallayers={$train} samplesfile={$occur} outputdirectory={$output_folder} -J -P -x -z redoifexists autorun
 
-echo execute future projections
 
 AAA;
-
-        // create combinration script files here
-
-        $future_projection_scripts = "";
-        
-        foreach ($combinations as $combination => $comboFilename)
-        {
-            
-            // here we need to check to see if the output already exists
-            // if it does we don't need to add this to the JOB
-            
-            $localComboFilename = configuration::Maxent_Species_Data_folder().$comboFilename;
-            
-            echo "does output exist localComboFilename  ".$localComboFilename."\n";
-            
-            if (!file_exists($localComboFilename))  // only create script if we don't have the file 
-            {
-
-                 echo "NO output exist  ".$localComboFilename."\n";
-                
-                $ss = $this->singleCombinationScript($speciesID,$combination,$localComboFilename); // script that will be used to execute just a single combo
-
-                if ($ss != "")
-                {
-                    $ssFN = file::random_filename(configuration::CommandScriptsFolder()."/".str_replace(" ", "_", $speciesID)."/").configuration::CommandScriptsSuffix() ;
-                    $ssFN = str_replace("//","/",$ssFN);
-
-                    file_put_contents($ssFN, $ss);
-
-                    exec("chmod u+x '$ssFN'");            
-
-                    $subJobName  = "{$this->QsubCollectionID()}s";
-
-                    $future_projection_scripts .= "qsub -N{$subJobName} '$ssFN'\n";
-
-                }
-                
-            }
-            
-        }
-
-        
-        $includeMaxent = true;
-        
-        // check to see if we need to run "Maxent"
-        $maxentLog = "{$output_folder}{$os_path}maxent.log";
-            
-        
-        echo "maxentLog = $maxentLog\n";
-        
-        if (file_exists($maxentLog))
-        {
-            $lastLogLine = exec("tail -n1 '$maxentLog'");
-            
-            echo "lastLogLine = $lastLogLine\n";
-            
-            if (util::contains($lastLogLine, "Ending")) 
-                    $includeMaxent = false;
-        }
+            return $maxent_script;
 
 
-        $script = "";
-        if ($includeMaxent) $script .= $maxent_script;
-        if ($future_projection_scripts != "")  $script .= $future_projection_scripts;  // here check to see if the future predectiosn are there as well.
-
-        
-        $script = trim($script);
-        if ($script != "")
-        {
-            file_put_contents($scriptFilename, $script);
-            // exec("chmod u+x '{$scriptFilename}'");
-            
-            return $scriptFilename;   // we have something to RUN so return the filename
-            
-        }
-
-        
-        return null;
     }
+    
+    
+    private function futureProjectionScripts($speciesID,$combinations)
+    {
+        
+        $this->GetResults(); // make sure we only create for what we don't have
+        
+        $future_projection_scripts = array();
+        foreach ($combinations as $combination => $file_id)
+        {
+            if (!is_null($file_id)) continue;  // we already have this combination
 
+            $future_projection_scripts[$combination] = $this->singleCombinationScript($speciesID,$combination); // script that will be used to execute just a single combo
 
+        }
+
+            
+        return $future_projection_scripts;
+            
+    }
+    
+    
     /**
      * For a single species for a single combination create script that can be submited to QSUB
      * 
@@ -608,60 +781,69 @@ AAA;
      * @param type $localComboFilename
      * @return string 
      */
-    private function singleCombinationScript($speciesID,$combination,$localComboFilename)
+    private function singleCombinationScript($speciesID,$combination)
     {
 
-        $os_path = configuration::osPathDelimiter();
+        $clean_species_name = str_replace(" ", "_", $speciesID);
+        
+        $script_folder =    $this->species_scripts_folder($speciesID);
         
         $maxent = configuration::MaxentJar();
         
-        $project = configuration::Maxent_Future_Projection_Data_folder();
-        $data_folder = configuration::Maxent_Species_Data_folder();
+        $lambdas =  $this->species_lambdas($speciesID);
 
-        $output_subfolder = configuration::Maxent_Species_Data_Output_Subfolder();
-        $occur = configuration::Maxent_Species_Data_Occurance_Filename();
+        $proj =     configuration::Maxent_Future_Projection_Data_folder().
+                    configuration::osPathDelimiter().
+                    $combination.
+        
 
-
-        $output_folder  = "{$data_folder}".str_replace(" ", "_", $speciesID)."{$os_path}{$output_subfolder}";
-        $occur          = "{$data_folder}".str_replace(" ", "_", $speciesID)."{$os_path}{$occur}";
+        $future_projection_output = configuration::Maxent_Species_Data_folder().
+                                    $clean_species_name.
+                                    configuration::osPathDelimiter().
+                                    configuration::Maxent_Species_Data_Output_Subfolder().
+                                    $combination.
+                                    ".asc";
 
         
-        // $future_projection_output = "{$output_folder}{$os_path}$combination{$os_dot}asc";
-
-        $future_projection_output = $localComboFilename;
+        $scriptFilename =   configuration::CommandScriptsFolder().
+                            $clean_species_name.
+                            configuration::osPathDelimiter().
+                            $this->ID().'_'.$combination.
+                            configuration::CommandScriptsSuffix();
         
-        echo "Do we need a script  .. Checkig to see if {$future_projection_output} exists\n";
+
+        $script .= "#!/bin/tcsh";
+        $script .= "\nmodule load java";
+        $script .= "\ncd {$script_folder}";
+
+                    //java -mx2048m -cp $MAXENT   density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x        
+        $script .= "\njava -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x";   
+        $script .= "\nphp -q ".configuration::ApplicationFolder()."Search/MaxentQuickLookInsert.php '$clean_species_name' '$future_projection_output'";
+        $script .= "\n";
         
-        $script = "";
-        // if we already have the file then we don't need this script
-        if (!file_exists($future_projection_output))
-        {
-
-            $script_folder = configuration::CommandScriptsFolder();
-            $lambdas = "{$output_folder}{$os_path}".str_replace(" ", "_", $speciesID).".lambdas";
-
-            $script_folder = configuration::CommandScriptsFolder();
-
+        
+        // here uncomment to make script  remove itself after running
+        // $script .= "\nrm $scriptFilename";
+        
             
-            $script .= "#!/bin/tcsh\n";
-            $script .= "module load java\n";
-            $script .= "cd {$script_folder}\n";
-
-            $proj = "{$project}{$os_path}{$combination}";
-
-                        //java -mx2048m -cp $MAXENT   density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x        
-            $script .= "java -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x\n";    
-            $script .= "\n";
-            
-            $clean_species_name = str_replace(" ", "_", $speciesID);
-            
-            $script .= "php -q ".configuration::ApplicationFolder()."Search/MaxentQuickLookInsert.php '$clean_species_name' '$future_projection_output'";
-            $script .= "\n";
-            
-        }
+        file_put_contents($scriptFilename, $script);
         
         
-        return $script;
+        return $scriptFilename;
+        
+    }
+    
+    
+    private function species_lambdas($speciesID) {
+        
+        $lambdas =  configuration::Maxent_Species_Data_folder().
+                    $this->clean_species_name($speciesID).
+                    configuration::osPathDelimiter().
+                    configuration::Maxent_Species_Data_Output_Subfolder().
+                    $this->clean_species_name($speciesID).
+                    ".lambdas";
+        
+        return $lambdas;
         
     }
     
@@ -709,6 +891,14 @@ AAA;
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
+
+    
+    public function ScriptsToRun() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
     
     /**
      * Keep the array of [species][combintations]
@@ -723,11 +913,49 @@ AAA;
     }
     
 
+    public function ResultsComplete() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    
     public function AttachedCommand() 
     {
         return $this;
     }
 
+    
+    private function species_occurence_filename($speciesID)
+    {
+        
+        $occurFilename =    configuration::Maxent_Species_Data_folder().
+                            $this->speciesDataFolder($speciesID).
+                            configuration::osPathDelimiter().
+                            configuration::Maxent_Species_Data_Occurance_Filename();
+        
+        return $occurFilename;
+        
+    }
+
+    
+    
+    private function speciesDataFolder($speciesID)
+    {
+        
+        $species_data_folder =  configuration::Maxent_Species_Data_folder().
+                                $this->speciesDataFolder($speciesID).
+                                configuration::osPathDelimiter();
+        
+        return $species_data_folder;
+        
+    }
+
+    private function clean_species_name($speciesID)
+    {
+        return str_replace(" ", "_", $speciesID);
+    }
+    
     
     
     /**
@@ -937,6 +1165,15 @@ AAA;
     }
             
     
+    public static function GetModelledData($species,$scenario, $model, $time)
+    {
+        // $scenario, $model, $time
+        $db = new PGDB();
+        $result = $db->GetModelledData($species, $scenario, $model, $time);
+        unset($db);
+        
+        return $result;
+    }
     
     
     

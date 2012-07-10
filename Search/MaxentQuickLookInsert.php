@@ -46,7 +46,7 @@ file::Delete($quicklook_image_filename);
 echo "{$prog}:{$file_id}\n";
 
 list($scenario, $model, $time) =  explode("_",str_replace('.asc','',basename($filename)));    
-SpeciesMaxent::InsertModelledData($species,$scenario, $model, $time,$file_id);
+SpeciesMaxent::InsertModelledData(str_replace("_", " ", $species),$scenario, $model, $time,$file_id);
 
 //echo "{$prog}: insert_result {$insert_result}\n";
 

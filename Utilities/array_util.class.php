@@ -600,10 +600,15 @@ class array_util
     * @param $findIn
     * @return mixed
     */
-    public static function Value($array, $key,$default = null)
+    public static function Value($array, $key,$default = null,$trim_string = false)
     {
-        if (array_key_exists($key, $array)) return $array[$key];
-        return $default;
+        
+        if (!array_key_exists($key, $array))  return $default;
+                
+        if (!$trim_string) return $array[$key];
+        
+        return trim($array[$key]);
+        
     }
 
 

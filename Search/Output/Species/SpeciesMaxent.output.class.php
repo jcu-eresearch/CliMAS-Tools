@@ -47,104 +47,10 @@ class SpeciesMaxentOutput extends Output
 
     public function Content()
     {
-
-        // $this->maxentResults - holds array of .asc grids to be display to the user
-        // we now have them to process other functions as well.
-
-        // this is where we build an output for for the user 
-        // table of images ?
         
-        if (!is_array($this->maxentResults)) return "Waiting for a response from the GRID"; 
-
-        $result = array();
+       $result = OutputFactory::Find($this->speciesMaxent());
         
-        foreach ($this->maxentResults as $speciesID => $combintations) 
-        {
-
-            foreach ($combintations as $combintation => $combintationFilename) 
-            {
-
-                if (substr($combintationFilename,0,1) == configuration::osPathDelimiter())
-                {
-                    $localCombintationFilename = configuration::Maxent_Species_Data_folder().$combintationFilename;
-
-                    $localCombintationFilename = str_replace(configuration::osPathDelimiter().configuration::osPathDelimiter(),configuration::osPathDelimiter() , $localCombintationFilename);
-
-
-                    if ($combintationFilename == "")
-                    {
-                        $result[$speciesID][$combintation] = "Calculating ......";
-                    }
-                    else
-                    {
-                        // echo "$localCombintationFilename<br>";
-                        
-                        $vis = $this->getVisualVersion($speciesID,$combintation,$localCombintationFilename);
-                        $result[$speciesID][$combintation] = $vis;
-                    }
-
-                }
-                else
-                {
-                    $result[$speciesID][$combintation] = $combintationFilename;
-                }
-
-
-            }
-
-        }
-        
-        
-        $r = '<table width="100%" border="0">';
-
-        
-        
-        foreach ($result as $speciesID => $combintations) 
-        {
-
-
-            $fk = util::first_key($combintations);
-            $fe = util::first_element($combintations);
-            
-            $r .= "\n".'<tr>';
-            $r .= "\n".'<td colspan="'.count($combintations).'">';
-            $r .= SpeciesData::SpeciesQuickInformation(str_replace("_"," ",$speciesID));
-            $r .= "<br>".$fe;
-            $r .= '</td>';
-            $r .= "\n".'</tr>';
-            
-            
-            $r .= "\n".'<tr>';
-            
-            foreach ($combintations as $combintation => $visualElement) 
-            {
-                
-                if ($combintation == $fk) continue;
-                
-                $smt = explode("_",$combintation);
-                
-                $info = "";
-                if (count($smt) == 3)
-                {
-                    
-                    $info .= "<br>time: ".$smt[2];
-                    $info .= "<br>scenario: ".$smt[0];
-                    $info .= "<br>model: ".$smt[1];
-                }
-                
-                $r .= "\n".'<td>';
-                $r .= $visualElement;
-                $r .= '<div class="info">'.$info.'</div>' ;
-                $r .= '</td>';
-                
-            }
-            
-            $r .= "\n".'</tr>';
-            
-        }
-       $r .= "\n".'</table>';
-
-       return $r;
+       return $result;
 
     }
 
