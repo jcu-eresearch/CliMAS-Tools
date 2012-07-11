@@ -201,7 +201,7 @@ echo "\n";
 echo "Create CRON script {$incoming_sh} \n";
 echo "\n";
 
-file_put_contents($incoming_sh, "cd ".configuration::ApplicationFolder()."; php -q ".configuration::ApplicationFolder()."Search/Incoming.php\n");
+file_put_contents($incoming_sh, "#!/bin/tcsh\n cd ".configuration::ApplicationFolder()."\n php -q ".configuration::ApplicationFolder()."Search/Incoming.php\n");
 
 if (!file_exists($incoming_sh))
 {

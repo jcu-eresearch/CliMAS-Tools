@@ -116,7 +116,7 @@ class SpeciesMaxent extends CommandAction {
 
         $this->SpeciesCombinations($result); // sets up the default empty result set
         
-        $this->ResultsFullCountString($full_count);
+        $this->ResultsFullCountString($full_count - 1);
         
         
     }
@@ -375,6 +375,9 @@ class SpeciesMaxent extends CommandAction {
         
         if (count($result) < self::$OCCURANCE_MINIMUM_LINES) return null;
         
+        
+        // this will create occurance file wqhere the "name" of the species will be the Species ID from database
+        // thise seems to have to match the Lambdas filename
         
         $file = '"SPPCODE","LATDEC","LONGDEC"'."\n";  // headers specific to Maxent JAR
         foreach ($result as $row) 

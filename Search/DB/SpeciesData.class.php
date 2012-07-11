@@ -48,7 +48,7 @@ class SpeciesData extends Object {
         
         $db = new PGDB();
         
-        $q = "select scientific_name,common_name from species where scientific_name = '{$speciesID}' limit 1";
+        $q = "select scientific_name,common_name from species where id = '{$speciesID}' limit 1";
 
         $db_result = $db->query($q, 'scientific_name');
         

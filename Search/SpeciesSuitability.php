@@ -19,48 +19,45 @@ $times instanceof Descriptions;
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Species Suitability</title>
-<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/black-tie/jquery-ui.css" type="text/css" />
-<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
-<script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js'></script>
-<link href="styles.css" rel="stylesheet" type="text/css">        
+
+<link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
+<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
+
+<link href="styles.css" rel="stylesheet" type="text/css">
 
 <style>
 #feedback { font-size: 1.4em; }
 #selectable_species .ui-selecting { background: #FECA40; }
 #selectable_species .ui-selected { background: #F39814; color: white; }
 #selectable_species { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-#selectable_species li { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
+#selectable_species li { margin: 3px; padding: 0.4em; font-size: 1.1em; height: 18px; }
 
 #selectable_scenario .ui-selecting { background: #FECA40; }
 #selectable_scenario .ui-selected { background: #F39814; color: white; }
 #selectable_scenario { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-#selectable_scenario li { margin: 3px; padding: 0.4em; font-size: 1.1em; height: 18px; }
+#selectable_scenario li { margin: 3px; padding: 0.4em; font-size: 1.0em; height: 18px; }
 
 #selectable_model .ui-selecting { background: #FECA40; }
 #selectable_model .ui-selected { background: #F39814; color: white; }
-#selectable_model { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-#selectable_model li { margin: 3px; padding: 0.4em; font-size: 1.1em; height: 18px; }
+#selectable_model { list-style-type: none; margin: 0; padding: 0; width: 60%; height: 300px; }
+#selectable_model li { margin: 3px; padding: 0.4em; font-size: 1.0em;  width: 25%; height: 30px; float: left;}
 
 #selectable_time .ui-selecting { background: #FECA40; }
 #selectable_time .ui-selected { background: #F39814; color: white; }
 #selectable_time { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-#selectable_time li { margin: 3px; padding: 0.4em; font-size: 1.1em; height: 18px; }
+#selectable_time li { margin: 3px; padding: 0.4em; font-size: 1.0em; height: 18px; }
+
+#selectable_display_1 .ui-selecting { background: #FECA40; }
+#selectable_display_1 .ui-selected { background: #F39814; color: white; }
+#selectable_display_1 { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+#selectable_display_1 li { margin: 3px; padding: 0.4em; font-size: 1.0em; height: 100px; }
+
+
 
 #test_process {float: left; }
 #run_process {float: left; }
 
-#species-result {
-/*    display: none;*/
-}
-#model-result  {
-/*    display: none;*/
-}
-#scenario-result  {
-/*    display: none;*/
-}
-#time-result {
-/*    display: none;*/
-}
 
 #remote-queue-id
 {
@@ -93,6 +90,11 @@ $times instanceof Descriptions;
 #demo-frame > div.slide_display { padding: 10px !important; }
 
 
+.species-remove-button
+{
+    height: 20px;
+    width: 20px;
+}
 
 
 </style>
@@ -103,7 +105,7 @@ $times instanceof Descriptions;
 echo htmlutil::AsJavaScriptSimpleVariable(CommandAction::$EXECUTION_FLAG_RUNNING,'EXECUTION_FLAG_RUNNING');
 echo htmlutil::AsJavaScriptSimpleVariable(CommandAction::$EXECUTION_FLAG_COMPLETE,'EXECUTION_FLAG_COMPLETE');
 
-echo htmlutil::AsJavaScriptObjectArray(SpeciesData::speciesList(),"full_name","scientific_name","availableSpecies");    
+echo htmlutil::AsJavaScriptObjectArray(SpeciesData::speciesList(),"full_name","species_id","availableSpecies");    
 
 ?>
 
@@ -128,29 +130,6 @@ function selectSelectableElement (selectableContainer, elementToSelect,unselectA
         selectableContainer.data("selectable")._mouseStop(null);
     }
 
-function setTestData()
-{
-    
-    selectSelectableElement(jQuery("#selectable_scenario"), $("#RCP3PD"),true);
-    selectSelectableElement(jQuery("#selectable_model"), $("#gfdl-cm20"),true);
-    selectSelectableElement(jQuery("#selectable_time"), $("#2015"),true);
-    selectSelectableElement(jQuery("#selectable_time"), $("#2025"),false);
-    selectSelectableElement(jQuery("#selectable_time"), $("#2035"),false);
-    selectSelectableElement(jQuery("#selectable_time"), $("#2045"),false);
-    selectSelectableElement(jQuery("#selectable_time"), $("#2055"),false);
-    selectSelectableElement(jQuery("#selectable_time"), $("#2065"),false);
-    selectSelectableElement(jQuery("#selectable_time"), $("#2075"),false);
-    selectSelectableElement(jQuery("#selectable_time"), $("#2085"),false);
-    
-
-    var value = "Lethrinus lentjan";
-    var valueID = value.replace(" ","_");
-    var li = $("<li id=\""+valueID+"\"  class=\"ui-widget-content\" >"+value+"</li>");
-    $('#selectable_species').append(li);
-    $( "#species-result" ).append(valueID + " ");             
-    
-    
-}
 
 /**
  * Process data from a run to the server
@@ -220,25 +199,95 @@ function postRun(data)
  */
 function startProcess()
 {
-    var jData = { 
-        cmdaction: 'SpeciesMaxent',
-        species:   $('#species-result').html(),
-        model:     $('#model-result').html(),
-        scenario:  $('#scenario-result').html(),
-        time:      $('#time-result').html()
-    }
-   
-   
-//        alert(jData.cmdaction + "\n" +
-//        jData.species + "\n" +
-//        jData.model + "\n" +
-//        jData.scenario + "\n" +
-//        jData.time);
+    
+    // collect ther data we need from the selections
+    
+      var species_ids = get_id_list('.species-from-user','user_species_','',new Array());
+        var model_ids = get_id_list('.user_model.ui-selected','user_model_','',new Array());
+     var scenario_ids = get_id_list('.user_scenario.ui-selected','user_scenario_','',new Array());
+         var time_ids = get_id_list('.user_time.ui-selected','user_time_','',new Array());
 
-            
+
+    var species_str   = jQuery.trim( species_ids.join(' '));
+    var model_str     = jQuery.trim(   model_ids.join(' '));
+    var scenario_str  = jQuery.trim(scenario_ids.join(' '));
+    var time_str      = jQuery.trim(    time_ids.join(' '));
+
+
+    var jData = { 
+         cmdaction:'SpeciesMaxent'
+        ,species:species_str
+        ,model:model_str
+        ,scenario:scenario_str
+        ,time:time_str
+    }
+
+    if (jData.species == "")
+    {   
+        flash_red('#tab_handle_species a');
+        $('#tabs').tabs( "select" , 0 );
+        return false;
+    }
+
+    if (jData.model == "")
+    {
+        flash_red('#tab_handle_model a');        
+        $('#tabs').tabs( "select" , 1 );
+        return false;
+    }
+
+    if (jData.scenario == "")
+    {
+        flash_red('#tab_handle_scenario a');
+        $('#tabs').tabs( "select" , 2 );
+        return false;
+    }
+    
+    if (jData.time == "")
+    {
+        flash_red('#tab_handle_time a');
+        $('#tabs').tabs( "select" , 3 );
+        return false;
+    }
+
+
    $.post("QueueCommandAjax.php", jData , function(data) { postRun(data); },"json");
    
    
+}
+
+/**
+ * What we are going to run
+ */
+function toProcessDisplay()
+{
+    
+      var species_ids = get_id_list('.species-from-user','user_species_','','');
+        var model_ids = get_id_list('.user_model.ui-selected','user_model_','','');
+     var scenario_ids = get_id_list('.user_scenario.ui-selected','user_scenario_','','');
+         var time_ids = get_id_list('.user_time.ui-selected','user_time_','','');
+
+    
+    var total_jobs = species_ids.length * model_ids.length * scenario_ids.length * time_ids.length;
+    var d = '&nbsp;&nbsp;'+total_jobs + ' items &nbsp;&nbsp;';
+    
+    $('#process-display').html(d);
+    
+    return total_jobs;
+    
+}
+
+function flash_selector(selector,from_color,to_color)
+{
+    $(selector).stop().css("background-color", from_color).
+    animate({ backgroundColor: to_color}, 800,function() { $(selector).css("background-color", ""); });
+
+}
+
+
+function flash_red(selector)
+{
+    flash_selector(selector,"#FF0000","#AA0000");
 }
 
 function updateProcess()
@@ -250,95 +299,111 @@ function updateProcess()
    $.post("UpdateCommandAjax.php", jData , function(data) { postRun(data); },"json");
 }
 
-function clearQueue()
+function removeUserSpecies(obj,species_id,species_name)
 {
+    $('#user_species_'+species_id).remove();
+ 
+}
+
+function get_id_list(selector)
+{
+    var delim = "~";
+    var replace_from = '';
+    var replace_to = '';
+    var default_value = null;
+
+    if (typeof arguments[1] != 'undefined') { replace_from  = arguments[1];}
+    if (typeof arguments[2] != 'undefined') { replace_to    = arguments[2]}
+    if (typeof arguments[3] != 'undefined') { default_value = arguments[3]}
     
-    $('#remote-queue-id').html(''); 
-    $('#remote-status').html(''); 
-    $('#remote-content').html(''); 
-    
-    $('#run_process').html('<span class="ui-button-text">RUN</span>');
-    $('#run_process').button();
-    
-    $('#run_process').unbind('click');
-    
-    $('#run_process').click( function() { startProcess(); return false;} );
-    
-    $('#remote-result').html(''); 
+    var ids = "";
+    $(selector) .each( 
+                    function() { 
+                        if (ids == "")    
+                            ids += this.id.replace(replace_from,replace_to); 
+                        else
+                            ids += delim + this.id.replace(replace_from,replace_to);
+                    }
+                );
+
+
+    if (ids == "") return default_value;
+
+    var result = ids.split(delim);
+
+    return result;
     
 }
 
 
 
 $(document).ready(function(){
-
-	$( "#species" ).autocomplete({ source: availableSpecies });
-
-    $( "#tabs" ).tabs();    
     
-    $( ".test_button" ).button();
+    $( "#species" ).autocomplete({ 
+                        source: availableSpecies,
+                        select: function (event, ui) 
+                        {
+                            
+                            if ( $('#user_species_'+ui.item.value).length ) 
+                            {
+                                $('#user_species_'+ui.item.value).stop().css("background-color", "#FF0000").animate({ backgroundColor: "#FFFFFF"}, 1500);
+                                
+                                $(this).val(''); 
+                                return false;
+                            }                                
+                            else
+                            {
+                                var li = $('<li class="species-from-user" id="user_species_'+ui.item.value+'" class="ui-widget-content" ><button class="species-remove-button" id="remove_user_species_'+ui.item.value+'" >remove</button>'+ui.item.label+'</li>');
+                                $('#selectable_species').append(li);
+                                //$( "#species-result" ).append(ui.item.value + " ");
 
-    $( "#run_process" ).button();
-    $( "#run_process" ).click ( function() { startProcess(); return false;} );
+                                //$( "#species" ).val(ui.item.label);
+
+                                $(this).val(''); 
+                                $('#remove_user_species_' + ui.item.value)
+                                    .button({
+                                                icons: { primary: "ui-icon-circle-close" },
+                                                text: false
+                                            })
+                                    .click( function() { removeUserSpecies(this,ui.item.value,ui.item.label); return false;} )
+                                    ;
+
+                                return false;
+                                
+                            }
+
+                        }
+                     });
+
+    $( "#tabs" ).tabs({
+        show: function(event, ui) {toProcessDisplay();}
+    });
 
 
-    $( "#test_process" ).click ( function() { setTestData(); return false;} );
-
-    $( "#test_clear_queueid" ).button();
-    $( "#test_clear_queueid" ).click ( function() { clearQueue();return false;} );
-
-
-    $( "#selectable_model" ).selectable({
-			stop: function() {
-				var result = $( "#model-result" ).empty();
-                $("#selectable_model .ui-selected").each(function(index) {result.append($(this).attr('id') + " ");});
-			}
-		});    
+    $( "#run_process" )
+            .button()
+            .click ( function() { startProcess(); return false;} );
 
 
-
-    $( "#selectable_scenario" ).selectable({
-			stop: function() {
-				var result = $( "#scenario-result" ).empty();
-                $("#selectable_scenario .ui-selected").each
-                (
-                    function(index) {
-                        result.append($(this).attr('id') + " ");
-                    }
-                );
-			}
-		});    
-
-    
-    $( "#selectable_time" ).selectable({
-			stop: function() {
-				var result = $( "#time-result" ).empty();
-                $("#selectable_time .ui-selected").each(function(index) {result.append($(this).attr('id') + " ");});
-			}
-		});    
-    
-    
     $( "#selectable_species" ).selectable();    
+    $( "#selectable_model" ).selectable();
+    $( "#selectable_scenario" ).selectable();
+    $( "#selectable_time" ).selectable();
     
-    $("#species").keypress(function(event) {
-            if(event.keyCode == 13) 
-            { 
-                var value = $("#species").val();
-                var valueID = value.replace(" ","_");
+    
+    $( "#selectable_model li" ).button();
+    
+    $( "#process-display" ).button();
+    
 
-                if ($('#'+valueID).html() == null )
-                {
-                    var li = $("<li id=\""+valueID+"\"  class=\"ui-widget-content\" >"+value+"</li>");
-                    $('#selectable_species').append(li);
-                    $( "#species-result" ).append(valueID + " ");             
-                }
-
-            }
-
-        });
+    //$('#tabs').height(500);
 
 
 })
+
+$(document).ready(function(){
+});
+
 
     
 </script>
@@ -352,15 +417,15 @@ $(document).ready(function(){
 <div class="rhs">
 
 <div id="tabs">
-	<ul>
-		<li><a href="#tabs-1">Species</a></li>
-		<li><a href="#tabs-2">Climate Model</a></li>
-		<li><a href="#tabs-3">Emission Scenario</a></li>
-		<li><a href="#tabs-4">Time</a></li>
-		<li><a href="#tabs-5">process</a></li>
-                <li><a href="#tabs-6">display</a></li>
-	</ul>
-	<div id="tabs-1">
+    <ul>
+        <li id="tab_handle_species"><a href="#tabs-1">Species</a></li>
+        <li id="tab_handle_model"><a href="#tabs-2">Climate Model</a></li>
+        <li id="tab_handle_scenario"><a href="#tabs-3">Emission Scenario</a></li>
+        <li id="tab_handle_time"><a href="#tabs-4">Time</a></li>
+        <li id="tab_handle_process"><a href="#tabs-5">process</a></li>
+    </ul>
+
+    <div id="tabs-1">
         
         
         <div class="ui-widget">
@@ -381,7 +446,7 @@ $(document).ready(function(){
             foreach ($models->asSimpleArray() as $key => $value) 
             { 
             ?>        
-                <li id="<?php  echo $key; ?>" class="ui-widget-content"><?php  echo $key; ?><span style="font-size: 80%;"></span></li>
+                <li id="user_model_<?php  echo $key; ?>" class="ui-widget-content user_model"><?php  echo $key; ?><span style="font-size: 80%;"></span></li>
             <?php                     
             }
             ?>
@@ -396,7 +461,7 @@ $(document).ready(function(){
             foreach ($scenarios->asSimpleArray() as $key => $value) 
             { 
             ?>        
-                <li id="<?php  echo $key; ?>" class="ui-widget-content"> <?php  echo $key; ?>&nbsp;&nbsp;&nbsp;<span style="font-size: 80%;">(<?php  echo $value; ?>)</span></li>
+                <li id="user_scenario_<?php  echo $key; ?>" class="ui-widget-content user_scenario"> <?php  echo $key; ?>&nbsp;&nbsp;&nbsp;<span style="font-size: 80%;">(<?php  echo $value; ?>)</span></li>
             <?php                     
             }
             ?>
@@ -415,7 +480,7 @@ $(document).ready(function(){
             foreach ($times->asSimpleArray() as $key => $value) 
             { 
             ?>        
-                <li id="<?php  echo $key; ?>" class="ui-widget-content"> <?php  echo $key; ?></li>
+                <li id="user_time_<?php  echo $key; ?>" class="ui-widget-content user_time"> <?php  echo $key; ?></li>
             <?php                     
             }
             ?>
@@ -423,71 +488,19 @@ $(document).ready(function(){
 	</div>
 	<div id="tabs-5">
         
-        <div id="test_process" class="test_button">test data</div> 
-        <div id="test_clear_queueid">CLEAR ID</div>
-        <div id="run_process">RUN</div>
-        
-        <div id="species-result"></div>
-        <div id="model-result"></div>
-        <div id="scenario-result"></div>
-        <div id="time-result"></div>
-        
-        <div id="remote-queue-id"></div>
-        <div id="remote-status"></div>
-        <div id="remote-content"></div>
-        <div id="remote-result"></div>
-        
-        
-	</div>
-	<div id="tabs-6">
-        
-            <script>
-            $(function() {
-                    $( "#display-tabs" ).tabs({
-                            select: function( event, ui ) {
-                                    $( "#display-slider" ).slider( "value", ui.index );
-                            }
-                    });
-                    $( "#display-slider" ).slider({
-                            min: 0,
-                            max: $( "#display-tabs" ).tabs( "length" ) - 1,
-                            slide: function( event, ui ) {
-                                    $( "#display-tabs" ).tabs( "select", ui.value );
-                            }
-                    });
-            });
-            </script>
+            <div id="run_process">START GENERATION</div>
+
+            <div id="process-display"></div>
+            
+            <div id="remote-queue-id"></div>
+            <div id="remote-status"></div>
+            <div id="remote-content"></div>
+            <div id="remote-result"></div>
 
 
-
-            <div class="slide-display">
-
-            <div id="display-slider" style="width:100px"></div>
-
-            <div id="display-tabs">
-                    <ul>
-                            <li><a href="#display-tabs-1">Nunc tincidunt</a></li>
-                            <li><a href="#display-tabs-2">Proin dolor</a></li>
-                            <li><a href="#display-tabs-3">Aenean lacinia</a></li>
-                    </ul>
-                    <div id="display-tabs-1">
-                            <p>Displ;ay Tab 1</p>
-                    </div>
-                    <div id="display-tabs-2">
-                            <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
-                    </div>
-                    <div id="display-tabs-3">
-                            <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
-                            <p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
-                    </div>
-            </div>
-
-            </div><!-- End demo -->
-
-
-	</div>
-    
         </div>
+    
+</div>
 
 </div>
     

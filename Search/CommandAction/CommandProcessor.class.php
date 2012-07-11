@@ -47,11 +47,35 @@ class CommandProcessor
     public static function ProcessQueue()
     {
         
-       echo "Reading queue for ".configuration::CommandQueueID()."\n";
         
-        for ($index = 1; $index <= 200; $index++)
+        $processor_running_filename = configuration::ApplicationFolder()."processor_running.flag";
+        
+        if (file_exists($processor_running_filename))
         {
-            
+            echo "Processor already running\n";
+            exit(0);            
+        }
+        
+        
+        $str  = "\nCommand Processor Started : ". datetimeutil::NowDateTime();
+        $str .= "\n";
+        $str .= "\ncommad line : ".configuration::ApplicationFolder()."Search/Incoming.php";
+        $str .= "\n";
+        $str .= "\nDelete this file to stop the TDH Tools command processor\n";
+        file_put_contents($processor_running_filename,$str);
+
+        
+        if (!file_exists($processor_running_filename)) 
+        {
+            echo "Failed to sart command processor for TDH TOOLS Queue:".configuration::CommandQueueID()."\n";
+            exit(1);
+        }
+        
+        echo "Reading queue for ".configuration::CommandQueueID()."\n";
+        echo "To gracefully stop process delete {$processor_running_filename}\n";
+        
+        while(file_exists($processor_running_filename))
+        {
             $commands = PGDB::CommandActionListIDs();
             
             if (is_null($commands))  continue;
@@ -60,7 +84,12 @@ class CommandProcessor
                 self::processSingleQueueItem($commandID);
             
             sleep(3);
+            
         }
+        
+        
+        echo "Gracefully stopped process for TDH TOOLS Queue:".configuration::CommandQueueID()."\n";
+        
 
     }
     
@@ -84,7 +113,7 @@ class CommandProcessor
             return; // todo:: Log as exception /??
         }
 
-        // echo "\n".$command->ID()."  == ".$command->ExecutionFlag()." .. ".$command->Status();
+        echo "\n".$command->ID()."  == ".$command->ExecutionFlag()." .. ".$command->Status();
 
         if (!($command instanceof CommandAction))
         {
@@ -109,7 +138,7 @@ class CommandProcessor
                 break;
 
             case CommandAction::$EXECUTION_FLAG_COMPLETE:
-                // Do nothingfs
+                self::Completed($command);
                 break;
 
         }
@@ -200,6 +229,14 @@ class CommandProcessor
         pgdb::CommandActionQueue($cmd);
     }
 
+    
+    private static function Completed(CommandAction $cmd)
+    {
+        // delete if oder than 2 days 
+        
+        //pgdb::CommandActionRemove($cmd->ID());
+    }
+    
 
     /**
      *
