@@ -410,7 +410,7 @@ $(document).ready(function(){
     
 </head>
 <body>
-<h1 class="pagehead"><a href="SpeciesSuitability.php">Species Suitability</a></h1>
+    <h1 class="pagehead"><a href="SpeciesSuitability.php"><img src="<?php echo configuration::IconSource()."Header_v1.png" ?>" /></a></h1>
 
 <div class="maincontent">
 
