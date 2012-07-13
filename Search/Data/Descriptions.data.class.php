@@ -173,6 +173,10 @@ class Descriptions extends Data {
         return $result;
     }
 
+    public function Keys()
+    {
+        return array_keys($this->descriptions);
+    }
     
     
     public function keyIsDescriptive() {

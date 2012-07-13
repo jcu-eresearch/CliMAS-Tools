@@ -117,72 +117,29 @@ $incoming_sh = configuration::ApplicationFolder()."Search/Incoming.sh";
 echo "=====================================================================================\n";  
 echo "Check on database access here\n";
 
-
-
-
 /*
 
-DROP TABLE IF EXISTS ap02_command_action;
-CREATE TABLE ap02_command_action 
+DROP TABLE IF EXISTS command_action;
+CREATE TABLE command_action 
 (
     id SERIAL NOT NULL PRIMARY KEY,
-    objectID VARCHAR(50) NOT NULL, -- objectID 
-    data text, -- php serialised object
-    execution_flag varchar(50), -- execution state
-    status varchar(200), -- current status
-    queueid varchar(50), -- to identify where this job cam from, allows multiple environments to use same queue
-    update_datetime TIMESTAMP NULL -- the last time data was updated
+    objectID VARCHAR(50) NOT NULL,  -- objectID 
+    data text,                      -- php serialised object
+    execution_flag varchar(50),     -- execution state
+    status varchar(200),            -- current status
+    queueid varchar(50),            -- to identify where this job cam from, allows multiple environments to use same queue
+    update_datetime TIMESTAMP NULL  -- the last time data was updated
 );
 
-GRANT ALL PRIVILEGES ON ap02_command_action TO ap02;
-GRANT USAGE, SELECT ON SEQUENCE ap02_command_action_id_seq TO ap02;
+GRANT ALL PRIVILEGES ON command_action TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE command_action_id_seq TO ap02;
 
 
-
-DROP TABLE IF EXISTS modelled_species_data;
-CREATE TABLE modelled_species_data 
-(
-    id SERIAL NOT NULL PRIMARY KEY
-    ,species_id        integer
-    ,scientific_name   varchar(300)
-    ,common_name       varchar(300)
-    ,model_name        varchar(50)
-    ,scenario_name     varchar(50)
-    ,time_name         varchar(10)
-    ,data_category     varchar(100)
-    ,get_data_query    varchar(999)
-    ,maxent_threshold  varchar(50)
-    ,file_id           varchar(100)
-    ,update_datetime   timestamp without time zone 
-);
-
-GRANT ALL PRIVILEGES ON modelled_species_data TO ap02;
-GRANT USAGE, SELECT ON SEQUENCE modelled_species_data_id_seq TO ap02;
-
-
-DROP TABLE IF EXISTS files_data;
-CREATE TABLE files_data 
-(
-    id SERIAL NOT NULL PRIMARY KEY
-    ,file_unique_id   varchar(60)
-    ,mimetype         varchar(100)
-    ,file_description varchar(500)
-    ,category         varchar(100)
-    ,partnum          float
-    ,totalparts       float
-    ,total_filesize   float
-    ,data             text
-    ,update_datetime  timestamp without time zone 
-);
-
-GRANT ALL PRIVILEGES ON files_data TO ap02;
-GRANT USAGE, SELECT ON SEQUENCE files_data_id_seq TO ap02;
-
-// Build species occurence_count lookup
+// SPECIES OCCURENCE COUNT - will need to be rebuilt on occuence updates
+ * easier to them look up species that have occurences
+ * 
 create table species_occurence as  select species_id,count(*) from occurrences group by species_id;
-
 GRANT ALL PRIVILEGES ON species_occurence TO ap02;
-
 
 
 

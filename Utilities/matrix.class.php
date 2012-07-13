@@ -488,14 +488,14 @@ class matrix
         $lines = explode("\n",$asciiFile);
 
         $result = array();
-        $headerNames = array_util::Trim(explode($delim,$lines[0]));
+        $headerNames = array_util::Trim(str_getcsv($lines[0],$delim,'"') );
 
         for ($index = 1; $index < count($lines); $index++)
         {
 
-            if (trim($lines[$index]) == "") continue;
+            if (trim($lines[$index]) == "") continue; //
 
-            $cells = explode($delim,$lines[$index]);
+            $cells = str_getcsv($lines[$index],$delim,'"');
 
             if (count($cells) > count($headerNames))
             {

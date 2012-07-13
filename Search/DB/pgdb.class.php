@@ -590,7 +590,7 @@ class PGDB extends Object {
         
     }
 
-    public function Unique($table,$field,$where = null) 
+    public function Unique($table,$field,$where = null,$as_array = false) 
     {        
         if (!is_null($where)) $where = " where {$where} " ;
         
@@ -598,7 +598,10 @@ class PGDB extends Object {
         
         $result = $this->query($sql);
         if (is_null($result)) return null;
-        return $result;
+        if (!$as_array)return $result;
+        
+        return matrix::Column($result, $field);
+        
     }
 
     public function CountUnique($table,$field,$where = null) 
@@ -871,6 +874,54 @@ class PGDB extends Object {
         
     }
     
+    
+    /**
+     * 
+     * 
+     * @param type $speciesID  - Scientific Name here as then across systems and database rebuilds it wont change
+     * @return array  [index] => (longitude,latitude)
+     */
+    public static  function InsertMaxentResults($modelled_climates_id,$filename) 
+    {
+
+        $db = new PGDB();
+        
+        if (!file_exists($filename)) return null;
+        
+        // field name to db_table id
+        $maxent_fields = array_flip(matrix::Column($db->query("select id,name from maxent_fields",'id'), 'name'));
+        
+        if (file::lineCount($filename) < 2) return null;
+        
+        
+        // get the maxent results file in 
+        $m = matrix::Load($filename);
+        
+        // create a big insert of this result
+        $fr = util::first_element($m);
+        
+        if (count($maxent_fields) != count($fr))
+        {
+            echo "Matrix field count = ".count($maxent_fields)."  count(fr) =  ".count($fr)."\n";
+            return null;
+        }
+        
+        
+        $subs = array();
+        foreach ($fr as $maxent_column_name => $maxent_value) 
+        {
+            $subs[] = "({$modelled_climates_id},{$maxent_fields[$maxent_column_name]},{$maxent_value})";
+        }
+        
+        $insert  = "insert into maxent_values (modelled_climates_id,maxent_fields_id,num) values ".implode(",",$subs);
+        
+        $insert_result = $db->update($insert);
+        
+        unset($db);
+        
+        return $insert_result;
+        
+    }
     
     
     
