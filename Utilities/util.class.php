@@ -11,6 +11,14 @@ class util {
     public static $EXTRA_CHARS = '@##$%^&*()_+-={}[]\|:";\'\\<>,.?/`~';
 
 
+    public static function dbq($str)
+    {
+        $str = str_replace('"', "'", $str);
+        
+        return "E'".  str_replace("'", "\'", $str)."'";
+    }
+    
+    
     /**
     * @method isWebBrowser
     * @return mixed

@@ -7,6 +7,9 @@
 class SpeciesClimateGenerate {
     
     
+    
+    private $cmdline = null;
+    
     /**
      * Run one or more stages of import 
      * 0 = test
@@ -16,13 +19,17 @@ class SpeciesClimateGenerate {
      */
     public static function Execute($stage = "names" ) 
     {
+        
+        $mcg = new SpeciesClimateGenerate();
+        
+        $mcg->cmdline = $stage;
+        
         if (is_null($stage)) $stage = "names";
         
         if ($stage == "names") 
         {
             
-            self::header("Stage Names ");
-            
+            $mcg->header("Stage Names ");
             
             $method_names = get_class_methods('SpeciesClimateGenerate');
 
@@ -31,7 +38,7 @@ class SpeciesClimateGenerate {
                 
                 if (util::contains($method_name, "Stage"))
                 {
-                    echo self::$method_name(true)."\n";
+                    echo $mcg->$method_name(true)."\n";
                 }
                 
             }
@@ -46,7 +53,7 @@ class SpeciesClimateGenerate {
         {
             foreach (explode(",",$stage)as $stage_num) {
                 $method = "Stage{$stage_num}";
-                $stage_result = self::$method();
+                $stage_result = $mcg->$method();
                 
                 if (!$stage_result) exit(1);
 
@@ -56,48 +63,111 @@ class SpeciesClimateGenerate {
         {
         
             $method = "Stage{$stage}";
-            self::$method();
+            $mcg->$method();
             
         }
         
         
     }
+
+
+    public function Stage001($name_only = false)
+    {
+
+        $name = 'create command action table ';
+
+        if ($name_only) return __METHOD__."::".$name;
+        
+        $this->header($name);
+        
     
+        // might not be a good idea to drop table - really need  to copy as we will have update 
+        // the models_id in other tables from old to new
+        
+        
+$table_sql = <<<SQL
+DROP TABLE IF EXISTS command_action;
+CREATE TABLE command_action 
+(
+    id SERIAL NOT NULL PRIMARY KEY,
+    objectID VARCHAR(50) NOT NULL,  -- objectID 
+    data text,                      -- php serialised object
+    execution_flag varchar(50),     -- execution state
+    status varchar(200),            -- current status
+    queueid varchar(50),            -- to identify where this job cam from, allows multiple environments to use same queue
+    update_datetime TIMESTAMP NULL  -- the last time data was updated
+);
+GRANT ALL PRIVILEGES ON command_action TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE command_action_id_seq TO ap02;
+SQL;
+
+
+        $db = new PGDB();
+        
+        $table_result = $db->CreateAndGrant($table_sql);
+        
+        unset($db);
+        
+        return true;
+        
+    }
+
+
     
 
-    public static  function Stage01($name_only = false) 
+    public function Stage01($name_only = false) 
     {
         
         $name = 'Populate Maxent Field Names';
 
         if ($name_only) return __METHOD__."::".$name;
         
-        self::header($name);
-        
-        $names = matrix::ColumnNames(matrix::Load('/home/jc166922/maxentResults.csv'));
+        $this->header($name);
         
         //echo "Count = ".count($names)."\n";
         //echo "Count Unique= ".count(array_unique($names))."\n";
+
+        $db = new PGDB();
         
-        $sql = self::sql_maxent_field_names();
+        $sql = "DROP TABLE IF EXISTS maxent_fields;
+                CREATE TABLE maxent_fields 
+                (
+                    id SERIAL NOT NULL PRIMARY KEY
+                    ,name              varchar(256)   -- eg. maxentResults.csv
+                    ,update_datetime   timestamp without time zone 
+                );
+                GRANT ALL PRIVILEGES ON maxent_fields TO ap02;
+                GRANT USAGE, SELECT ON SEQUENCE maxent_fields_id_seq TO ap02;
+               ";
+        
         
         //echo "$sql\n";
 
-        $db = new PGDB();
-        $update_result = $db->update($sql);
-        //echo "update_result = $update_result\n";
+        $table_result = $db->CreateAndGrant($sql);
 
+        if (is_null($table_result)) throw new Exception("FAILED to create table maxent_fields - null result from query ");
+        
+        if (!$db->has_table('maxent_fields')) throw new Exception("FAILED to create table maxent_fields - Can't find table with describe ");
+        
         
         $inserted_count = 0;
+        $M = matrix::Load('/home/jc166922/test/maxentResults.csv');
+        
+        $names = matrix::ColumnNames($M);
+        
         foreach ($names as $name) 
         {
             $row_sql = "insert into maxent_fields (name) values ('{$name}')";
             
             //echo "$row_sql  ";
             
-            $update_result = $db->update($row_sql);
+            $insert_result = $db->insert($row_sql);
             
-            $inserted_count += $update_result;
+            if (is_null($insert_result)) throw new Exception("FAILED insert  Maxent field name {$name}");
+            
+            if (!is_numeric($insert_result))  throw new Exception("FAILED insert Maxent field name {$name}  Insert Result [{$insert_result}] is not a number");
+            
+            $inserted_count++;
             
             //echo " UR = $update_result\n";
             
@@ -107,7 +177,8 @@ class SpeciesClimateGenerate {
         
         if ($inserted_count != count($names))
         {
-            echo "### ERROR:: Failed to insert all Names\n";
+            throw new Exception("### ERROR:: Failed to insert all Names  inserted_count [{$inserted_count}] != CountNames [".count($names)."] \n");
+
             return false;
         }
         
@@ -118,41 +189,21 @@ class SpeciesClimateGenerate {
     }
     
     
-    private static function sql_maxent_field_names() {
-        
-$sql = <<<SQL
-DROP TABLE IF EXISTS maxent_fields;
-CREATE TABLE maxent_fields 
-(
-    id SERIAL NOT NULL PRIMARY KEY
-    ,name              varchar(256)   -- eg. maxentResults.csv
-    ,update_datetime   timestamp without time zone 
-);
-GRANT ALL PRIVILEGES ON maxent_fields TO ap02;
-GRANT USAGE, SELECT ON SEQUENCE maxent_fields_id_seq TO ap02;
-        
-SQL;
-
-        return $sql;
-
-    }
-
     
     
     
-    public static  function Stage02($name_only = false)
+    public   function Stage02($name_only = false)
     {
 
         $name = 'Model Descriptions';
 
         if ($name_only) return __METHOD__."::".$name;
         
-        self::header($name);
+        $this->header($name);
         
     
         // might not be a good idea to drop table - really need  to copy as we will have update 
         // the models_id in other tables from old to new
-        
         
 $table_sql = <<<SQL
 DROP TABLE IF EXISTS models;
@@ -173,34 +224,42 @@ SQL;
 
         $db = new PGDB();
         
-        $table_result = $db->update($table_sql);
+        $table_result = $db->CreateAndGrant($table_sql);
         
-        //echo "table_result = $table_result\n";
+        if (is_null($table_result)) throw new Exception("FAILED to create table models - null result from query ");
+        if (!$db->has_table('models')) throw new Exception("FAILED to create table models - Can't find table with describe ");
+        
+        
         
         $descs = FinderFactory::Result("ClimateModelAllValues");
         $descs instanceof Descriptions;
         
-        $format = "insert into models (dataname,description,moreinfo,uri) values ('{DataName}','{Description}','{MoreInformation}','{URI}');";
+        $format = "insert into models (dataname,description,moreinfo,uri) values ({DataName},{Description},{MoreInformation},{URI});";
          
         $inserted_count = 0;
         foreach ($descs->Descriptions() as $desc) {
             
             $desc instanceof Description;
-            $values_sql = $desc->asFormattedString($format);
+            $values_sql = $desc->asFormattedString($format,true);
             
-            //echo "\n$values_sql  "; 
+            //echo "\n values_sql = $values_sql  "; 
             
-            $values_result = $db->update($values_sql);
+            $values_result = $db->insert($values_sql);
+            
+            if (is_null($values_result)) throw new Exception("\nFAILED insert Model Descriptions using sql = {$values_sql}\nresult = $values_result\n\n");
+            
+            if (!is_numeric($values_result))  throw new Exception("\nFAILED insert Model Descriptions using sql = {$values_sql} [{$values_result}] is not a number\n");
+            
             
             //echo "  UR = {$values_result}"; 
             
-            $inserted_count += $values_result;
+            $inserted_count++;
         
         }
         
         if ($inserted_count != $descs->count())
         {
-            echo "\n### ERROR:: Failed to insert Model Description properly\n";
+            throw new Exception("\n### ERROR:: Failed to insert Model Description properly {$inserted_count} != {$descs->count()}\n");
             return false;
         }
         
@@ -211,14 +270,14 @@ SQL;
     }
 
 
-    public static  function Stage03($name_only = false)     
+    public   function Stage03($name_only = false)     
     {
         
         $name = 'Scenario Descriptions';
 
         if ($name_only) return __METHOD__."::".$name;
         
-        self::header($name);
+        $this->header($name);
     
         // might not be a good idea to drop table - really need  to copy as we will have update 
         // the models_id in other tables from old to new
@@ -243,34 +302,42 @@ SQL;
 
         $db = new PGDB();
         
-        $table_result = $db->update($table_sql);
+        $table_result = $db->CreateAndGrant($table_sql);
+        
+        if (is_null($table_result)) throw new Exception("FAILED to create table scenarios - null result from query ");
+        if (!$db->has_table('scenarios')) throw new Exception("FAILED to create table scenarios - Can't find table with describe ");
+        
         
         //echo "table_result = $table_result\n";
         
         $descs = FinderFactory::Result("EmissionScenarioAllValues");
         $descs instanceof Descriptions;
         
-        $format = "insert into scenarios (dataname,description,moreinfo,uri) values ('{DataName}','{Description}','{MoreInformation}','{URI}');";
+        $format = "insert into scenarios (dataname,description,moreinfo,uri) values ({DataName},{Description},{MoreInformation},{URI});";
          
         $inserted_count = 0;
         foreach ($descs->Descriptions() as $desc) {
             
             $desc instanceof Description;
-            $values_sql = $desc->asFormattedString($format);
+            $values_sql = $desc->asFormattedString($format,true);
             
-            //echo "\n$values_sql  "; 
+            //echo "\n\n$values_sql\n\n"; 
             
-            $values_result = $db->update($values_sql);
+            $values_result = $db->insert($values_sql);
+            
+            if (is_null($values_result)) throw new Exception("\nFAILED insert Scenario Descriptions using sql = {$values_sql}\n result = $values_result\n\n");
+            
+            if (!is_numeric($values_result))  throw new Exception("\nFAILED insert Scenario Descriptions using sql = {$values_sql} [{$values_result}] is not a number\n");
             
             //echo "  UR = {$values_result}"; 
             
-            $inserted_count += $values_result;
+            $inserted_count++;
         
         }
         
         if ($inserted_count != $descs->count())
         {
-            echo "\n### ERROR:: Failed to insert scenarios Description properly\n";
+            throw new Exception("\n### ERROR:: Failed to insert scenarios Description properly {$inserted_count} != {$descs->count()}\n");
             return FALSE;
         }
         
@@ -282,14 +349,14 @@ SQL;
 
     
     
-    public static  function Stage04($name_only = false)
+    public   function Stage04($name_only = false)
     {
         
         $name = 'Times Descriptions';
 
         if ($name_only) return __METHOD__."::".$name;
         
-        self::header($name);
+        $this->header($name);
     
         // might not be a good idea to drop table - really need  to copy as we will have update 
         // the models_id in other tables from old to new
@@ -314,36 +381,43 @@ SQL;
 
         $db = new PGDB();
         
-        $table_result = $db->update($table_sql);
+        $table_result = $db->CreateAndGrant($table_sql);
+        
+        if (is_null($table_result)) throw new Exception("FAILED to create table times - null result from query ");
+        if (!$db->has_table('times')) throw new Exception("FAILED to create table times - Can't find table with describe ");
+        
         
         //echo "table_result = $table_result\n";
         
         $descs = FinderFactory::Result("TimeAllValues");
         $descs instanceof Descriptions;
         
-        $format = "insert into times (dataname,description,moreinfo,uri) values ('{DataName}','{Description}','{MoreInformation}','{URI}');";
+        $format = "insert into times (dataname,description,moreinfo,uri) values ({DataName},{Description},{MoreInformation},{URI});";
          
         $inserted_count = 0;
         foreach ($descs->Descriptions() as $desc) {
             
             $desc instanceof Description;
-            $values_sql = $desc->asFormattedString($format);
+            $values_sql = $desc->asFormattedString($format,true);
             
             //echo "\n$values_sql  "; 
             
-            $values_result = $db->update($values_sql);
+            $values_result = $db->insert($values_sql);
+            
+            if (is_null($values_result)) throw new Exception("\nFAILED insert Times Descriptions using sql = {$values_sql}\nresult = $values_result\n\n");
+            
+            if (!is_numeric($values_result))  throw new Exception("\nFAILED insert Times Descriptions using sql = {$values_sql} [{$values_result}] is not a number\n");
             
             //echo "  UR = {$values_result}"; 
             
-            $inserted_count += $values_result;
+            $inserted_count++;
         
         }
         
         if ($inserted_count != $descs->count())
         {
-            echo "\n### ERROR:: Failed to insert times Description properly\n";
+            throw new Exception("\n### ERROR:: Failed to insert Times Description properly {$inserted_count} != {$descs->count()}\n");            
             return false;
-            
         }
         
         unset($db);
@@ -353,21 +427,21 @@ SQL;
     }
 
 
-    public static  function Stage05($name_only = false)
+    public   function Stage05($name_only = false)
     {
         
         $name = 'maxent_values';
 
         if ($name_only) return __METHOD__."::".$name;
         
-        self::header($name);
+        $this->header($name);
         
 $table_sql = <<<SQL
 DROP TABLE IF EXISTS maxent_values;
 CREATE TABLE maxent_values
 (
     id SERIAL NOT NULL PRIMARY KEY
-    ,modelled_climates_id  integer       -- many to one with modelled_climates.id
+    ,species_id  integer   
     ,maxent_fields_id      integer       -- many to one with maxent_fields.id
     ,num                   float         -- a numeric value 
     ,update_datetime   timestamp without time zone 
@@ -375,39 +449,49 @@ CREATE TABLE maxent_values
 GRANT ALL PRIVILEGES ON maxent_values TO ap02;
 GRANT USAGE, SELECT ON SEQUENCE maxent_values_id_seq TO ap02;        
 SQL;
-    
 
         $db = new PGDB();
         
-        $table_result = $db->update($table_sql);
+        $table_result = $db->CreateAndGrant($table_sql);
+
+        if (is_null($table_result)) throw new Exception("FAILED to create table maxent_values - null result from query ");
+        if (!$db->has_table('maxent_values')) throw new Exception("FAILED to create table maxent_values - Can't find table with describe ");
         
-        //echo "table_result = $table_result\n";
         
         unset($db);
         
-        if ($table_result != 0)
-        {
-            echo "\n### ERROR:: Failed to add maxent_values properly\n";
-            return false;
-            
-        }
         
         return true;
         
     }
     
 
-    public static  function Stage06($name_only = false)
+    public   function Stage06($name_only = false)
     {
         
         $name = 'modelled_climates';
 
         if ($name_only) return __METHOD__."::".$name;
         
-        self::header($name);
+        $this->header($name);
     
         
 $table_sql = <<<SQL
+   
+DROP TABLE IF EXISTS modelled_species_files;
+CREATE TABLE modelled_species_files
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,species_id        integer        
+    ,scientific_name   varchar(256)   -- Will be Unique
+    ,common_name       varchar(256)
+    ,file_unique_id    varchar(60)
+    ,update_datetime   timestamp without time zone 
+);
+GRANT ALL PRIVILEGES ON modelled_species_files TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE modelled_species_files_id_seq TO ap02;        
+
+
 DROP TABLE IF EXISTS modelled_climates;
 CREATE TABLE modelled_climates
 (
@@ -418,55 +502,65 @@ CREATE TABLE modelled_climates
     ,models_id         integer
     ,scenarios_id      integer
     ,times_id          integer
+    ,file_unique_id   varchar(60)
     ,update_datetime   timestamp without time zone 
 );
 GRANT ALL PRIVILEGES ON modelled_climates TO ap02;
 GRANT USAGE, SELECT ON SEQUENCE modelled_climates_id_seq TO ap02;        
+
 SQL;
 
         $db = new PGDB();
         
-        $table_result = $db->update($table_sql);
+        $table_result = $db->CreateAndGrant($table_sql);
         
-        //echo "table_result = $table_result\n";
-        
+        if (is_null($table_result)) throw new Exception("FAILED to create table modelled_species_files & modelled_climates - null result from query ");
+
+        if (!$db->has_table('modelled_species_files')) throw new Exception("FAILED to create table modelled_species_files - Can't find table with describe ");
+        if (!$db->has_table('modelled_climates')) throw new Exception("FAILED to create table modelled_climates - Can't find table with describe ");
+
         unset($db);
 
-        if ($table_result != 0)
-        {
-            echo "\n### ERROR:: Failed to add modelled_climates properly\n";
-            return false;
-            
-        }
-        
         
         return true;
         
     }
     
     
-    public static  function Stage07($name_only = false)
+    public   function Stage07($name_only = false)
     {
         
         $name = 'files_data';
 
         if ($name_only) return __METHOD__."::".$name;
         
-        self::header($name);
+        $this->header($name);
 
         
 $table_sql = <<<SQL
-DROP TABLE IF EXISTS files_data;
-CREATE TABLE files_data 
+DROP TABLE IF EXISTS files;
+CREATE TABLE files 
 (
     id SERIAL NOT NULL PRIMARY KEY
     ,file_unique_id   varchar(60)
-    ,mimetype         varchar(100)
-    ,file_description varchar(500)
-    ,category         varchar(100)
-    ,partnum          float
+    ,mimetype         varchar(50)
+    ,description      varchar(500)
     ,totalparts       float
     ,total_filesize   float
+    ,update_datetime  timestamp without time zone 
+);
+
+GRANT ALL PRIVILEGES ON files TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE files_id_seq TO ap02;
+
+
+DROP TABLE IF EXISTS files_data;
+CREATE TABLE files_data
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,file_unique_id   varchar(60)
+    ,partnum          float
+    ,totalparts       float
     ,data             text
     ,update_datetime  timestamp without time zone 
 );
@@ -479,78 +573,21 @@ SQL;
 
         $db = new PGDB();
         
-        $table_result = $db->update($table_sql);
+        $table_result = $db->CreateAndGrant($table_sql);
         
-        //echo "table_result = $table_result\n";
+        if (is_null($table_result)) throw new Exception("FAILED to create table files &  files_data - null result from query ");
+
+        if (!$db->has_table('files')) throw new Exception("FAILED to create table files - Can't find table with describe ");
+        if (!$db->has_table('files_data')) throw new Exception("FAILED to create table files_data - Can't find table with describe ");
         
         unset($db);
-        
-        if ($table_result != 0)
-        {
-            echo "\n### ERROR:: Failed to add files_data properly\n";
-            return false;
-            
-        }
-        
-        
-        return true;
-        
-        
-        
-    }
-    
-    
-    public static  function Stage08($name_only = false)
-    {
-        
-        $name = 'modelled_climate_files';
-
-        if ($name_only) return __METHOD__."::".$name;
-        
-        self::header($name);
-
-        
-$table_sql = <<<SQL
-DROP TABLE IF EXISTS modelled_climate_files;
-CREATE TABLE modelled_climate_files
-(
-    id SERIAL NOT NULL PRIMARY KEY
-    ,file_unique_id        varchar(60)
-    ,modelled_climates_id  integer       -- Many to 1 with  modelled_climates.id
-    ,update_datetime  timestamp without time zone 
-);
-
-GRANT ALL PRIVILEGES ON modelled_climate_files TO ap02;
-GRANT USAGE, SELECT ON SEQUENCE modelled_climate_files_id_seq TO ap02;
-SQL;
-    
-        //echo "Create Table for modelled_climate_files \n";
-
-        $db = new PGDB();
-        
-        $table_result = $db->update($table_sql);
-        
-        //echo "table_result = $table_result\n";
-        
-        unset($db);
-
-        
-        if ($table_result != 0)
-        {
-            echo "\n### ERROR:: Failed to add modelled_climate_files properly\n";
-            return false;
-            
-        }
         
         return true;
         
     }
     
 
-    
-    
-
-    private static function header($str = "")
+    private  function header($str = "")
     {
         //echo "\n".str_repeat("=", 70);
         echo "\n=== {$str}\n";
@@ -559,22 +596,22 @@ SQL;
     }
     
     
-    public static  function Stage1($name_only = false) 
+    public   function Stage1($name_only = false) 
     {
         
-        $name = 'Bulid tables for climate model data stages(01,02,03,04,05,06,07,08) ';
+        $name = 'Bulid tables for climate model data stages(01,02,03,04,05,06,07) ';
 
         if ($name_only) return __METHOD__."::".$name;
         
-        self::header($name);
+        $this->header($name);
         
-        self::Execute('01,02,03,04,05,06,07,08');
+        $this->Execute('01,02,03,04,05,06,07');
         
         
     }
     
 
-    public static  function Stage2($name_only = false) 
+    public   function Stage2($name_only = false) 
     {
         
         $name = 'Test insert of Maxent Data';
@@ -582,13 +619,11 @@ SQL;
 
         $species_id = 2;
         
-        $maxentResults = configuration::Maxent_Species_Data_folder().$species_id.configuration::osPathDelimiter().configuration::Maxent_Species_Data_Output_Subfolder().configuration::osPathDelimiter()."maxentResults.csv";
-
-        echo "maxentResults = $maxentResults\n";
-        
         $db = new PGDB();
         
-        $insert_result = $db->InsertMaxentResults($species_id,$maxentResults);
+        $insert_result = $db->InsertMaxentResultsCSV($species_id);
+        
+        print_r($db->GetMaxentResultsCSV($species_id));
         
         unset($db);
         
@@ -598,15 +633,89 @@ SQL;
         
     }    
     
+    
+    public function Stage3($name_only = false) 
+    {
+        
+        $name = 'Test insert of Data from Filesystem to database';
+        if ($name_only) return __METHOD__."::".$name;
 
+        $species_id = 3081;
+        
+        $db = new PGDB();
+        
+        $db->RemoveAllMaxentResults($species_id,true);        
+        $db->InsertAllMaxentResults($species_id);
+        
+        unset($db);
+    }    
 
-    public static  function Stage99($name_only = false) 
+    public function Stage4($name_only = false) 
+    {
+
+        $db = new PGDB();
+        
+        $name = 'Test insert of Data - running models first';
+        if ($name_only) return __METHOD__."::".$name;
+
+        $species_id = 3081;
+        
+        $scenarios = matrix::Column($db->Unique('scenarios', 'dataname'),'dataname');
+        $models    = matrix::Column($db->Unique('models',    'dataname'),'dataname');
+        $times     = matrix::Column($db->Unique('times',     'dataname'),'dataname');
+//        
+//        echo "scenarios = ".implode(", ", $scenarios)."\n";
+//        echo "models    = ".implode(", ", $models)."\n";
+//        echo "times     = ".implode(", ", $times)."\n";
+
+        
+        $scenario = $scenarios[1];
+        $model    = $models[0];
+        $time     = $times[0];
+
+        echo "test scenarios = ".$scenario."\n";
+        echo "test models    = ".$model."\n";
+        echo "test times     = ".$time."\n";
+        
+        
+        $M = new SpeciesMaxent();
+        
+        $src = array();
+        $src['species']  = $species_id;
+        $src['scenario'] = $scenario;
+        $src['model']    = $model;
+        $src['time']     = $time;
+        
+        $M->initialise($src);
+
+        
+        if (!$M->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE)
+        {
+            echo "====================================\n";
+            echo "RUNNING MOdel On GRID\n";
+            echo "====================================\n";
+            
+            $M->Execute();
+            
+        }
+            echo "====================================\n";
+            echo "Writing data to DB\n";
+            echo "====================================\n";
+        
+        
+        
+        unset($db);
+    }    
+    
+    
+    
+    public function Stage99($name_only = false) 
     {
         
         $name = 'Pregenerate all species / models / scenarios / times using - Maxent';
         if ($name_only) return __METHOD__."::".$name;
         
-        self::header($name);
+        $this->header($name);
 
         $db = new PGDB();
         
@@ -615,12 +724,14 @@ SQL;
         $times     = implode(" ",matrix::Column($db->Unique('times',     'dataname'),'dataname'));
 
         $species_id = 2;
+
+        
         
         
         
     }
     
-    private static function preGenerateSpecies($species_id,$scenarios,$models,$times) 
+    private  function preGenerateSpecies($species_id,$scenarios,$models,$times) 
     {
         
         

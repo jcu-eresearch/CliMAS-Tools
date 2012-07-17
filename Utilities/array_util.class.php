@@ -496,8 +496,14 @@ class array_util
 
     public static function FirstElementsThatContain($array, $find)
     {
-        $vals = array_values(self::ElementsThatContain($array, $find));
-        if (count($vals) == 0 ) return null;
+        $elements = self::ElementsThatContain($array, $find);
+        
+        if (is_null($elements)) return null;
+        
+        if (count($elements) == 0 ) return null;
+        
+        $vals = array_values($elements);
+        
 
         return $vals[0];
     }

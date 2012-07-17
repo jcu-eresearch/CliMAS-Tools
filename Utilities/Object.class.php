@@ -213,6 +213,8 @@ class Object  {
 
 
 
+    
+    
     /**
      * $format should contain a string with
      * {property_name}  ... {property_name} ... {property_name}
@@ -223,17 +225,30 @@ class Object  {
      * @param type $format
      * @return type
      */
-    public function asFormattedString($format = null)
+    public function asFormattedString($format = null,$use_db_escapes = false)
     {
         $result = "";
         if (is_null($format))
             foreach ($this->property as $key => $value)
             {
-                if (is_bool($value)) $value = ($value) ? self::$TRUE : self::$FALSE;
+                if (is_bool($value)) 
+                {
+                    $value =  ($value) ? self::$TRUE : self::$FALSE;    
+                    if ($use_db_escapes) $value = util::dbq($value);
+                    
+                }
+                
                 if (is_array($value))
-                    $result = join (",", $value);
+                {
+                    $result =  join (",", $value);
+                    if ($use_db_escapes) $result = util::dbq($result);
+                }   
                 else
+                {
                     $result = $value;
+                    if ($use_db_escapes && !is_numeric($value)) $result = util::dbq($result);
+                }
+                    
 
             }
             
@@ -244,9 +259,22 @@ class Object  {
             {
                 if (is_bool($value)) $value = ($value) ? self::$TRUE : self::$FALSE;
                 
-                if (is_array($value))  $value = join (",", $value);
+                if (is_array($value))  
+                {
+                    $value = join (",", $value);
+                    if ($use_db_escapes) $value = util::dbq($value);
+                }
+                    
+                if ($use_db_escapes)
+                {
+                    $result = str_replace("{".$key."}", (is_numeric($value) ? $value : util::dbq($value) ), $result);
+                }
+                else
+                {
+                    $result = str_replace("{".$key."}", $value, $result);    
+                }
                 
-                $result = str_replace("{".$key."}", $value, $result);
+                
             }
                 
         }

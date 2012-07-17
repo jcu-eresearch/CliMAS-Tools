@@ -73,7 +73,7 @@ function db_access($viaCommandLine)
         echo "TESTING:: db_access with exec calls to command lines\n";
     
     
-    $q = "select column_name,data_type from INFORMATION_SCHEMA.COLUMNS where table_name = 'ap02_command_action';";
+    $q = "select column_name,data_type from INFORMATION_SCHEMA.COLUMNS where table_name = 'command_action';";
     echo "READ TABLE:: \n";
     echo "---------------------------------------------------------------------------------------------\n";
     echo "$q\n";
@@ -93,7 +93,7 @@ function db_access($viaCommandLine)
         return false;
     }
 
-    $q = "insert into ap02_command_action (objectid,execution_flag,status,queueid) values ('1234','NOT WORKING','TEST STATUS','ME')";
+    $q = "insert into command_action (objectid,execution_flag,status,queueid) values ('1234','NOT WORKING','TEST STATUS','ME')";
     echo "INSERT INTO TABLE:: \n";
     echo "---------------------------------------------------------------------------------------------\n";
     echo "$q\n";
@@ -118,7 +118,7 @@ function db_access($viaCommandLine)
     
     
     
-    $q = "select * from ap02_command_action where id = {$i};";
+    $q = "select * from command_action where id = {$i};";
     echo "SELECT DATA:: \n";
     echo "---------------------------------------------------------------------------------------------\n";
     echo "$q\n";
@@ -140,7 +140,7 @@ function db_access($viaCommandLine)
     }
     
     
-    $q = "update ap02_command_action set execution_flag = 'NEW FLAG' where id = {$i};";
+    $q = "update command_action set execution_flag = 'NEW FLAG' where id = {$i};";
     echo "UPDATE TABLE:: \n";
     echo "---------------------------------------------------------------------------------------------\n";
     echo "$q\n";
@@ -156,7 +156,7 @@ function db_access($viaCommandLine)
 
     
     
-    $q = "select * from ap02_command_action where id = {$i};";
+    $q = "select * from command_action where id = {$i};";
     echo "SELECT DATA:: \n";
     echo "---------------------------------------------------------------------------------------------\n";
     echo "$q\n";

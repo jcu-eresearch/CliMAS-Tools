@@ -484,12 +484,13 @@ class matrix
 
     public static function fromString($str,$delim = ",",$rowID = "")
     {
-        $asciiFile = str_replace('"','',$str);
-        $lines = explode("\n",$asciiFile);
+        
+        $lines = explode("\n",$str);
 
         $result = array();
         $headerNames = array_util::Trim(str_getcsv($lines[0],$delim,'"') );
-
+        
+        
         for ($index = 1; $index < count($lines); $index++)
         {
 
@@ -497,6 +498,8 @@ class matrix
 
             $cells = str_getcsv($lines[$index],$delim,'"');
 
+            // echo " cell count = ".count($cells)."  header count = ".count($headerNames)."\n";
+            
             if (count($cells) > count($headerNames))
             {
                 echo "\nincorrect number of cells on line: $index - ignored  " . count($cells) ." > ". count($headerNames);

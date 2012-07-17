@@ -23,13 +23,27 @@ class file {
     }
 
     
-    public static function mime2extension($mimetype)
-    {
-        // http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
-        
-        
-        
-    }
+//    public static function mime2extension($mimetype)
+//    {
+//        // http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
+//        
+//        $file = file("http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types");
+//        $file = file::arrayFilterOut($file, "#");
+//        
+//        $elements = array_util::ElementsThatContain($file, $mimetype);
+//        
+//        if (count($elements) == 0) return null;
+//        
+//        $element = util::first_element($elements);
+//        
+//        $exts = explode(" ",trim(util::fromLastChar($element, " ")));
+//        
+//        if (count($exts) < 1) return null;
+//        
+//        return $exts[0];
+//        
+//        
+//    }
 
 
 
