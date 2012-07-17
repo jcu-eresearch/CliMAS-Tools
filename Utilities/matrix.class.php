@@ -1804,6 +1804,8 @@ class matrix
      */
     public static function Column($src, $column_name)
     {
+        
+        if (!is_array($src)) return null;
 
         $first = util::first_element($src);
 

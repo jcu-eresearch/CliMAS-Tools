@@ -685,11 +685,8 @@ SQL;
     public static function first_element($array)
     {
         if (!is_array($array)) return null;
-        
         if (count($array) == 0) return null;
-        
         $vals = array_values($array);
-
         return $vals[0];
     }
 

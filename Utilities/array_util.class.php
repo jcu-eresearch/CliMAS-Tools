@@ -608,6 +608,7 @@ class array_util
     */
     public static function Value($array, $key,$default = null,$trim_string = false)
     {
+        if (!is_array($array)) return $default;
         
         if (!array_key_exists($key, $array))  return $default;
                 

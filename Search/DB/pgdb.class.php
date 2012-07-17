@@ -90,20 +90,12 @@ class PGDB extends Object {
         // we don't have Postgress SQL php addin so  this is the way query works - thru sending to file and readin file.
         //
         
-        //echo "\n\nQuery By Command Line \n{$sql}\n";
-        
         $resultFilename = file::random_filename();
-        
-        //echo "resultFilename = $resultFilename\n";
         
         $sql_result = $this->ExecuteSQL($sql,$resultFilename);
         
         if (is_null($sql_result)) return null;
         if (count($sql_result) <= 0) return null;
-        
-        
-        //echo "sql_result = \n";
-        //print_r($sql_result);
         
         if (!file_exists($resultFilename)) return null;
         
@@ -124,22 +116,13 @@ class PGDB extends Object {
             {
             
                 if (count($data) == count($headers)) // this should stop any odd lines and the last line (nnnn rows)
-                {
                     for ($c=0; $c < count($data); $c++) 
-                    {
                         
                         if (is_null($keyColumn))
-                        {
                             $result[$row][$headers[$c]] = trim($data[$c]);    
-                        }
                         else
-                        {
                             $result[trim($data[$keyColumnIndex])][$headers[$c]] = trim($data[$c]); 
-                        }
                         
-                        
-                    }
-                }
                 
                 $row++;
             }
@@ -150,7 +133,6 @@ class PGDB extends Object {
         
         file::Delete($resultFilename);
         
-        
         return $result;
 
     }
@@ -159,33 +141,20 @@ class PGDB extends Object {
     public function insert($sql) 
     {
         
-        // we don't have Postgress SQL php addin so  this is the way query works - thru sending to file and readin file.        
         $sql = util::trim_end(trim($sql), ';'). "; select LASTVAL();";
         
         $result = $this->ExecuteSQL($sql);
         
-        //echo "insert  result = $result \n";
-        //print_r($result);
-        
         $last_val_line = array_util::FirstElementsThatContain($result, "lastval");
-        
-        //echo " last_val_line = $last_val_line \n";
         
         if (is_null($last_val_line)) return null;
         
-        $lastId = array_util::Value($result,2);        
-        
-        //echo "aa lastId = $lastId\n";
+        $lastId = array_util::Value($result,2);  // get thrid line of result
         
         if (is_null($lastId)) return null;
-        $lastId = trim(array_util::Value($result,2));
-        //echo "bb lastId = $lastId\n";
-            
+        $lastId = trim($lastId);
         
         if (!is_numeric($lastId))  return null;
-        //echo "cc lastId = $lastId\n";
-        
-        
         
         return trim($lastId);
     }
@@ -194,20 +163,14 @@ class PGDB extends Object {
     
     public function update($sql) 
     {
-        //echo "update sql = $sql\n";
         
         $result = $this->ExecuteSQL($sql);
-
-        print_r($result);
-        
         $update_line = array_util::FirstElementsThatContain($result, "UPDATE");
         
         if (is_null($update_line)) return null;
         if (count($update_line) <= 0 ) return null;
         
         $ins = array_util::FirstElementsThatContain($result,"UPDATE" );
-
-        //echo "ins = $ins\n";
         
         $split = explode(" ",$ins);
         $count = trim($split[1]);
@@ -239,21 +202,23 @@ class PGDB extends Object {
      */
     public function delete($table,$where) 
     {
+        if (is_null($table)) return null;
+        if (is_null($where)) return null;
         
+        $table = trim($table);
         $where = trim($where);
+
+        if ($table == "") return null;
+        if ($where == "") return null;
+        
         
         if ($where == "~~~~~")
             $q = "delete from $table";
         else
             $q = "delete from $table where $where";
         
-        //echo "delete q = $q\n";
-        
         $result = $this->ExecuteSQL($q);
         
-        //echo "delete result\n";
-        
-        //print_r($result);
 
         $delete_line = array_util::FirstElementsThatContain($result, "DELETE");
         
@@ -261,8 +226,6 @@ class PGDB extends Object {
         if (count($delete_line) <= 0 ) return null;
         
         $delete_count = trim(str_replace("DELETE", "", $delete_line)); 
-        
-        //echo "delete delete_count = {$delete_count}\n";
         
         return $delete_count;
     }
@@ -283,7 +246,6 @@ class PGDB extends Object {
         
         $q = "select column_name,data_type from INFORMATION_SCHEMA.COLUMNS where table_name = {$this->q($table_name)};";
         
-        // echo "q = $q\n";
         $result = $this->query($q,"column_name");
         
         if(is_null($result)) return null;
@@ -338,21 +300,6 @@ class PGDB extends Object {
      */
     public function InsertFile($srcFilename,$description) 
     {
-        return $this->InsertFileByCommandLine($srcFilename, $description);
-    }
-    
-
-    /**
-     *
-     * @param type $srcFilename
-     * @param type $description
-     * @param type $category
-     * @return type
-     * @throws Exception 
-     */
-    private function InsertFileByCommandLine($srcFilename,$description) 
-    {
-        
         $chunck_size = self::$FILE_DB_STORAGE_SIZE;
 
         $total_filesize = filesize($srcFilename);
@@ -379,9 +326,6 @@ class PGDB extends Object {
             
             $insertResult = $this->insert($sql);    
             
-            //echo "sql = $sql\n";
-            
-             // echo "insertResult = $insertResult   total_read = $total_read of {$total_filesize}\n";
             
             if (!is_numeric($insertResult) || $insertResult == -1) 
             {
@@ -408,21 +352,15 @@ class PGDB extends Object {
         
         
         return $file_unique_id;
-        
+
     }
     
     
     public function HasFile($file_unique_id) 
     {
-        
-        $q = "select * from files where file_unique_id = {$this->q($file_unique_id)} limit 1";
-        
-        $query_result = $this->query($q);
-        
+        $query_result = $this->query("select * from files where file_unique_id = {$this->q($file_unique_id)} limit 1");
         if(is_null($query_result)) return false;
-        
         if (count($query_result) <= 0) return false;
-
         return true;
 
     }
@@ -443,23 +381,17 @@ class PGDB extends Object {
         
         $sql = "select data from {$this->FilesTableName()} where file_unique_id = {$this->q($file_unique_id)} order by partnum;";
         
-        //echo "Read File here  {$sql} \n";
-        
         $query_result = $this->query($sql);
-        
         if(is_null($query_result)) return null;
-        
         if (count($query_result) <= 0) return null;
+
         
         if ($collect_data) $result_file = '';
         foreach ($query_result as $row) 
         {    
             $datapart =  base64_decode($row['data']);
-            
             if ($collect_data) $result_file .= $datapart;
-            
             if ($echo_data) echo $datapart;
-
         }
         
         unset($row);
@@ -468,7 +400,6 @@ class PGDB extends Object {
         if ($collect_data) return $result_file;
         
         return true;
-        
     }
 
     
@@ -482,11 +413,9 @@ class PGDB extends Object {
      */
     public function ReadFile2Filesystem($file_unique_id,$dest_filename = null) 
     {
-        
         if (is_null($dest_filename)) $dest_filename = file::random_filename(); // 
         
         $result_file =  $this->ReadFile($file_unique_id);
-        
         if (is_null($result_file)) return null;
         
         $info = $this->FileInfo($file_unique_id);
@@ -494,12 +423,8 @@ class PGDB extends Object {
         $fw = fopen($dest_filename,'wb');
         fwrite($fw,$result_file,$info['total_filesize']);
         fclose($fw);
-        
 
-        if (!file_exists($dest_filename)) 
-        {
-            return null;
-        }
+        if (!file_exists($dest_filename))  return null;
         
         return $dest_filename;
         
@@ -517,55 +442,35 @@ class PGDB extends Object {
     
     public function ReadFileMimeType($file_unique_id) 
     {        
-        $sql = "select mimetype from files where file_unique_id = {$this->q($file_unique_id)} limit 1";
-        
-        $mimetype_result = $this->query($sql);
+        $mimetype_result = $this->query("select mimetype from files where file_unique_id = {$this->q($file_unique_id)} limit 1");
         $first = util::first_element($mimetype_result);
         
         return trim($first['mimetype']);
-        
     }
 
     
     public function ReadFileDescription($file_unique_id,$replace_space = " ") 
     {        
-        $sql = "select description from files where file_unique_id = {$this->q($file_unique_id)} limit 1";
-        
-        $mimetype_result = $this->query($sql);
-        $first = util::first_element($mimetype_result);
-        
+        $first = util::first_element($this->query("select description from files where file_unique_id = {$this->q($file_unique_id)} limit 1"));
         return str_replace(" ",$replace_space,trim($first['description']));
-        
     }
-
     
     public function RemoveFile($file_unique_id) 
     {        
-        
         $this->delete('files',                 "file_unique_id = {$this->q($file_unique_id)}");
-        $this->delete($this->FilesTableName(), "file_unique_id = {$this->q($file_unique_id)}");
-        
+        $this->delete($this->FilesTableName(), "file_unique_id = {$this->q($file_unique_id)}");        
         if ($this->HasFile($file_unique_id)) return false; // if file still exists in DB then delet failed
-        
         return true;
-        
     }
-
-    
     
     public function Count($table,$where) 
     {        
-        $sql = "select count(*) as row_count from $table where {$where}";
-        
-        $count_result = $this->query($sql);
+        $count_result = $this->query("select count(*) as row_count from $table where {$where}");
         
         if (is_null($count_result)) return null;
         if (count($count_result) < 0) return null;
         
-        $first = util::first_element($count_result);
-        
-        $count = array_util::Value($first, 'row_count', -1);
-        
+        $count = array_util::Value(util::first_element($count_result), 'row_count', -1);
         return $count;
         
     }
@@ -581,16 +486,12 @@ class PGDB extends Object {
         if (!$as_array)return $result;
         
         return matrix::Column($result, $field);
-        
     }
 
     public function CountUnique($table,$field,$where = null) 
     {        
         return count($this->Unique($table, $field,$where));
     }
-    
-    
-    
     
     /**
      * Add new Action to queue or update the current action
@@ -614,11 +515,8 @@ class PGDB extends Object {
         if ($count > 0)
         {
             // update 
-            $q = "update {$db->ActionsTableName()} set data = '{$data}',status={$db->q($cmd->Status())},execution_flag={$db->q($cmd->ExecutionFlag())} where objectid = {$db->q($command_id)};"; 
-            
-            $updateCount = $db->update($q);    
+            $updateCount = $db->update("update {$db->ActionsTableName()} set data = '{$data}',status={$db->q($cmd->Status())},execution_flag={$db->q($cmd->ExecutionFlag())} where objectid = {$db->q($command_id)};");
             if ($updateCount != 1 ) return null;
-            
         }
         else
         {
@@ -655,15 +553,14 @@ class PGDB extends Object {
         $id = ($src instanceof CommandAction) ? $id->ID() : $src;
         
         $db = new PGDB();
-
-        $q = "select objectid,status from {$db->ActionsTableName()} where queueid={$db->q($db->QueueID())} and objectid = {$db->q($id)}"; 
         
-        $result = $db->query($q,'objectid');
+        $result = $db->query("select objectid,status from {$db->ActionsTableName()} where queueid={$db->q($db->QueueID())} and objectid = {$db->q($id)}",
+                             'objectid');
+        
+        if (is_null($result)) return null;
         if (count($result) <= 0 ) return null;
         
-        $first_row = util::first_element($result);
-        
-        $status = array_util::Value($first_row, 'status', null);
+        $status = array_util::Value(util::first_element($result), 'status', null);
         
         return $status;
         
@@ -674,24 +571,16 @@ class PGDB extends Object {
 
         $db = new PGDB();
         
-        $q = "select data from {$db->ActionsTableName()} where queueid={$db->q($db->QueueID())} and objectid = {$db->q($commandID)};";
+        $result = $db->query("select data from {$db->ActionsTableName()} where queueid={$db->q($db->QueueID())} and objectid = {$db->q($commandID)};",
+                             'objectid');
         
-        $result = $db->query($q,'objectid');
+        if (is_null($result)) return null;
+        if (count($result) <= 0 )  return null;
         
-        
-        if (count($result) <= 0 ) 
-        {
-            return null;
-        }
-        
-        $first_row = util::first_element($result);
-        
-        $data = array_util::Value($first_row, 'data', null);
+        $data = array_util::Value( util::first_element($result), 'data');
         if (is_null($data)) return null;
         
-        $serString = base64_decode($data);
-        
-        $object = unserialize($serString);
+        $object = unserialize(base64_decode($data));
         $object instanceof CommandAction;
         
         return  $object;
@@ -709,26 +598,20 @@ class PGDB extends Object {
     public static function CommandActionRemoveAll($really = false) 
     {
         if (!$really) return;
-        $qid = configuration::CommandQueueID();
         
         $db = new PGDB();
-        $num_removed = $db->update("delete from {$db->ActionsTableName()} where queueid= {$db->q($db->QueueID())};");
+        $num_removed = $db->delete($db->ActionsTableName(), "queueid= {$db->q($db->QueueID())}");
         unset($db);
-        
         return  $num_removed;
-        
     }
     
     
     public static function CommandActionRemove($commandID) 
     {
-
         $db = new PGDB();
-        $num_removed = $db->update("delete from {$db->ActionsTableName()} where queueid={$db->q($db->QueueID())}  and objectid = {$db->q($commandID)};");
+        $num_removed = $db->delete($db->ActionsTableName(), "queueid={$db->q($db->QueueID())}  and objectid = {$db->q($commandID)}");
         unset($db);
-        
         return  $num_removed;
-        
     }
     
     
@@ -736,6 +619,8 @@ class PGDB extends Object {
     {
         $db = new PGDB();
         $result = $db->query("select objectid from {$db->ActionsTableName()} where queueid={$db->q($db->QueueID())};",'objectid');
+        
+        if (is_null($result)) return null;
         if (count($result) <= 0 ) return null;
         
         unset($db);
@@ -747,18 +632,16 @@ class PGDB extends Object {
     
     public static function CommandActionExecutionFlag($commandID) 
     {
-        
         $db = new PGDB();
         $q = "select objectid,execution_flag from {$db->ActionsTableName()} where queueid={$db->q($db->QueueID())} and objectid = {$db->q($commandID)}"; 
         $result = $db->query($q,'objectid');
+        
+        if (is_null($result)) return null;
         if (count($result) <= 0 ) return null;
         
-        $first_row = util::first_element($result);
+        $value = array_util::Value(util::first_element($result), 'execution_flag', null);
         
-        $value = array_util::Value($first_row, 'execution_flag', null);
-        
-        return $value;
-        
+        return $value;   
     }
     
     
@@ -818,17 +701,13 @@ class PGDB extends Object {
     
     public function SpeciesInfoByID($species_id) 
     {
-        
-        
-        $q = "select scientific_name,common_name from species where id = $species_id";
-        $results = $this->query($q,'id');
+
+        $results = $this->query("select scientific_name,common_name from species where id = $species_id",'id');
         
         if (is_null($results)) return null;
         if (count($results) == 0) return null;
         
-        $first = util::first_element($results);
-        
-        return  $first;
+        return  util::first_element($results);
         
     }
     
@@ -855,9 +734,6 @@ class PGDB extends Object {
                 files f  
               where  m.file_unique_id = f.file_unique_id 
                 and  m.species_id = {$species_id}";
-
-                
-        echo __METHOD__.": q = $q \n";
                 
                 
         $result = $this->query($q, 'file_unique_id' );
@@ -876,9 +752,7 @@ class PGDB extends Object {
         $folder = pgdb::MaxentResultsOutputFolder($species_id);
         
         if (!is_dir($folder)) 
-        {
             throw new Exception("InsertAllMaxentResults $folder does not exist\n");
-        }
         
         
         $fn = array();
@@ -889,16 +763,12 @@ class PGDB extends Object {
         $fn['samplePredictions.csv'] = $folder.$species_id.'_samplePredictions.csv';
         $fn['maxent.log'           ] = $folder.'maxent.log';
 
-        foreach ($fn as $desc => $filename) 
-        {
-            
-            $this->InsertSingleMaxentOutput($species_id,$filename,$desc);
-            
-        }
         
         echo "InsertAllMaxentResults folder = $folder \n";
-        $this->InsertMaxentResultsCSV($species_id);
+        foreach ($fn as $desc => $filename)  $this->InsertSingleMaxentOutput($species_id,$filename,$desc);
         
+        echo "InsertMaxentResultsCSV  as rows\n";
+        $this->InsertMaxentResultsCSV($species_id);
         $this->InsertMaxentHTMLasZIP($species_id);
         
         //print_r($this->GetMaxentResultsCSV($species_id));
@@ -911,10 +781,6 @@ class PGDB extends Object {
         
         matrix::display($file_ids, " ", null, 15);
         
-        
-        // plots and html need to be one unit
-        // $fn['html'                 ] = $folder.$species_id.'.html';
-        
 
     }
     
@@ -924,32 +790,27 @@ class PGDB extends Object {
      * 
      * @param type $species_id 
      */
-    
     private function InsertMaxentHTMLasZIP($species_id) 
     {
-             $html_filename = $this->MaxentResultsOutputFolder($species_id).$species_id.".html";
-        $plots_file_pattern = $this->MaxentResultsOutputFolder($species_id)."plots/*";
-     
-        echo "html_filename = $html_filename\n";
-        echo "plots_file_pattern = $plots_file_pattern\n";
+        $html_filename = $this->MaxentResultsOutputFolder($species_id).$species_id.".html";
+        if (!file_exists($html_filename)) return null;
         
-        // store these into a single zip and then add zip to database.
-
-        $zipfilename = file::random_filename().".zip";
+        $plots_folder = $this->MaxentResultsOutputFolder($species_id)."plots";
+        if (!is_dir($plots_folder)) return null;
         
-        echo "zipfilename = $zipfilename\n";
+        $zipfilename = file::random_filename().".zip";  // store these into a single zip and then add zip to database.
         
         $cmd = "cd ".$this->MaxentResultsOutputFolder($species_id)."; ". 
                "zip '{$zipfilename}' '{$html_filename}'; ".
-               "zip '{$zipfilename}' '{$plots_file_pattern}'";
-               
-        echo "cmd = $cmd\n";
+               "zip '{$zipfilename}' '{$plots_folder}/*'";
         
         exec($cmd);
         
         if (!file_exists($zipfilename)) return null;
         
         $file_unique_id = $this->InsertSingleMaxentOutput ($species_id,  $zipfilename,"HTML results zipped");
+        
+        if (is_null($file_unique_id)) return null;
         
         file::Delete($zipfilename);
         
@@ -960,8 +821,15 @@ class PGDB extends Object {
     
     public function InsertSingleMaxentModelledOutput($species_id,$desc,$scenario, $model, $time) 
     {
-        $fn = $this->species_output_projection_filename($speciesID, $scenario, $model, $time);
-        return $this->InsertSingleMaxentOutput($species_id,$fn,$desc,$scenario, $model, $time);
+        return $this->InsertSingleMaxentOutput(
+                        $species_id,
+                        $this->species_output_projection_filename($speciesID, $scenario, $model, $time),
+                        $desc,
+                        $scenario, 
+                        $model, 
+                        $time
+                        );
+        
     }
     
     private function species_output_projection_filename($speciesID, $scenario, $model, $time)
@@ -978,8 +846,6 @@ class PGDB extends Object {
     }
 
     
-    
-    
     /**
      * Store a file to be associated with a species
      * 
@@ -994,19 +860,13 @@ class PGDB extends Object {
     {
      
         if (!file_exists($filename))
-        {
             throw new Exception("InsertModelledSpeciesFile file does not exist {$filename}");
-        }
-        
+            
         echo "Insert for {$species_id} {$filename}  desc = {$desc}\n ";
         
-        
         $file_unique_id = $this->InsertFile($filename, $desc);
-        
         if (is_null($file_unique_id)) 
-        {
             throw new Exception("Failed to insert file {$filename}");
-        }
         
         
         $info = $this->SpeciesInfoByID($species_id);
