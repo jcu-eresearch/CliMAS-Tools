@@ -2,17 +2,61 @@
 <?php
 include_once 'includes.php';
 
-// updated 
+// coverage types
+$coverages = array();
+
+$coverages['australia-5km'] = array();
+$coverages['australia-5km']['tag'] = 'Australia, 5km resolution';
+$coverages['australia-5km']['size_current'] = '~21Mb zip';  // current data
+$coverages['australia-5km']['size_single'] = '~300Mb zip';  // a single model and single scenario
+$coverages['australia-5km']['size_RCP'] = '~1.2Gb zip';     // one model, all RCP scenarios
+$coverages['australia-5km']['size_SRES'] = '~1.5Gb zip';    // one model, all SRES scenarios
+$coverages['australia-5km']['size_models'] = '~5.2Gb zip';  // all models, a single scenario
+
 
 $requestedScenario = array_util::Value($_GET, "scenario", null);
 $requestedModel = array_util::Value($_GET, "model", null);
 $requestedTime = array_util::Value($_GET, "time", null);
+$requestedCoverage = array_util::Value($_GET, "coverage", null);
 
-$haveRequest = (!is_null($requestedScenario)) && (!is_null($requestedModel)) && (!is_null($requestedTime));
+$haveCoverage = !is_null($requestedCoverage);
+$haveRequest = $haveCoverage && (!is_null($requestedScenario)) && (!is_null($requestedModel)) && (!is_null($requestedTime));
+
+// made this file-global
+$self = "http://" . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'];
+if ($_SERVER['SERVER_PORT'] != '80') {
+    $self = "http://" . $_SERVER['SERVER_NAME'] . ":" . $_SERVER['SERVER_PORT'] . $_SERVER['PHP_SELF'];
+}
+
+function coverageSelector($promptTerm = "select")
+{
+    global $self, $coverages, $requestedCoverage;
+
+    $modelDesc = ToolsData::ClimateModels();
+
+    $result = "";
+    $result .= "<div class='coverageselector linkbuttons'>\n";
+    $result .= "<h2>Modelling Coverage</h2>\n";
+    foreach ($coverages as $coverId => $coverData) {
+        $coverageURL = "{$self}?coverage={$coverId}";
+        if ($coverId === $requestedCoverage) {
+            $coverageTip = "currently showing " . $coverData['tag'];
+            $result .= "\t<a href='{$self}' class='selected' title='{$coverageTip}'>{$coverData['tag']}</a>\n";
+        } else {
+            $coverageTip = $promptTerm . " " . $coverData['tag'];
+            $result .= "\t<a href='{$coverageURL}' title='{$coverageTip}'>{$coverData['tag']}</a>\n";
+        }
+    }
+    $result .= "</div>\n";
+    return $result;
+}
 
 function selectionTable()
 {
-    $self = "http://".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
+    global $self, $coverages, $requestedCoverage;
+    
+    // self URL will now always include the selected coverage
+    $baseURL = $self . "?coverage=" . $requestedCoverage;
 
     $modelDesc = ToolsData::ClimateModels();
     $scenarioDesc = ToolsData::EmissionScenarios();
@@ -24,51 +68,6 @@ function selectionTable()
 
     $result = "";
 
-/*
-
-    // files for EACH scenario, ALL models
-    $r1 = array();
-    foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo)
-    {
-        $r1[$scenarioKey] = "{$self}?scenario=$scenarioKey&model=all&time=all";
-    }
-    $result .= "\n"."<h2>Modelling data for one Emission Scenario & all models (~4GB)</h2>";
-    $result .= "\n".htmlutil::TableByCSS($r1, "<a target=\"_dl\" href=\"{#value#}\">{#key#}</a>","scenTable", "scenRow","scenCell");
-
-
-    // files for ALL scenarios, EACH model
-    $r2 = array();
-    foreach ($modelDesc->asSimpleArray($f) as $modelKey => $modelInfo)
-    {
-        $r2[$modelKey] = "{$self}?scenario=all&model={$modelKey}&time=all";
-    }
-    $result .= "\n"."<h2>Modelling data for one Climate model and all scenarios (~2GB)</h2>";
-    $result .= "\n".htmlutil::TableByCSS($r2,"<a target=\"_dl\" href=\"{#value#}\">{#key#}</a>","modelTable", "modelRow","modelCell");
-    $result .= "<br>";
-
-    // files for EACH scenario, EACH model
-    $r3 = array();
-    foreach ($modelDesc->asSimpleArray($f) as $modelKey => $modelInfo)
-    {
-        $r3[$modelKey] = array();
-        $r3[$modelKey][] = $modelKey;
-
-        foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo)
-        {
-            $link = $self."?scenario={$scenarioKey}&model={$modelKey}&time=all";
-
-            $value = '<div class="scenModelCell" ><a target="_dl" href="'.$link.'">'.$scenarioKey.'</a></div>';
-
-            $r3[$modelKey][$scenarioKey] = $value;
-        }
-
-    }
-
-    $result .= "\n"."<h2>Modelling data Individual Models and Emission Scenarios (~300MB)</h2>";
-    $result .= "\n".htmlutil::table($r3,false);
-    $result .= "<br>";
-*/
-
     // --------------------------------------------------------------------
     // files for EACH scenario, EACH model
     // new version, table with integrated header links
@@ -79,16 +78,16 @@ function selectionTable()
 
     $modes['rcp'] = array();
     $modes['rcp']['buttonname'] = 'show RCP scenarios';
-    $modes['rcp']['scenarios'] = array('RCP3PD','RCP45','RCP6','RCP85');
+    $modes['rcp']['scenarios'] = array('RCP', 'RCP3PD','RCP45','RCP6','RCP85');
     
     $modes['sres'] = array();
     $modes['sres']['buttonname'] = 'show SRES scenarios';
-    $modes['sres']['scenarios'] = array('SRESA1B','SRESA1FI','SRESA2','SRESB1','SRESB2');
-
+    $modes['sres']['scenarios'] = array('SRES', 'SRESA1B','SRESA1FI','SRESA2','SRESB1','SRESB2');
+/*
     $modes['all'] = array();
     $modes['all']['buttonname'] = 'show all scenarios';
     $modes['all']['scenarios'] = array(); // special mode that always includes everything
-
+*/
     function modesForScenario($scenario) { // - - - - - - - - - -
         global $modes;
         $scenmodes = array();
@@ -99,7 +98,51 @@ function selectionTable()
         }
         $scenmodes[] = 'all';
         return $scenmodes;
-    } // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    } // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    function downloadUrl($coverage, $scenario, $model) { // - - -
+        // calc the server url
+        $url = "http://" . $_SERVER['SERVER_NAME'];
+        // add port if required
+        if ($_SERVER['SERVER_PORT'] != '80') {
+            $url .= ":" . $_SERVER['SERVER_PORT'];
+        }
+        // add the download path
+        $url .= '/output/';
+        // add the coverage
+        $url .= $coverage . '/';
+
+        // bail out if they asked for current
+        if ($scenario === 'current') {
+            $url .= 'current.zip';
+            return $url;
+        }
+
+        // make the filename
+        if ($scenario !== 'all') {
+            $url .= $scenario;
+        }
+        if ($scenario !== 'all' && $model !== 'all') {
+            $url .= "_";
+        }
+        if ($model !== 'all') {
+            $url .= $model;
+        }
+
+        // add .zip and return
+        $url = $url . '.zip';
+        return $url;
+    } // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    //
+    // link to the current data
+    //
+    $result .= "<p class='current linkbuttons'>";
+    $url = downloadUrl($requestedCoverage,'current');
+    $covername = $coverages[$requestedCoverage]['tag'];
+    $text = $coverages[$requestedCoverage]['size_current'];
+    $result .= "Current climate layers for {$covername}: <a href='{$url}'>{$text}</a>";
+    $result .= "</p>";
 
     //
     // write mode selection buttons
@@ -122,21 +165,41 @@ function selectionTable()
     
     // make a big cell in the top left intersection of the heading rows and
     // columns, and label the horizontal and vertical heading rows with it.
-    $result .= "<tr class='tophalf'><td class='rowcollabels always' colspan='2' rowspan='2'>\n";
+    $result .= "<tr class='tophalf'><td class='rowcollabels always' rowspan='2'>\n";
     $result .= "<div class='rightlabel'>Emission Scenarios</div>";
     $result .= "<div class='downlabel'>Climate Models</div>";
     $result .= "</td>\n";
+
+    // top row: scenario titles
+    // first the two all-scenario-group cells
+    $modeclasses = join(modesForScenario('SRES'), " ");
+    $result .= "<td class='{$modeclasses}'><b>All SRES</b><br>all SRES scenarios</td>\n";
+
+    $modeclasses = join(modesForScenario('RCP'), " ");
+    $result .= "<td class='{$modeclasses}'><b>All RCP</b><br>all RCP scenarios</td>\n";
+    // now loop through the individial scenarios
     foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo) {
         $modeclasses = join(modesForScenario($scenarioKey), " ");
-        $result .= "<td class='{$modeclasses}'><b>{$scenarioKey}</b><br>all models, this scenario</td>";
+        $result .= "<td class='{$modeclasses}'><b>{$scenarioKey}</b><br>all models, this scenario</td>\n";
     }
     $result .= "</tr>\n";
 
+    // bottom row: scenario download buttons
     $result .= "<tr class='bottomhalf'>";
+
+    // first the two all-scenario-group cells
+    $modeclasses = join(modesForScenario('SRES'), " ");
+    $result .= "<td class='" . $modeclasses . "'></td>";
+
+    $modeclasses = join(modesForScenario('RCP'), " ");
+    $result .= "<td class='" . $modeclasses . "'></td>";
+
+    // now loop through the individial scenarios
     foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo) {
-        $scenarioURL = "{$self}?scenario=$scenarioKey&model=all&time=all";
+        $scenarioURL = downloadUrl($requestedCoverage, $scenarioKey, 'all');
         $modeclasses = join(modesForScenario($scenarioKey), " ");
-        $result .= "<td class='" . $modeclasses . "'><a href='" . $scenarioURL . "'>~4Gb zip</a></td>";
+        $text = $coverages[$requestedCoverage]['size_models'];
+        $result .= "<td class='" . $modeclasses . "'><a href='" . $scenarioURL . "'>{$text}</a></td>";
     }
     $result .= "</tr>\n";
 
@@ -145,30 +208,45 @@ function selectionTable()
     //
     foreach ($modelDesc->asSimpleArray($f) as $modelKey => $modelInfo) {
 
-        // start of row is model description etc
-        $modelURL = "{$self}?scenario=all&model={$modelKey}&time=all";
-        $result .= "<tr class='tophalf'><th rowspan='2' class='always'>{$modelKey}</th>";
-        // two actual html table rows for each model
-        // top row is descriptions, starting with model description
-        $result .= "<td class='always'>";
+        // first cell is double high, and has model name & description
+        $result .= "<tr class='tophalf'><td class='always' rowspan='2'><b>{$modelKey}</b><br>";
         $result .= $modelInfo['Description'];
-        $result .= " <a class='morelink' href='{$modelInfo['URI']}'>model ref &raquo;</a> ";
-        $result .= "<br>this model, all scenarios";
+        $result .= "<br><a class='morelink' href='{$modelInfo['URI']}'>model ref &raquo;</a>";
         $result .= "</td>";
-        // rest of the row is model/scenario descriptions
+
+        // then the subtotal columns for all SRES & all RCPs
+        $modeclasses = join(modesForScenario('SRES'), " ");
+        $result .= "<td class='{$modeclasses}'>{$modelKey} for all SRES</td>";
+        $modeclasses = join(modesForScenario('RCP'), " ");
+        $result .= "<td class='{$modeclasses}'>{$modelKey} for all RCP</td>";
+
+        // rest of the top row is model/scenario descriptions
         foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo) {
             $modeclasses = join(modesForScenario($scenarioKey), " ");
             $result .= "<td class='{$modeclasses}'>{$modelKey} for {$scenarioKey}</td>";
         }
         $result .= "</tr>\n";
-        // bottom row is download links, starting with model download
-        $result .= "<tr class='bottomhalf'><td class='always'><a href='{$modelURL}'>~2Gb zip</a></td>";
 
-        // rest of the row is model/scenario download links
+
+        // the bottom row is model/scenario download links
+
+        // first couple are for all SRES & all RCPs
+        $modeclasses = join(modesForScenario('SRES'), " ");
+        $url = downloadUrl($requestedCoverage, 'SRES', $modelKey);
+        $text = $coverages[$requestedCoverage]['size_SRES'];
+        $result .= "<td class='{$modeclasses}'><a href='{$url}''>{$text}</a></td>";
+
+        $modeclasses = join(modesForScenario('RCP'), " ");
+        $url = downloadUrl($requestedCoverage, 'RCP', $modelKey);
+        $text = $coverages[$requestedCoverage]['size_RCP'];
+        $result .= "<td class='{$modeclasses}'><a href='{$url}''>{$text}</a></td>";
+
+        // remainder are for single intersections
         foreach ($scenarioDesc->asSimpleArray($f) as $scenarioKey => $scenarioInfo) {
             $modeclasses = join(modesForScenario($scenarioKey), " ");
-            $result .= "<td class='" . $modeclasses . "'>";
-            $result .= "<a href='" . $self . "?scenario={$scenarioKey}&model={$modelKey}&time=all'>~300Mb zip</a></td>";
+            $url = downloadUrl($requestedCoverage, $scenarioKey, $modelKey);
+            $text = $coverages[$requestedCoverage]['size_single'];
+            $result .= "<td class='{$modeclasses}'><a href='{$url}''>{$text}</a></td>";
         }
         $result .= "</tr>\n";
     }
@@ -193,10 +271,11 @@ function selectionTable()
 
 }
 
-function downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime)
+function downloadRequestConfirmation($requestedCoverage,$requestedScenario,$requestedModel,$requestedTime)
 {
 
     $requestedData = array();
+    $requestedData["Coverage"] = $requestedCoverage;
     $requestedData["Scenarios"] = $requestedScenario;
     $requestedData["Models"] = $requestedModel;
     $requestedData["Times"] = $requestedTime;
@@ -246,6 +325,7 @@ function zipFiles($requestedData)
 
     $archiveFilename  = $outputFolder;
     $archiveFilename .= "JCU-ClimateData";
+    $archiveFilename .= "-".str_replace(" ","_",$requestedData["Coverage"])."";
     $archiveFilename .= "-".str_replace(" ","_",$requestedData["Scenarios"])."";
     $archiveFilename .= "-".str_replace(" ","_",$requestedData["Models"])."";
     $archiveFilename .= "-".str_replace(" ","_",$requestedData["Times"])."";
@@ -253,44 +333,52 @@ function zipFiles($requestedData)
 
 
     if (!file_exists($archiveFilename))
+//    if (false)
     {
-
         $scenarioDesc = ToolsData::EmissionScenarios();
         $modelsDesc = ToolsData::ClimateModels();
         $timeDesc = ToolsData::Times();
+
+        // assume here that only one Coverage can be selected at a time, so we don't need
+        // to have a coverageDesc or replace any "all" coverage selections.
 
         $requestedData["Scenarios"] = ($requestedData["Scenarios"] == "all") ? join(" ",array_keys($scenarioDesc->asSimpleArray())) : $requestedData["Scenarios"];
         $requestedData["Models"]    = ($requestedData["Models"]    == "all") ? join(" ",array_keys($modelsDesc->asSimpleArray()))   : $requestedData["Models"];
         $requestedData["Times"]     = ($requestedData["Times"]     == "all") ? join(" ",array_keys($timeDesc->asSimpleArray()))     : $requestedData["Times"];
 
 
-
+        $coverages = array($requestedData['Coverage']);
         $scenarios = explode(" ",$requestedData["Scenarios"]);
         $models = explode(" ",$requestedData["Models"]);
         $times = explode(" ",$requestedData["Times"]);
 
-        $total = count($scenarios) * count($models) * count($times);
+        $total = count($coverages) * count($scenarios) * count($models) * count($times);
         $count = 1;
-        foreach ($scenarios as $scenario)
-            foreach ($models as $model)
-                foreach ($times as $time)
+        foreach ($coverages as $coverage)
+        {
+            foreach ($scenarios as $scenario)
+            {
+                foreach ($models as $model)
                 {
-                    $toStore = "{$scenario}_{$model}_{$time}".CommandConfiguration::osPathDelimiter()."*.gz";
+                    foreach ($times as $time)
+                    {
+//                        $toStore = "{$coverage}_{$scenario}_{$model}_{$time}".CommandConfiguration::osPathDelimiter()."*.gz";
+                        $toStore = "{$coverage}_{$scenario}_{$model}_{$time}/*.gz";
 
-                    $cmd  = "cd '{$DF}'; ";
-                    $cmd .= "zip -0 $archiveFilename {$toStore}".";";
+                        $cmd  = "cd '{$DF}'; ";
+                        $cmd .= "zip -0 $archiveFilename {$toStore}".";";
 
-                    exec("{$cmd}"); // add files to archive
+                        exec("{$cmd}"); // add files to archive
 
-                    $count++;
+                        $count++;
+                    }
                 }
-
+            }
+        }
     }
 
     return str_replace($outputFolder, "", $archiveFilename);
 }
-
-
 
 ?>
 <html>
@@ -322,16 +410,22 @@ function zipFiles($requestedData)
     $modeListString = '';
 
     if ($haveRequest) {
-        echo downloadRequestConfirmation($requestedScenario,$requestedModel,$requestedTime);
+        echo downloadRequestConfirmation($requestedCoverage,$requestedScenario,$requestedModel,$requestedTime);
         echo "<p><a href='DataDownload.php'>&laquo; climate data downloads page</a></p>";
-    } else {
+    } else if ($haveCoverage) {
         echo "<div class='intro'>";
         include 'DataDownloadDesc.html';
         echo "</div>";
+        echo coverageSelector("change");
         echo selectionTable();
         
         // here's where we put actual modes into this string
         $modeListString = '"' . join(array_keys($modes), '", "') . '"';
+    } else {
+        echo "<div class='intro'>";
+        include 'DataDownloadDesc.html';
+        echo "</div>";
+        echo coverageSelector("choose");
     }
 ?>
     </div>
