@@ -108,7 +108,7 @@ function selectionTable()
             $url .= ":" . $_SERVER['SERVER_PORT'];
         }
         // add the download path
-        $url .= '/output/';
+        $url .= '/climate_2012/output/';
         // add the coverage
         $url .= $coverage . '/';
 
