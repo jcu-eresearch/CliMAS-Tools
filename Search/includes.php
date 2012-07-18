@@ -267,7 +267,8 @@ if (stripos( $hostname, "wallaceinitiative.jcu.edu.au") !== FALSE)
         $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
         $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
     }
-    
+
+}
     $af = configuration::ApplicationFolder();
     include_once configuration::ApplicationFolder().'Utilities/includes.php';
     
