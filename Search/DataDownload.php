@@ -100,7 +100,7 @@ function selectionTable()
         return $scenmodes;
     } // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    function downloadUrl($coverage, $scenario, $model) { // - - -
+    function downloadUrl($coverage, $scenario, $model = 'all') { // - - -
         // calc the server url
         $url = "http://" . $_SERVER['SERVER_NAME'];
         // add port if required
