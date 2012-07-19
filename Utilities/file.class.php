@@ -359,6 +359,12 @@ class file {
         return self::folder_with_extension($path, 'png' ,$sep, $basenameAsKey );
     }
 
+    public static function folder_asc($path, $sep = "/", $basenameAsKey = false )
+    {
+        return self::folder_with_extension($path, 'asc' ,$sep, $basenameAsKey );
+    }
+
+    
 
     /*
     * @method folder_files

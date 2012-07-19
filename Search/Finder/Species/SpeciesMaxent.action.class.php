@@ -61,9 +61,9 @@ class SpeciesMaxent extends CommandAction {
         
         $this->buildCombinations(); 
         
+        $this->LoadResults();
+        
         $this->GetResults();  // then populates the combinations with anything that has already been done
-
-        $this->loadFilesystemMaxentResults();
         
         
         if ($this->ResultsComplete())
@@ -77,42 +77,23 @@ class SpeciesMaxent extends CommandAction {
         
     }
 
-    private function loadFilesystemMaxentResults()
+    
+    /**
+     *
+     * Results that exist on filesystem but not in database will be loaded here
+     *  
+     */
+    private function LoadResults() 
     {
         
-        $result = array();
+        $db = new PGDB();
         
-        foreach ($this->SpeciesCombinations() as $speciesID => $combinations) 
+        foreach (array_keys($this->SpeciesCombinations()) as $speciesID) 
         {
-            
-            $result[$speciesID] = array();
-            
-            // get data into datbase if we already have it - manin maxent data has been compiled            
-            $db = new PGDB();        
-            $db->RemoveAllMaxentResults($speciesID,true);  // Remove this line later
-            $db->InsertAllMaxentResults($speciesID);       
-            unset($db);            
-            
-            foreach ($combinations as $combination => $file_id) 
-            {
-                $result[$speciesID][$combination] = $file_id;
-                if (is_null($file_id))
-                {
-                    $ascii_file_id = $this->insertMaxentProjectedFiles($speciesID, $scenario, $model, $time);    
-                    
-                    if (!is_null($ascii_file_id))
-                        $result[$speciesID][$combination] = $new_file_id;
-                    
-                }
-                
-            }
-            
-            
+            $db->InsertAllMaxentResults($speciesID);
         }
         
-        $this->SpeciesCombinations($result); // 
-
-        
+        unset($db);
         
     }
     
@@ -123,13 +104,9 @@ class SpeciesMaxent extends CommandAction {
         $logStr = "";
         
         if (is_array($str) || is_object($str))
-        {
             $logStr .= datetimeutil::NowDateTime()." ".$from."\n".print_r($str,true)."\n";    
-        }
         else
             $logStr .= datetimeutil::NowDateTime()." ".$from." ".$str."\n";
-        
-        $logStr .= str_repeat("-", 50)."\n";
         
         
         echo $logStr;
@@ -149,12 +126,12 @@ class SpeciesMaxent extends CommandAction {
         $result = array();
         foreach ($species as $speciesID)
         {
-            $result[$this->clean_species_name($speciesID)] = array();
+            $result[$speciesID] = array();
             foreach ($scenarios as $scenarioID)
                 foreach ($models  as $modelID)
                     foreach ($times as $timeID)
                     {
-                        $result[$this->clean_species_name($speciesID)]["{$scenarioID}_{$modelID}_{$timeID}"] = null;
+                        $result[$speciesID]["{$scenarioID}_{$modelID}_{$timeID}"] = null;
                         $full_count++;
                     }
                         
@@ -189,19 +166,8 @@ class SpeciesMaxent extends CommandAction {
         if (is_null($this->SpeciesCombinations()) ||  count($this->SpeciesCombinations()) == 0  )  $this->buildCombinations();
         
         $this->GetResults();
-
-        $this->msg(__METHOD__,"Check after GetResults()");
-        $this->msg(__METHOD__,$this->SpeciesCombinations());
-        
-        
-        /**
-         * check now to see if we have to  call the GRID
-         */
-        if ($this->ResultsComplete()) 
+        if ($this->ResultsComplete())  // check now to see if we have to  call the GRID
         {            
-            
-            $this->msg(__METHOD__,"we already have all so finish quick");
-            
             $this->Status("ALL DONE");
             $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
             pgdb::CommandActionQueue($this);; // update the status and interim results 
@@ -319,7 +285,6 @@ class SpeciesMaxent extends CommandAction {
         foreach ($speciesIDs as $speciesID) 
         {
             if (is_null($speciesID)) continue;
-            
             if ($speciesID == "" ) continue;
             
             $this->msg(__METHOD__,"species data folder = ".$this->speciesDataFolder($speciesID));
@@ -332,7 +297,7 @@ class SpeciesMaxent extends CommandAction {
             $this->msg(__METHOD__,$getOccurResult);
             
             
-            if (is_null($getOccurResult)) return new Exception ("Error getting Occurence data for ".$this->clean_species_name($speciesID)."\n");
+            if (is_null($getOccurResult)) return new Exception ("Error getting Occurence data for ".$speciesID."\n");
             
         }
         
@@ -416,7 +381,7 @@ class SpeciesMaxent extends CommandAction {
         
         $this->msg(__METHOD__," occurFilename = $occurFilename");
         
-        $result = pgdb::SpeciesOccurance(str_replace("_", " ", $speciesID));
+        $result = pgdb::SpeciesOccurance($speciesID);
         
         $this->msg(__METHOD__,"post pgdb::SpeciesOccurance");
         //$this->msg(__METHOD__,$result);
@@ -429,7 +394,7 @@ class SpeciesMaxent extends CommandAction {
         
         $file = '"SPPCODE","LATDEC","LONGDEC"'."\n";  // headers specific to Maxent JAR
         foreach ($result as $row) 
-            $file .= $this->clean_species_name($speciesID).",".$row['latitude'].",".$row['longitude']."\n";
+            $file .= $speciesID.",".$row['latitude'].",".$row['longitude']."\n";
         
         
         file_put_contents($occurFilename, $file);
@@ -464,6 +429,7 @@ class SpeciesMaxent extends CommandAction {
         $complete = true;
         
         $done_count = 0;
+        
         foreach ($this->SpeciesCombinations() as $speciesID => $combinations) 
         {
             
@@ -477,7 +443,7 @@ class SpeciesMaxent extends CommandAction {
                 // since the maxent log does not exiosts we want to 
                 // just copy the current results over
                 foreach ($combinations as $combination => $file_id) 
-                    $result[$this->clean_species_name($speciesID)][$combination] = $file_id;
+                    $result[$speciesID][$combination] = $file_id;
                 
                 continue;      
                 // don't check outputs when we don't have a complete maxent log
@@ -487,31 +453,30 @@ class SpeciesMaxent extends CommandAction {
             foreach ($combinations as $combination => $file_id) 
             {
                 
-                $result[$this->clean_species_name($speciesID)][$combination] = $file_id; // copy current value
+                $result[$speciesID][$combination] = $file_id; // copy current values into new result - will copy over null values as well
                 
+                // the current file_id for this combinartion is not set - go get it / check for it
                 if (is_null($file_id))
                 {
+                    
                     list($scenario, $model, $time) = explode("_",$combination);    
                     
                     // we don't know if we have database data for this comnination so go acheck
-                    $file_id = $this->GetModelledData($speciesID, $scenario, $model, $time);
-                    
+                    $file_id = $this->GetModelledData($speciesID, $scenario, $model, $time); // only interested in ASCII_GRID outputs
                     
                     if (is_null($file_id))
                     {
-                        // if Id is still NULL check the filesystem for results
-                        // check filesystem to see if we have that file already - if so add this to database and set file_id
-                        
-                        
+                        $result[$speciesID][$combination] = null;  // we check for the file / db row and we did not find it so set this combinatrion to null
+                        $complete = false; // we still don't have all results requested
                     }
-                    
-                    $result[$this->clean_species_name($speciesID)][$combination] = $file_id;
-                    
-                    if (is_null($file_id)) $complete = false;
+                    else
+                    {
+                        $result[$speciesID][$combination] = $file_id;    
+                    }
                     
                 }
                 
-                if (!is_null($file_id)) $done_count++; // count what ahs been done
+                if (strlen($file_id) > 0) $done_count++; // count what ahs been done
                 
             }
                         
@@ -528,44 +493,6 @@ class SpeciesMaxent extends CommandAction {
         $this->Status("Items processed ".$this->ResultsDoneCountString()." of ".$this->ResultsFullCountString() );
         
     }
-    
-
-    private function insertMaxentProjectedFiles($speciesID, $scenario, $model, $time)
-    {
-        
-        $pfn = $this->species_output_projection_filename($speciesID, $scenario, $model, $time);
-
-        echo "checking for pfn $pfn\n"; // - ascii grid output                        
-
-        $combination = "{$scenario}_{$model}_{$time}";
-        
-        $file_id = null;
-        
-        if (file_exists($pfn))
-        {
-            
-            $file_id = $this->GetModelledData($speciesID, $scenario, $model, $time);
-            
-            $db = new PGDB();
-
-            echo "pushing ascii grid into database $pfn\n";                            
-            $file_id = $db->InsertSingleMaxentOutput($speciesID, $pfn, "Grid_".$combination, $scenario, $model, $time);
-            unset($db);
-        }
-        
-        $quicklook_image_filename = self::CreateQuickLookImage($species_id,$pfn);
-        
-        if (file_exists($quicklook_image_filename))
-        {
-            echo "pushing quick look into database $quicklook_image_filename\n";                            
-            
-            $ql_file_id = $db->InsertSingleMaxentOutput($species_id,$quicklook_image_filename,"QuickLook_".$combination,$scenario, $model, $time);    
-        }
-        
-        return $file_id; // nly need to retuyrn ascii grid file id
-        
-    }
-    
     
     
     /**
@@ -594,7 +521,7 @@ class SpeciesMaxent extends CommandAction {
     {
         
         $maxentLog =    configuration::Maxent_Species_Data_folder().
-                        $this->clean_species_name($speciesID).
+                        $speciesID.
                         configuration::osPathDelimiter().
                         configuration::Maxent_Species_Data_Output_Subfolder().
                         configuration::osPathDelimiter().
@@ -653,27 +580,21 @@ class SpeciesMaxent extends CommandAction {
     {
         
         // for each species we need to run all the combinations (or check to see if thay have been run)
-        $this->msg(__METHOD__,"pre ");
         
         $scripts = array();
         foreach ($this->SpeciesCombinations() as $speciesID => $combinations)
         {
             $singleScript = $this->writeMaxentSingleSpeciesProjectionScriptFile($speciesID,$combinations); // all combinations for a single species
             
+            if ($singleScript == "")  continue;
+
             $this->msg(__METHOD__,"singleScript = [$singleScript] ");
             
-            if ($singleScript != "") 
-            {
-                
-                $scripts[$speciesID] = $singleScript;
-            }
-                
+            $scripts[$speciesID] = $singleScript; // add script if we have the name
             
         }
 
         $this->ScriptsToRun($scripts);
-        
-        $this->msg(__METHOD__,"post ");
 
     }
 
@@ -690,11 +611,8 @@ class SpeciesMaxent extends CommandAction {
         
         $this->msg(__METHOD__,"pre");
         
-        
         file::mkdir_safe($this->species_scripts_folder($speciesID));
-
         file::mkdir_safe($this->species_data_folder($speciesID));
-
         file::mkdir_safe($this->species_output_folder($speciesID));
         
         $this->msg(__METHOD__,"this->species_scripts_folder(speciesID) ".$this->species_scripts_folder($speciesID));
@@ -743,7 +661,7 @@ class SpeciesMaxent extends CommandAction {
     private function species_scripts_folder($speciesID)
     {
         $scripts_folder =  configuration::CommandScriptsFolder().
-                           $this->clean_species_name($speciesID).
+                           $speciesID.
                            configuration::osPathDelimiter();
 
         return $scripts_folder;
@@ -754,7 +672,7 @@ class SpeciesMaxent extends CommandAction {
     private function species_data_folder($speciesID)
     {
         $data_folder    =   configuration::Maxent_Species_Data_folder().
-                            $this->clean_species_name($speciesID).
+                            $speciesID.
                             configuration::osPathDelimiter();
 
         return $data_folder;
@@ -765,7 +683,7 @@ class SpeciesMaxent extends CommandAction {
     private function species_output_folder($speciesID)
     {
         $output_folder  =   configuration::Maxent_Species_Data_folder().
-                            $this->clean_species_name($speciesID).
+                            $speciesID.
                             configuration::osPathDelimiter().
                             configuration::Maxent_Species_Data_Output_Subfolder();
 
@@ -776,7 +694,7 @@ class SpeciesMaxent extends CommandAction {
     private function species_output_projection_filename($speciesID, $scenario, $model, $time)
     {
         $output_file    =   configuration::Maxent_Species_Data_folder().
-                            $this->clean_species_name($speciesID).
+                            $speciesID.
                             configuration::osPathDelimiter().
                             configuration::Maxent_Species_Data_Output_Subfolder().
                             configuration::osPathDelimiter().
@@ -790,9 +708,9 @@ class SpeciesMaxent extends CommandAction {
     private function maxent_single_species_script_filename($speciesID)
     {
         $scriptFilename =   configuration::CommandScriptsFolder().
-                            $this->clean_species_name($speciesID).
+                            $speciesID.
                             configuration::osPathDelimiter().
-                            $this->clean_species_name($speciesID).'_root'.
+                            $speciesID.'_root'.
                             configuration::CommandScriptsSuffix();
 
         return $scriptFilename;
@@ -805,10 +723,7 @@ class SpeciesMaxent extends CommandAction {
         
         if ($this->MaxentLogDone($speciesID)) return ""; // if we already have the maxent data then don't run this part 
         
-        $clean_species_name = str_replace(" ", "_", $speciesID);        
-        
         $species_folder = $this->species_data_folder($speciesID);
-        
         
          $maxent = configuration::MaxentJar();
           $train = configuration::Maxent_Taining_Data_folder();
@@ -819,15 +734,22 @@ class SpeciesMaxent extends CommandAction {
         
         $occur =  $this->species_occurence_filename($speciesID);
 
-        $MaxentResultsInsert_php  = configuration::ApplicationFolder()."MaxentResultsInsert_php.php";
+        $MaxentResultsInsert_php  = configuration::ApplicationFolder()."Search/MaxentResultsInsert.php";
+        
+        
+        $db = new PGDB();
+        $speciesInfo = implode("," , $db->SpeciesInfoByID($speciesID));
+        unset($db);
+        
         
 $maxent_script = <<<AAA
 #!/bin/tcsh
 #
-# execute maxent for  ({$clean_species_name})
+# execute maxent for  ({$speciesID})
 # ==================================================================================
 #
 # speciesID      = {$speciesID} 
+# Species Info   = {$speciesInfo}
 # Scenarios      = {$this->EmissionScenarioIDs()}
 # Models         = {$this->ClimateModelIDs()} 
 # Times          = {$this->TimeIDs()}
@@ -847,7 +769,7 @@ module load java
 
 #model the species distribution
 java -mx2048m -jar {$maxent} environmentallayers={$train} samplesfile={$occur} outputdirectory={$output_folder} -J -P -x -z redoifexists autorun
-php -q '{$MaxentResultsInsert_php}' '$clean_species_name'
+php -q '{$MaxentResultsInsert_php}' $speciesID
 
 AAA;
             return $maxent_script;
@@ -888,8 +810,6 @@ AAA;
      */
     private function singleCombinationScript($speciesID,$combination)
     {
-
-        $clean_species_name = str_replace(" ", "_", $speciesID);
         
         $script_folder =    $this->species_scripts_folder($speciesID);
         
@@ -903,7 +823,7 @@ AAA;
         
 
         $future_projection_output = configuration::Maxent_Species_Data_folder().
-                                    $clean_species_name.
+                                    $speciesID.
                                     configuration::osPathDelimiter().
                                     configuration::Maxent_Species_Data_Output_Subfolder().
                                     configuration::osPathDelimiter().
@@ -912,20 +832,27 @@ AAA;
 
         
         $scriptFilename =   configuration::CommandScriptsFolder().
-                            $clean_species_name.
+                            $speciesID.
                             configuration::osPathDelimiter().
                             $this->ID().'_'.$combination.
                             configuration::CommandScriptsSuffix();
         
+        
+        $db = new PGDB();
+        $speciesInfo = implode("," , $db->SpeciesInfoByID($speciesID));
+        unset($db);
+        
+        
         $script  = "#!/bin/tcsh"; 
-        $script .= "\n#combination              = {$combination}";
-        $script .= "\n#clean_species_name       = {$clean_species_name}";
-        $script .= "\n#script_folder            = {$script_folder}";
-        $script .= "\n#maxent                   = {$maxent}";
-        $script .= "\n#lambdas                  = {$lambdas}";
-        $script .= "\n#proj                     = {$proj}";
-        $script .= "\n#future_projection_output = {$future_projection_output}";
-        $script .= "\n#scriptFilename           = {$scriptFilename}";
+        $script .= "\n# combination              = {$combination}";
+        $script .= "\n# speciesID                = {$speciesID}";
+        $script .= "\n# speciesInfo              = {$speciesInfo}";
+        $script .= "\n# script_folder            = {$script_folder}";
+        $script .= "\n# maxent                   = {$maxent}";
+        $script .= "\n# lambdas                  = {$lambdas}";
+        $script .= "\n# proj                     = {$proj}";
+        $script .= "\n# future_projection_output = {$future_projection_output}";
+        $script .= "\n# scriptFilename           = {$scriptFilename}";
         $script .= "\n#";
         
         $script .= "\nmodule load java";
@@ -933,7 +860,7 @@ AAA;
 
                     //java -mx2048m -cp $MAXENT   density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x        
         $script .= "\njava -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x";   
-        $script .= "\nphp -q ".configuration::ApplicationFolder()."Search/MaxentQuickLookInsert.php '$clean_species_name' '$future_projection_output'";
+        $script .= "\nphp -q ".configuration::ApplicationFolder()."Search/MaxentQuickLookInsert.php $speciesID '$future_projection_output'";
         $script .= "\n";
         
         
@@ -952,11 +879,11 @@ AAA;
     private function species_lambdas($speciesID) {
         
         $lambdas =  configuration::Maxent_Species_Data_folder().
-                    $this->clean_species_name($speciesID).
+                    $speciesID.
                     configuration::osPathDelimiter().
                     configuration::Maxent_Species_Data_Output_Subfolder().
                     configuration::osPathDelimiter().
-                    $this->clean_species_name($speciesID).
+                    $speciesID.
                     ".lambdas";
         
         return $lambdas;
@@ -1060,7 +987,7 @@ AAA;
     {
         
         $occurFilename =    configuration::Maxent_Species_Data_folder().
-                            $this->clean_species_name($speciesID).
+                            $speciesID.
                             configuration::osPathDelimiter().
                             configuration::Maxent_Species_Data_Occurance_Filename();
         
@@ -1074,18 +1001,12 @@ AAA;
     {
         
         $species_data_folder =  configuration::Maxent_Species_Data_folder().
-                                $this->clean_species_name($speciesID).
+                                $speciesID.
                                 configuration::osPathDelimiter();
         
         return $species_data_folder;
         
     }
-
-    private function clean_species_name($speciesID)
-    {
-        return str_replace(" ", "_", $speciesID);
-    }
-    
     
     
     /**
@@ -1100,15 +1021,15 @@ AAA;
     public static function CreateQuickLookImage($species_id,$src_grid_filename,$output_image_filename = null ,$low_threshold = null,$transparency = 255,$background_colour = "0 0 0 255")
     {
         
-        if (is_null($output_image_filename)) $output_image_filename = str_replace("asc","png",$output_image_filename);
+        if (is_null($output_image_filename)) $output_image_filename = str_replace("asc","png",$src_grid_filename);
         
         if (file_exists($output_image_filename)) return $output_image_filename;
         
         list($scenario, $model, $time) =  explode("_",str_replace('.asc','',basename($src_grid_filename)));    
+
+        $histogram_buckets = 10;
         
-        $stats = spatial_util::RasterStatisticsPrecision($src_grid_filename);    
-        
-        $ramp = RGB::Ramp(0, 1, 10, RGB::GradientYellowOrangeRed());    
+        $ramp = RGB::Ramp(0, 1, $histogram_buckets,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())); 
 
         $colour_txt = file::random_filename().".txt"; // list of colours to use - will bne generated
         file::Delete($colour_txt);
@@ -1128,9 +1049,15 @@ AAA;
         $colour_legend_png = file::random_filename().".png"; // legend  image together
         file::Delete($colour_legend_png);
 
+        $header_png = file::random_filename().".png"; // legend  image together
+        file::Delete($header_png);
+        
+        
         if (is_null($output_image_filename))
             $output_image_filename = file::random_filename().".png"; // return image filename
         
+        
+        $db = new PGDB();
         
 
     //    echo "\ncolour_txt = ".$colour_txt ;
@@ -1142,103 +1069,84 @@ AAA;
 
 
         $indexes = array_keys($ramp);
-        if (is_null($low_threshold)) 
+        if (is_null($low_threshold))   // try to get value from  Maxent Results self::$DisplayThresholdFieldName
         {
-            // try to get value from  Maxent Results self::$DisplayThresholdFieldName
-            
             $low_threshold = $indexes[1]; // if they did not pass low end threshold then just show everything above lowest value    
-            
-            $db = new PGDB();
             $maxent_threshold = $db->GetMaxentResult($species_id,self::$DisplayThresholdFieldName);
-            
-            echo "\nmaxent_threshold = $maxent_threshold\n";
-            
-            exit();
-            
-            if (!is_null($maxent_threshold)) 
-            {
-                echo "\nlow_threshold set by lookup to maxent results = $low_threshold\n";
-                $low_threshold = $maxent_threshold;
-            }
-                
-            unset($db);
-            
+            if (!is_null($maxent_threshold))  $low_threshold = $maxent_threshold;
         }
-            
-
-        echo "\nlow_threshold = $low_threshold\n";
-
-
+        
         // create colour "lookup table"    
-        $value_count = 0; // used later to know how tall the legend will be
 
         $color_table = "nv 0 0 0 0\n";  // no value
-        $count = 0;
+        $pcent = 0;
+        $step = round( 100 / count($ramp),0);
         foreach ($ramp as $index => $rgb) 
         {
             $rgb instanceof RGB;
             if ($index < $low_threshold)
             {
-                $color_table .= $count."% 0 0 0 0\n";
+                $color_table .= $pcent."% 0 0 0 0\n";
             }
             else
             {
-                $color_table .= $count."% ".$rgb->Red()." ".$rgb->Green()." ".$rgb->Blue()." {$transparency}\n";    
-                $value_count++;
+                $color_table .= $pcent."% ".$rgb->Red()." ".$rgb->Green()." ".$rgb->Blue()." {$transparency}\n";    
+                
             }
-            $count++;
+            $pcent += $step;
         }
-
-        //echo "\nramp\n";
-        //print_r($ramp);
-
 
         // save the colour lookup table 
         file_put_contents($colour_txt, $color_table);
+        
         $cmd = "gdaldem  color-relief {$src_grid_filename} {$colour_txt} -nearest_color_entry -alpha -of PNG {$colour_png}";
-
-        //echo "$cmd\n";
-
         exec($cmd);  // generate a coloured image using colour lookup 
-
-
 
         // create backgound to put coloured image on top of
         file_put_contents($colour_zero_txt, "nv 0 0 0 0\n0% {$background_colour}\n100% {$background_colour}\n"); // default is ALL Values = $background_colour  & No Value  = transparent  
-
         $cmd = "gdaldem  color-relief {$src_grid_filename} $colour_zero_txt -nearest_color_entry -alpha -of PNG {$colour_background_png}";
-
-        //echo "$cmd\n";
-
         exec($cmd);
 
 
         // order here is important first is lowest
         $cmd = "convert {$colour_background_png} {$colour_png} -layers flatten {$colour_combined_png}";
-        //echo "$cmd\n";
         exec($cmd);
+
+        
+        $species_info = $db->SpeciesInfoByID($species_id);
+        $species_info = array_util::Replace($species_info, "'", "");
+        
+        
+        list($width, $height, $type, $attr) = getimagesize($colour_png);     
+        
+        // - add parameters  to the image  $scenario, $model, $time
+
+$header = <<<HEADER
+convert \
+-size  {$width}x60 xc:white -font DejaVu-Sans-Book -fill black \
+-draw 'text  10,20 "{$species_info['scientific_name']}"' \
+-draw 'text  10,40 "{$species_info['common_name']}"' \
+-draw 'text 200,20 "Scenario: {$scenario}"' \
+-draw 'text 400,20 "Model: {$model}"' \
+-draw 'text 600,20 "Time: {$time}"' \
+{$header_png};
+HEADER;
+
+        exec($header);
 
 
         // create a legend image
         // # rectangle left,top right,bottom" \
-
-
         $swatch_height = 20;
         $swatch_width = 20;
-
         $swatch_width_padding = 10;
-
         $text_align_up = -2;
 
-        list($width, $height, $type, $attr) = getimagesize($colour_png);     
-
-        $height = $value_count * $swatch_height + (2 * $swatch_height);  // heioght of the legend is a cal of the number of legend items
-
-
-        $box_top = 20;
+        
+        $height = count($ramp) * $swatch_height + (2 * $swatch_height);  // heioght of the legend is a cal of the number of legend items + 2 for top and bittom padding
+        $box_top = 10;
         $box_left = 20;
-
-
+        
         $legend  = "convert -size  {$width}x{$height} xc:white ";
         $legend .= "-font DejaVu-Sans-Book ";
 
@@ -1246,52 +1154,32 @@ AAA;
         {
             $rgb instanceof RGB;
 
-            if ($index >= $low_threshold)
-            {
-                $box_right = $box_left + $swatch_width;
-                $box_bottom = $box_top + $swatch_height;
+            $box_right = $box_left + $swatch_width;
+            $box_bottom = $box_top + $swatch_height;
 
-                $text_left = $box_left + $swatch_width + $swatch_width_padding;
-                $text_top  = $box_top + $swatch_height + $text_align_up;
+            $text_left = $box_left + $swatch_width + $swatch_width_padding;
+            $text_top  = $box_top + $swatch_height + $text_align_up;
 
-                $text = $index;
+            $text = sprintf("%01.2f", $index);
 
-                $legend .= "-fill '#{$rgb->asHex()}' -draw 'rectangle {$box_left},{$box_top} {$box_right},{$box_bottom}' ";
-                $legend .= "-fill black -draw 'text {$text_left},{$text_top} \"{$text}\"' ";
+            $legend .= "-fill '#{$rgb->asHex()}' -draw 'rectangle {$box_left},{$box_top} {$box_right},{$box_bottom}' ";
+            $legend .= "-fill black -draw 'text {$text_left},{$text_top} \"{$text}\"' ";
 
-                $box_top += $swatch_height;
-            }
+            $box_top += $swatch_height;
 
         }
 
-
-        // - add parameters  to the image  $scenario, $model, $time
-
-        $param_text_left = $width / 2;
-        $param_text_top = 20; 
-
-        $legend .= "-fill black -draw 'text {$param_text_left},{$param_text_top} \"Scenario: {$scenario}\"' ";
-
-        $param_text_top += 20;
-        $legend .= "-fill black -draw 'text {$param_text_left},{$param_text_top} \"Model: {$model}\"' ";
-
-        $param_text_top += 20;
-        $legend .= "-fill black -draw 'text {$param_text_left},{$param_text_top} \"Time: {$time}\"' ";
-
         $legend .= " {$colour_legend_png}";
-
-
-        //echo "$legend\n";
-
+        
         exec($legend); // create legend
 
-
-        $cmd = "convert {$colour_combined_png} {$colour_legend_png} -append {$output_image_filename}";
-        //echo "$cmd\n";
+        $cmd = "convert {$header_png} {$colour_combined_png} {$colour_legend_png} -append {$output_image_filename}";
         exec($cmd);
 
         // might be better here to convert to a tmp image
         // and then copy back to the $output_image_filename
+        
+        unset($db);
         
 
         file::Delete($colour_txt);
@@ -1303,19 +1191,42 @@ AAA;
 
         if (!file_exists($output_image_filename)) return null;
 
+        
+        
+        
         return $output_image_filename; // filename of png that can be used - 
 
     }
 
     
+    /**
+     * Make sure all outputs for a model run exist
+     * 
+     * @param type $species
+     * @param type $scenario
+     * @param type $model
+     * @param type $time
+     * @return null 
+     */
     public function GetModelledData($species,$scenario, $model, $time)
     {
         // $scenario, $model, $time
         $db = new PGDB();
-        $file_id = $db->GetModelledData($species, $scenario, $model, $time);
+        
+        //echo __METHOD__."  $species,$scenario, $model, $time,$filetype , $desc  \n";
+        
+        $asc_file_id = $db->GetModelledData($species, $scenario, $model, $time,'ASCII_GRID');
+        
+        $quickLook_file_id  = $db->GetModelledData($species, $scenario, $model, $time,'QUICK_LOOK');
+        
+        if (is_null($asc_file_id) || is_null($quickLook_file_id) )return null;
+        
+        
+        //echo __METHOD__."  file_id = $file_id  \n";
+        
         unset($db);
         
-        return $file_id;
+        return $asc_file_id;
     }
     
 }

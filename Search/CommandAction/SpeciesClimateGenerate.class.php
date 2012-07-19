@@ -485,6 +485,7 @@ CREATE TABLE modelled_species_files
     ,species_id        integer        
     ,scientific_name   varchar(256)   -- Will be Unique
     ,common_name       varchar(256)
+    ,filetype          varchar(90)
     ,file_unique_id    varchar(60)
     ,update_datetime   timestamp without time zone 
 );
@@ -502,6 +503,7 @@ CREATE TABLE modelled_climates
     ,models_id         integer
     ,scenarios_id      integer
     ,times_id          integer
+    ,filetype          varchar(90)
     ,file_unique_id   varchar(60)
     ,update_datetime   timestamp without time zone 
 );
@@ -544,6 +546,7 @@ CREATE TABLE files
     id SERIAL NOT NULL PRIMARY KEY
     ,file_unique_id   varchar(60)
     ,mimetype         varchar(50)
+    ,filetype         varchar(90)  -- e.g. ASC_GRID, QuickLook, HTML, CSV
     ,description      varchar(500)
     ,totalparts       float
     ,total_filesize   float
@@ -669,10 +672,15 @@ SQL;
 //        echo "times     = ".implode(", ", $times)."\n";
 
         
-        $scenario = $scenarios[1];
-        $model    = $models[0];
-        $time     = $times[0];
+        $scenario = implode(" ", $scenarios);
+        $model    = implode(" ", $models);
+        $time     = implode(" ", $times);
 
+        //$scenario = $scenarios[4];
+        //$model    = $models[4];
+        //$time     = $times[0];
+        
+        
         echo "test scenarios = ".$scenario."\n";
         echo "test models    = ".$model."\n";
         echo "test times     = ".$time."\n";
@@ -689,8 +697,18 @@ SQL;
         $M->initialise($src);
 
         
-        if (!$M->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE)
+        if ($M->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE)
         {
+            echo "====================================\n";
+            echo "MOdel output is is completed D\n";
+            echo "====================================\n";
+            
+            print_r($M->Result());
+            
+        }
+        else
+        {
+            
             echo "====================================\n";
             echo "RUNNING MOdel On GRID\n";
             echo "====================================\n";
@@ -698,9 +716,16 @@ SQL;
             $M->Execute();
             
         }
-            echo "====================================\n";
-            echo "Writing data to DB\n";
-            echo "====================================\n";
+        
+        
+        $loaded = $db->ModelledSpeciesFiles($species_id);
+        
+        matrix::display($loaded, " ", null, 15);
+        
+        
+        echo "====================================\n";
+        echo "Finished\n";
+        echo "====================================\n";
         
         
         

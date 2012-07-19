@@ -298,7 +298,7 @@ class PGDB extends Object {
      * @return string unique_file_id - use this id to get file backl from database;
      * @throws Exception 
      */
-    public function InsertFile($srcFilename,$description) 
+    public function InsertFile($srcFilename,$description,$filetype = null) 
     {
         $chunck_size = self::$FILE_DB_STORAGE_SIZE;
 
@@ -339,8 +339,8 @@ class PGDB extends Object {
         $description = str_replace("'", '', $description);
         
         // write the description of the file 
-        $sql  = "insert into files (file_unique_id,mimetype,totalparts,total_filesize,description)  values ".
-                "({$this->q($file_unique_id)},{$this->q($mimetype)},{$totalparts},$total_filesize,{$this->q($description)})";
+        $sql  = "insert into files (file_unique_id,mimetype,totalparts,total_filesize,description,filetype)  values ".
+                "({$this->q($file_unique_id)},{$this->q($mimetype)},{$totalparts},$total_filesize,{$this->q($description)},{$this->q($filetype)})";
 
                 
         $insertResult = $this->insert($sql);    
@@ -465,14 +465,11 @@ class PGDB extends Object {
     
     public function Count($table,$where) 
     {        
-        $count_result = $this->query("select count(*) as row_count from $table where {$where}");
-        
+        $count_result = $this->query("select count(*) as row_count from $table where {$where}");        
         if (is_null($count_result)) return null;
-        if (count($count_result) < 0) return null;
-        
-        $count = array_util::Value(util::first_element($count_result), 'row_count', -1);
+        $count = array_util::Value(util::first_element($count_result), 'row_count', -1);        
         return $count;
-        
+
     }
 
     public function Unique($table,$field,$where = null,$as_array = false) 
@@ -482,6 +479,10 @@ class PGDB extends Object {
         $sql = "select $field from $table $where group by $field order by $field";
         
         $result = $this->query($sql);
+        
+        unset($result[count($result) - 1]);
+        
+        
         if (is_null($result)) return null;
         if (!$as_array)return $result;
         
@@ -681,22 +682,6 @@ class PGDB extends Object {
     
     
     
-    /**
-     * 
-     * 
-     * @param type $speciesID  - Scientific Name here as then across systems and database rebuilds it wont change
-     * @return array  [index] => (longitude,latitude)
-     */
-    public static function SpeciesOccurance($speciesID) 
-    {
-
-        $db = new PGDB();
-        $q = "SELECT ST_X(location) AS longitude, ST_Y(location) AS latitude FROM occurrences where species_id = {$speciesID}";
-        $speciesOccuranceResult = $db->query($q);
-        unset($db);
-        return $speciesOccuranceResult;
-        
-    }
     
     
     public function SpeciesInfoByID($species_id) 
@@ -712,7 +697,6 @@ class PGDB extends Object {
     }
     
     
-    
     /**
      * All files stored for this species - get file list back from DB of all files store for a species
      * 
@@ -724,17 +708,16 @@ class PGDB extends Object {
     public function ModelledSpeciesFiles($species_id)
     {
     
-        $q = "select 
-                m.file_unique_id as file_unique_id ,
-                m.species_id,m.scientific_name,
-                m.common_name,
-                f.description 
-              from 
-                modelled_species_files m, 
-                files f  
-              where  m.file_unique_id = f.file_unique_id 
-                and  m.species_id = {$species_id}";
-                
+        $q = "select  m.file_unique_id as file_unique_id
+                     ,m.species_id,m.scientific_name
+                     ,m.common_name
+                     ,m.filetype
+                     ,f.description 
+                from  modelled_species_files m
+                     ,files f  
+               where m.file_unique_id = f.file_unique_id 
+                 and m.species_id = {$species_id}
+              ";
                 
         $result = $this->query($q, 'file_unique_id' );
 
@@ -749,40 +732,111 @@ class PGDB extends Object {
     public function InsertAllMaxentResults($species_id) 
     {
         
-        $folder = pgdb::MaxentResultsOutputFolder($species_id);
+        $species_id = trim($species_id);
+        
+        if ($species_id == "") return;
+        
+        
+        $folder = $this->MaxentResultsOutputFolder($species_id);
         
         if (!is_dir($folder)) 
             throw new Exception("InsertAllMaxentResults $folder does not exist\n");
         
-        
         $fn = array();
         
-        $fn['lambdas'              ] = $folder.$species_id.'.lambdas';
-        $fn['omission.csv'         ] = $folder.$species_id.'_omission.csv';
-        $fn['sampleAverages.csv'   ] = $folder.$species_id.'_sampleAverages.csv';
-        $fn['samplePredictions.csv'] = $folder.$species_id.'_samplePredictions.csv';
-        $fn['maxent.log'           ] = $folder.'maxent.log';
-
+        $fn['lambdas'          ] = $folder.$species_id.'.lambdas';
+        $fn['omission'         ] = $folder.$species_id.'_omission.csv';
+        $fn['sampleAverages'   ] = $folder.$species_id.'_sampleAverages.csv';
+        $fn['samplePredictions'] = $folder.$species_id.'_samplePredictions.csv';
+        $fn['maxent.log'       ] = $folder.'maxent.log';
         
-        echo "InsertAllMaxentResults folder = $folder \n";
-        foreach ($fn as $desc => $filename)  $this->InsertSingleMaxentOutput($species_id,$filename,$desc);
+        // echo "InsertAllMaxentResults folder = $folder \n";
+        foreach ($fn as $filetype => $filename)  
+        {
+            // check to see if we have this alreasdy
+            
+            //echo "Check to see if we already have species_id = {$species_id} and filetype = {$this->q($filetype)} \n";
+            
+            $count = $this->Count('modelled_species_files', "species_id = {$species_id} and filetype = {$this->q($filetype)}");
+            
+            //echo "Check to see if we already have species_id = {$species_id} and filetype = {$this->q($filetype)}  count = $count \n";
+            
+            
+            
+            if ( $count <= 0)
+            {
+                $this->InsertSingleMaxentOutput( $species_id
+                                                ,$filename
+                                                ,$filetype
+                                                ,"Maxent output for projected species suitability"
+                                                ,null
+                                                ,null
+                                                ,null);
+                
+            }
+            
+                
+        }
         
-        echo "InsertMaxentResultsCSV  as rows\n";
         $this->InsertMaxentResultsCSV($species_id);
+        
         $this->InsertMaxentHTMLasZIP($species_id);
         
-        //print_r($this->GetMaxentResultsCSV($species_id));
         
-        echo "RESULTS of insert all Maxent data files\n";
-        echo "============================================================================\n";
+        // $this->InsertAllMaxentResultsForProjectedClimates($species_id);
         
-        //
-        $file_ids = $this->ModelledSpeciesFiles($species_id);
-        
-        matrix::display($file_ids, " ", null, 15);
-        
+        return $this->ModelledSpeciesFiles($species_id);
 
     }
+    
+    /**
+     *
+     * If we have run processes and we don't have the results from the file system in databaase - so import them 
+     *  
+     */
+    private function InsertAllMaxentResultsForProjectedClimates($species_id)
+    {
+        
+        $species_folder = $this->MaxentResultsOutputFolder($species_id);
+
+        // get ascii grids  
+        $files = file::folder_with_extension($species_folder, 'asc' ,configuration::osPathDelimiter());
+        $files = file::arrayFilterOut($files, "aux");
+        $files = file::arrayFilterOut($files, "xml");
+        
+        
+        // for the "completeness of a model run we are only looking at the ASC grids" - all othert files are auxillary 
+        foreach ($files as $filename) 
+        {
+            $file_id = $this->InsertSingleMaxentProjectedFile($species_id,$filename,'ASCII_GRID', 'Spatial data of projected species suitability:'.basename($filename));
+            if (is_null($file_id))
+                throw new Exception("Failed InsertAllMaxentResultsForProjectedClimates - filename = {$filename} ");
+            
+            // build quick look from asc 
+                
+            $qlfn = SpeciesMaxent::CreateQuickLookImage($species_id, $filename);
+            //echo "CReated Quick Look = $qlfn\n";
+            
+            
+        }
+        
+        
+        // get QuickLook png's 
+        $files = file::folder_with_extension($species_folder, 'png' ,configuration::osPathDelimiter());
+        
+        // import these files as "QuickLook"
+        foreach ($files as $filename) 
+        {
+            $file_id = $this->InsertSingleMaxentProjectedFile($species_id,$filename,'QUICK_LOOK', 'Quick look image of projected species suitability:'.basename($filename));
+            if (is_null($file_id))
+                throw new Exception("Failed InsertAllMaxentResultsForProjectedClimates - quick look image filename = {$filename} ");
+            
+        }
+        
+    }
+    
+    
+    
     
     
     /**
@@ -792,23 +846,45 @@ class PGDB extends Object {
      */
     private function InsertMaxentHTMLasZIP($species_id) 
     {
-        $html_filename = $this->MaxentResultsOutputFolder($species_id).$species_id.".html";
-        if (!file_exists($html_filename)) return null;
+        
+        $filetype = "ZIPPED_HTML";
+        
+        
+        $html_count = $this->Count('modelled_species_files', "species_id = {$species_id} and filetype = {$this->q($filetype)}");
+        
+        if ($html_count  >= 1) return 1;  // we already have it 
+        
+        
+        $htmlfilename = configuration::Maxent_Species_Data_folder().
+                        $species_id.
+                        configuration::osPathDelimiter().
+                        configuration::Maxent_Species_Data_Output_Subfolder().
+                        configuration::osPathDelimiter().
+                        $species_id.".html";
+        
+        
+        $htmlfilename = $this->MaxentResultsOutputFolder($species_id).$species_id.".html";
+        
+        //echo "htmlfilename = $htmlfilename\n";
+        
+        if (!file_exists($htmlfilename)) return null;
         
         $plots_folder = $this->MaxentResultsOutputFolder($species_id)."plots";
         if (!is_dir($plots_folder)) return null;
         
+        
         $zipfilename = file::random_filename().".zip";  // store these into a single zip and then add zip to database.
         
+        
         $cmd = "cd ".$this->MaxentResultsOutputFolder($species_id)."; ". 
-               "zip '{$zipfilename}' '{$html_filename}'; ".
+               "zip '{$zipfilename}' '{$htmlfilename}'; ".
                "zip '{$zipfilename}' '{$plots_folder}/*'";
         
         exec($cmd);
         
         if (!file_exists($zipfilename)) return null;
-        
-        $file_unique_id = $this->InsertSingleMaxentOutput ($species_id,  $zipfilename,"HTML results zipped");
+
+        $file_unique_id = $this->InsertSingleMaxentOutput ($species_id,$zipfilename,$filetype,"HTML results zipped");
         
         if (is_null($file_unique_id)) return null;
         
@@ -819,16 +895,74 @@ class PGDB extends Object {
         
     }
     
-    public function InsertSingleMaxentModelledOutput($species_id,$desc,$scenario, $model, $time) 
+    
+    /**
+     *
+     *  - Take one of the projected outputs from maxent and look at the filename and find scenario model time
+     *  - import this into the database and return the fuile id
+     *  - update Results
+     * 
+     * @param type $species_id
+     * @param type $desc
+     * @param type $filename  Is a filename with a format of  scenario_model_time.ext
+     * @return type 
+     */
+    public function InsertSingleMaxentProjectedFile($speciesID,$filename,$filetype,$desc) 
     {
-        return $this->InsertSingleMaxentOutput(
-                        $species_id,
-                        $this->species_output_projection_filename($speciesID, $scenario, $model, $time),
-                        $desc,
-                        $scenario, 
-                        $model, 
-                        $time
-                        );
+        
+        $basename = util::toLastChar(basename($filename),".");
+        
+        list($scenario, $model, $time) = explode("_",$basename);
+        
+        
+        $file_results = $this->GetModelledData($speciesID,$scenario, $model, $time,$filetype, $desc);
+        
+        //print_r($file_results);
+        
+        $file_id = null;
+        if (is_null($file_results)) // no file so insert it
+        {
+            $file_id = $this->InsertSingleMaxentOutput(
+                                                        $speciesID
+                                                        ,$filename
+                                                        ,$filetype
+                                                        ,$desc
+                                                        ,$scenario 
+                                                        ,$model
+                                                        ,$time
+                                                        );
+
+            if (is_null($file_id)) return null;
+            
+        }
+        else
+        {
+            $file_id = $file_results;
+            
+            //echo "\n .......... We already have this file {$file_id}\n";
+            
+        }
+        
+        
+        return $file_id;
+        
+    }
+    
+    
+    public function InsertSingleMaxentModelledOutput($speciesID,$filetype,$desc,$scenario, $model, $time) 
+    {
+
+        $result = 
+            InsertSingleMaxentOutput($speciesID
+                                    ,$this->species_output_projection_filename($speciesID, $scenario, $model, $time)
+                                    ,$desc
+                                    ,$filetype
+                                    ,$scenario 
+                                    ,$model
+                                    ,$time
+                                    ) ;
+        
+        return $result;
         
     }
     
@@ -856,15 +990,16 @@ class PGDB extends Object {
      * @return null
      * @throws Exception 
      */
-    public function InsertSingleMaxentOutput($species_id,$filename,$desc = null,$scenario = null, $model = null, $time = null) 
+    public function InsertSingleMaxentOutput($species_id,$filename,$filetype = null,$desc = null,$scenario = null, $model = null, $time = null) 
     {
      
         if (!file_exists($filename))
             throw new Exception("InsertModelledSpeciesFile file does not exist {$filename}");
             
-        echo "Insert for {$species_id} {$filename}  desc = {$desc}\n ";
+        //echo "Insert for {$species_id} {$filename}  desc = {$desc}\n ";
         
-        $file_unique_id = $this->InsertFile($filename, $desc);
+        
+        $file_unique_id = $this->InsertFile($filename, $desc,$filetype);
         if (is_null($file_unique_id)) 
             throw new Exception("Failed to insert file {$filename}");
         
@@ -872,22 +1007,26 @@ class PGDB extends Object {
         $info = $this->SpeciesInfoByID($species_id);
         
         $q  = "insert into modelled_species_files 
-                (species_id,
-                 scientific_name,
-                 common_name,
-                 file_unique_id
+                ( species_id
+                 ,scientific_name
+                 ,common_name
+                 ,filetype
+                 ,file_unique_id
                 ) values (
-                 {$species_id},
-                 {$this->q($info['scientific_name'])},
-                 {$this->q($info['common_name'])},
-                 {$this->q($file_unique_id)}
+                  {$species_id}
+                 ,{$this->q($info['scientific_name'])}
+                 ,{$this->q($info['common_name'])}
+                 ,{$this->q($filetype)}
+                 ,{$this->q($file_unique_id)}
                 )";
         
-        echo "Insert into Modelled Species Files \n$q\n";
+        //echo "Insert into Modelled Species Files \n$q\n";
 
         $result = $this->insert($q);
         
-        echo "Insert into Modelled Species Files result = $result \n";
+        
+        
+        //echo "Insert into Modelled Species Files result = $result \n";
         
         if ($result <= 0) return null;
         
@@ -895,12 +1034,18 @@ class PGDB extends Object {
         if (!is_null($scenario) && !is_null($model) && !is_null($time) )
         {
 
-            
             $scenario_id = $this->getScenarioID($scenario);
-            $model_id = $this->getModelID($model);
-            $time_id = $this->getTimeID($time);
+            if (is_null($scenario_id)) throw new Exception("scenario_id is null");
+            //echo "scenario_id = $scenario_id\n";
             
-
+            $model_id = $this->getModelID($model);
+            if (is_null($model_id)) throw new Exception("model_id is null");
+            //echo "model_id = $model_id\n";
+            
+            $time_id = $this->getTimeID($time);
+            if (is_null($time_id)) throw new Exception("time_id is null");
+            //echo "time_id = $time_id\n";
+            
             $q = "insert into modelled_climates
                   (  species_id
                     ,scientific_name
@@ -908,6 +1053,7 @@ class PGDB extends Object {
                     ,models_id
                     ,scenarios_id
                     ,times_id
+                    ,filetype         
                     ,file_unique_id
                   ) values ( 
                     {$species_id}
@@ -916,6 +1062,7 @@ class PGDB extends Object {
                    ,{$model_id}
                    ,{$scenario_id}
                    ,{$time_id}
+                   ,{$this->q($filetype)}                   
                    ,{$this->q($file_unique_id)}
                    ) ;
                  ";
@@ -923,19 +1070,61 @@ class PGDB extends Object {
                    
            $modelled_climates_result = $this->insert($q);
                    
-           echo "modelled_climates_result  = $modelled_climates_result";
+           //echo "modelled_climates_result  = $modelled_climates_result";
            
         }
         
         
-        echo "InsertModelledSpeciesFile result = $result";
+        //echo "InsertModelledSpeciesFile result = $result";
         
         return $file_unique_id;
         
     }
     
-    public function RemoveSingleMaxentOutput($species_id,$scenario, $model, $time ) 
+    
+    // $scenario = null, $model = null, $time = null    
+    public function getScenarioID($scenario) 
     {
+        return $this->getSingleRowValue("select id from scenarios where dataname = {$this->q($scenario)};",'id');
+    }
+
+    public function getModelID($model) 
+    {
+        return $this->getSingleRowValue("select id from models where dataname = {$this->q($model)};",'id');
+    }
+
+    public function getTimeID($time) 
+    {
+        return $this->getSingleRowValue("select id from times where dataname = {$this->q($time)};",'id');
+    }
+    
+    private function getSingleRowValue($sql,$column)
+    {
+        //echo "getSingleRowValue = $sql\n";
+        
+        $result = $this->query($sql,$column);
+        if (is_null($result)) return null;
+        if (count($result) == 0) return null;
+        return array_util::Value(util::first_element($result), $column);
+    }
+    
+    
+    /**
+     * What projected file related to species do you want to remove
+     *  
+     * @param type $species_id
+     * @param type $scenario
+     * @param type $model
+     * @param type $time
+     * @param type $filetype  - leave null to remove all of this grouping
+     * @return boolean
+     * @throws Exception 
+     */
+    public function RemoveSingleMaxentOutput($species_id,$scenario, $model, $time, $filetype = null) 
+    {
+        
+        
+        $filetype_and = (is_null($filetype)) ? "" : "and mc.filetype= {$this->q($filetype)}";
         
         $sql = "select mc.id as id
                       ,mc.species_id
@@ -947,6 +1136,7 @@ class PGDB extends Object {
                       , s.dataname as scenario_name
                       ,mc.times_id
                       , t.dataname as time_name
+                      ,mc.filetype
                       ,mc.file_unique_id as file_id
                 from   modelled_climates mc
                       ,models m
@@ -959,29 +1149,33 @@ class PGDB extends Object {
                   and m.dataname = {$this->q($model)}
                   and s.dataname = {$this->q($scenario)}
                   and t.dataname = {$this->q($time)}
+                  {$filetype_and}
                  limit 1
                 ;";
         
         
         $row = util::first_element($this->query($sql));
         
+        
+        if (is_null($row))
+        {
+            echo "No Such files can be found with qsl\n $sql\n";
+            return null;
+        }
+        
         // use these id's to remove reference row and file.
         $id = $row['id'];
         $file_id = $row['file_id'];
         
         $del_modelled_climates = $this->delete("modelled_climates", "id = {$id}");        
+
         
         $count_modelled_climates = $this->Count("modelled_climates", "id = {$id}");
-        if (is_null($count_modelled_climates) || $count_modelled_climates <= 0) 
-        {
-            throw new Exception("Can't RemoveSingleMaxentOutput id = {$id} \n Result =  $del_modelled_climates");
-        }
+        if (is_null($count_modelled_climates) || $count_modelled_climates <= 0)  throw new Exception("Can't RemoveSingleMaxentOutput id = {$id} \n Result =  $del_modelled_climates");
+
         
         $del_modelled_climates_file = $this->RemoveFile($file_id);        
-        if (!$del_modelled_climates_file) 
-        {
-            throw new Exception("Can't RemoveSingleMaxentOutput del_modelled_climates_file   file_id = {$file_id}");
-        }
+        if (!$del_modelled_climates_file)  throw new Exception("Can't RemoveSingleMaxentOutput del_modelled_climates_file   file_id = {$file_id}");
         
         
         return true;
@@ -992,65 +1186,10 @@ class PGDB extends Object {
     
     
     
-    // $scenario = null, $model = null, $time = null    
-    public function getScenarioID($scenario) 
-    {
-        $q = "select id from scenarios where dataname = {$this->q($scenario)};";
-        
-        $result = $this->query($q,'id');
-        
-        if (is_null($result)) return null;
-        if (count($result) == 0) return null;
-
-        $first_row = util::first_element($result);
-        
-        $id = array_util::Value($first_row, 'id');
-
-        return $id;
-        
-    }
-
-    public function getModelID($model) 
-    {
-        $q = "select id from models where dataname = {$this->q($model)};";
-        
-        $result = $this->query($q,'id');
-        
-        if (is_null($result)) return null;
-        if (count($result) == 0) return null;
-
-        $first_row = util::first_element($result);
-        
-        $id = array_util::Value($first_row, 'id');
-
-        return $id;
-        
-    }
-    
-
-    public function getTimeID($time) 
-    {
-        $q = "select id from times where dataname = {$this->q($time)}";
-        
-        $result = $this->query($q,'id');
-        
-        if (is_null($result)) return null;
-        if (count($result) == 0) return null;
-
-        $first_row = util::first_element($result);
-        
-        $id = array_util::Value($first_row, 'id');
-
-        return $id;
-        
-    }
-    
-    
-    
     
     
     /**
-     * this is a DB version of the "maxentResults.csv"
+     * this is to store a DB version of the "maxentResults.csv"
      * 
      * @param type $speciesID  - Scientific Name here as then across systems and database rebuilds it wont change
      * @return array  [index] => (longitude,latitude)
@@ -1058,32 +1197,30 @@ class PGDB extends Object {
     public function InsertMaxentResultsCSV($species_id) 
     {
         
-        $filename = self::MaxentResultsFilename($species_id);
+        $current_result = $this->GetMaxentResultsCSV($species_id);
         
-        echo __METHOD__." species_id = $species_id\n";
-        echo __METHOD__." filename = $filename\n";
+        if (count($current_result) >= 120) return 1; // we already have the InsertMaxentResultsCSV for this species
+
+        
+        
+        
+        $filename = self::MaxentResultsFilename($species_id);
         
         if (!file_exists($filename)) return null;
         
-        // field name to db_table id
         $maxent_fields = array_flip(matrix::Column($this->query("select id,name from maxent_fields",'id'), 'name'));
         
         if (file::lineCount($filename) < 2) return null;
         
+        $m = matrix::Load($filename); // get the maxent results file in 
         
-        // get the maxent results file in 
-        $m = matrix::Load($filename);
-        
-        // create a big insert of this result
-        $fr = util::first_element($m);
-        
+        $fr = util::first_element($m);  
         if (count($maxent_fields) != count($fr))
-        {
-            echo "Matrix field count = ".count($maxent_fields)."  count(fr) =  ".count($fr)."\n";
-            return null;
+        {    
+            throw new Exception("Matrix field count = ".count($maxent_fields)."  count(fr) =  ".count($fr)."\n");
         }
         
-        
+        // create a big insert of this result
         $subs = array();
         foreach ($fr as $maxent_column_name => $maxent_value) 
             $subs[] = "({$species_id},{$maxent_fields[$maxent_column_name]},{$maxent_value})";
@@ -1091,10 +1228,6 @@ class PGDB extends Object {
             
         $insert  = "insert into maxent_values (species_id,maxent_fields_id,num) values ".implode(",",$subs);
         $insert_result = $this->update($insert);
-        
-        echo __METHOD__." Maxent Insert = \n{$insert }\n";
-        
-        echo __METHOD__." Maxent Insert result = {$insert_result}\n";
         
         
         return $insert_result;
@@ -1105,15 +1238,13 @@ class PGDB extends Object {
     public function GetMaxentResultsCSV($species_id)
     {
         
-        $q = "select v.species_id,v.maxent_fields_id ,f.name as maxent_name,v.num  from maxent_values v, maxent_fields f  where v.maxent_fields_id = f.id and species_id = {$species_id}";
-        
-        $result = $this->query($q, 'maxent_name' );
+        $result = $this->query( "select v.species_id,v.maxent_fields_id ,f.name as maxent_name,v.num  from maxent_values v, maxent_fields f  where v.maxent_fields_id = f.id and species_id = {$species_id}", 
+                                'maxent_name' );
 
         if (is_null($result)) return null;
         if (count($result) == 0) return null;
         
         return $result;
-        
         
     }
     
@@ -1121,21 +1252,14 @@ class PGDB extends Object {
     {
         
         $q = "select v.species_id,v.maxent_fields_id ,f.name as maxent_name,v.num  from maxent_values v, maxent_fields f  where v.maxent_fields_id = f.id and species_id = {$species_id} and f.name = {$this->q($MaxentFieldName)} ";
-        
-        echo __METHOD__." .. q = $q\n";
-        
         $result = $this->query($q, 'maxent_name' );
-
-        
-        print_r($result);
-        
         
         if (is_null($result)) return null;
         if (count($result) == 0) return null;
 
         $first = util::first_element($result);
         
-        $field_value = $first[$MaxentFieldName];
+        $field_value = $first['num'];
         
         
         return $field_value;
@@ -1159,26 +1283,22 @@ class PGDB extends Object {
         
         if (is_null($species_id) ||  $species_id == "" ) 
         {
-            echo "species_id passed as NULL\n";
+            //echo "species_id passed as NULL\n";
             return null;
         }
             
         
-        echo "Remove Maxent Values {$species_id}\n";
+        //echo "Remove Maxent Values {$species_id}\n";
         $remove_result = $this->RemoveMaxentValues($species_id);
         
         if (is_null($remove_result)) 
-        {
             throw new Exception("Remove Maxent Values failed");
-        }
         
 
-        echo "remove_modelled_species_files{$species_id}\n";
+        //echo "remove_modelled_species_files{$species_id}\n";
         $remove_result = $this->RemoveModelledSpeciesFiles($species_id);
         if (is_null($remove_result)) 
-        {
             throw new Exception("remove_modelled_species_files failed");
-        }
         
         
     }
@@ -1191,27 +1311,26 @@ class PGDB extends Object {
         return $result;   
     }
     
-    
-    
 
     public function RemoveModelledSpeciesFiles($species_id)
     {
         
-        echo "Remove Files for {$species_id} \n";
+        //echo "Remove Files for {$species_id} \n";
         
         $file_ids = $this->ModelledSpeciesFiles($species_id);
+        
+        if (is_null($file_ids)) throw new Exception("Return from ModelledSpeciesFiles os null");
+        
         
         $remove_results = array();
         foreach ($file_ids as $file_id => $row) 
         {
-            echo "Remove File for {$species_id} {$file_id} ". implode(",",$row)."\n";
+            //echo "Remove File for {$species_id} {$file_id} ". implode(",",$row)."\n";
             
             $remove_result =  $this->RemoveSingleModelledSpeciesFile($species_id,$file_id);
             
             if (is_null($remove_result))       
-            {
                 throw new Exception("Failed to remove file for  $species_id, $file_id ");
-            }
             
             $remove_results[] = $remove_result;
             
@@ -1230,51 +1349,42 @@ class PGDB extends Object {
      */
     public function RemoveSingleModelledSpeciesFile($species_id,$file_id)
     {
-
-        $info = $this->FileInfo($file_id);
         
-        echo "Remove file for \n";
-        print_r($info);
-        echo "\n";
-        
-        // remove file
-        $file_remove_result = $this->RemoveFile($file_id);
-        echo "Remove File result {$file_remove_result}\n";
-        
+        $this->RemoveFile($file_id);
         if ($this->HasFile($file_id)) return null;
         
-        
         // remove referenced to modelled species
-        $remove_ref_result  = $this->delete('modelled_species_files', "species_id = '{$species_id}'  and file_unique_id =  {$this->q($file_id)} ");
-        echo "Remove $remove_ref_result  for {$species_id} .. {$file_id} \n";
-        
+        $this->delete('modelled_species_files', "species_id = '{$species_id}'  and file_unique_id =  {$this->q($file_id)} ");
         
         return true;
         
     }
     
     
-    
-    
-    
-    public static  function MaxentResultsFilename($species_id) 
+    private function MaxentResultsFilename($species_id) 
     {
-        
-        $result = self::MaxentResultsOutputFolder($species_id)."maxentResults.csv";
+        $result =   configuration::Maxent_Species_Data_folder().
+                    $species_id.
+                    configuration::osPathDelimiter().
+                    configuration::Maxent_Species_Data_Output_Subfolder().
+                    configuration::osPathDelimiter().
+                    "maxentResults.csv";
         
         return $result;
+        
     }
     
-    public static  function MaxentResultsOutputFolder($species_id) 
+    private function MaxentResultsOutputFolder($species_id) 
     {
-        
+     
         $result =   configuration::Maxent_Species_Data_folder().
                     $species_id.
                     configuration::osPathDelimiter().
                     configuration::Maxent_Species_Data_Output_Subfolder().
                     configuration::osPathDelimiter();
-        
+         
         return $result;
+        
     }
     
     
@@ -1286,12 +1396,14 @@ class PGDB extends Object {
      * @param type $scenario
      * @param type $model
      * @param type $time
-     * @return string|null  file_+id for that file
+     * @return string|null  file_id for that file  pr Em,pty string says that now file for these parameters
      */
-    public function GetModelledData($species,$scenario, $model, $time)
+    public function GetModelledData($speciesID,$scenario, $model, $time,$filetype = null, $desc = null)
     {
         
-        $species = str_replace("_", " ", $species);
+        $filetypeAnd = (is_null($filetype)) ? "" : "and mc.filetype   = {$this->q($filetype)} ";
+        $descAnd     = (is_null($desc))     ? "" : "and f.description = {$this->q($desc)} ";
+        
         
         $sql = "select mc.id as id
                       ,mc.species_id
@@ -1303,75 +1415,77 @@ class PGDB extends Object {
                       , s.dataname as scenario_name
                       ,mc.times_id
                       , t.dataname as time_name
+                      ,mc.filetype
+                      , f.description
                       ,mc.file_unique_id as file_id
                 from   modelled_climates mc
                       ,models m
                       ,scenarios s
                       ,times t
-                where mc.species_id = {$species}
-                  and mc.models_id     = m.id
-                  and mc.scenarios_id  = s.id
-                  and mc.times_id      = t.id
+                      ,files f
+                where mc.species_id = {$speciesID}
+                  and mc.models_id      = m.id
+                  and mc.scenarios_id   = s.id
+                  and mc.times_id       = t.id
+                  and mc.file_unique_id = f.file_unique_id
                   and m.dataname = {$this->q($model)}
                   and s.dataname = {$this->q($scenario)}
-                  and t.dataname = {$this->q($time)}
+                  and t.dataname = {$this->q($time)} {$filetypeAnd} {$descAnd}
+                  limit 1
                 ;";
         
         
         $result = $this->query($sql);
         
-        echo "GetModelledData sql = $sql\n";
+        //echo "PGDB::GetModelledData sql = $sql\n";
         
-        if (is_null($result)) return new Exception(__METHOD__." result is NULL for query {$sql}");
+        //echo "PGDB::GetModelledData result = \n";
+        
+        //print_r($result);
+        
+        //echo "PGDB::GetModelledData result =  count =  ".count($result)."\n";
+        
+        //echo "\n";
+        
+        if (is_null($result)) throw new Exception(__METHOD__." result is NULL for query {$sql}");
         
         if (count($result) == 0) return null;
+
         
         $first = util::first_element($result);
         
-        $file_id = array_util::Value($first, 'file_id');
+//        echo "First is \n";
+  //      print_r($first);
         
-        if (count($result) == 0) return new Exception(__METHOD__." result no column called file_id "); ;
+        $id_result = array_util::Value($first, 'file_id');
         
-        return $file_id;
+    //    echo "id_result is \n";
+      //  print_r($id_result);
+        
+        
+        
+        return $id_result;
+        
         
     }
+        
     
-    
-    
-//    public static function InsertModelledData($species,$scenario, $model, $time,$file_id)
-//    {
-//        
-//        
-//        $sql  = "insert 
-//                 into {$this->ModelledDataTableName()} 
-//                (scientific_name,
-//                 model_name, 
-//                 scenario_name, 
-//                 time_name, 
-//                 data_category, 
-//                 maxent_threshold, 
-//                 file_id
-//                 ) values (
-//                '{$species}',
-//                '{$model}',
-//                '{$scenario}',
-//                '{$time}',
-//                'QuickLook',
-//                '',
-//                '{$file_id}'
-//                )";
-//        
-//        //echo "insert sql = $sql";
-//        
-//        $insert_id = $this->insert($sql);
-//        
-//        //echo "insert_id = $insert_id";
-//        
-//        return $insert_id;
-//        
-//    }
-    
-    
+    /**
+     * 
+     * 
+     * @param type $speciesID  - Scientific Name here as then across systems and database rebuilds it wont change
+     * @return array  [index] => (longitude,latitude)
+     */
+    public static function SpeciesOccurance($speciesID) 
+    {
+
+        $db = new PGDB();
+        $q = "SELECT ST_X(location) AS longitude, ST_Y(location) AS latitude FROM occurrences where species_id = {$speciesID}";
+        $speciesOccuranceResult = $db->query($q);
+        unset($db);
+        return $speciesOccuranceResult;
+        
+    }
     
     
     
