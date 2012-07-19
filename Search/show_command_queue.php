@@ -1,13 +1,13 @@
 <?php
 include_once 'includes.php';
 
-$idList = pgdb::CommandActionListIDs();
+$idList = DatabaseCommands::CommandActionListIDs();
 
 if (is_array($idList))
 {
     foreach ($idList as $commandID) 
     {
-        $ca = pgdb::CommandActionRead($commandID);
+        $ca = DatabaseCommands::CommandActionRead($commandID);
         
         if (is_null($ca)) 
         {

@@ -76,12 +76,11 @@ class CommandProcessor
         
         while(file_exists($processor_running_filename))
         {
-            $commands = PGDB::CommandActionListIDs();
+            $commands = DatabaseCommands::CommandActionListIDs();
             
-            if (is_null($commands))  continue;
-            
-            foreach ($commands as $commandID) 
-                self::processSingleQueueItem($commandID);
+            if (count($commands) > 0)
+                foreach ($commands as $commandID) 
+                    self::processSingleQueueItem($commandID);
             
             sleep(3);
             
@@ -95,8 +94,8 @@ class CommandProcessor
     
     
     /**
-     *
      * Read Single command file
+     *
      * - unserailize and action command based on it's "state" ExecutionFlag (ref: CommandAction statics)
      * 
      * @param string $filepath
@@ -105,8 +104,9 @@ class CommandProcessor
     private function processSingleQueueItem($commandID)
     {
 
-        $command =  pgdb::CommandActionRead($commandID) ;
-
+        $command = DatabaseCommands::CommandActionRead($commandID) ;
+        
+        
         if (is_null($command))
         {
             // echo datetimeutil::now()."checking $filepath\nCommand was NULL\n\n";
@@ -159,7 +159,7 @@ class CommandProcessor
     {
         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_RUNNING);
         self::scriptIt($cmd);
-        CommandUtil::Queue($cmd);
+        DatabaseCommands::CommandActionQueue($cmd);
     }
 
     
@@ -203,7 +203,7 @@ class CommandProcessor
                     if (trim($split[1]) == self::$QSTAT_COMPLETED)
                     {
                         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
-                        pgdb::CommandActionQueue($cmd);
+                        DatabaseCommands::CommandActionQueue($cmd);
                         // echo "\nQueue said job is finished= \n".$result."\n\n";
                     }
                     
@@ -226,7 +226,7 @@ class CommandProcessor
     private static function Finalise(CommandAction $cmd)
     {
         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
-        pgdb::CommandActionQueue($cmd);
+        DatabaseCommands::CommandActionQueue($cmd);
     }
 
     
@@ -234,7 +234,7 @@ class CommandProcessor
     {
         // delete if oder than 2 days 
         
-        //pgdb::CommandActionRemove($cmd->ID());
+        
     }
     
 

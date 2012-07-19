@@ -7,7 +7,6 @@
 class SpeciesClimateGenerate {
     
     
-    
     private $cmdline = null;
     
     /**
@@ -76,7 +75,7 @@ class SpeciesClimateGenerate {
 
         $name = 'create command action table ';
 
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
         
         $this->header($name);
         
@@ -101,12 +100,38 @@ GRANT ALL PRIVILEGES ON command_action TO ap02;
 GRANT USAGE, SELECT ON SEQUENCE command_action_id_seq TO ap02;
 SQL;
 
+        
+        $table_result = DBO::CreateAndGrant($table_sql);
+        
+        return true;
+        
+    }
 
-        $db = new PGDB();
+    public function Stage002($name_only = false)
+    {
+
+        $name = 'create  error log table ';
+
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
         
-        $table_result = $db->CreateAndGrant($table_sql);
+        $this->header($name);
+    
         
-        unset($db);
+$table_sql = <<<SQL
+DROP TABLE IF EXISTS error_log;
+CREATE TABLE error_log 
+(
+     id SERIAL NOT NULL PRIMARY KEY
+    ,error_date_time   VARCHAR(100)
+    ,source_code_from  VARCHAR(100)
+    ,error_message     VARCHAR(5000)
+);
+GRANT ALL PRIVILEGES ON error_log TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE error_log_id_seq TO ap02;
+SQL;
+
+        
+        $table_result = DBO::CreateAndGrant($table_sql);
         
         return true;
         
@@ -120,14 +145,13 @@ SQL;
         
         $name = 'Populate Maxent Field Names';
 
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
         
         $this->header($name);
         
         //echo "Count = ".count($names)."\n";
         //echo "Count Unique= ".count(array_unique($names))."\n";
 
-        $db = new PGDB();
         
         $sql = "DROP TABLE IF EXISTS maxent_fields;
                 CREATE TABLE maxent_fields 
@@ -143,11 +167,11 @@ SQL;
         
         //echo "$sql\n";
 
-        $table_result = $db->CreateAndGrant($sql);
+        $table_result = DBO::CreateAndGrant($sql);
 
         if (is_null($table_result)) throw new Exception("FAILED to create table maxent_fields - null result from query ");
         
-        if (!$db->has_table('maxent_fields')) throw new Exception("FAILED to create table maxent_fields - Can't find table with describe ");
+        if (!DBO::HasTable('maxent_fields')) throw new Exception("FAILED to create table maxent_fields - Can't find table with describe ");
         
         
         $inserted_count = 0;
@@ -161,7 +185,7 @@ SQL;
             
             //echo "$row_sql  ";
             
-            $insert_result = $db->insert($row_sql);
+            $insert_result = DBO::Insert($row_sql);
             
             if (is_null($insert_result)) throw new Exception("FAILED insert  Maxent field name {$name}");
             
@@ -182,8 +206,6 @@ SQL;
             return false;
         }
         
-        unset($db);
-        
         return true;
         
     }
@@ -197,7 +219,7 @@ SQL;
 
         $name = 'Model Descriptions';
 
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
         
         $this->header($name);
         
@@ -222,16 +244,14 @@ GRANT USAGE, SELECT ON SEQUENCE models_id_seq TO ap02;
 SQL;
 
 
-        $db = new PGDB();
         
-        $table_result = $db->CreateAndGrant($table_sql);
+        $table_result = DBO::CreateAndGrant($table_sql);
         
         if (is_null($table_result)) throw new Exception("FAILED to create table models - null result from query ");
-        if (!$db->has_table('models')) throw new Exception("FAILED to create table models - Can't find table with describe ");
+        if (!DBO::HasTable('models')) throw new Exception("FAILED to create table models - Can't find table with describe ");
         
         
-        
-        $descs = FinderFactory::Result("ClimateModelAllValues");
+        $descs = Descriptions::fromFile(configuration::Descriptions_ClimateModels());
         $descs instanceof Descriptions;
         
         $format = "insert into models (dataname,description,moreinfo,uri) values ({DataName},{Description},{MoreInformation},{URI});";
@@ -244,7 +264,7 @@ SQL;
             
             //echo "\n values_sql = $values_sql  "; 
             
-            $values_result = $db->insert($values_sql);
+            $values_result = DBO::Insert($values_sql);
             
             if (is_null($values_result)) throw new Exception("\nFAILED insert Model Descriptions using sql = {$values_sql}\nresult = $values_result\n\n");
             
@@ -263,19 +283,18 @@ SQL;
             return false;
         }
         
-        unset($db);
         
         return true;
         
     }
 
 
-    public   function Stage03($name_only = false)     
+    public function Stage03($name_only = false)     
     {
         
         $name = 'Scenario Descriptions';
 
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
         
         $this->header($name);
     
@@ -300,17 +319,14 @@ GRANT ALL PRIVILEGES ON scenarios TO ap02;
 GRANT USAGE, SELECT ON SEQUENCE scenarios_id_seq TO ap02;        
 SQL;
 
-        $db = new PGDB();
         
-        $table_result = $db->CreateAndGrant($table_sql);
+        $table_result = DBO::CreateAndGrant($table_sql);
         
         if (is_null($table_result)) throw new Exception("FAILED to create table scenarios - null result from query ");
-        if (!$db->has_table('scenarios')) throw new Exception("FAILED to create table scenarios - Can't find table with describe ");
+        if (!DBO::HasTable('scenarios')) throw new Exception("FAILED to create table scenarios - Can't find table with describe ");
         
         
-        //echo "table_result = $table_result\n";
-        
-        $descs = FinderFactory::Result("EmissionScenarioAllValues");
+        $descs = Descriptions::fromFile(configuration::Descriptions_EmissionScenarios());
         $descs instanceof Descriptions;
         
         $format = "insert into scenarios (dataname,description,moreinfo,uri) values ({DataName},{Description},{MoreInformation},{URI});";
@@ -323,7 +339,7 @@ SQL;
             
             //echo "\n\n$values_sql\n\n"; 
             
-            $values_result = $db->insert($values_sql);
+            $values_result = DBO::Insert($values_sql);
             
             if (is_null($values_result)) throw new Exception("\nFAILED insert Scenario Descriptions using sql = {$values_sql}\n result = $values_result\n\n");
             
@@ -341,8 +357,6 @@ SQL;
             return FALSE;
         }
         
-        unset($db);
-        
         return true;
         
     }
@@ -354,7 +368,7 @@ SQL;
         
         $name = 'Times Descriptions';
 
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
         
         $this->header($name);
     
@@ -379,17 +393,16 @@ GRANT ALL PRIVILEGES ON times TO ap02;
 GRANT USAGE, SELECT ON SEQUENCE times_id_seq TO ap02;        
 SQL;
 
-        $db = new PGDB();
         
-        $table_result = $db->CreateAndGrant($table_sql);
+        $table_result = DBO::CreateAndGrant($table_sql);
         
         if (is_null($table_result)) throw new Exception("FAILED to create table times - null result from query ");
-        if (!$db->has_table('times')) throw new Exception("FAILED to create table times - Can't find table with describe ");
+        if (!DBO::HasTable('times')) throw new Exception("FAILED to create table times - Can't find table with describe ");
         
         
         //echo "table_result = $table_result\n";
         
-        $descs = FinderFactory::Result("TimeAllValues");
+        $descs = Descriptions::fromFile(configuration::Descriptions_Years());
         $descs instanceof Descriptions;
         
         $format = "insert into times (dataname,description,moreinfo,uri) values ({DataName},{Description},{MoreInformation},{URI});";
@@ -402,7 +415,7 @@ SQL;
             
             //echo "\n$values_sql  "; 
             
-            $values_result = $db->insert($values_sql);
+            $values_result = DBO::Insert($values_sql);
             
             if (is_null($values_result)) throw new Exception("\nFAILED insert Times Descriptions using sql = {$values_sql}\nresult = $values_result\n\n");
             
@@ -420,8 +433,6 @@ SQL;
             return false;
         }
         
-        unset($db);
-        
         return true;
         
     }
@@ -432,7 +443,7 @@ SQL;
         
         $name = 'maxent_values';
 
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
         
         $this->header($name);
         
@@ -449,17 +460,11 @@ CREATE TABLE maxent_values
 GRANT ALL PRIVILEGES ON maxent_values TO ap02;
 GRANT USAGE, SELECT ON SEQUENCE maxent_values_id_seq TO ap02;        
 SQL;
-
-        $db = new PGDB();
         
-        $table_result = $db->CreateAndGrant($table_sql);
+        $table_result = DBO::CreateAndGrant($table_sql);
 
         if (is_null($table_result)) throw new Exception("FAILED to create table maxent_values - null result from query ");
-        if (!$db->has_table('maxent_values')) throw new Exception("FAILED to create table maxent_values - Can't find table with describe ");
-        
-        
-        unset($db);
-        
+        if (!DBO::HasTable('maxent_values')) throw new Exception("FAILED to create table maxent_values - Can't find table with describe ");
         
         return true;
         
@@ -471,7 +476,7 @@ SQL;
         
         $name = 'modelled_climates';
 
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
         
         $this->header($name);
     
@@ -511,18 +516,13 @@ GRANT ALL PRIVILEGES ON modelled_climates TO ap02;
 GRANT USAGE, SELECT ON SEQUENCE modelled_climates_id_seq TO ap02;        
 
 SQL;
-
-        $db = new PGDB();
         
-        $table_result = $db->CreateAndGrant($table_sql);
+        $table_result = DBO::CreateAndGrant($table_sql);
         
         if (is_null($table_result)) throw new Exception("FAILED to create table modelled_species_files & modelled_climates - null result from query ");
 
-        if (!$db->has_table('modelled_species_files')) throw new Exception("FAILED to create table modelled_species_files - Can't find table with describe ");
-        if (!$db->has_table('modelled_climates')) throw new Exception("FAILED to create table modelled_climates - Can't find table with describe ");
-
-        unset($db);
-
+        if (!DBO::HasTable('modelled_species_files')) throw new Exception("FAILED to create table modelled_species_files - Can't find table with describe ");
+        if (!DBO::HasTable('modelled_climates')) throw new Exception("FAILED to create table modelled_climates - Can't find table with describe ");
         
         return true;
         
@@ -534,7 +534,7 @@ SQL;
         
         $name = 'files_data';
 
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
         
         $this->header($name);
 
@@ -573,18 +573,14 @@ GRANT USAGE, SELECT ON SEQUENCE files_data_id_seq TO ap02;
 SQL;
     
         //echo "Create Table for files_data \n";
-
-        $db = new PGDB();
         
-        $table_result = $db->CreateAndGrant($table_sql);
+        $table_result = DBO::CreateAndGrant($table_sql);
         
         if (is_null($table_result)) throw new Exception("FAILED to create table files &  files_data - null result from query ");
 
-        if (!$db->has_table('files')) throw new Exception("FAILED to create table files - Can't find table with describe ");
-        if (!$db->has_table('files_data')) throw new Exception("FAILED to create table files_data - Can't find table with describe ");
-        
-        unset($db);
-        
+        if (!DBO::HasTable('files')) throw new Exception("FAILED to create table files - Can't find table with describe ");
+        if (!DBO::HasTable('files_data')) throw new Exception("FAILED to create table files_data - Can't find table with describe ");
+                
         return true;
         
     }
@@ -604,11 +600,11 @@ SQL;
         
         $name = 'Bulid tables for climate model data stages(01,02,03,04,05,06,07) ';
 
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
         
         $this->header($name);
         
-        $this->Execute('01,02,03,04,05,06,07');
+        $this->Execute('001,002,01,02,03,04,05,06,07');
         
         
     }
@@ -618,18 +614,13 @@ SQL;
     {
         
         $name = 'Test insert of Maxent Data';
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
 
         $species_id = 2;
         
-        $db = new PGDB();
+        $insert_result = DatabaseMaxent::InsertMaxentResultsCSV($species_id);
         
-        $insert_result = $db->InsertMaxentResultsCSV($species_id);
-        
-        print_r($db->GetMaxentResultsCSV($species_id));
-        
-        unset($db);
-        
+        matrix::display(DatabaseMaxent::GetMaxentResultsCSV($species_id), $delim = " ",null,20);
         
         echo "insert_result = $insert_result\n";
         
@@ -641,45 +632,40 @@ SQL;
     {
         
         $name = 'Test insert of Data from Filesystem to database';
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
 
         $species_id = 3081;
         
-        $db = new PGDB();
-        
-        $db->RemoveAllMaxentResults($species_id,true);        
-        $db->InsertAllMaxentResults($species_id);
-        
-        unset($db);
+        DatabaseMaxent::RemoveAllMaxentResults($species_id,true);        
+        DatabaseMaxent::InsertMainMaxentResults($species_id);
     }    
 
     public function Stage4($name_only = false) 
     {
 
-        $db = new PGDB();
-        
         $name = 'Test insert of Data - running models first';
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
 
-        $species_id = 3081;
+        //$species_id = 3081;
         
-        $scenarios = matrix::Column($db->Unique('scenarios', 'dataname'),'dataname');
-        $models    = matrix::Column($db->Unique('models',    'dataname'),'dataname');
-        $times     = matrix::Column($db->Unique('times',     'dataname'),'dataname');
+        $scenarios = DatabaseClimate::GetScenarios();
+        
+        $models    = DatabaseClimate::GetModels();
+        
+        $times     = DatabaseClimate::GetTimes();
 //        
 //        echo "scenarios = ".implode(", ", $scenarios)."\n";
 //        echo "models    = ".implode(", ", $models)."\n";
 //        echo "times     = ".implode(", ", $times)."\n";
 
-        
+        $species  = "1103 1849 1350 1308 1999 427 194 482 1420 2073 2232 492 1822 1764";
         $scenario = implode(" ", $scenarios);
         $model    = implode(" ", $models);
         $time     = implode(" ", $times);
 
-        //$scenario = $scenarios[4];
-        //$model    = $models[4];
-        //$time     = $times[0];
-        
+        $scenario = util::first_element($scenarios);
+        $model    = util::first_element($models);
+        //$time     = util::first_element($times);
         
         echo "test scenarios = ".$scenario."\n";
         echo "test models    = ".$model."\n";
@@ -689,7 +675,7 @@ SQL;
         $M = new SpeciesMaxent();
         
         $src = array();
-        $src['species']  = $species_id;
+        $src['species']  = $species;
         $src['scenario'] = $scenario;
         $src['model']    = $model;
         $src['time']     = $time;
@@ -718,7 +704,7 @@ SQL;
         }
         
         
-        $loaded = $db->ModelledSpeciesFiles($species_id);
+        $loaded = DatabaseMaxent::ModelledSpeciesFiles($species_id);
         
         matrix::display($loaded, " ", null, 15);
         
@@ -728,8 +714,6 @@ SQL;
         echo "====================================\n";
         
         
-        
-        unset($db);
     }    
     
     
@@ -738,19 +722,9 @@ SQL;
     {
         
         $name = 'Pregenerate all species / models / scenarios / times using - Maxent';
-        if ($name_only) return __METHOD__."::".$name;
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
         
         $this->header($name);
-
-        $db = new PGDB();
-        
-        $scenarios = implode(" ",matrix::Column($db->Unique('scenarios', 'dataname'),'dataname'));
-        $models    = implode(" ",matrix::Column($db->Unique('models',    'dataname'),'dataname'));
-        $times     = implode(" ",matrix::Column($db->Unique('times',     'dataname'),'dataname'));
-
-        $species_id = 2;
-
-        
         
         
         

@@ -2,16 +2,11 @@
 session_start();
 include_once dirname(__FILE__).'/includes.php';
 
+$scenarios = Descriptions::fromTable("scenarios");
+$models = Descriptions::fromTable("models");
+$times = Descriptions::fromTable("times"); 
 
-$scenarios = FinderFactory::Result("EmissionScenarioAllValues");
-$scenarios instanceof Descriptions;
-
-$models = FinderFactory::Result("ClimateModelAllValues");
-$models instanceof Descriptions;
-
-$times = FinderFactory::Result("TimeAllValues");
-$times instanceof Descriptions;
-
+//print_r($scenarios);
 
 ?>
 <!DOCTYPE html>

@@ -11,7 +11,7 @@ if (is_null($commandActionID))
     return;
 }
 
-$cmd = pgdb::CommandActionRead($commandActionID);
+$cmd = DatabaseCommands::CommandActionRead($commandActionID);
 if ( !($cmd instanceof CommandAction))
 {
     // it was a command but it was not a command action

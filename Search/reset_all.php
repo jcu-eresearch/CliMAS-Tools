@@ -5,19 +5,21 @@ $doit = array_util::Value($argv, 1,null);
 
 if (is_null($doit)) echo "Test ONLY \n";
 
-pgdb::CommandActionRemoveAll(true);
+
+echo "Remove all COmmand Action queue Items\n";
+if (!is_null($doit)) DatabaseCommands::CommandActionRemoveAll(true);
 
 
 $db = new PGDB();
 
 echo "Remove all rows from modelled_species_data \n";
-if (!is_null($doit)) $db->delete("modelled_species_data", "~~~~~");
+if (!is_null($doit)) DBO::DeleteAll("modelled_species_data");
 
 echo "Remove all rows from files_data \n";
-if (!is_null($doit)) $db->delete("files_data", "~~~~~");
+if (!is_null($doit)) DBO::DeleteAll("files_data");
 
 echo "Remove all rows from ap02_command_action \n";
-if (!is_null($doit)) $db->delete("ap02_command_action", "~~~~~");
+if (!is_null($doit)) DBO::DeleteAll("command_action");
 
 $cmd = "rm -r " . configuration::CommandScriptsFolder()."*";
 echo "Remove all Scripts as per $cmd \n";

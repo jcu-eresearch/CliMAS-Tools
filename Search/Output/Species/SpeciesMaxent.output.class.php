@@ -59,10 +59,14 @@ class SpeciesMaxentOutput extends Output
             
             foreach ($combinations as $combination => $file_id) 
             {
-                
                 if (!is_null($file_id))
                 {
-                    $image_url = configuration::ApplicationFolderWeb()."Search/file.php?id={$file_id}";
+                    
+                    list($scenario, $model, $time) = explode("_",$combination);
+                    
+                    $quick_look_file_id = SpeciesData::GetModelledData($speciesID,$scenario, $model, $time,'QUICK_LOOK');
+                    
+                    $image_url = configuration::ApplicationFolderWeb()."Search/file.php?id={$quick_look_file_id}";
                     $images[$speciesID][$combination] =  '<li id="out'.$speciesID.':'.$combination.'" class="ui-widget-content SpeciesRangeImageContainer"><img class="SpeciesRangeImage" src="'.$image_url.'" /></li>';
                 }
                 

@@ -10,9 +10,6 @@
  */
 class SpeciesMaxent extends CommandAction {
     
-    public static $OCCURANCE_MINIMUM_LINES = 3;
-
-    public static $DisplayThresholdFieldName = "Equate entropy of thresholded and original distributions logistic threshold";
     
     
     public function __construct() {
@@ -57,59 +54,35 @@ class SpeciesMaxent extends CommandAction {
                     
         // check here to see if we are missing some data
         
-        $this->initialised(true);
         
         $this->buildCombinations(); 
+
+        $this->initialised(true);
         
-        $this->LoadResults();
         
         $this->GetResults();  // then populates the combinations with anything that has already been done
-        
         
         if ($this->ResultsComplete())
         {
             $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);      // if we already have the dat - no reason to go to the server
-            pgdb::CommandActionQueue($this);
+            $this->Queue();
             return $this->Result();   // we are done 
         }
         
         return true;
         
     }
-
     
-    /**
-     *
-     * Results that exist on filesystem but not in database will be loaded here
-     *  
-     */
-    private function LoadResults() 
+    private function Queue()
     {
-        
-        $db = new PGDB();
-        
-        foreach (array_keys($this->SpeciesCombinations()) as $speciesID) 
-        {
-            $db->InsertAllMaxentResults($speciesID);
-        }
-        
-        unset($db);
-        
+        DBO::LogError(__METHOD__."(".__LINE__.")"," Updated queue for  ".$this->ID()." .. ".$this->Status());
+        DatabaseCommands::CommandActionQueue($this);
     }
     
     
     private function msg($from,$str)
     {
-        
-        $logStr = "";
-        
-        if (is_array($str) || is_object($str))
-            $logStr .= datetimeutil::NowDateTime()." ".$from."\n".print_r($str,true)."\n";    
-        else
-            $logStr .= datetimeutil::NowDateTime()." ".$from." ".$str."\n";
-        
-        
-        echo $logStr;
+        DBO::LogError("SpeciesMaxent::".$from,$str);
     }
     
     /**
@@ -163,85 +136,98 @@ class SpeciesMaxent extends CommandAction {
         $this->QsubCollectionID(substr(uniqid(),0,10));
         
         // rebuild combos i we don't have them
-        if (is_null($this->SpeciesCombinations()) ||  count($this->SpeciesCombinations()) == 0  )  $this->buildCombinations();
+        if (is_null($this->SpeciesCombinations()) ||  count($this->SpeciesCombinations()) == 0  ) 
+        {
+            $this->buildCombinations();
+            DBO::LogError(__METHOD__."(".__LINE__.")","Has to rebuild Combinations as thery were not build - Odd ??\n");
+        }
+        
+        
+        // if we have data in the file system but not in database load it in - Just NMain root results for each spcecies
+        foreach (array_keys($this->SpeciesCombinations()) as $speciesID) 
+        {
+            if (is_null($speciesID)) continue;
+            $speciesID = trim($speciesID);
+            if ($speciesID == "") continue;
+            
+            
+            DBO::LogError(__METHOD__."(".__LINE__.")"," InsertAllMaxentResults for speciesID = $speciesID");
+            DatabaseMaxent::InsertMainMaxentResults($speciesID); 
+        }
+
         
         $this->GetResults();
+        
+        
+        
         if ($this->ResultsComplete())  // check now to see if we have to  call the GRID
         {            
             $this->Status("ALL DONE");
             $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
-            pgdb::CommandActionQueue($this);; // update the status and interim results 
+            $this->Queue();
             return $this->Result();   // we are done 
         }
 
         //
         // We have to call the grid because at least one outyput is missing
         //
-
-        $this->msg(__METHOD__,"Started Model Execution on GRID");
         
         $this->Status("Started Model Execution on GRID");
-        pgdb::CommandActionQueue($this);
+        $this->Queue();
         
-        
-        $this->msg(__METHOD__,"pre getOccurances()");
-        
-        $this->getOccurances();
+        $occurences_ok = $this->getOccurances();
+        if (!$occurences_ok) 
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to get Occurences \n".print_r($this->SpeciesCombinations(),true));
 
-        $this->msg(__METHOD__,"post getOccurances()");
+            $this->Status("An Error Occured ".__METHOD__."(".__LINE__.")"." - 1");
+            $this->Result(null);
+            $this->Queue();
+            return null;
+        }
         
-        $this->msg(__METHOD__,"pre ComputeSelectedSpecies");
-        $this->ComputeSelectedSpecies();
-        $this->msg(__METHOD__,"post ComputeSelectedSpecies");
         
-        $this->msg(__METHOD__,"Scripts to run");
-        $this->msg(__METHOD__,$this->ScriptsToRun());
         
+        $compute_ok = $this->ComputeSelectedSpecies();
+        if (!$compute_ok) 
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to compute Scripts \n".print_r($this->SpeciesCombinations(),true));
+            
+            $this->Status("An Error Occured ".__METHOD__."(".__LINE__.")"." - 2");
+            $this->Result(null);
+            $this->Queue();
+            return null;
+        }
         
         
         if (count($this->ScriptsToRun()) == 0)
         {
-            $this->msg(__METHOD__,"No Scripts to run  shpuld be complete");
-            
-            $this->Status("Completed");  // or error ?
             $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
             $this->GetResults();
-            
-            $this->msg(__METHOD__,"Current Result");
-            $this->msg(__METHOD__,$this->Result());
-            
-            pgdb::CommandActionQueue($this);   // update the status and last results
+            $this->Queue();
             return $this->Result();
         }
         
         sleep(10); // wait for Qstat to catch up - before we start poling it
 
         
-        $this->msg(__METHOD__,"Current QSTAT job list");
-        $jobList = $this->qsubJobs(); // get current number of qsub jobs actually running now
-
-        $this->msg(__METHOD__,$jobList);
+        $jobList = $this->qsubJobs();      // get current number of qsub jobs actually running now
         
         while (count($jobList) > 0)
         {
-            // check on jobs and get their progress
 
-             $this->msg(__METHOD__,"Job list count = ".count($jobList));
-            
-            $this->Status("Processing data on grid, waiting ".count($jobList)." jobs");
             $this->GetResults();
-            pgdb::CommandActionQueue($this); // update the status and interim results
-
+            $this->Queue();
             
             sleep(10);
             $jobList = $this->qsubJobs();
             
         }
-
+        
         $this->Status("All GRID jobs have been completed ");
         $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
         $this->GetResults();
-        pgdb::CommandActionQueue($this); // update the status and final results
+        $this->Queue();
 
     }
     
@@ -255,10 +241,6 @@ class SpeciesMaxent extends CommandAction {
     {
         $lines = array();
         exec("qstat | grep '{$this->QsubCollectionID()}'",$lines);
-        
-        $this->msg(__METHOD__,"qsubJobs");
-        $this->msg(__METHOD__,$lines);
-        
         return $lines;
     }
 
@@ -273,31 +255,24 @@ class SpeciesMaxent extends CommandAction {
     private function getOccurances()
     {
         
-        $this->msg(__METHOD__,"start - keys for species are ");
-        
         $speciesIDs = array_keys($this->SpeciesCombinations());
-
-        $this->msg(__METHOD__,"marker 1");
-
-        
-        $this->msg(__METHOD__,$speciesIDs);
         
         foreach ($speciesIDs as $speciesID) 
         {
             if (is_null($speciesID)) continue;
             if ($speciesID == "" ) continue;
             
-            $this->msg(__METHOD__,"species data folder = ".$this->speciesDataFolder($speciesID));
-            
             file::mkdir_safe($this->speciesDataFolder($speciesID));
             
             $getOccurResult = $this->getOccurancesRecordsFor($speciesID);
             
-            $this->msg(__METHOD__,"getOccurResult");
-            $this->msg(__METHOD__,$getOccurResult);
             
             
-            if (is_null($getOccurResult)) return new Exception ("Error getting Occurence data for ".$speciesID."\n");
+            if (is_null($getOccurResult))
+            {
+                DBO::LogError(__METHOD__."(".__LINE__.")","Error getting Occurence data for ".$speciesID."\n");
+                return null;
+            }
             
         }
         
@@ -305,8 +280,6 @@ class SpeciesMaxent extends CommandAction {
         return true;
         
     }
-    
-    
     
     
     
@@ -320,100 +293,14 @@ class SpeciesMaxent extends CommandAction {
     {
      
         $occurFilename = $this->species_occurence_filename($speciesID);
-     
-        $this->msg(__METHOD__,"occurFilename = $occurFilename");
+        file::Delete($occurFilename);
         
-        
-        // check the validity of the file - a "good" number of lines
-        if (file_exists($occurFilename))
-        {
-            $line_count = file::lineCount($occurFilename);
-            
-            $this->msg(__METHOD__,"Occur file exists line_count = $line_count");
-            
-            if ($line_count <= self::$OCCURANCE_MINIMUM_LINES) 
-                file::Delete($occurFilename); // not big enough
-        }
-        
-        
-        if (!file_exists($occurFilename))
-        {
-                                      
-            $this->msg(__METHOD__,"Occur file does not exists  pre get SpeciesOccuranceToFile");
-            
-            $file_result = $this->SpeciesOccuranceToFile($speciesID); // get occuances from database
-            
-            $this->msg(__METHOD__,"post SpeciesOccuranceToFile   file_result = $file_result");
-
-            
-            if (is_null($file_result)) return null; // something  wrong
-            
-            if (!file_exists($occurFilename)) return null; // make sure file exists
-
-
-            // check the validity of the file - a "good" number of lines
-            $lineCount = file::lineCount($occurFilename);
-            if ($lineCount < self::$OCCURANCE_MINIMUM_LINES) 
-            {
-                file::Delete($occurFilename);
-                return null;
-            }
-            
-            
-            $this->msg(__METHOD__," after gettoing amd checking line count lineCount = $lineCount");
-            
-            
-        }
-        
-        // sanity check again the occurance file - probably has atleast N rows - ie header and data row and empty last row ?   
-        if (!file_exists($occurFilename)) return null; // make sure file exists
-        
+        $file_written = SpeciesData::SpeciesOccuranceToFile($speciesID,$occurFilename); // get occuances from database
+        if (!$file_written) return null;
         
         return true;
         
     }
-    
-    
-    public function SpeciesOccuranceToFile($speciesID) 
-    {
-        
-        $occurFilename = $this->species_occurence_filename($speciesID);
-        
-        $this->msg(__METHOD__," occurFilename = $occurFilename");
-        
-        $result = pgdb::SpeciesOccurance($speciesID);
-        
-        $this->msg(__METHOD__,"post pgdb::SpeciesOccurance");
-        //$this->msg(__METHOD__,$result);
-        
-        if (count($result) < self::$OCCURANCE_MINIMUM_LINES) return null;
-        
-        
-        // this will create occurance file wqhere the "name" of the species will be the Species ID from database
-        // thise seems to have to match the Lambdas filename
-        
-        $file = '"SPPCODE","LATDEC","LONGDEC"'."\n";  // headers specific to Maxent JAR
-        foreach ($result as $row) 
-            $file .= $speciesID.",".$row['latitude'].",".$row['longitude']."\n";
-        
-        
-        file_put_contents($occurFilename, $file);
-        
-        if (!file_exists($occurFilename)) return null;
-        
-        if (file::lineCount($occurFilename) < self::$OCCURANCE_MINIMUM_LINES) return null;
-
-        $this->msg(__METHOD__,"Check contents of occurFilename = $occurFilename");
-        
-        
-        unset($result);
-        unset($file);
-        
-        return true;
-        
-    }
-    
-    
     
     
     /**
@@ -440,14 +327,13 @@ class SpeciesMaxent extends CommandAction {
             {
                 $complete = false;
                 
-                // since the maxent log does not exiosts we want to 
-                // just copy the current results over
+                // since the maxent log does not exiosts we want to  just copy the current results over                
                 foreach ($combinations as $combination => $file_id) 
                     $result[$speciesID][$combination] = $file_id;
                 
-                continue;      
-                // don't check outputs when we don't have a complete maxent log
+                continue;  // Next SpeciesID don't check outputs when we don't have a complete maxent log
             }
+            
             
             
             foreach ($combinations as $combination => $file_id) 
@@ -460,9 +346,8 @@ class SpeciesMaxent extends CommandAction {
                 {
                     
                     list($scenario, $model, $time) = explode("_",$combination);    
-                    
-                    // we don't know if we have database data for this comnination so go acheck
-                    $file_id = $this->GetModelledData($speciesID, $scenario, $model, $time); // only interested in ASCII_GRID outputs
+                                                                                             
+                    $file_id = $this->GetModelledData($speciesID, $scenario, $model, $time); // we don't know if we have database data for this comnination so go acheck
                     
                     if (is_null($file_id))
                     {
@@ -505,9 +390,15 @@ class SpeciesMaxent extends CommandAction {
     private function MaxentLogDone($speciesID)
     {
         
-        $maxentLog = $this->maxentLogFilename($speciesID);
+        $maxentLog =    configuration::Maxent_Species_Data_folder().
+                        $speciesID.
+                        configuration::osPathDelimiter().
+                        configuration::Maxent_Species_Data_Output_Subfolder().
+                        configuration::osPathDelimiter().
+                        "maxent.log";
         
-        if (!file_exists($maxentLog)) return false;
+        
+        if (!file_exists($maxentLog)) return false;   // if we don't have the file then it's not done yet
 
         $lastLogLine = exec("tail -n1 '$maxentLog'");
 
@@ -517,19 +408,6 @@ class SpeciesMaxent extends CommandAction {
         
     }
 
-    private function maxentLogFilename($speciesID)
-    {
-        
-        $maxentLog =    configuration::Maxent_Species_Data_folder().
-                        $speciesID.
-                        configuration::osPathDelimiter().
-                        configuration::Maxent_Species_Data_Output_Subfolder().
-                        configuration::osPathDelimiter().
-                        "maxent.log";
-        
-        return $maxentLog;
-        
-    }
     
     
 
@@ -544,30 +422,24 @@ class SpeciesMaxent extends CommandAction {
     private  function ComputeSelectedSpecies()
     {
         
-        $this->msg(__METHOD__,"Pre ");
+        $scripts_written_ok = $this->writeScriptFiles();  // array of script path names
         
+        if (!$scripts_written_ok)
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to create scripts \n");
+            return null;
+        }
         
-        $this->writeScriptFiles();  // array of script path names
-        
-        if (is_null($this->ScriptsToRun())) return null;
-        
-        $this->msg(__METHOD__,"ScriptsToRun()");
-        $this->msg(__METHOD__,$this->ScriptsToRun());
-        
+        if (is_null($this->ScriptsToRun())) return null;  // no scripts to run this might be just fune
         
         foreach ($this->ScriptsToRun() as $scriptname) 
         {
-            if (!is_null($scriptname))
-            {
-                $cmd = "qsub -N{$this->QsubCollectionID()} '{$scriptname}'";
-                
-                $this->msg(__METHOD__,"exec $cmd");
-                
-                exec($cmd);  /// QSUB JOBS Submitted here
-            }
+            if (is_null($scriptname) || trim($scriptname) == "" ) continue;
+            $cmd = "qsub -N{$this->QsubCollectionID()} '{$scriptname}'";
+            exec($cmd);  /// QSUB JOBS Submitted here
         }
         
-        $this->msg(__METHOD__,"post ");
+        return true;
         
     }
     
@@ -579,23 +451,29 @@ class SpeciesMaxent extends CommandAction {
     private function writeScriptFiles()
     {
         
-        // for each species we need to run all the combinations (or check to see if thay have been run)
+        // for each species we need to run all the combinations
         
         $scripts = array();
         foreach ($this->SpeciesCombinations() as $speciesID => $combinations)
         {
-            $singleScript = $this->writeMaxentSingleSpeciesProjectionScriptFile($speciesID,$combinations); // all combinations for a single species
+            $singleScriptName = $this->writeMaxentSingleSpeciesProjectionScriptFile($speciesID,$combinations); // all combinations for a single species
             
-            if ($singleScript == "")  continue;
-
-            $this->msg(__METHOD__,"singleScript = [$singleScript] ");
             
-            $scripts[$speciesID] = $singleScript; // add script if we have the name
+            if (is_null($singleScriptName))
+            {
+                DBO::LogError(__METHOD__."(".__LINE__.")","Failed to create script for  {$speciesID}\n");
+                return null;
+            }
+            
+            
+            if ($singleScriptName != "")   $scripts[$speciesID] = $singleScriptName; // add script if we have the name
             
         }
 
-        $this->ScriptsToRun($scripts);
+        $this->ScriptsToRun($scripts); // update list of scriupts that need to run
 
+        return true;
+        
     }
 
 
@@ -609,49 +487,58 @@ class SpeciesMaxent extends CommandAction {
     private function writeMaxentSingleSpeciesProjectionScriptFile($speciesID,$combinations)
     {
         
-        $this->msg(__METHOD__,"pre");
-        
         file::mkdir_safe($this->species_scripts_folder($speciesID));
         file::mkdir_safe($this->species_data_folder($speciesID));
         file::mkdir_safe($this->species_output_folder($speciesID));
         
-        $this->msg(__METHOD__,"this->species_scripts_folder(speciesID) ".$this->species_scripts_folder($speciesID));
-        $this->msg(__METHOD__,"this->species_data_folder(speciesID) ".$this->species_data_folder($speciesID));
-        $this->msg(__METHOD__,"this->species_output_folder(speciesID) ".$this->species_output_folder($speciesID));
-        
         $maxent_single_species_script_filename = $this->maxent_single_species_script_filename($speciesID);
         
-        $this->msg(__METHOD__,"$maxent_single_species_script_filename ".$maxent_single_species_script_filename);
         
-
-        // create combinration script files here
+        // create combinration script files here - will contains lines to run MaxEnt and Qsub calls to run future projects  in paralell
         
         $script = "";
         $script .= $this->maxentScript($speciesID);
         
-        foreach ($this->futureProjectionScripts($speciesID,$combinations) as $singleFutureScriptFilename) 
+
+        foreach ($combinations as $combination => $file_id)
         {
-            $script .= "\nqsub -N{$this->QsubCollectionID()} '{$singleFutureScriptFilename}'";          // this is the line need to qsub this script
+            
+            if (!is_null($file_id)) continue;  // we already have this combination
+            
+            // script that will be used to execute just a single combo
+            $singleFutureScriptFilename = $this->singleCombinationScript($speciesID,$combination); 
+
+            if (is_null($singleFutureScriptFilename))
+            {
+                DBO::LogError(__METHOD__."(".__LINE__.")","Call to singleCombinationScript failed SpeciesID = $speciesID  combination = $combination  \n");
+                return null;
+            }
+            
+            
+            // add this script name to the Main "root" script to be run
+            $script .= "\nqsub -N{$this->QsubCollectionID()} '{$singleFutureScriptFilename}'";          
+            
         }
         
+            
+        
         $script = trim($script);
-        if ($script == "") null;
+        if ($script == "") return "";  // if there is nothing to run return empty_string
+
         
-        // TODO for testing uncomment this line
+        // add lines to remove - script once it's complete
         $script .=  "\n";
-        $script .= "\n#rm {$maxent_single_species_script_filename}\n"; // remove itself after execution
+        $script .=  "\nrm {$maxent_single_species_script_filename}\n"; // remove itself after execution
         $script .=  "\n";
-        
-        
-        $this->msg(__METHOD__,"Maxent Script is");
-        $this->msg(__METHOD__,$script);
         
         
         file_put_contents($maxent_single_species_script_filename, $script);
-        
-        if (!file_exists($maxent_single_species_script_filename))  return null;
-        
-        $this->msg(__METHOD__,"return {$maxent_single_species_script_filename}");
+
+        if (!file_exists($maxent_single_species_script_filename))
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Write Script for Species = {$speciesID} maxent_single_species_script_filename = $maxent_single_species_script_filename \n");
+            return null;
+        }
         
         return $maxent_single_species_script_filename;   // we have something to RUN so return the filename
         
@@ -736,10 +623,7 @@ class SpeciesMaxent extends CommandAction {
 
         $MaxentResultsInsert_php  = configuration::ApplicationFolder()."Search/MaxentResultsInsert.php";
         
-        
-        $db = new PGDB();
-        $speciesInfo = implode("," , $db->SpeciesInfoByID($speciesID));
-        unset($db);
+        $speciesInfo = SpeciesData::SpeciesQuickInformation($speciesID);
         
         
 $maxent_script = <<<AAA
@@ -753,8 +637,9 @@ $maxent_script = <<<AAA
 # Scenarios      = {$this->EmissionScenarioIDs()}
 # Models         = {$this->ClimateModelIDs()} 
 # Times          = {$this->TimeIDs()}
-# Species Folder = {$species_folder}
+#
 # file locations
+# Species Folder = {$species_folder}
 # MAXENT         = {$maxent}
 # TRAINCLIMATE   = {$train}
 # PROJECTCLIMATE = {$project}
@@ -777,27 +662,6 @@ AAA;
 
     }
     
-    
-    private function futureProjectionScripts($speciesID,$combinations)
-    {
-        
-        //$this->GetResults(); // make sure we only create for what we don't have
-        
-        $future_projection_scripts = array();
-        foreach ($combinations as $combination => $file_id)
-        {
-            if (!is_null($file_id)) continue;  // we already have this combination
-
-            $this->msg(__METHOD__," getting future_projection_scripts[$combination]");
-            
-            $future_projection_scripts[$combination] = $this->singleCombinationScript($speciesID,$combination); // script that will be used to execute just a single combo
-
-        }
-
-            
-        return $future_projection_scripts;
-            
-    }
     
     
     /**
@@ -838,15 +702,10 @@ AAA;
                             configuration::CommandScriptsSuffix();
         
         
-        $db = new PGDB();
-        $speciesInfo = implode("," , $db->SpeciesInfoByID($speciesID));
-        unset($db);
-        
-        
         $script  = "#!/bin/tcsh"; 
         $script .= "\n# combination              = {$combination}";
         $script .= "\n# speciesID                = {$speciesID}";
-        $script .= "\n# speciesInfo              = {$speciesInfo}";
+        $script .= "\n# speciesInfo              = ".SpeciesData::SpeciesQuickInformation($speciesID);
         $script .= "\n# script_folder            = {$script_folder}";
         $script .= "\n# maxent                   = {$maxent}";
         $script .= "\n# lambdas                  = {$lambdas}";
@@ -861,14 +720,16 @@ AAA;
                     //java -mx2048m -cp $MAXENT   density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x        
         $script .= "\njava -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x";   
         $script .= "\nphp -q ".configuration::ApplicationFolder()."Search/MaxentQuickLookInsert.php $speciesID '$future_projection_output'";
+        $script .= "\nrm $scriptFilename";
         $script .= "\n";
-        
-        
-        // here uncomment to make script  remove itself after running
-        // $script .= "\nrm $scriptFilename";
-        
             
         file_put_contents($scriptFilename, $script);
+        
+        if (!file_exists($scriptFilename))
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Write Script for Species = {$speciesID}  combination = $combination scriptFilename = $scriptFilename \n");
+            return null;
+        }
         
         
         return $scriptFilename;
@@ -1009,195 +870,7 @@ AAA;
     }
     
     
-    /**
-    *
-    * @param type $src_grid_filename      - Maxent ASC Grid with filename in format of      (Scenario)_(model)_(time).asc
-    * @param type $output_image_filename  - Where you want to output mage to end up 
-    * @param type $low_threshold          - display value start from   - to be read from maxentResults.csv - "Equate entropy of thresholded and original distributions logistic threshold"
-    * @param type $transparency           - transparency of all colors 
-    * @param type $background_colour      - background colour   use 0 0 0 255 = Full balck   0 0 0 0 = Full Transparent
-    * @return null|String                 - Output filename 
-    */
-    public static function CreateQuickLookImage($species_id,$src_grid_filename,$output_image_filename = null ,$low_threshold = null,$transparency = 255,$background_colour = "0 0 0 255")
-    {
-        
-        if (is_null($output_image_filename)) $output_image_filename = str_replace("asc","png",$src_grid_filename);
-        
-        if (file_exists($output_image_filename)) return $output_image_filename;
-        
-        list($scenario, $model, $time) =  explode("_",str_replace('.asc','',basename($src_grid_filename)));    
-
-        $histogram_buckets = 10;
-        
-        $ramp = RGB::Ramp(0, 1, $histogram_buckets,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())); 
-
-        $colour_txt = file::random_filename().".txt"; // list of colours to use - will bne generated
-        file::Delete($colour_txt);
-
-        $colour_png = file::random_filename().".png"; // colourized ASC file as a png
-        file::Delete($colour_png);
-
-        $colour_zero_txt = file::random_filename().".txt"; // used to create black background
-        file::Delete($colour_zero_txt);
-
-        $colour_background_png = file::random_filename().".png"; // background image
-        file::Delete($colour_background_png);
-
-        $colour_combined_png = file::random_filename().".png"; // background + coloured image 
-        file::Delete($colour_combined_png);
-
-        $colour_legend_png = file::random_filename().".png"; // legend  image together
-        file::Delete($colour_legend_png);
-
-        $header_png = file::random_filename().".png"; // legend  image together
-        file::Delete($header_png);
-        
-        
-        if (is_null($output_image_filename))
-            $output_image_filename = file::random_filename().".png"; // return image filename
-        
-        
-        $db = new PGDB();
-        
-
-    //    echo "\ncolour_txt = ".$colour_txt ;
-    //    echo "\ncolour_png = ".$colour_png ;
-    //    echo "\ncolour_zero_txt = ".$colour_zero_txt ;
-    //    echo "\ncolour_background_png = ".$colour_background_png ;
-    //    echo "\ncolour_combined_png = ".$colour_combined_png ;
-    //    echo "\ncolour_legend_png = ".$colour_legend_png ;
-
-
-        $indexes = array_keys($ramp);
-        if (is_null($low_threshold))   // try to get value from  Maxent Results self::$DisplayThresholdFieldName
-        {
-            $low_threshold = $indexes[1]; // if they did not pass low end threshold then just show everything above lowest value    
-            $maxent_threshold = $db->GetMaxentResult($species_id,self::$DisplayThresholdFieldName);
-            if (!is_null($maxent_threshold))  $low_threshold = $maxent_threshold;
-        }
-        
-        // create colour "lookup table"    
-
-        $color_table = "nv 0 0 0 0\n";  // no value
-        $pcent = 0;
-        $step = round( 100 / count($ramp),0);
-        foreach ($ramp as $index => $rgb) 
-        {
-            $rgb instanceof RGB;
-            if ($index < $low_threshold)
-            {
-                $color_table .= $pcent."% 0 0 0 0\n";
-            }
-            else
-            {
-                $color_table .= $pcent."% ".$rgb->Red()." ".$rgb->Green()." ".$rgb->Blue()." {$transparency}\n";    
-                
-            }
-            $pcent += $step;
-        }
-
-        // save the colour lookup table 
-        file_put_contents($colour_txt, $color_table);
-        
-        $cmd = "gdaldem  color-relief {$src_grid_filename} {$colour_txt} -nearest_color_entry -alpha -of PNG {$colour_png}";
-        exec($cmd);  // generate a coloured image using colour lookup 
-
-        // create backgound to put coloured image on top of
-        file_put_contents($colour_zero_txt, "nv 0 0 0 0\n0% {$background_colour}\n100% {$background_colour}\n"); // default is ALL Values = $background_colour  & No Value  = transparent  
-        $cmd = "gdaldem  color-relief {$src_grid_filename} $colour_zero_txt -nearest_color_entry -alpha -of PNG {$colour_background_png}";
-        exec($cmd);
-
-
-        // order here is important first is lowest
-        $cmd = "convert {$colour_background_png} {$colour_png} -layers flatten {$colour_combined_png}";
-        exec($cmd);
-
-        
-        $species_info = $db->SpeciesInfoByID($species_id);
-        $species_info = array_util::Replace($species_info, "'", "");
-        
-        
-        list($width, $height, $type, $attr) = getimagesize($colour_png);     
-        
-        // - add parameters  to the image  $scenario, $model, $time
-
-$header = <<<HEADER
-convert \
--size  {$width}x60 xc:white -font DejaVu-Sans-Book -fill black \
--draw 'text  10,20 "{$species_info['scientific_name']}"' \
--draw 'text  10,40 "{$species_info['common_name']}"' \
--draw 'text 200,20 "Scenario: {$scenario}"' \
--draw 'text 400,20 "Model: {$model}"' \
--draw 'text 600,20 "Time: {$time}"' \
-{$header_png};
-HEADER;
-
-        exec($header);
-
-
-        // create a legend image
-        // # rectangle left,top right,bottom" \
-        $swatch_height = 20;
-        $swatch_width = 20;
-        $swatch_width_padding = 10;
-        $text_align_up = -2;
-
-        
-        $height = count($ramp) * $swatch_height + (2 * $swatch_height);  // heioght of the legend is a cal of the number of legend items + 2 for top and bittom padding
-        $box_top = 10;
-        $box_left = 20;
-        
-        $legend  = "convert -size  {$width}x{$height} xc:white ";
-        $legend .= "-font DejaVu-Sans-Book ";
-
-        foreach (array_reverse($ramp, true) as $index => $rgb) 
-        {
-            $rgb instanceof RGB;
-
-            $box_right = $box_left + $swatch_width;
-            $box_bottom = $box_top + $swatch_height;
-
-            $text_left = $box_left + $swatch_width + $swatch_width_padding;
-            $text_top  = $box_top + $swatch_height + $text_align_up;
-
-            $text = sprintf("%01.2f", $index);
-
-            $legend .= "-fill '#{$rgb->asHex()}' -draw 'rectangle {$box_left},{$box_top} {$box_right},{$box_bottom}' ";
-            $legend .= "-fill black -draw 'text {$text_left},{$text_top} \"{$text}\"' ";
-
-            $box_top += $swatch_height;
-
-        }
-
-        $legend .= " {$colour_legend_png}";
-        
-        exec($legend); // create legend
-
-        $cmd = "convert {$header_png} {$colour_combined_png} {$colour_legend_png} -append {$output_image_filename}";
-        exec($cmd);
-
-        // might be better here to convert to a tmp image
-        // and then copy back to the $output_image_filename
-        
-        unset($db);
-        
-
-        file::Delete($colour_txt);
-        file::Delete($colour_png);
-        file::Delete($colour_zero_txt);
-        file::Delete($colour_background_png);
-        file::Delete($colour_combined_png);
-        file::Delete($colour_legend_png);
-
-        if (!file_exists($output_image_filename)) return null;
-
-        
-        
-        
-        return $output_image_filename; // filename of png that can be used - 
-
-    }
-
+    
     
     /**
      * Make sure all outputs for a model run exist
@@ -1210,21 +883,11 @@ HEADER;
      */
     public function GetModelledData($species,$scenario, $model, $time)
     {
-        // $scenario, $model, $time
-        $db = new PGDB();
         
-        //echo __METHOD__."  $species,$scenario, $model, $time,$filetype , $desc  \n";
-        
-        $asc_file_id = $db->GetModelledData($species, $scenario, $model, $time,'ASCII_GRID');
-        
-        $quickLook_file_id  = $db->GetModelledData($species, $scenario, $model, $time,'QUICK_LOOK');
+        $asc_file_id        = SpeciesData::GetModelledData($species, $scenario, $model, $time,'ASCII_GRID');
+        $quickLook_file_id  = SpeciesData::GetModelledData($species, $scenario, $model, $time,'QUICK_LOOK');
         
         if (is_null($asc_file_id) || is_null($quickLook_file_id) )return null;
-        
-        
-        //echo __METHOD__."  file_id = $file_id  \n";
-        
-        unset($db);
         
         return $asc_file_id;
     }

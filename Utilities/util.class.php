@@ -18,6 +18,33 @@ class util {
         return "E'".  str_replace("'", "\'", $str)."'";
     }
     
+
+    public static function dbqKeyedArray($array,$operator = "=",$delim = ",") 
+    {
+    
+        $results = array();
+        foreach ($array as $key => $value) 
+        {
+            if (is_numeric($value))
+                $results[] = $key." ".$operator." ".$value;    
+            else
+                $results[] = $key." ".$operator." ".util::dbq($value);
+        }
+        
+
+        $result = implode($delim, $results);
+        
+        return $result;
+        
+    }
+    
+    
+    public static function Log($from,$str) 
+    {
+        error_log("APPLICATION ERROR:: ".$from."::".$str);
+    }
+    
+    
     
     /**
     * @method isWebBrowser
@@ -1064,6 +1091,12 @@ SQL;
         return $str;
     }
 
+    
+    public static function CleanString($str)
+    {
+        return self::CleanStr($str,NULL,self::$EXTRA_CHARS,"");   
+    }
+    
     
     public static function toString($src)
     {

@@ -1,5 +1,5 @@
 <?php
-ini_set('memory_limit','128M');
+ini_set('memory_limit','8096M');
 include_once dirname(__FILE__).'/ParameterNames.class.php';
 
 $af = dirname(__FILE__).'/';
@@ -29,4 +29,5 @@ include_once $af.'MapServer/Mapserver.includes.php';
 include_once $af.'DB/ToolsData.includes.php';
 include_once $af.'Output/Output.includes.php';
 include_once $af.'Finder/Species/SpeciesMaxent.action.class.php';
+include_once $af.'Finder/Species/SpeciesMaxentQuickLook.class.php';
 ?>

@@ -76,7 +76,7 @@ if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_READY)
         $result['content'] = $O;
     }
     
-    $queueID = CommandUtil::Queue($cmd);
+    $queueID = DatabaseCommands::CommandActionQueue($cmd);
     
     if ($queueID instanceof Exception)
     {

@@ -29,28 +29,43 @@ function usage($prog)
 // MAIN
 // --------------------------------------------------------------
 
-$db = new PGDB();
 
-$file_id = 
-    $db->InsertSingleMaxentProjectedFile(
+
+$file_id = DatabaseMaxent::InsertSingleMaxentProjectedFile(
              $species_id
             ,$ascii_filename
             ,'ASCII_GRID'
             ,'Spatial data of projected species suitability:'.basename($ascii_filename)
             );
 
+if (is_null($file_id))
+{    
+    DBO::LogError("MaxentQuickLookInsert.php","Failed to Insert Single Maxent Projected ASCII Grid File {$ascii_filename}  \nspecies_id = $species_id\n");
+    return null;
+}
 
-$qlfn = SpeciesMaxent::CreateQuickLookImage($species_id,$ascii_filename);
 
-$file_id = 
-    $db->InsertSingleMaxentProjectedFile(
+$qlfn = SpeciesMaxentQuickLook::CreateImage($species_id,$ascii_filename);
+if (is_null($qlfn))
+{    
+    DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Create Quick Look from ASCII Grid File {$ascii_filename}  \nspecies_id = $species_id\n");
+    return null;
+}
+
+$file_id = DatabaseMaxent::InsertSingleMaxentProjectedFile(
              $species_id
             ,$qlfn
             ,'QUICK_LOOK'
             ,'Quick look image of projected species suitability:'.basename($qlfn)
             );
 
-unset($db);
 
-file::Delete($qlfn);
+if (is_null($file_id))
+{    
+    DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Insert Single Maxent Projected Quick Look File {$qlfn}  \nspecies_id = $species_id\n");
+    return null;
+}
+
+
+//file::Delete($qlfn);
 ?>

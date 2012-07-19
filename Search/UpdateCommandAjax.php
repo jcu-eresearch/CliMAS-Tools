@@ -2,9 +2,14 @@
 session_start();
 include_once 'includes.php';
 
+$result = array();
+
+
 $queueID = array_util::Value($_POST, "queueID", null);
 
-$result = array();
+$result['msg'] = "Server time ".datetimeutil::NowDateTime();
+echo json_encode($result);
+return;   // will stop here and return if we have all results requested.
 
 
 if (is_null($queueID))
@@ -17,10 +22,7 @@ if (is_null($queueID))
 
 $result['queueID'] = $queueID;
 
-
-$db = new PGDB();
-$cmd = $db->CommandActionRead($queueID);
-unset($db);
+$cmd = DatabaseCommands::CommandActionRead($queueID);
 
 
 if (is_null($cmd))

@@ -17,7 +17,6 @@ function usage($prog)
 }
 // MAIN
 // --------------------------------------------------------------
-$db = new PGDB();
-$db->InsertAllMaxentResults($species_id);
-unset($db);
+DatabaseMaxent::InsertAllMaxentResults($species_id);
+
 ?>        

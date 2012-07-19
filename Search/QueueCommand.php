@@ -51,7 +51,7 @@ if (is_null($queueID))
 
                 //print_r($cmd);
 
-                $queueID = CommandUtil::Queue($cmd);
+                $queueID = DatabaseCommands::CommandActionQueue($cmd);
 
                 if (is_null($queueID))
                 {
@@ -84,7 +84,7 @@ if (is_null($queueID))
 else
 {
     
-    $cmd = CommandUtil::GetCommandFromID($queueID);
+    $cmd = DatabaseCommands::CommandActionRead($queueID);
     
     if (is_null($cmd))
     {
