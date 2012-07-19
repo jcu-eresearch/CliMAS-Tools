@@ -29,3 +29,24 @@ With respect to the emission scenarios, Representative Concentration Pathways (R
     </div>
 </div>
 
+<div class="additionalcontent">
+    <span class="opener">Tips for downloading large files</span>
+    <div class="add">
+        <h4>Avoid Internet Explorer</h4>
+        <p>
+            There is <a href="http://support.microsoft.com/kb/298618">a limit in early versions of Internet Explorer</a> that means you may not be able to download files larger than 2Gb. If you are using Internet Explorer you should consider 
+            <a href="http://browsehappy.com/">upgrading your web browser</a>.
+        </p>
+        <h4>Use wget</h4>
+        <p>
+            Linux, Mac OSX, and other Unix-like systems often include a command-line tool, <a href="http://en.wikipedia.org/wiki/Wget">wget</a>.  Wget is available for Windows, Linux and OSX, and lets you download files from a terminal, without using a web browser.
+        </p><p>
+            If you have wget, you can run a command like this in your terminal to download a file:
+        </p>
+        <pre>
+wget -c http://wallaceinitiative.org/climate_2012/output/australia-5km/RCP3PD_cccma-cgcm31.zip
+</pre><p>
+            Replace the example URL with the URL to the file you want to download.  You can find the correct URL by right-clicking the download button and copying the file location.  The <tt>-c</tt> flag means it will resume an incomplete download if interrupted (otherwise wget will create a new file).
+        </p>
+    </div>
+</div>
