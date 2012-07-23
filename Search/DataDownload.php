@@ -423,7 +423,7 @@ function zipFiles($requestedData)
         echo "<div class='intro'>";
         include 'DataDownloadDesc.html';
         echo "</div>";
-        echo coverageSelector("change");
+        echo coverageSelector("change to");
         echo selectionTable();
         
         // here's where we put actual modes into this string
