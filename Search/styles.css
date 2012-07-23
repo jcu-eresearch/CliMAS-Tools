@@ -335,6 +335,7 @@ pre {
 /* footer and credits ----------------------------------------- */
 
 .footer {
+    font-size: 80%;
 	margin: 0;
 	padding: 3em 1em;
 }
