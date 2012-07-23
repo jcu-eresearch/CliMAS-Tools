@@ -6,7 +6,7 @@ include_once 'includes.php';
 $coverages = array();
 
 $coverages['australia-5km'] = array();
-$coverages['australia-5km']['tag'] = 'Australia, 2.5&prime; (~5km) resolution';
+$coverages['australia-5km']['tag'] = 'Australia, 2.5arcmin (~5km)';
 $coverages['australia-5km']['size_current'] = '~21Mb zip';  // current data
 $coverages['australia-5km']['size_single'] = '~300Mb zip';  // a single model and single scenario
 $coverages['australia-5km']['size_RCP'] = '~1.2Gb zip';     // one model, all RCP scenarios
@@ -14,7 +14,7 @@ $coverages['australia-5km']['size_SRES'] = '~1.5Gb zip';    // one model, all SR
 $coverages['australia-5km']['size_models'] = '~5.2Gb zip';  // all models, a single scenario
 
 $coverages['world-20km'] = array();
-$coverages['world-20km']['tag'] = 'World, 10&prime; (~20km) resolution';
+$coverages['world-20km']['tag'] = 'World, 10arcmin (~20km)';
 $coverages['world-20km']['size_current'] = '~200Mb zip';  // current data
 $coverages['world-20km']['size_single'] = '~650Mb zip';  // a single model and single scenario
 $coverages['world-20km']['size_RCP'] = '~2.6Gb zip';     // one model, all RCP scenarios
@@ -393,7 +393,7 @@ function zipFiles($requestedData)
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Data Download</title>
 <link rel="stylesheet" type="text/css" href="Output/Descriptions.css" />
-
+<link rel="icon" type="image/png" href="../images/favicon-trans.png">
 <link href="styles.css" rel="stylesheet" type="text/css">
 
 <script type="text/javascript">
