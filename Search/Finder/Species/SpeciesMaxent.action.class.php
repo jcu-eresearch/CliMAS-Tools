@@ -17,6 +17,8 @@ class SpeciesMaxent extends CommandAction {
         $this->CommandName(__CLASS__);
         
         $this->FinderName("SpeciesFinder");
+     
+        $this->isServerRun(false);
         
     }
 
@@ -59,8 +61,8 @@ class SpeciesMaxent extends CommandAction {
 
         $this->initialised(true);
         
-        
-        $this->GetResults();  // then populates the combinations with anything that has already been done
+        if (!$this->isServerRun())
+            $this->GetResults();  // then populates the combinations with anything that has already been done
         
         if ($this->ResultsComplete())
         {
@@ -79,11 +81,6 @@ class SpeciesMaxent extends CommandAction {
         DatabaseCommands::CommandActionQueue($this);
     }
     
-    
-    private function msg($from,$str)
-    {
-        DBO::LogError("SpeciesMaxent::".$from,$str);
-    }
     
     /**
      * 
@@ -144,17 +141,13 @@ class SpeciesMaxent extends CommandAction {
         
         
         // if we have data in the file system but not in database load it in - Just NMain root results for each spcecies
-        foreach (array_keys($this->SpeciesCombinations()) as $speciesID) 
-        {
-            if (is_null($speciesID)) continue;
-            $speciesID = trim($speciesID);
-            if ($speciesID == "") continue;
-            
-            
-            DBO::LogError(__METHOD__."(".__LINE__.")"," InsertAllMaxentResults for speciesID = $speciesID");
-            DatabaseMaxent::InsertMainMaxentResults($speciesID); 
-        }
+        // but only load the data if we are running as "Large Server Process"
+        // we don't want to inflict this on the user
+        if ($this->isServerRun())
+            foreach (array_keys($this->SpeciesCombinations()) as $speciesID) 
+                DatabaseMaxent::InsertMainMaxentResults($speciesID);  // this will load for all 
 
+        
         
         $this->GetResults();
         
@@ -319,6 +312,9 @@ class SpeciesMaxent extends CommandAction {
         
         foreach ($this->SpeciesCombinations() as $speciesID => $combinations) 
         {
+
+            DBO::LogError(__METHOD__."(".__LINE__.")","Checking on results for {$speciesID}");
+            
             
             $speciesID = trim($speciesID);
             if ($speciesID == "") continue;
@@ -340,6 +336,9 @@ class SpeciesMaxent extends CommandAction {
             {
                 
                 $result[$speciesID][$combination] = $file_id; // copy current values into new result - will copy over null values as well
+                
+                
+                DBO::LogError(__METHOD__."(".__LINE__.")","Checking on results for {$speciesID} ... {$combination}");
                 
                 // the current file_id for this combinartion is not set - go get it / check for it
                 if (is_null($file_id))
@@ -811,6 +810,13 @@ AAA;
      * @return type 
      */
     public function SpeciesCombinations() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+    
+    public function isServerRun() {
         if (func_num_args() == 0)
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));

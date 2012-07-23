@@ -20,11 +20,12 @@ class SpeciesData extends Object {
      * @param type $pattern
      * @return type 
      */
-    public static function speciesList($pattern = "%",$min_count = 1) 
+    public static function speciesList($pattern = "%")  //
     {
         $pattern = util::CleanString($pattern);
-        $sql = "select s.id as species_id ,s.scientific_name,s.common_name,sp.count as occurance_count, (s.common_name || ' (' || s.scientific_name || ')' ) as full_name   from species s, species_occurence sp  where s.id=sp.species_id and sp.count >= {$min_count}  and (s.common_name LIKE '%{$pattern}%' or  s.scientific_name LIKE '%{$pattern}%' ) ";
-        
+        $sql = "select species_id,(common_name || ' (' || scientific_name || ')' ) as full_name  from modelled_climates  where (common_name LIKE '%{$pattern}%' or scientific_name LIKE '%{$pattern}%' ) ";
+                        
+                       
         $result = DBO::Query($sql,'species_id');
         
         if (is_null($result))

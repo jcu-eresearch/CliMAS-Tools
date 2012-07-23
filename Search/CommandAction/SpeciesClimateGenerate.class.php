@@ -658,11 +658,15 @@ SQL;
 //        echo "models    = ".implode(", ", $models)."\n";
 //        echo "times     = ".implode(", ", $times)."\n";
 
+        
+        
         $species  = "1103 1849 1350 1308 1999 427 194 482 1420 2073 2232 492 1822 1764";
         $scenario = implode(" ", $scenarios);
         $model    = implode(" ", $models);
         $time     = implode(" ", $times);
 
+        
+        
         $scenario = util::first_element($scenarios);
         $model    = util::first_element($models);
         //$time     = util::first_element($times);
@@ -670,6 +674,8 @@ SQL;
         echo "test scenarios = ".$scenario."\n";
         echo "test models    = ".$model."\n";
         echo "test times     = ".$time."\n";
+        
+        
         
         
         $M = new SpeciesMaxent();
@@ -712,6 +718,58 @@ SQL;
         echo "====================================\n";
         echo "Finished\n";
         echo "====================================\n";
+        
+        
+    }    
+
+    
+    public function Stage5($name_only = false) 
+    {
+
+        $name = 'running models for All Models for ten Species';
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
+
+        //$species_id = 3081;
+        
+        $scenarios = DatabaseClimate::GetScenarios();
+        
+        $models    = DatabaseClimate::GetModels();
+        
+        $times     = DatabaseClimate::GetTimes();
+//        
+//        echo "scenarios = ".implode(", ", $scenarios)."\n";
+//        echo "models    = ".implode(", ", $models)."\n";
+//        echo "times     = ".implode(", ", $times)."\n";
+
+        
+        
+        
+        $species = implode(" ",array_keys( DBO::Unique("species_occurence", "species_id", "count > 5000", true)));
+        $scenario = implode(" ", $scenarios);
+        $model    = implode(" ", $models);
+        $time     = implode(" ", $times);
+
+        
+        echo "load species   = ".$species."\n";
+        echo "load scenarios = ".$scenario."\n";
+        echo "load models    = ".$model."\n";
+        echo "load times     = ".$time."\n";
+        
+        $M = new SpeciesMaxent();
+        
+        $src = array();
+        $src['species']  = $species;
+        $src['scenario'] = $scenario;
+        $src['model']    = $model;
+        $src['time']     = $time;
+        
+        $M->initialise($src);
+        
+        echo "====================================\n";
+        echo "RUNNING MOdel On GRID\n";
+        echo "====================================\n";
+
+        $M->Execute();
         
         
     }    

@@ -11,10 +11,10 @@ class database
     
     public $open_new_connection = false;
     
-    private $db     = 'gw_2011';
-    private $host   = 'localhost';
-    private $userID = 'root';
-    private $pwd    = 'good4you';
+    private $db     = '';
+    private $host   = '';
+    private $userID = '';
+    private $pwd    = '';
     
     private $insert_block_size = 40;
     
@@ -40,19 +40,15 @@ class database
     
     public function __destruct()
     {
-        if ($this->debug_all) logger::called();
-        if ($this->debug_all) logger::text("Disconnecting Database\n");
         $this->disconnect();
     }
 
     public function selectTable($db, $tableName, $keyColoumn = "",$where = "",$limit = "")
     {
-        logger::called();
         if ($where != "") $where = " where $where ";
         if ($limit != "") $limit = " limit {$limit} ";
         
         $q = "select * from `$db`.`$tableName` $where $limit";
-        if ($this->debug_all) logger::text($q);
         
         return $this->query($q,$keyColoumn);
     }
@@ -60,7 +56,6 @@ class database
 
     public function database_names($like = "%")
     {
-        if ($this->debug_all) logger::called();
         $sql_result = $this->query("SELECT S.`SCHEMA_NAME` as database_name FROM information_schema.SCHEMATA S where SCHEMA_NAME != 'information_schema' and SCHEMA_NAME != 'mysql' and SCHEMA_NAME like '$like';",'database_name');
         
         return array_keys($sql_result);
@@ -69,18 +64,12 @@ class database
     
     public function table_names($db, $like = "%")
     {
-        if ($this->debug_all) logger::called();
         $sql = "SELECT TABLE_NAME  as table_name FROM information_schema.TABLES where TABLE_SCHEMA = '$db' and TABLE_NAME like('$like');";
-        if ($this->debug_all) logger::text($sql);
         $sql_result = $this->query($sql,'table_name');
-        
-        
         
         $result = array();
         foreach (array_keys($sql_result) as $value)
             $result[$value] = $value;
-        
-        logger::text($result);
         
         return $result;
     }
@@ -90,7 +79,6 @@ class database
     
     public function connect()
     {
-        if ($this->debug_all) logger::called();
         $this->link = mysql_connect($this->host, $this->userID, $this->pwd,$this->open_new_connection);
         
         if (!$this->link) die('Could not connect: ' . mysql_error());
@@ -104,13 +92,11 @@ class database
 
     public function change_db($db)
     {
-        if ($this->debug_all) logger::called();
         return  mysql_select_db($db);
     }
 
     public function disconnect()
     {
-        if ($this->debug_all) logger::called();
         if ($this->isConnected())
             @mysql_close($this->link);
         
@@ -122,26 +108,14 @@ class database
 
     public function isConnected()
     {        
-        if ($this->debug_all) logger::called();
         return (!is_null($this->link));   
     }
     
-    public function show_error()
-    {        
-        logger::called();
-        $err = trim(mysql_error());
-        if ($err == "") 
-            logger::text("NO ERRORS");
-        else
-            logger::text("$err");
-        
-    }
-
+    
     
     //** the key will be unique and the value will be the last value for that key
     public function KeyedColumn($table,$keyColoumn,$valueColumn,$where,$limit)
     {
-        logger::called();
         if (is_null($table)       || $table == '') return null;
         if (is_null($keyColoumn)  || $keyColoumn == '') return null;
         if (is_null($valueColumn) || $valueColumn == '') return null;
@@ -163,8 +137,6 @@ class database
 
     private function clean_query($sql,$above_128 = true) 
     {
-        if ($this->debug_all) logger::called();
-        if ($this->debug_all) logger::text("Query length pre = ".  strlen($sql));
         
         //** clean all non typeable chars from query
         for ($index = 0; $index <= 31; $index++) $sql = str_replace(chr($index), ' ', $sql);   
@@ -172,7 +144,6 @@ class database
         if ($above_128)
             for ($index = 128; $index <= 255; $index++) $sql = str_replace(chr($index), ' ', $sql);   
 
-        if ($this->debug_all) logger::text("Query length post = ".  strlen($sql)."\n");
             
         $sql = trim($sql);
         $sql = util::trim_end($sql, ';');
@@ -185,7 +156,6 @@ class database
     public function query($sql,$keyColoumn = "",$query_names = null)
     {
         
-         if ($this->debug_all)  logger::called();
         $this->connect();
         $sql = $this->clean_query($sql);
         
@@ -197,7 +167,6 @@ class database
         {
             $single_sql = trim($single_sql);
             if ($single_sql == "") continue;
-            if (strlen($single_sql) <= 5) logger::text("ERROR: Not executing query seems too short $single_sql");
             
             $qname = (is_null($query_names)) ? $count  : $query_names[$count];
             if (substr($single_sql,0,2) == "<<") 
@@ -221,11 +190,8 @@ class database
     
     private function query_single($sql,$keyColoumn = "")
     {
-        if ($this->debug_all) logger::called();
         
         $sql = $this->clean_query($sql);
-        
-        if ($this->debug_all) logger::text("Run Query {$this->link} $sql");
 
         $sql_result = mysql_query($sql, $this->link);
 
@@ -238,8 +204,6 @@ class database
         catch (Exception $exc) {
             return array();
         }
-        
-        if ($this->debug_all) logger::text("Get rows  total row count = ".mysql_num_rows($sql_result));
         
         $result = array();
         while ($row)
@@ -262,12 +226,9 @@ class database
 
     public function jagged_query($sql,$key_column)
     {
-        logger::called();
         $this->connect();
 
         $sql = $this->clean_query($sql);
-        
-        logger::text("Run Query $sql");
 
         $sql_result = mysql_query($sql, $this->link);
 
@@ -280,8 +241,6 @@ class database
         catch (Exception $exc) {
             return array();
         }
-        
-        logger::text("Get rows  total row count = ".mysql_num_rows($sql_result));
         
         $result = array();
         while ($row)
@@ -303,7 +262,6 @@ class database
     //** $array = key field name  value = column type
     public function change_types_of_columns($db,$table, $array)
     {    
-        logger::called();
         $changes = array();
         foreach ($array as $field => $datatype)
             $changes[] = "CHANGE  `$field`  `$field` $datatype NULL";
@@ -316,27 +274,23 @@ class database
     
     public function change_column_type($db,$table, $field,$datatype)
     {    
-        logger::called();
         $sql = "ALTER TABLE  `{$db}`.`{$table}` CHANGE  `$field`  `$field` $datatype NULL";
         return $this->update($sql);
     }
     
     public function change_column_type_to_double($db,$table, $field)
     {       
-        logger::called();
         return $this->change_column_type($db, $table, $field, 'double');
     }
     
     public function change_column_type_to_varchar($db,$table, $field,$size = 100)
     {            
-        logger::called();
         return $this->change_column_type($db, $table, $field, "varchar($size)");
     }
     
     
     public function count($table, $field = NULL,$where = NULL)
     {
-        if ($this->debug_all) logger::called();
         $this->connect();
         $result = -1;
 
@@ -351,7 +305,6 @@ class database
 
         $sql = $this->clean_query($sql);
         
-        if ($this->debug_all)logger::text("$this->count $sql");
         $sql_result = mysql_query($sql, $this->link);
 
         if ($sql_result == FALSE)
@@ -376,7 +329,6 @@ class database
 
     public function single_value_query($sql)
     {
-        if ($this->debug_all)logger::called();
         $sql_result = $this->query($sql);
         $first_row = util::first_element($sql_result);        
         return util::first_element($first_row);        
@@ -385,13 +337,11 @@ class database
     
     public function max($table,$id_field,$value_field,$where = NULL)
     {
-        logger::called();
         $result = null;
 
         if (!is_null($where) && $where != '') $where = " where $where ";
 
         $sql = "select $id_field,max($value_field) as 'max' from $table $where group by $id_field order by $id_field";
-        logger::text("$this->max\n$sql");
 
         $sql_result = $this->query($sql, $id_field);
 
@@ -407,14 +357,12 @@ class database
 
     public function min($table,$id_field,$value_field,$where = NULL)
     {
-        logger::called();
         $result = null;
 
         if (!is_null($where)) $where = " where $where ";
 
         $sql = "select $id_field,min($value_field) as 'min' from $table $where group by $id_field order by $id_field";
 
-        logger::text("$this->min \n$sql");
 
         $sql_result = $this->query($sql, $id_field);
 
@@ -431,7 +379,6 @@ class database
 
     public function insert($sql)
     {
-        if ($this->debug_all) logger::called();
         $this->connect();
         $sql = $this->clean_query($sql);
         $sql_result = mysql_query($sql,$this->link);
@@ -442,7 +389,6 @@ class database
 
     public function delete($sql)
     {
-        if ($this->debug_all) logger::called();
         $this->connect();
         $sql = $this->clean_query($sql);
         $sql_result = mysql_query($sql,$this->link);
@@ -453,7 +399,6 @@ class database
 
     public function update($sql)
     {
-        if ($this->debug_all)logger::called();
         $this->connect();
         
         $sql = util::trim_end(trim($sql), ";");
@@ -462,9 +407,6 @@ class database
         
         if (!util::contains($sql, ';'))
         {
-            //**logger::text("Single update query:  $sql");
-            //** single query - return as before
-            
             $sql_result = mysql_query($sql, $this->link);
             $affected = mysql_affected_rows();
             $this->disconnect();
@@ -476,12 +418,10 @@ class database
         $result_affected_rows = array();
         foreach (explode(';',$sql) as $single_sql)
         {
-            //**logger::text("multiple update querys:  $single_sql");
             $sql_result = mysql_query($single_sql.";", $this->link);
             $result_affected_rows[$sql_result] = mysql_affected_rows();
         }
             
-        if ($this->debug_all) logger::text("Update results\n".util::toString($result_affected_rows));
         
         $this->disconnect();
         
@@ -491,18 +431,13 @@ class database
 
     public function Index($db,$table,$column)
     {
-        logger::called();
         if (is_null($db) || $db == "") return null;
         if (is_null($table) || $table == "") return null;
         if (is_null($column) || $column == "") return null;
 
-        if ($this->debug_all)logger::text("Adding index for $column");
-        
         $sql = "ALTER TABLE `$db`.`$table` ADD INDEX (  `$column` );";
 
         $update_rows = $this->update($sql);
-
-        if ($this->debug_all)logger::text("Index results\n".util::toString($update_rows));
 
         return $update_rows;
     }
@@ -510,7 +445,6 @@ class database
     //** $column_array = column names to index
     public function IndexColumns($db,$table,$column_array)
     {
-        logger::called();
         if (is_null($db) || $db == "") return null;
         if (is_null($table) || $table == "") return null;
         
@@ -519,12 +453,8 @@ class database
             $adds[] = "ADD INDEX (`$column` )";
         
         $sql = "ALTER TABLE `$db`.`$table` ".join(',',$adds).";";
-
-        logger::text("IndexColumns .... $sql");
         
         $update_rows = $this->update($sql);
-
-        logger::text("Index results\n".util::toString($update_rows));
 
         return $update_rows;
     }
@@ -533,25 +463,21 @@ class database
     
     public function AddTextColumn($db,$table,$column,$size = 100)
     {
-        logger::called();
         if (is_null($db) || $db == "") return null;
         if (is_null($table) || $table == "") return null;
         if (is_null($column) || $column == "") return null;
         
         if ($this->hasColumn($db,$table,$column))
         {
-            logger::text("AddTextColumn:: $column already exists in table $table");
             return 1;            
         }
         
-        logger::text("Adding column: $column to table: $table");
 
         $sql  = "ALTER TABLE  `$db`.`$table` ADD `$column` VARCHAR( $size ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;\n";
         $add_column_ok = $this->update($sql);
 
         if(is_null($add_column_ok))
         {
-            logger::text("FAILED:: Adding column: $column to table: $table");
             return null;
         }
 
@@ -560,18 +486,15 @@ class database
 
     public function AddDateColumn($db,$table,$column)
     {
-        logger::called();
         if (is_null($db) || $db == "") return null;
         if (is_null($table) || $table == "") return null;
         if (is_null($column) || $column == "") return null;
 
         if ($this->hasColumn($db,$table,$column))
         {
-            logger::text("AddDateColumn:: $column already exists in table $table");
             return 1;            
         }
         
-        logger::text("AddDateColumn: $column to table: $table");
 
         $sql  = "ALTER TABLE  `$db`.`$table` ADD `$column` DATETIME NULL;\n";
         $add_column_ok = $this->update($sql);
@@ -579,7 +502,6 @@ class database
         
         if(is_null($add_column_ok))
         {
-            logger::text("FAILED:: Adding column: $column to table: $table");
             return null;
         }
 
@@ -589,7 +511,6 @@ class database
 
     public function hasColumn($db,$table,$column)
     {
-        if ($this->debug_all)logger::called();
         $short_table = $this->query("select * from `$db`.`$table` limit 1");
         $first_row = util::first_element($short_table);
 
@@ -599,7 +520,6 @@ class database
 
     public function ColumnNames($db,$table)
     {   
-        if ($this->debug_all)logger::called();        
         $short_table = $this->query("select COLUMN_NAME as columns FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '{$db}' and table_name = '{$table}';",'columns');
         return array_keys($short_table);
     }
@@ -608,7 +528,6 @@ class database
     public function AddNumericColumn($db,$table,$column)
     {
         
-        logger::called();
 
         if (is_null($db) || $db == "") return null;
         if (is_null($table) || $table == "") return null;
@@ -616,18 +535,15 @@ class database
 
         if ($this->hasColumn($db,$table,$column))
         {
-            logger::text("AddNumericColumn:: $column already exists in table $table");
             return 1;            
         }
         
-        logger::text("AddNumericColumn: $column to table: $table");
 
         $sql  = "ALTER TABLE  `$db`.`$table` ADD `$column` DOUBLE NULL;\n";
         $add_column_ok = $this->update($sql);
 
         if(is_null($add_column_ok))
         {
-            logger::text("FAILED:: Adding column: $column to table: $table");
             return null;
         }
         
@@ -638,7 +554,6 @@ class database
     public function Set($db,$table,$column,$value)
     {
         
-        if ($this->debug_all)logger::called();
 
         if (is_null($db) || $db == "") return null;
         if (is_null($table) || $table == "") return null;
@@ -647,18 +562,15 @@ class database
 
         if (!$this->hasColumn($db,$table,$column))
         {
-            logger::text("##ERROR QuickSet $column does not exists in table [$db.$table]");
             return null;
         }
 
 
         $sql  = "update `$db`.`$table` set `$column` = $value;";
 
-        if ($this->debug_all) logger::text("Quick Set \n".$sql);
 
         $update_rows = $this->update($sql);
 
-        if ($this->debug_all) logger::text("Quick Set \n".util::toString($update_rows));
 
         return $update_rows;
     }
@@ -666,13 +578,9 @@ class database
 
     public function DropTable($db,$table)
     {
-         
-        logger::called();
 
        if (is_null($db) || $db == "") return null;
         if (is_null($table) || $table == "") return null;
-
-        logger::text("Drop Table $db.$table");
 
         $update_rows = $this->update("drop table if exists `$db`.`$table`;");
 
@@ -681,8 +589,6 @@ class database
 
     public function CreateTable($db,$table,$sql,$drop_table_first = false, $full_index = false)
     {
-         
-        logger::called();
 
        if (is_null($db) || $db == "") return null;
         if (is_null($table) || $table == "") return null;
@@ -691,11 +597,9 @@ class database
         if ($drop_table_first) $this->DropTable($db, $table);
         
         $create_sql = "create table `$db`.`$table` \n".str_replace(';', '', $sql).";";
-        if ($this->debug_all) logger::text("Creating table $db.$table from \n$sql");
         
         $row_count = $this->update($create_sql);
 
-        logger::text("Creating table $db.$table row count  = $row_count");
         
         if ($full_index)
             $this->IndexColumns($db,$table,$this->ColumnNames($db,$table));
@@ -708,47 +612,39 @@ class database
     public function CreateTableFromArray($db,$table_name,$column_name_array,$drop_table_first = false, $full_index = false)
     {
           
-        logger::called();
 
       if (is_null($db))
         {
-            logger::text("##CreateTableFromArray DB is null");
             return null;
         }
 
         if (is_null($table_name))
         {
-            logger::text("##CreateTableFromArray table_name is null");
             return null;
         }
 
         if (is_null($column_name_array))
         {
-            logger::text("##CreateTableFromArray column_name_array is null");
             return null;
         }
 
         if ($db == "")
         {
-            logger::text("##CreateTableFromArray DB is empty");
             return null;
         }
 
         if ($table_name == "")
         {
-            logger::text("##CreateTableFromArray TableName is empty");
             return null;
         }
 
         if (count($column_name_array) == 0)
         {
-            logger::text("##CreateTableFromArray column_name_array  has Zero elements");
             return null;
         }
 
         $tableName = $this->cleanColumnName($table_name);
 
-        logger::text("BUILD TABLE CODE :: $table_name");
 
         if ($drop_table_first) $this->DropTable($db, $table_name);
 
@@ -797,7 +693,6 @@ class database
     public function matrixToTable($matrix,$rowID_name, $to_db,$tableName,$numeric_prefix = 'F',$indexes = NULL,$drop_table = false)
     {
          
-        logger::called();
         
         $sql_create_db = "create database if not exists $to_db;";
         $this->update($sql_create_db);
@@ -808,8 +703,6 @@ class database
         $column_name_lookup = array(); //** store keyed array of old name to new name
        
         $create_table_sql = $this->matrixToTable_CreateTable( $matrix,$rowID_name, $to_db,$tableName,$column_name_lookup,$numeric_prefix, $indexes);
-        //** if ($this->debug_all) 
-            logger::text("matrixToTable:: $create_table_sql");
         
         
         $this->update($create_table_sql); //** create table
@@ -863,7 +756,6 @@ class database
             {                
                 
                 $inserted_count = $this->InsertArrayBulk($to_db, $tableName, $block_insert);                
-                if ($this->debug_all) logger::text("inserted block to $to_db.$tableName $inserted_count");   
                 unset($block_insert);
                 $block_insert = array();
                 $block_count = 1;
@@ -877,8 +769,6 @@ class database
         if (count($block_insert) != 0)
         {
             $inserted_count = $this->InsertArrayBulk($to_db, $tableName, $block_insert); //** write anything left in block
-            if ($this->debug_all)  
-                logger::text("inserted last bit of block to $to_db.$tableName $inserted_count\n");   
         }
         
         unset($block_insert);
@@ -894,7 +784,6 @@ class database
     {
         //** SQL to create Table
         
-        logger::called();
 
         $result = "";
         
@@ -968,19 +857,15 @@ class database
 
 
     public function fromDelimited($filename,$db,$tableName = null, $delim = ",")
-    {
-        logger::called();
+    {        
         return fromCSV($filename,$db,$tableName, $delim);
     }
 
-    public function fromCSV($filename,$db,$tableName = null, $delim = ",")
+    public function fromCSV($filename,$db,$tableName = null, $delim = ",",$add_date_columns = false)
     {
-         
-        logger::called();
 
        if (!file_exists($filename))
         {
-            logger::text("##ERROR fromCSV ... File not found: ".$filename) ;
             return NULL;
         }
 
@@ -988,7 +873,7 @@ class database
             $tableName = $this->cleanColumnName(str_replace(".".file::getFileExtension($filename),"",util::fromLastSlash($filename)));
 
 
-        $sql = $this->getCreateTableText($db,$filename,$tableName,$delim);
+        $sql = $this->getCreateTableText($db,$filename,$tableName,$delim,'F',$add_date_columns);
         
         $sql_result = $this->update($sql);
         
@@ -1002,22 +887,17 @@ class database
 
 
 
-
-
-    private function getCreateTableText($db,$filename,$tableName = NULL,$delim = ",",$numeric_prefix = 'F')
+    private function getCreateTableText($db,$filename,$tableName = NULL,$delim = ",",$numeric_prefix = 'F',$add_date_columns = false)
     {
           
-        logger::called();
 
       if (!file_exists($filename))
         {
-            logger::text("##ERROR getCreateTableText ... File not found: ".$filename) ;
             return NULL;
         }
 
         if (file::lineCount($filename) <= 1)
         {
-            logger::text("##ERROR getCreateTableText ... $filename must contain more than ONE line") ;
             return NULL;
         }
 
@@ -1027,9 +907,9 @@ class database
         if (is_null($tableName))
             $tableName = $this->cleanColumnName(util::toLastChar(util::fromLastSlash($filename), '.'));
 
-        $split = explode($delim,$file[0]);
+        
+        $split = str_getcsv($file[0], $delim, '"');
 
-        logger::text("BUILD TABLE CODE :: $filename ($delim) --> $tableName");
 
         $result  = "";
         $result .= "\nDROP TABLE IF EXISTS `$db`.`$tableName`;";
@@ -1042,13 +922,19 @@ class database
         foreach ($split as $rawColumnName)
         {
             $columnType = $this->getColumnType($file, $colCount,$delim);
-
+            
+            
             $cleanName = $this->cleanColumnName($rawColumnName,$numeric_prefix);
-
+            
             //echo "$cleanName\n";
             
             if ($cleanName == "") continue;
 
+            // check to see if the name of the column has "date" somewhere
+            // if so then we will make this a datetime column
+            if ($add_date_columns && util::contains(strtolower($cleanName), "date"))  $columnType = "DATE";
+            
+            
             $colNames[] = $cleanName;
 
             if ($columnType == "DOUBLE")
@@ -1098,6 +984,8 @@ class database
 
         $result .= $trim_sql;
 
+        
+        
 
         return $result;
 
@@ -1106,7 +994,6 @@ class database
     public function cleanColumnName($rawColumnName,$numeric_prefix = 'F')
     {
           
-        if ($this->debug_all)  logger::called();
 
           $rawColumnName = trim($rawColumnName);
 
@@ -1167,7 +1054,6 @@ class database
     private function getColumnType($fileArray, $colCount,$delim)
     {
         
-        if ($this->debug_all)  logger::called();
 
 
         $rowCount = 0;
@@ -1177,37 +1063,44 @@ class database
 
         foreach ($fileArray as $fileLine)
         {
-            $split = explode($delim,$fileLine);
-            $cell = trim($split[$colCount]);
+            
+            if ($rowCount > 0)
+            {
+                $split = str_getcsv($fileLine, $delim);
+                $cell = trim($split[$colCount]);
 
-            if ($cell == "") continue;
+                if ($cell == "") continue;
 
-            $maxStringLength = max(strlen($cell),$maxStringLength);
+                $maxStringLength = max(strlen($cell),$maxStringLength);
 
+                if (is_numeric($cell)) $numberCount++;    
+                
+            }
+            
             $rowCount++;
-            if (is_numeric($cell)) $numberCount++;
 
         }
 
-        if ( $numberCount >  ($rowCount * 0.8) ) return "DOUBLE"; //** if 80% of values are numbers its a number column
+        if ( $numberCount >  ( ($rowCount -1 ) * 0.8) ) return "DOUBLE"; //** if 80% of values are numbers its a number column
 
+        if ($maxStringLength == 0) $maxStringLength = 1;
+        
         $maxStringLength = round($maxStringLength * 3,0); //**make it 3 times the max length
 
-        return "varchar($maxStringLength)";
+        $result_type = "varchar($maxStringLength)";
+        
+        return $result_type;
 
     }
 
     public function toCSV($sql,$outputFilename)
     {
-        logger::called();
-        logger::text("toCSV saved to $outputFilename output of \n $sql");
         matrix::Save(self::query($sql), $outputFilename);        
         return file_exists($outputFilename);
     }
 
     public function pivotToCSV($db, $sql,$outputFilename,$pivotFieldsStr)
     {
-        logger::called();
         
         $pivotFields = explode(',',$pivotFieldsStr);
 
@@ -1224,14 +1117,12 @@ class database
     public function uniqueValues($db, $table, $field, $where = '',$limit = '')
     {
           
-        logger::called();
 
       if ($where != '') $where = " where $where ";
         if ($limit != '') $limit = " limit $limit ";
 
         $sql = "SELECT `$field`  FROM `$db`.`$table` $where group by `$field` order by `$field` $limit;";
 
-        if ($this->debug_all) logger::text("UNIQUE VALUES SQL: $sql");
 
         return matrix::Column($this->query($sql), $field);
     }
@@ -1254,8 +1145,6 @@ class database
     public function PivotQuery($to_db,$table_name,$field_prefix,$sql, $pivot_column, $pivot_row, $pivot_value,$pivot_operation,$null_value = null, $get_stats = false,$min_row_count = null)
     {
         
-        logger::called();
-        logger::text("PivotQuery Database.........:  $to_db");
         
         
         $add_db = "create database if not exists {$to_db};";
@@ -1263,12 +1152,10 @@ class database
         
         $add_db_result = print_r($add_db_result,true);
         
-        logger::text("Add database to sytstem.....:  $to_db  {$add_db_result}");
         
 
         $sql_result = $this->query($sql);
 
-        logger::text("Result Row Count.......: ".count($sql_result));
 
         
         if (count($sql_result) <= 0) return;
@@ -1280,7 +1167,6 @@ class database
             !array_key_exists($pivot_value,  $first_row)
             )
         {
-            logger::text("\n## ERROR One or more pivot fields have not been selected \n   column = $pivot_column  row = $pivot_row   value =  $pivot_value  summary by = $pivot_operation\n   selected columns: ".join(',',array_keys($first_row)));
             return null;
         }
 
@@ -1293,14 +1179,12 @@ class database
             //** unique value counts for $pivot_row
             $histogram = matrix::ColumnHistogram($sql_result, $pivot_row);  //** count per unique value
             
-            logger::text( "histogram count = ".count($histogram));
 
             $sql_row_ids_to_remove = array();
             foreach ($histogram as $histogram_row_id => $count)
             {
                 if ($count >= $min_row_count) continue;
 
-                logger::text("min_row_count = $min_row_count   $histogram_row_id  count = $count  --  get list of row ids for this histogram_row_id");
 
                 //** here we need to get a list of keys from $sql_result where $row_id  the value in  result[$pivot_row] =  $histogram_row_id
                 foreach ($sql_result as $sql_row_id => $sql_row)
@@ -1314,14 +1198,12 @@ class database
 
             }
 
-            logger::text("Removing data below minimum count [$min_row_count]");
             foreach ($sql_row_ids_to_remove as $id) unset($sql_result[$id]);
 
             unset($histogram);
             unset($sql_row_ids_to_remove);
         }
 
-        logger::text("Pivot Table............: column = $pivot_column  row = $pivot_row   value =  $pivot_value  summary by = $pivot_operation");
 
         
         $pivot = util::sqlPivot($sql_result,$pivot_column,$pivot_row,$pivot_value, $null_value, $pivot_operation,false);
@@ -1331,7 +1213,6 @@ class database
 
         if ($get_stats)
         {
-            logger::text("Calculating statistics.:");
             $stats = matrix::RowStatistics($pivot,$null_value);
             
             //** Add Stats to Table
@@ -1341,22 +1222,9 @@ class database
 
         }
 
-
-
-        logger::text("Writing to database....: $to_db.$table_name");
-
-        
-        logger::text("pivot....: {$pivot}");
-        logger::text("pivot_row....: {$pivot_row}");
-        logger::text("to_db....: {$to_db}");
-        logger::text("table_name....: {$table_name}");
-        
         
         $row_count = $this->matrixToTable($pivot,$pivot_row,$to_db, $table_name,$field_prefix ,NULL);
 
-        
-        
-        logger::text("Pivot rows.....: $row_count");
 
         unset($pivot);
 
@@ -1368,33 +1236,24 @@ class database
     public function add_column_varchar($db,$table,$column_name,$size = 100)
     {
         
-        logger::called();
-
         return $this->add_column($db,$table,$column_name,"VARCHAR($size)");
     }
 
     public function add_column_decimal($db,$table,$column_name,$size = 15,$decimal_places = 5)
     {
           
-        logger::called();
-
       return $this->add_column($db,$table,$column_name,"double");
     }
 
     public function add_column_double($db,$table,$column_name)
     {
          
-        logger::called();
-
        return $this->add_column($db,$table,$column_name,"double");
     }
 
     public function add_column($db,$table,$column_name,$db_column_type = "VARCHAR(100)")
     {
         
-        logger::called();
-
-
         $collate = "";
         if (util::contains(strtoupper($db_column_type), 'VARCHAR'))
             $collate = "CHARACTER SET utf8 COLLATE utf8_unicode_ci";
@@ -1410,8 +1269,6 @@ class database
     public function hasTable($db,$table)
     {
 
-          
-        logger::called();
 
       $sql = "SELECT count(*) as count FROM information_schema.`TABLES` where TABLE_SCHEMA = '$db'   and TABLE_NAME   = '$table';";
         $sql_result = $this->query($sql);
@@ -1427,7 +1284,6 @@ class database
     public function InsertArray($db,$table,$array)
     {
             
-        logger::called();
 
     $useable = array();
         foreach ($array as $key => $value)
@@ -1435,7 +1291,6 @@ class database
 
         $sql   = "insert into `$db`.`$table` (".join(',',array_keys($useable)).") values (".join(',',array_values($useable)).");";
 
-        if ($this->debug_all) logger::text("InsertArray:: $sql");
 
         return $this->insert($sql);
 
@@ -1447,7 +1302,6 @@ class database
     public function InsertArrayBulk($db,$table,$array)
     {
           
-        if ($this->debug_all)  logger::called();
       
         if (count($array) == 0) return 0;
         
@@ -1467,7 +1321,6 @@ class database
 
         $sql = util::trim_end(trim($sql), ",").";";
         
-        if ($this->debug_all) logger::text("InsertArray:: $sql");
 
         return $this->insert($sql);
 
@@ -1477,14 +1330,10 @@ class database
     public function GroupBy($db,$table,$key_column,$value_column,$where = "")
     {
         
-        logger::called();
-
 
         $where = ($where == "") ?  "" : " where $where ";
         
         $sql = "SELECT {$key_column},{$value_column} FROM `$db`.$table $where group by {$key_column},{$value_column} order by {$key_column},{$value_column};";
-
-        logger::text("GroupBy:: $sql");
 
         $sql_result = $this->query($sql, $key_column);
 
@@ -1501,7 +1350,6 @@ class database
     public function Grant($user = null,$db = null,$table = "*",$privilege = "ALL")
     {
         
-        logger::called();
 
         if (is_null($db)) $db = $this->db;
         if (is_null($user)) $user = $this->userID;
@@ -1513,16 +1361,13 @@ class database
 
     private function GrantFullAccess()
     {      
-        logger::called();
         $sql = "GRANT ALL PRIVILEGES ON *.* TO '{$this->user}'@'%' WITH GRANT OPTION;";
-        logger::text("GRANT ... $sql");
         return $this->update($sql);
     }
     
 
     public function AndClauseFromKeyedArray($src)
     {      
-        logger::called();
        
         $result_array = array();
         foreach ($src as $key => $value)
@@ -1533,14 +1378,12 @@ class database
     
     public function CopyTable($fromDB,$fromTable,$toDB,$toTable,$drop_table_first = false, $full_index = false)
     {      
-        logger::called();
         $row_count = $this->CreateTable($toDB, $toTable, "select * from `$fromDB`.`$fromTable` ",$drop_table_first, $full_index);
         return $row_count;
     }
     
     public function Table2File($db, $tableName,$filename,$delim = ",",$replace_delim = null,$write_row_limit = 5000)
     {      
-        logger::called();
         $row_count = $this->count("`{$db}`.`{$tableName}`");
 
         $matrix = $this->selectTable($db, $tableName, "", "", "0,1");

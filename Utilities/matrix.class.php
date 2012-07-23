@@ -750,6 +750,7 @@ class matrix
         fclose($handle);
 
         if (file_exists($filename)) return $filename;
+        
         return NULL; // if it did not save
     }
 

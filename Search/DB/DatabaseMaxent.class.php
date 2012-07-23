@@ -103,15 +103,22 @@ class DatabaseMaxent extends Object
     public static function InsertMainMaxentResults($species_id)
     {
      
+        if (is_null($species_id)) return null;
+        $species_id = trim($species_id);
+        if ($species_id == "") return null;
+        
+        
+        DBO::LogError(__METHOD__."(".__LINE__.")"," InsertAllMaxentResults for speciesID = $species_id");
+        
         $folder = self::MaxentResultsOutputFolder($species_id);
         
         $fn = array();
         
+        $fn['maxent.log'       ] = $folder.'maxent.log'; // will be checked first - if this does not exists then  - we need to run this first
         $fn['lambdas'          ] = $folder.$species_id.'.lambdas';
         $fn['omission'         ] = $folder.$species_id.'_omission.csv';
         $fn['sampleAverages'   ] = $folder.$species_id.'_sampleAverages.csv';
         $fn['samplePredictions'] = $folder.$species_id.'_samplePredictions.csv';
-        $fn['maxent.log'       ] = $folder.'maxent.log';
         
         foreach ($fn as $filetype => $filename)  
         {
@@ -125,7 +132,6 @@ class DatabaseMaxent extends Object
             
             // check to see if we have this already
             $count = DBO::Count('modelled_species_files', "species_id = {$species_id} and filetype = ".util::dbq($filetype));
-            
             
             if ( $count == 0)
                 self::InsertSingleMaxentOutput( $species_id,$filename,$filetype,"Maxent output for projected species suitability");

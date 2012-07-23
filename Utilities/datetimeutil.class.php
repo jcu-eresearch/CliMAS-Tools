@@ -30,6 +30,29 @@ class datetimeutil {
     }
 
 
+    /**
+     *
+     * Convert from a string like "30/02/2012"  to 2012-02-30
+     * 
+     * @param type $src
+     * @param type $src_delim
+     * @param type $to_delim 
+     */
+    public static function fromDMY2YMD($src, $to_delim = "-")
+    {
+        if (is_null($to_delim)) return null;
+        
+        if (!is_string($src)) return null;
+        
+        $src = trim($src);
+        
+        if ($src == "") return "";
+        
+        
+        return substr($src,6,4).$to_delim.substr($src,3,2).$to_delim.substr($src,0,2);
+    }
+    
+    
     public static function fromYMD($YearMonthDay, $delim = "-")
     {
         return strtotime("$YearMonthDay");

@@ -13,6 +13,8 @@ if (file_exists("{$af}config.default"))  include_once $af.'config.default';
 //if (file_exists("{$af}config.daniel"))   include_once $af.'config.daniel';
 //if (file_exists("{$af}config.hpc"))      include_once $af.'config.hpc';
 //if (file_exists("{$af}config.wallace"))  include_once $af.'config.wallace';
+if (file_exists("{$af}config.tdh1"))     include_once $af.'config.tdh1';
+if (file_exists("{$af}config.tdh1-hpc")) include_once $af.'config.tdh1-hpc';
 if (file_exists("{$af}config.tdh2"))     include_once $af.'config.tdh2';
 if (file_exists("{$af}config.tdh2-hpc")) include_once $af.'config.tdh2-hpc';
 //if (file_exists("{$af}config.afakes"))   include_once $af.'config.afakes';
@@ -30,4 +32,6 @@ include_once $af.'DB/ToolsData.includes.php';
 include_once $af.'Output/Output.includes.php';
 include_once $af.'Finder/Species/SpeciesMaxent.action.class.php';
 include_once $af.'Finder/Species/SpeciesMaxentQuickLook.class.php';
+include_once $af.'Finder/Species/MaxentServerBuild.class.php';
+
 ?>
