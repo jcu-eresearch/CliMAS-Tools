@@ -5,6 +5,8 @@ include_once 'includes.php';
 // coverage types
 $coverages = array();
 
+/*
+
 $coverages['world-20km'] = array();
 $coverages['world-20km']['tag'] = 'World, 10arcmin (~20km)';
 $coverages['world-20km']['size_current'] = '~200Mb zip';  // current data
@@ -21,7 +23,6 @@ $coverages['world-10km']['size_RCP'] = '~11Gb zip';      // one model, all RCP s
 $coverages['world-10km']['size_SRES'] = '~14Gb zip';     // one model, all SRES scenarios
 $coverages['world-10km']['size_models'] = '~49Gb zip';   // all models, a single scenario
 
-/*
 $coverages['world'] = array();
 $coverages['world']['tag'] = 'World, XXXXarcmin (~XXXkm)';
 $coverages['world']['size_current'] = '~Gb zip';    // current data
