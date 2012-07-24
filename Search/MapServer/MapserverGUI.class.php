@@ -10,10 +10,11 @@
 class MapserverGUI extends Object {
     
     
-    public static function create($mapfilepath)
+    public static function create($mapfilepath,$extent_str = "")
     {
         if (!file_exists($mapfilepath)) return; null;
-        $M = new MapserverGUI($mapfilepath);
+        $M = new MapserverGUI($mapfilepath,$extent_str);
+        
         return $M;
     }
     
@@ -21,7 +22,7 @@ class MapserverGUI extends Object {
     private $mapfilepath;
     private $mapObject = null;
     
-    public function __construct($mapfilepath) {
+    public function __construct($mapfilepath,$extent_str) {
         parent::__construct();
         $this->mapfilepath = $mapfilepath;
         
@@ -29,6 +30,7 @@ class MapserverGUI extends Object {
         
         $this->Extent($this->spatial_extent_from_ms_rect_obj($this->mapObject->extent));    
         
+        $this->setSpatialExtentFromString($extent_str);
         
         $this->setPropertyByName("ImageWidth", $this->mapObject->width);
         $this->setPropertyByName("ImageHeight", $this->mapObject->height);
@@ -55,8 +57,6 @@ class MapserverGUI extends Object {
 
         return $E;        
     }
-    
-    
     
     
     //** Interactive methods ---------------------------------------------- 
@@ -97,9 +97,19 @@ class MapserverGUI extends Object {
     
     public function setSpatialExtentFromPost()
     {
-        if (!array_key_exists("extent", $_POST)) return;
+        $this->setSpatialExtentFromString(array_util::Value($_POST, 'extent'));
+    }
+
+    
+    public function setSpatialExtentFromString($str)
+    {
         
-        $e = explode(" ",$_POST["extent"]);
+        if (is_null($str)) return;
+        
+        $str= trim($str);
+        if ($str == "") return;
+        
+        $e = explode(" ",$str);
         
         $E = new SpatialExtent();        
          $E->West($e[0]);

@@ -208,9 +208,13 @@ class DatabaseFile extends Object
      * @param type $dest_filename  - leave off / null to be random filename will be the return value
      * @return null|string  - Destination filename
      */
-    public static   function ReadFile2Filesystem($file_unique_id,$dest_filename = null) 
+    public static function ReadFile2Filesystem($file_unique_id,$dest_filename = null,$overwrite = true,$reuse = false) 
     {
         if (is_null($dest_filename)) $dest_filename = file::random_filename(); // 
+        
+        if ($overwrite)  file::Delete ($dest_filename);
+
+        if ($reuse && file_exists($dest_filename)) return $dest_filename;
         
         $result_file =  self::ReadFile($file_unique_id);
         

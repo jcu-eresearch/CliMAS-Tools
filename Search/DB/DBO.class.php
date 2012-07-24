@@ -44,9 +44,7 @@ class DBO {
             return null;
         }
         
-        
         return $result;
-        
         
     }
 
@@ -153,12 +151,9 @@ class DBO {
             return null;
         }
         
-        
         unset($db);
         return $result;
     }
-
-    
     
     
     public static function Update($sql) 
@@ -321,8 +316,8 @@ class DBO {
         
         $sql = "insert into error_log (error_date_time,source_code_from,error_message) values ({$dt},{$from},{$str})";
         
+        $result = $db->insert($sql,false);
         
-        $result = $db->insert($sql);
         
         echo "$from ... $str\n";
         

@@ -19,7 +19,15 @@ class Session {
 
         $result = array();
         foreach ($actionsToMap as $actionToMap)
-            $result[$actionToMap] = FinderFactory::Result($actionToMap);
+        {
+            $actionResult = FinderFactory::Result($actionToMap);
+            if (!is_null($actionResult))
+                $result[$actionToMap] = $actionResult;
+            else
+                $result[$actionToMap] = $actionToMap;   // add raw string to be mapped
+            
+        }
+            
 
         
         return $result;

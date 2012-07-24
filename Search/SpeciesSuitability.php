@@ -8,6 +8,33 @@ $times = Descriptions::fromTable("times");
 
 //print_r($scenarios);
 
+$M = new MapServerWrapper();
+
+$caption = new VisualText("Species suitability", 10, "Red");
+$M->Caption($caption);
+
+foreach (Session::MapableResults() as $MapableResult)
+    $M->Layers()->AddLayer($MapableResult);
+
+
+$MF = Mapfile::create($M);
+
+$_SESSION['map_path'] = $MF->save($M);
+
+$GUI = MapserverGUI::create($_SESSION['map_path']);
+if (is_null($GUI)) die ("Map Server GUI failed");
+
+if ($GUI->hasInteractive()) $GUI->ZoomAndPan();
+
+Session::add('MAP_EXTENT', $GUI->ExtentString()); // make available to session so we know where to look later
+
+
+function icon($name)
+{
+    echo '<img title="'.$name.'" style="height: 30px; width: 30px;" border="0" src="'.configuration::IconSource().$name.'" />';
+}
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -16,43 +43,131 @@ $times = Descriptions::fromTable("times");
 <title>Species Suitability</title>
 
 <link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
+<link type="text/css" href="css/selectMenu.css" rel="stylesheet" />
 <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
+<script type="text/javascript" src="js/selectMenu.js"></script>
 
 <link href="styles.css" rel="stylesheet" type="text/css">
 
 <style>
-#feedback { font-size: 1.4em; }
 #selectable_species .ui-selecting { background: #FECA40; }
 #selectable_species .ui-selected { background: #F39814; color: white; }
-#selectable_species { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-#selectable_species li { margin: 3px; padding: 0.4em; font-size: 1.1em; height: 18px; }
+#selectable_species { list-style-type: none; margin: 0; padding: 0; width: 90%; }
+#selectable_species li { margin: 3px; padding: 0.4em; font-size: 0.8em; height: 18px; }
+s
+#selectable_model .ui-selecting { background: #FECA40; }
+#selectable_model .ui-selected { background: #F39814; color: white; }
+#selectable_model { list-style-type: none; margin: 0; padding: 0; width: 90%;  }
+#selectable_model li { margin: 3px; padding: 0.0em; font-size: 0.8em; height: 18px;}
 
 #selectable_scenario .ui-selecting { background: #FECA40; }
 #selectable_scenario .ui-selected { background: #F39814; color: white; }
-#selectable_scenario { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-#selectable_scenario li { margin: 3px; padding: 0.4em; font-size: 1.0em; height: 18px; }
-
-#selectable_model .ui-selecting { background: #FECA40; }
-#selectable_model .ui-selected { background: #F39814; color: white; }
-#selectable_model { list-style-type: none; margin: 0; padding: 0; width: 60%; height: 300px; }
-#selectable_model li { margin: 3px; padding: 0.4em; font-size: 1.0em;  width: 25%; height: 30px; float: left;}
+#selectable_scenario { list-style-type: none; margin: 0; padding: 0; width: 90%; }
+#selectable_scenario li { margin: 3px; padding: 0.4em; font-size: 0.8em; height: 18px; }
 
 #selectable_time .ui-selecting { background: #FECA40; }
 #selectable_time .ui-selected { background: #F39814; color: white; }
-#selectable_time { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-#selectable_time li { margin: 3px; padding: 0.4em; font-size: 1.0em; height: 18px; }
+#selectable_time { list-style-type: none; margin: 0; padding: 0; width: 90%; }
+#selectable_time li { margin: 3px; padding: 0.4em; font-size: 0.8em; height: 18px; }
 
-#selectable_display_1 .ui-selecting { background: #FECA40; }
-#selectable_display_1 .ui-selected { background: #F39814; color: white; }
-#selectable_display_1 { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-#selectable_display_1 li { margin: 3px; padding: 0.4em; font-size: 1.0em; height: 100px; }
+#selectable_layers .ui-selecting { background: #FECA40; }
+#selectable_layers .ui-selected { background: #F39814; color: white; }
+#selectable_layers { list-style-type: none; margin: 0; padding: 0; width: 90%; }
+#selectable_layers li { margin: 3px; padding: 0.4em; font-size: 0.8em; height: 90px; }
+
+
+#species
+{
+    padding: 0px;
+    margin: 0px;
+    
+}
+
+#lhs
+{
+    float: none; 
+    height: 600px; 
+    width: 1000px; 
+    overflow: hidden;    
+    clear:both;
+}
+
+#MapContainer
+{
+    float: left; 
+    height: 100%; 
+    width: 620px; 
+    overflow: hidden;
+}
+
+#MapLayers
+{
+    float: left; 
+    height: 100%; 
+    width: 300px; 
+    overflow: hidden;    
+}
+
+
+#rhs
+{
+    float: left; 
+    height: 0px; 
+    width: 0px; 
+    overflow: hidden;    
+    
+}
+
+
+.ToolButtonSelected
+{
+    background-color: red;
+}
+
+
+#ToolBar 
+{
+    padding-top: 4px;
+    padding-left: 4px;
+    height: 44px;
+}
+
+
+#SpeciesBar
+{
+    padding-top: 4px;
+    padding-left: 4px;
+    height: 44px;
+}
 
 
 
-#test_process {float: left; }
-#run_process {float: left; }
 
+#MapTools
+{
+    float:left;
+    height: 40px;
+}
+
+#FSspeedA
+{
+    float:left;
+    height: 40px;
+    width: 200px;
+}
+
+#speedA
+{
+    
+    height: 100%;
+    width: 90%;
+}
+
+#speedA option
+{    
+    width: 90%;
+}
 
 #remote-queue-id
 {
@@ -82,9 +197,6 @@ $times = Descriptions::fromTable("times");
 }
 
 
-#demo-frame > div.slide_display { padding: 10px !important; }
-
-
 .species-remove-button
 {
     height: 20px;
@@ -95,7 +207,15 @@ $times = Descriptions::fromTable("times");
 </style>
 <script>
 
+    function GetZoom() {
+        document.getElementById('ZoomFactor').value = parent.document.getElementById('ZoomFactor').value;
+    }
+    
+
+
 <?php 
+
+echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),'ApplicationFolderWeb');
 
 echo htmlutil::AsJavaScriptSimpleVariable(CommandAction::$EXECUTION_FLAG_RUNNING,'EXECUTION_FLAG_RUNNING');
 echo htmlutil::AsJavaScriptSimpleVariable(CommandAction::$EXECUTION_FLAG_COMPLETE,'EXECUTION_FLAG_COMPLETE');
@@ -217,35 +337,6 @@ function startProcess()
         ,time:time_str
     }
 
-    if (jData.species == "")
-    {   
-        flash_red('#tab_handle_species a');
-        $('#tabs').tabs( "select" , 0 );
-        return false;
-    }
-
-    if (jData.model == "")
-    {
-        flash_red('#tab_handle_model a');        
-        $('#tabs').tabs( "select" , 1 );
-        return false;
-    }
-
-    if (jData.scenario == "")
-    {
-        flash_red('#tab_handle_scenario a');
-        $('#tabs').tabs( "select" , 2 );
-        return false;
-    }
-    
-    if (jData.time == "")
-    {
-        flash_red('#tab_handle_time a');
-        $('#tabs').tabs( "select" , 3 );
-        return false;
-    }
-
-
    $.post("QueueCommandAjax.php", jData , function(data) { postRun(data); },"json");
    
    
@@ -333,7 +424,7 @@ function get_id_list(selector)
 
 
 $(document).ready(function(){
-    
+
     $( "#species" ).autocomplete({ 
                         source: availableSpecies,
                         select: function (event, ui) 
@@ -350,10 +441,7 @@ $(document).ready(function(){
                             {
                                 var li = $('<li class="species-from-user" id="user_species_'+ui.item.value+'" class="ui-widget-content" ><button class="species-remove-button" id="remove_user_species_'+ui.item.value+'" >remove</button>'+ui.item.label+'</li>');
                                 $('#selectable_species').append(li);
-                                //$( "#species-result" ).append(ui.item.value + " ");
-
-                                //$( "#species" ).val(ui.item.label);
-
+                                addSpecies(ui.item.value,ui.item.label);
                                 $(this).val(''); 
                                 $('#remove_user_species_' + ui.item.value)
                                     .button({
@@ -369,35 +457,176 @@ $(document).ready(function(){
 
                         }
                      });
+    
 
-    $( "#tabs" ).tabs({
-        show: function(event, ui) {toProcessDisplay();}
-    });
 
+
+    $( "#selectable_species" ).selectable();
+    $( "#selectable_model" ).selectable();
+    $( "#selectable_scenario" ).selectable();
+    $( "#selectable_time" ).selectable();
+
+    
+
+    $( "#process-display" ).button();
+
+    $( "#ToolFullExtent" ).button({ text: false, icons: { primary: "ui-icon-image"  } });
+    $( "#ToolZoomOut"    ).button({ text: false, icons: { primary: "ui-icon-zoomout"} }).click(function() { setTools(this); });
+    $( "#ToolCentre"     ).button({ text: false, icons: { primary: "ui-icon-plus"   } }).click(function() { setTools(this); });
+    $( "#ToolZoomIn"     ).button({ text: false, icons: { primary: "ui-icon-zoomin" } }).click(function() { setTools(this); });
+
+    $( "#ToolFullExtent" ).height(30);
+    $( "#ToolZoomOut"    ).height(30);
+    $( "#ToolCentre"     ).height(30);
+    $( "#ToolZoomIn"     ).height(30);
+
+
+    $('select#speedA').selectmenu();
 
     $( "#run_process" )
             .button()
             .click ( function() { startProcess(); return false;} );
+            
+    $( "#accordion" ).accordion();
 
-
-    $( "#selectable_species" ).selectable();    
-    $( "#selectable_model" ).selectable();
-    $( "#selectable_scenario" ).selectable();
-    $( "#selectable_time" ).selectable();
-    
-    
-    $( "#selectable_model li" ).button();
-    
-    $( "#process-display" ).button();
+    $( "#accordion" ).accordion( "option", "autoHeight", true );
+    $( "#accordion" ).accordion( "option", "fillSpace", true );
     
 
-    //$('#tabs').height(500);
+    $( ".parts" ).css("padding","0px");
+
+    $("#species").css("padding","4px").css("margin","3px").addclass("ui-widget-header");
 
 
-})
-
-$(document).ready(function(){
 });
+
+
+function addSpecies(speciesID,speciesName)
+{
+
+    var jData = { 
+         cmdaction:'SpeciesComputed'
+        ,species:speciesID
+    }
+
+
+   $.post("ExecuteCommandAjax.php", jData , function(data) { postAddSpecies(data); },"json");
+
+
+}
+
+
+function postAddSpecies(data)
+{    
+    for (d in data)
+    {
+        postAddSpeciesLayers(d,data[d]);
+    }
+    
+    $('.species_layer_image').width("95%");
+    
+    $('.species-layer-from-user').height(160).css("overflow","hidden");
+
+    $('.species_layer_image').click(function() { userSelectedLayer(this) });
+
+    
+}
+
+
+
+
+function postAddSpeciesLayers(combination,row_str)
+{
+    
+
+    var values = row_str.split("_");  // speciesID_scenario_model_time_QuickLookFileID_AsciiGridFileID
+
+    var speciesID = values[0];
+    var scenario  = values[1];
+    var model     = values[2];
+    var time      = values[3];
+    var QuickLookFileID = values[4];
+    var AsciiGridFileID = values[5];
+
+    var layerID = speciesID + "_" + combination;
+
+
+    var imgsrc = ApplicationFolderWeb + 'Search/file.php?id=' + QuickLookFileID;
+
+    var img = '<img id="ascii_'+AsciiGridFileID+'" class="species_layer_image" src="'+imgsrc+'"   >';
+
+    var li = $('<li class="species-layer-from-user" id="speciesLayer_'+layerID+'" >'+ img + '</li>');
+    
+    $('#selectable_layers').append(li);
+    
+    
+}
+
+
+function userSelectedLayer(src)
+{
+    var id = src.id.toString();
+    
+    // get ascii  grid  file id 
+    
+    var ascii_grid_id = id.split('_')[1];
+    $("#UserLayer").val(ascii_grid_id);    // file_id of grid file
+    $('#GUI').contents().find('#MAP_FORM').submit();
+    
+}
+
+
+function setTools(src)
+{
+     $( "#" + src.id.toString() ).toggleClass( "ui-state-active", 200 );
+
+}
+
+function GetExtentText() 
+{
+    var iframe = document.getElementById('GUI');
+    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;   
+    return innerDoc.getElementById('extent').value
+}
+
+function ReloadDiv(divID) 
+{
+    document.getElementById(divID).src = document.getElementById(divID).src
+}
+
+function SetContent(url, divID) 
+{
+    document.getElementById(divID).src = url;    
+}
+
+
+function ReloadGUI() 
+{
+    ReloadDiv('GUI') ;
+}
+
+
+function SetZoom(caller,zoom_value) {
+    document.getElementById('ZoomFactor').value = zoom_value;   
+}
+
+function SetFullExtent() {
+    ReloadGUI();
+}
+
+
+function zoomOut()
+{
+    var iframe = document.getElementById('GUI');
+    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+    
+    var map_form = innerDoc.getElementById("MAP_FORM");
+    
+    innerDoc.getElementById('ZoomFactor').value  = -2.0;
+    
+    innerDoc.getElementById('mapa').click();
+    
+}
 
 
     
@@ -409,93 +638,125 @@ $(document).ready(function(){
 
 <div class="maincontent">
 
-<div class="rhs">
-
-<div id="tabs">
-    <ul>
-        <li id="tab_handle_species"><a href="#tabs-1">Species</a></li>
-        <li id="tab_handle_model"><a href="#tabs-2">Climate Model</a></li>
-        <li id="tab_handle_scenario"><a href="#tabs-3">Emission Scenario</a></li>
-        <li id="tab_handle_time"><a href="#tabs-4">Time</a></li>
-        <li id="tab_handle_process"><a href="#tabs-5">process</a></li>
-    </ul>
-
-    <div id="tabs-1">
-        
-        
-        <div class="ui-widget">
-            <label for="species">Species lookup: </label>
-            <input id="species">
-        </div>
-        
-        <ol id="selectable_species">
-
-        </ol>	        
-        
-        
-    </div>
-	<div id="tabs-2">
-        
-        <ol id="selectable_model">
-            <?php 
-            foreach ($models->asSimpleArray() as $key => $value) 
-            { 
-            ?>        
-                <li id="user_model_<?php  echo $key; ?>" class="ui-widget-content user_model"><?php  echo $key; ?><span style="font-size: 80%;"></span></li>
-            <?php                     
-            }
-            ?>
-
-        </ol>	        
-		
-	</div>
-	<div id="tabs-3">
-        
-        <ol id="selectable_scenario">
-            <?php 
-            foreach ($scenarios->asSimpleArray() as $key => $value) 
-            { 
-            ?>        
-                <li id="user_scenario_<?php  echo $key; ?>" class="ui-widget-content user_scenario"> <?php  echo $key; ?>&nbsp;&nbsp;&nbsp;<span style="font-size: 80%;">(<?php  echo $value; ?>)</span></li>
-            <?php                     
-            }
-            ?>
-        </ol>	
-
-        <p>
-        With respect to the emission scenarios, Representative Concentration Pathways (RCPs) has been adopted by the IPCC to replace the Special Report on Emissions Scenarios (SRES) used in the AR4 report (Solomon, Qin et al. 2007); RCPs are to be used in the AR5 IPCC report due in 2014.
-        </p>
-
-        
-	</div>
-	<div id="tabs-4">
-        
-        <ol id="selectable_time">
-            <?php 
-            foreach ($times->asSimpleArray() as $key => $value) 
-            { 
-            ?>        
-                <li id="user_time_<?php  echo $key; ?>" class="ui-widget-content user_time"> <?php  echo $key; ?></li>
-            <?php                     
-            }
-            ?>
-        </ol>	
-	</div>
-	<div id="tabs-5">
-        
-            <div id="run_process">START GENERATION</div>
-
-            <div id="process-display"></div>
-            
-            <div id="remote-queue-id"></div>
-            <div id="remote-status"></div>
-            <div id="remote-content"></div>
-            <div id="remote-result"></div>
-
-
-        </div>
     
+<div id="lhs" class="ui-widget-content" >
+
+    <div id="MapContainer" class="ui-widget-content" >
+
+        <div id="ToolBar" class="ui-widget-header ui-corner-all" >
+            <div id="MapTools">
+                <button id="ToolFullExtent" onclick="SetFullExtent();" >Full Extent</button>
+                <input name="MapsTools" type="radio" id="ToolZoomOut"  onclick="SetZoom(this,-2.0);"                   /><label for="ToolZoomOut">Zoom Out</label>
+                <input name="MapsTools" type="radio" id="ToolCentre"   onclick="SetZoom(this,1.0)"                     /><label for="ToolCentre" >Centre</label>
+                <input name="MapsTools" type="radio" id="ToolZoomIn"   onclick="SetZoom(this,2.0)"   checked="checked" /><label for="ToolZoomIn" >Zoom In</label>
+
+            </div>
+
+        </div>
+        
+        <iframe ID="GUI" src="SearchMap.php" width="640" height="440" frameBorder="0" border="0" style="overflow:hidden; float:left;" ></iframe>
+
+        <FORM METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
+            <INPUT TYPE="HIDDEN" ID="ZoomFactor" NAME="ZoomFactor" VALUE="2">
+            <INPUT TYPE="HIDDEN" ID="UserLayer"  NAME="UserLayer"  VALUE="">
+        </FORM>
+
+    </div>
+    <div id="MapLayers" class="ui-widget-content ui-corner-all" >
+        
+        <div id="accordion">
+            <h3><a href="#">Species</a></h3>
+            <div id="accordionSpecies" class="parts">
+                
+                <div id="SpeciesBar" class="ui-widget-header ui-corner-all" >
+                    <input id="species">
+                </div>
+                
+                <ol id="selectable_species">
+                </ol>	        
+            </div>
+
+            <h3><a href="#">Layers</a></h3>
+            <div  class="parts">
+                For selected species
+                <ol id="selectable_layers">
+
+                </ol>	        
+            </div>
+            
+            
+            <h3><a href="#">Climate Models</a></h3>
+            <div  class="parts">
+                
+                <ol id="selectable_model">
+                    <?php 
+                    foreach ($models->asSimpleArray() as $key => $value) 
+                    { 
+                    ?>        
+                        <li id="user_model_<?php  echo $key; ?>" class="ui-widget-content user_model"><?php  echo $key; ?><span style="font-size: 80%;"></span></li>
+                    <?php                     
+                    }
+                    ?>
+
+                </ol>	        
+            </div>
+
+            <h3><a href="#">Emission Scenarios</a></h3>
+            <div  class="parts">
+                
+                FOR THIS SPECIES
+                
+                <ol id="selectable_scenario">
+                    <?php 
+                    foreach ($scenarios->asSimpleArray() as $key => $value) 
+                    { 
+                    ?>        
+                        <li id="user_scenario_<?php  echo $key; ?>" class="ui-widget-content user_scenario"> <?php  echo $key; ?>&nbsp;&nbsp;&nbsp;<span style="font-size: 80%;">(<?php  echo $value; ?>)</span></li>
+                    <?php                     
+                    }
+                    ?>
+                </ol>	
+
+                <p>
+                With respect to the emission scenarios, Representative Concentration Pathways (RCPs) has been adopted by the IPCC to replace the Special Report on Emissions Scenarios (SRES) used in the AR4 report (Solomon, Qin et al. 2007); RCPs are to be used in the AR5 IPCC report due in 2014.
+                </p>
+
+            </div>
+
+            <h3><a href="#">Time periods</a></h3>
+            <div  class="parts">
+                
+                FOR THIS SPECIES
+                
+                <ol id="selectable_time">
+                    <?php 
+                    foreach ($times->asSimpleArray() as $key => $value) 
+                    { 
+                    ?>        
+                        <li id="user_time_<?php  echo $key; ?>" class="ui-widget-content user_time"> <?php  echo $key; ?></li>
+                    <?php                     
+                    }
+                    ?>
+                </ol>	
+
+            </div>
+        </div>            
+
+    </div>
+
 </div>
+    
+    
+<div id="rhs">
+
+    <div id="run_process">START GENERATION</div>
+
+    <div id="process-display"></div>
+
+    <div id="remote-queue-id"></div>
+    <div id="remote-status"></div>
+    <div id="remote-content"></div>
+    <div id="remote-result"></div>
 
 </div>
     

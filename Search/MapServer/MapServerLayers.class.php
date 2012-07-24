@@ -85,6 +85,8 @@ class MapServerLayers extends Object {
         //** It's a string so most likely a Filename
         if (is_string($src))
         {
+            if ($src == "") return null;
+            
             if (file_exists($src))
             {
                 $L = MapServerLayer::create($this, $src); //** default details

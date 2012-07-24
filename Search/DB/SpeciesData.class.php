@@ -37,11 +37,15 @@ class SpeciesData extends Object {
         return $result;
     }
 
-    
+    /**
+     *
+     * @param type $speciesID
+     * @return null|string  
+     */
     public static function SpeciesQuickInformation($speciesID) 
     {
        
-        $sql = "select scientific_name,common_name from species where id = '{$speciesID}' limit 1";
+        $sql = "select scientific_name,common_name from species where id = {$speciesID} limit 1";
         
         $first = DBO::QueryFirst($sql,'scientific_name');
         
@@ -56,7 +60,7 @@ class SpeciesData extends Object {
     }
     
     
-    public function SpeciesInfoByID($species_id) 
+    public static function SpeciesInfoByID($species_id) 
     {
         
         $sql = "select scientific_name,common_name from species where id = $species_id";
@@ -87,7 +91,7 @@ class SpeciesData extends Object {
      * @param type $time
      * @return string|null  file_id for that file  pr Em,pty string says that now file for these parameters
      */
-    public function GetModelledData($speciesID,$scenario, $model, $time,$filetype = null, $desc = null)
+    public static function GetModelledData($speciesID,$scenario, $model, $time,$filetype = null, $desc = null)
     {
         
         $filetypeAnd = (is_null($filetype)) ? "" : "and mc.filetype   = ".util::dbq($filetype);
@@ -130,6 +134,71 @@ class SpeciesData extends Object {
         
     }
         
+    
+    /**
+     * Get file id from datbaase for this combination
+     * 
+     * 
+     * @param type $species
+     * @param type $scenario
+     * @param type $model
+     * @param type $time
+     * @return string|null  file_id for that file  pr Em,pty string says that now file for these parameters
+     */
+    
+    
+    /**
+     *
+     * get FileId for all datra files for this species 90
+     * 
+     * @param type $speciesID
+     * @param type $filetype Limit to this filetype only
+     * @return type 
+     */
+    public static function GetAllModelledData($speciesID,$filetype = null,$key = 'combination')
+    {
+        
+        $filetypeAnd = (is_null($filetype)) ? "" : "and mc.filetype   = ".util::dbq($filetype);
+        
+        
+        $sql = "select mc.id as id
+                      ,mc.species_id
+                      ,mc.scientific_name
+                      ,mc.common_name
+                      ,mc.models_id
+                      , m.dataname as model_name
+                      ,mc.scenarios_id
+                      , s.dataname as scenario_name
+                      ,mc.times_id
+                      , t.dataname as time_name
+                      ,mc.filetype
+                      , f.description
+                      ,mc.file_unique_id as file_unique_id
+                      ,(s.dataname || '_' || m.dataname || '_' || t.dataname) as combination
+                from   modelled_climates mc
+                      ,models m
+                      ,scenarios s
+                      ,times t
+                      ,files f
+                where mc.species_id = {$speciesID}
+                  and mc.models_id      = m.id
+                  and mc.scenarios_id   = s.id
+                  and mc.times_id       = t.id
+                  and mc.file_unique_id = f.file_unique_id
+                  {$filetypeAnd}
+                  order by 
+                      m.dataname
+                     ,s.dataname
+                     ,t.dataname
+                ;";
+        
+        
+        $result = DBO::Query($sql,$key);
+        
+        return $result;
+        
+    }
+    
     
     
     

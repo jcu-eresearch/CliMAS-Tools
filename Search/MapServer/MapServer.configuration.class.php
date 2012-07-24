@@ -32,8 +32,8 @@ class MapServerConfiguration {
 
     public static function mapfileExtension()  { return "map"; }
 
-    public static function imageHeight() { return 500;}
-    public static function imageWidth()  { return 800;}
+    public static function imageHeight() { return 400;}
+    public static function imageWidth()  { return 600;}
     public static function imageType()   { return "PNG24";}
 
     public static function imageMaxHeight() { return 100000;}

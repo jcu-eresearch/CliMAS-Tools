@@ -8,18 +8,46 @@ class MaxentMainServerBuild extends Object {
     {
         if (is_null($speciesID)) return null;
         
+        if ($speciesID == "ALL")  return self::RunAll();
+        
         echo "MaxentMainServerBuild for $speciesID\n";
         
         $MM = new MaxentMainServerBuild($speciesID);
+        $MM->GenerateOnly(false);
         return $MM->Execute();
         
     }
+
+    private  static function RunAll()
+    {
+        
+        $species_ids = DBO::Unique("species_occurence", "species_id", "count > 1", true);
+        
+
+        foreach ($species_ids as $species_row) 
+        {
+            $id = $species_row['species_id'];
+            //echo "species_id = {$id} \n";
+            
+            $MM = new MaxentMainServerBuild($id);
+            $MM->GenerateOnly(false);
+            $MM->Execute();
+        }
+        
+    }
+    
     
     
     public function __construct($speciesID) {
         parent::__construct();
         
         $this->SpeciesID($speciesID);
+        
+        $this->ParalellFuturePredictions(false);
+    
+        $this->GenerateOnly(false);
+    
+            
         
     }
 
@@ -39,12 +67,20 @@ class MaxentMainServerBuild extends Object {
     public function Execute()
     {
         
+        if (file_exists($this->maxent_single_species_script_filename())) 
+        {
+            echo "Already Exists {$this->maxent_single_species_script_filename()}\n ";
+            return;
+        }
+        
+        
         file::mkdir_safe($this->species_scripts_folder());
         file::mkdir_safe($this->species_data_folder());
         file::mkdir_safe($this->species_output_folder());
         
         
-        $this->QsubCollectionID(substr(uniqid(),0,10));
+        
+        $this->QsubCollectionID("tdh_".$this->SpeciesID());
         
         if (is_null($this->getOccurances()))  return null;
         
@@ -55,27 +91,28 @@ class MaxentMainServerBuild extends Object {
                     $combinations["{$scenarioID}_{$modelID}_{$timeID}"] = null;
 
         $this->SpeciesCombinations($combinations); // sets up the default empty result set
-        
-        print_r($combinations);
 
         
         
         $scriptname = $this->writeMaxentSingleSpeciesProjectionScriptFile(); // all combinations for a single species
         if ($scriptname == "") return null;
-
-        echo "scriptname = $scriptname\n";
         
         if (!file_exists($scriptname)) return null;
         
-        echo "Executing to QSUB  $scriptname \n ";
         
-        
-        $qsub_result = exec("qsub -N{$this->QsubCollectionID()} '{$scriptname}'");  /// QSUB JOBS Submitted here
-        
-        echo "Executing to QSUB  qsub_result = $qsub_result \n ";
-         
-         
-        sleep(10); // wait for Qstat to catch up - before we start poling it
+        if ($this->GenerateOnly())
+        {
+            echo "Create script ready for execution \n$scriptname \n ";
+        }
+        else
+        {
+            $dir = dirname($scriptname);
+            
+            echo "Executing to QSUB  $scriptname \n ";
+            $qsub_result     = exec("cd {$dir}; qsub -N{$this->QsubCollectionID()} '{$scriptname}'");  /// QSUB JOBS Submitted here
+            echo "QSUB  qsub_result = $qsub_result \n ";
+            
+        }
 
     }
     
@@ -92,37 +129,40 @@ class MaxentMainServerBuild extends Object {
         
         $script = $this->maxentScript();
         
-        echo "\n\n script = $script \n\n";
-        
-        
         foreach (array_keys($this->SpeciesCombinations()) as $combination)
         {
             
-            $singleFutureScriptFilename = $this->singleCombinationScript($combination);   // script that will be used to execute just a single combo
-            if (is_null($singleFutureScriptFilename)) continue;
-            if (!file_exists($singleFutureScriptFilename)) continue;
-
-            echo "{$combination} ";
+            $singleFutureScript = $this->singleCombinationScript($combination);   // script that will be used to execute just a single combo
             
-            $script .= "\nqsub -N{$this->QsubCollectionID()} '{$singleFutureScriptFilename}'";            // add this script name to the Main "root" script to be run
+            if (is_null($singleFutureScript)) continue;
+
+
+            //
+            // If we are running bigger Future jobs then these may be in paralell 
+            // - here we add either the script itself or a call to execute the script 
+            //
+            if ($this->ParalellFuturePredictions())
+            {
+                echo "Adding as Paralell {$combination} ";
+                
+                $script .= "\nqsub -N{$this->QsubCollectionID()} '{$singleFutureScript}'";              
+            }
+            else
+            {
+                // echo "Adding as Serial {$combination} ";
+                $script .= $singleFutureScript;
+            }
+            
             
         }
         
         $script = trim($script);
         
-
-        $maxent_single_species_script_filename = 
-                            configuration::CommandScriptsFolder().
-                            $this->SpeciesID().
-                            configuration::osPathDelimiter().
-                            $this->SpeciesID().'_root'.
-                            configuration::CommandScriptsSuffix();
-
-        
+        $maxent_single_species_script_filename = $this->maxent_single_species_script_filename();
         
         // add lines to remove - script once it's complete
         $script .=  "\n";
-        $script .=  "\nrm {$maxent_single_species_script_filename}\n"; // remove itself after execution
+        $script .=  "\n# rm {$maxent_single_species_script_filename}\n"; // remove itself after execution
         $script .=  "\n";
         
         
@@ -137,15 +177,31 @@ class MaxentMainServerBuild extends Object {
         
         echo "maxent_single_species_script_filename = $maxent_single_species_script_filename\n";
         
-        echo "\n\n$script\n\n";
+        // echo "\n\n$script\n\n";
         
         return $maxent_single_species_script_filename;   // we have something to RUN so return the filename
         
     }
 
     
-    
-    
+    private function maxent_single_species_script_filename() {
+        
+        $result  = 
+                            configuration::CommandScriptsFolder().
+                            $this->SpeciesID().
+                            configuration::osPathDelimiter().
+                            $this->SpeciesID().'_root'.
+                            configuration::CommandScriptsSuffix();
+        
+        return $result ;
+        
+    }
+
+
+
+
+
+
     private function maxentScript()
     {
         
@@ -249,40 +305,76 @@ AAA;
         
         if (file_exists($scriptFilename)) return $scriptFilename;
         
+        $script  = ""; 
         
-        $script  = "#!/bin/tcsh"; 
-        $script .= "\n# combination              = {$combination}";
-        $script .= "\n# speciesID                = {$this->SpeciesID()}";
-        $script .= "\n# speciesInfo              = ".SpeciesData::SpeciesQuickInformation($this->SpeciesID());
-        $script .= "\n# script_folder            = {$script_folder}";
-        $script .= "\n# maxent                   = {$maxent}";
-        $script .= "\n# lambdas                  = {$lambdas}";
-        $script .= "\n# proj                     = {$proj}";
-        $script .= "\n# future_projection_output = {$future_projection_output}";
-        $script .= "\n# scriptFilename           = {$scriptFilename}";
-        $script .= "\n#";
+        // don't have to do this as the main script alreayd has the data  if ParalellFuturePredictions  === FALSE
+        if ($this->ParalellFuturePredictions())
+        {
+            $script .= "#!/bin/tcsh"; 
         
-        $script .= "\nmodule load java";
-        $script .= "\ncd {$script_folder}";
+            $script .= "\n# combination              = {$combination}";
+            $script .= "\n# speciesID                = {$this->SpeciesID()}";
+            $script .= "\n# speciesInfo              = ".SpeciesData::SpeciesQuickInformation($this->SpeciesID());
+            $script .= "\n# script_folder            = {$script_folder}";
+            $script .= "\n# maxent                   = {$maxent}";
+            $script .= "\n# lambdas                  = {$lambdas}";
+            $script .= "\n# proj                     = {$proj}";
+            $script .= "\n# future_projection_output = {$future_projection_output}";
+            $script .= "\n# scriptFilename           = {$scriptFilename}";
+            $script .= "\n#";
+
+            $script .= "\nmodule load java";            
+            $script .= "\ncd {$script_folder}";
+
+        } else {
+            
+            $script .= "\n# speciesID .. combination = {$this->SpeciesID()} .. {$combination}";
+        }
+
 
                     //java -mx2048m -cp $MAXENT   density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x        
         $script .= "\njava -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x";   
         $script .= "\nphp -q ".configuration::ApplicationFolder()."Search/MaxentQuickLookInsert.php {$this->SpeciesID()} '$future_projection_output'";
-        $script .= "\nrm $scriptFilename";
+        
+        if ($this->ParalellFuturePredictions())        
+        {
+            $script .= "\nrm $scriptFilename\n";
+        }
+        
         $script .= "\n";
             
-        file_put_contents($scriptFilename, $script);
         
+        
+        // it may be usefull to have different script for each future model 
+        // // as we can run then on hpc as different jobs - this will be useful wehn the resol;ution of the data is higher
+        // 
+        // 
+        // for now return the script  and we will add it to the end of the major script 
+        
+        
+        
+        // NOT running paralell 
+        if (!$this->ParalellFuturePredictions()) return $script;   // - return the actual script
+            
+        
+        
+        
+        // --------------------------------------------------------------
+        // create new script as we are going to run in paralell
+        // --------------------------------------------------------------
+        file_put_contents($scriptFilename, $script);
+
         if (!file_exists($scriptFilename))
         {
             DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Write Script for Species = {$this->SpeciesID()}  combination = $combination scriptFilename = $scriptFilename \n");
             return null;
         }
-        
-        
-        echo "singleCombinationScript for {$combination} scriptFilename = $scriptFilename;\n";
-        
+
+
+        //echo "singleCombinationScript for {$combination} scriptFilename = $scriptFilename;\n";
+
         return $scriptFilename;
+        
         
     }
         
@@ -347,7 +439,32 @@ AAA;
     }
 
     
+    /**
+     *
+     * JUst create scripts to be run and don't execute them,
+     * - this will download the occurence files and create the folders but will nmot run the scripts
+     * 
+     * @return type 
+     */
+    public function GenerateOnly() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
     
+    
+    
+    /**
+     *
+     * Set to stru to have each future prediction as a sepearte QSUB job
+     * 
+     * @return type 
+     */
+    public function ParalellFuturePredictions() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
     
     
     

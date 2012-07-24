@@ -136,11 +136,26 @@ class Mapfile extends Object{
         $rgbs = array_values($layer->ColorTable());
         $values = array_keys($layer->ColorTable());
         
+        // need to be abale to calulate the "Value" tyranslattion to the colour indexs
+        
+        $min = $layer->Minimum();
+        $max = $layer->Maximum();
+        
+        $range = $max - $min;
+        
+        $step = $range / $layer->HistogramBuckets();
+        
+        
+        
         for ($index = 1; $index < count($values); $index++) 
         {
             
-            $value1 = number_format( $values[$index - 1], 5, '.', '' );
-            $value2 = number_format( $values[$index]    , 5, '.', '' );
+            $proper_value1 = (($index - 1) * $step) + $min;
+            $proper_value2 = ( $index      * $step) + $min;
+            
+            
+            $value1 = number_format( $proper_value1, 5, '.', '' );
+            $value2 = number_format( $proper_value2, 5, '.', '' );
             
             $rgb = $rgbs[$index - 1]; 
 

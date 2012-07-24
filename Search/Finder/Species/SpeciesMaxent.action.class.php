@@ -20,6 +20,7 @@ class SpeciesMaxent extends CommandAction {
      
         $this->isServerRun(false);
         
+        
     }
 
     public function __destruct() {
@@ -750,7 +751,7 @@ AAA;
         
     }
     
-    
+
     
     public function SpeciesIDs() {
         if (func_num_args() == 0)

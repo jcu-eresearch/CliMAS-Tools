@@ -10,7 +10,7 @@ include_once 'matrix.class.php';
 include_once 'spatial_util.class.php';
 include_once 'util.class.php';
 
-//include_once 'color.class.php';
+include_once 'color.class.php';
 //include_once 'debug.class.php';
 //include_once 'draw.class.php';
 //include_once 'gnuplot.class.php';
