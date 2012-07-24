@@ -40,6 +40,15 @@ $coverages['australia-5km']['size_RCP'] = '~1.2Gb zip';     // one model, all RC
 $coverages['australia-5km']['size_SRES'] = '~1.5Gb zip';    // one model, all SRES scenarios
 $coverages['australia-5km']['size_models'] = '~5.2Gb zip';  // all models, a single scenario
 
+$coverages['world-50km'] = array();
+$coverages['world-50km']['tag'] = 'World, 0.5deg (~50km)';
+$coverages['world-50km']['size_current'] = '~4Mb zip';    // current data
+$coverages['world-50km']['size_single'] = '~30Mb zip';  // a single model and single scenario
+$coverages['world-50km']['size_RCP'] = '~120Mb zip';      // one model, all RCP scenarios
+$coverages['world-50km']['size_SRES'] = '~150Mb zip';     // one model, all SRES scenarios
+$coverages['world-50km']['size_models'] = '~525Mb zip';   // all models, a single scenario
+
+
 $requestedScenario = array_util::Value($_GET, "scenario", null);
 $requestedModel = array_util::Value($_GET, "model", null);
 $requestedTime = array_util::Value($_GET, "time", null);
