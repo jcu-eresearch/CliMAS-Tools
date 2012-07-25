@@ -245,7 +245,7 @@ class DBO {
         
         if (is_null($result))
         {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Delete ALL from column = $column \n sql = $sql  \n result = ".print_r($result,true)."  \n");
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to get data column = $column \n sql = $sql  \n result = ".print_r($result,true)."  \n");
             return null;
         }
         

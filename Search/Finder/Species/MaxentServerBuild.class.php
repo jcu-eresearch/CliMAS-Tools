@@ -67,18 +67,11 @@ class MaxentMainServerBuild extends Object {
     public function Execute()
     {
         
-        if (file_exists($this->maxent_single_species_script_filename())) 
-        {
-            echo "Already Exists {$this->maxent_single_species_script_filename()}\n ";
-            return;
-        }
-        
+        file::Delete($this->maxent_single_species_script_filename());
         
         file::mkdir_safe($this->species_scripts_folder());
         file::mkdir_safe($this->species_data_folder());
         file::mkdir_safe($this->species_output_folder());
-        
-        
         
         $this->QsubCollectionID("tdh_".$this->SpeciesID());
         
@@ -88,7 +81,12 @@ class MaxentMainServerBuild extends Object {
         foreach (DatabaseClimate::GetScenarios() as $scenarioID)
             foreach (DatabaseClimate::GetModels()  as $modelID)
                 foreach (DatabaseClimate::GetTimes() as $timeID)
-                    $combinations["{$scenarioID}_{$modelID}_{$timeID}"] = null;
+                {
+                    if (!is_null($scenarioID) && !is_null($modelID) &&  !is_null($timeID) )
+                        $combinations["{$scenarioID}_{$modelID}_{$timeID}"] = null;
+                }
+                    
+                    
 
         $this->SpeciesCombinations($combinations); // sets up the default empty result set
 
@@ -107,6 +105,7 @@ class MaxentMainServerBuild extends Object {
         else
         {
             $dir = dirname($scriptname);
+            exec("rm {$dir}/tdh_*");
             
             echo "Executing to QSUB  $scriptname \n ";
             $qsub_result     = exec("cd {$dir}; qsub -N{$this->QsubCollectionID()} '{$scriptname}'");  /// QSUB JOBS Submitted here
@@ -205,8 +204,11 @@ class MaxentMainServerBuild extends Object {
     private function maxentScript()
     {
         
-        if ($this->MaxentLogDone()) return ""; // if we already have the maxent data then don't run this part 
+        $maxent_script = "#!/bin/tcsh\n";
         
+        
+        if (!$this->MaxentLogDone()) 
+        {    
         $species_folder = $this->species_data_folder();
         
          $maxent = configuration::MaxentJar();
@@ -214,15 +216,12 @@ class MaxentMainServerBuild extends Object {
         $project = configuration::Maxent_Future_Projection_Data_folder();
         
         $output_folder  =  $this->species_output_folder(); 
-        
 
-        $MaxentResultsInsert_php  = configuration::ApplicationFolder()."Search/MaxentResultsInsert.php";
         
         $speciesInfo = SpeciesData::SpeciesQuickInformation($this->SpeciesID());
         
         
-$maxent_script = <<<AAA
-#!/bin/tcsh
+$maxent_script .= <<<AAA
 #
 # execute maxent for  ({$this->SpeciesID()})
 # ==================================================================================
@@ -249,9 +248,14 @@ module load java
 
 #model the species distribution
 java -mx2048m -jar {$maxent} environmentallayers={$train} samplesfile={$this->OccurenceFilename()} outputdirectory={$output_folder} -J -P -x -z redoifexists autorun
-php -q '{$MaxentResultsInsert_php}' {$this->SpeciesID()}
 
 AAA;
+
+        }
+
+        $MaxentResultsInsert_php  = configuration::ApplicationFolder()."Search/MaxentResultsInsert.php";
+
+        $maxent_script  .= "\nphp -q '{$MaxentResultsInsert_php}' {$this->SpeciesID()}\n";
 
 
             return $maxent_script;
@@ -312,31 +316,33 @@ AAA;
         {
             $script .= "#!/bin/tcsh"; 
         
-            $script .= "\n# combination              = {$combination}";
-            $script .= "\n# speciesID                = {$this->SpeciesID()}";
-            $script .= "\n# speciesInfo              = ".SpeciesData::SpeciesQuickInformation($this->SpeciesID());
-            $script .= "\n# script_folder            = {$script_folder}";
-            $script .= "\n# maxent                   = {$maxent}";
-            $script .= "\n# lambdas                  = {$lambdas}";
-            $script .= "\n# proj                     = {$proj}";
-            $script .= "\n# future_projection_output = {$future_projection_output}";
-            $script .= "\n# scriptFilename           = {$scriptFilename}";
-            $script .= "\n#";
+            $script .= "# combination              = {$combination}\n";
+            $script .= "# speciesID                = {$this->SpeciesID()}\n";
+            $script .= "# speciesInfo              = ".SpeciesData::SpeciesQuickInformation($this->SpeciesID())."\n";
+            $script .= "# script_folder            = {$script_folder}\n";
+            $script .= "# maxent                   = {$maxent}\n";
+            $script .= "# lambdas                  = {$lambdas}\n";
+            $script .= "# proj                     = {$proj}\n";
+            $script .= "# future_projection_output = {$future_projection_output}\n";
+            $script .= "# scriptFilename           = {$scriptFilename}\n";
+            $script .= "#\n";
 
-            $script .= "\nmodule load java";            
-            $script .= "\ncd {$script_folder}";
+            $script .= "module load java\n";
+            $script .= "cd {$script_folder}\n";
 
         } else {
             
-            $script .= "\n# speciesID .. combination = {$this->SpeciesID()} .. {$combination}";
+            $script .= "#!/bin/tcsh"; 
+            $script .= "\nmodule load java\n";
+            $script .= "\n# speciesID .. combination = {$this->SpeciesID()} .. {$combination}\n";
         }
 
 
                     //java -mx2048m -cp $MAXENT   density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x        
-        $script .= "\njava -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x";   
-        $script .= "\nphp -q ".configuration::ApplicationFolder()."Search/MaxentQuickLookInsert.php {$this->SpeciesID()} '$future_projection_output'";
+        $script .= "\njava -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x\n";   
+        $script .= "\nphp -q ".configuration::ApplicationFolder()."Search/MaxentQuickLookInsert.php {$this->SpeciesID()} '$future_projection_output'\n";
         
-        if ($this->ParalellFuturePredictions())        
+        if ($this->ParalellFuturePredictions())     
         {
             $script .= "\nrm $scriptFilename\n";
         }

@@ -660,8 +660,13 @@ class DatabaseMaxent extends Object
      * @param type $MaxentFieldName
      * @return null 
      */
-    public static  function GetMaxentResult($species_id,$MaxentFieldName)
+    public static  function GetMaxentResult($species_id = null,$MaxentFieldName = null)
     {
+        
+        if (is_null($species_id))  return null;
+        if (is_null($MaxentFieldName)) return null;
+        
+        
         
         $q = "select v.species_id,v.maxent_fields_id ,f.name as maxent_name,v.num  from maxent_values v, maxent_fields f  where v.maxent_fields_id = f.id and species_id = {$species_id} and f.name = ".util::dbq($MaxentFieldName);
         $result = DBO::Query($q, 'maxent_name' );

@@ -153,6 +153,21 @@ select s.id as species_id ,s.scientific_name,s.common_name,sp.count as occurance
 select s.id as species_id ,s.scientific_name,s.common_name,sp.count as occurance_count from species s, species_occurence sp  where s.id=sp.species_id and sp.count > 0
 
 
+
+FIND FAULTY FILES - files that donot have the correct number of parts
+select f.file_unique_id,f.filetype,f.totalparts,count(*) as parts_count from files f, files_data fd  where f.file_unique_id = fd.file_unique_id group by f.file_unique_id,f.filetype,f.totalparts having count(*) != f.totalparts;
+
+
+REMOVE FILES_DATA
+delete from files_data where file_unique_id             = '500dfd4576c8e';
+delete from files where file_unique_id                  = '500dfd4576c8e';
+delete from modelled_climates where file_unique_id      = '500dfd4576c8e';
+delete from modelled_species_files where file_unique_id = '500dfd4576c8e';
+
+
+
+
+
  */
 
 

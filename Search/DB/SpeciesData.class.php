@@ -175,6 +175,7 @@ class SpeciesData extends Object {
                       , f.description
                       ,mc.file_unique_id as file_unique_id
                       ,(s.dataname || '_' || m.dataname || '_' || t.dataname) as combination
+                      ,(mc.common_name  || ' (' || mc.scientific_name || ')' ) as full_name
                 from   modelled_climates mc
                       ,models m
                       ,scenarios s
