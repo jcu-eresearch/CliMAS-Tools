@@ -45,7 +45,19 @@ $ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())
 #selectable_layers { list-style-type: none; margin: 0; padding: 0; width: 90%; }
 #selectable_layers li { margin: 3px; padding: 0.4em; font-size: 0.8em; height: 90px; }
 
+.ui-autocomplete {
+		max-height: 150px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		padding-right: 20px;
+	}
 
+
+.green
+{
+    background-color: green;
+}
+        
 #ColorKeyContainer
 {
     width: 100%;
@@ -82,8 +94,8 @@ $ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())
 #lhs
 {
     float: none; 
-    height: 700px; 
-    width: 940px; 
+    height: 800px;
+    width: 1200px; 
     overflow: hidden;    
     clear:both;
 }
@@ -93,7 +105,7 @@ $ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())
     float: left; 
     
     height: 100%; 
-    width: 620px; 
+    width: 710px; 
     overflow: hidden;
     
 }
@@ -101,8 +113,8 @@ $ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())
 #MapLayers
 {
     float: left; 
-    height: 690px; 
-    width: 316px; 
+    height: 100%; 
+    width: 450px; 
     overflow: hidden;    
 }
 
@@ -144,7 +156,8 @@ $ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())
 {
     height: 92%;
     width:100%;
-    
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 
@@ -160,12 +173,13 @@ $ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())
     height: 40px;
     font-size: 0.8em;
     width:100%;
+    
 }
 
 .species_data
 {
-    height: 500px;
-    overflow: scroll;
+    height: 660px;
+    overflow: auto;
 }
 
 
@@ -196,10 +210,13 @@ $ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())
 
 // GLOBAL VARIABLES
 <?php 
+
 echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),'ApplicationFolderWeb');
 echo htmlutil::AsJavaScriptSimpleVariable(CommandAction::$EXECUTION_FLAG_RUNNING,'EXECUTION_FLAG_RUNNING');
 echo htmlutil::AsJavaScriptSimpleVariable(CommandAction::$EXECUTION_FLAG_COMPLETE,'EXECUTION_FLAG_COMPLETE');
 echo htmlutil::AsJavaScriptObjectArray(SpeciesData::speciesList(),"full_name","species_id","availableSpecies");    
+echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSource');
+
 ?>
 
 var speciesDataHeight = 400;
@@ -209,7 +226,7 @@ function string2Array(str,delim)
 {
     
     var result = new Array();
-    if (str.indexOf("~") == -1 )
+    if (str.indexOf(delim) == -1 )
     {
         result[0] = str;
     }
@@ -246,62 +263,6 @@ function flash_red(selector)
     flash_selector(selector,"#FF0000","#AA0000");
 }
 
-function get_id_list(selector)
-{
-    var delim = "~";
-    var replace_from = '';
-    var replace_to = '';
-    var default_value = null;
-
-    if (typeof arguments[1] != 'undefined') { replace_from  = arguments[1];}
-    if (typeof arguments[2] != 'undefined') { replace_to    = arguments[2]}
-    if (typeof arguments[3] != 'undefined') { default_value = arguments[3]}
-    
-    var ids = "";
-    $(selector) .each( 
-                    function() { 
-                        if (ids == "")    
-                            ids += this.id.replace(replace_from,replace_to); 
-                        else
-                            ids += delim + this.id.replace(replace_from,replace_to);
-                    }
-                );
-
-
-    if (ids == "") return default_value;
-
-    var result = ids.split(delim);
-
-    return result;
-    
-}
-
-
-
-
-
-
-function selectSelectableElement (selectableContainer, elementToSelect,unselectAll)
-{
-
-    if (unselectAll == true)
-    {
-        // add unselecting class to all elements in the styleboard canvas except current one
-        jQuery("li", selectableContainer).each(function() {
-        if (this != elementToSelect[0])
-            jQuery(this).removeClass("ui-selected").addClass("ui-unselecting");
-        });
-
-    }
-
-    // add ui-selecting class to the element to select
-    elementToSelect.addClass("ui-selecting");
-
-    // trigger the mouse stop event (this will select all .ui-selecting elements, and deselect all .ui-unselecting elements)
-    selectableContainer.data("selectable")._mouseStop(null);
-}
-
-
 
 function removeUserSpecies(obj,species_id,species_name)
 {
@@ -321,23 +282,20 @@ function addSpecies(speciesID,speciesName)
     // check to see if this species already exists if so just move to that one
     if (exists("#species_container_for_" + speciesID))
     {
-        flash_red("#species_header_for_" + speciesID);
+        $( "#species_data_for_" + speciesID ).show( 'blind', options, 200 ); // hide all then add
         return;
     }
-    
 
     var div = '';
-        div += '<div id="species_container_for_'+speciesID+'" class="ui-widget-content ui-corner-all species_container" >';
-        div +=   '<div id="species_header_for_'+speciesID+'"  class="ui-widget-header  ui-corner-all species_header" >'+ speciesName +'</div>';
-        div +=   '<div id="species_data_for_'+speciesID+'"    class="ui-widget-content ui-corner-all species_data"   ></div>';
+        div += '<div id="species_container_for_'+speciesID+'"    class="ui-widget-content ui-corner-all species_container" >';
+        div +=   '<div id="species_header_for_'+speciesID+'"     class="ui-widget-header  ui-corner-all species_header" >'+ speciesName +'</div>';
+        div +=   '<div id="species_data_for_'+speciesID+'"       class="ui-widget-content ui-corner-all species_data"   >';
+        div +=   '</div>';
         div += '</div>';
 
     $("#species_data").append(div);
     
-    
-    $('#species_header_for_'+speciesID).button();
-    
-    $('#species_header_for_'+speciesID).click(function() { toggleSpeciesData(this); });
+    $('#species_header_for_'+speciesID).button().click(function() { toggleSpeciesData(this); });
     
     var jData = { 
          cmdaction:'SpeciesComputed'
@@ -352,10 +310,14 @@ function addSpecies(speciesID,speciesName)
 
 function toggleSpeciesData(src)
 {
+    // gets the data area 
     var dataID = src.id.toString().replace('species_header_for_','species_data_for_');  
+    
     
     var options = {};
     $( "#" + dataID ).toggle( 'blind', options, 500 );
+    
+    $(src).toggleClass("ui-selected"); 
     
     
 }
@@ -367,44 +329,187 @@ function postAddSpecies(data)
     
     var species_data_id = 'species_data_for_' + speciesID;
     
+    postAddSpeciesScenarioModels(species_data_id,speciesID,data['scenarioModels'],data);
     
-//    postAddSpeciesScenarios(data_div_id,data['scenarios']);
-//    postAddSpeciesModels(data_div_id,data['models']);
-//    postAddSpeciesTimes(data_div_id,data['times']);
     
-    for (d in data)
+
+    
+}
+
+function postAddSpeciesScenarioModels(species_data_id,speciesID,scenarioModelsStr,data)
+{
+    
+    // data - all the fileid's that we are goiong to look at '
+    
+    var scenarioModels =  string2Array(scenarioModelsStr, "~");
+
+    var div = "";
+    var div_header = "";
+    var div_content = "";
+    var div_timeline = "";
+
+    var scenarioModelName = "";
+
+    var timesStr = "";
+
+    var timeStrValues = null;
+
+    var firstScenarioModelTime = "";  // holds the id of the quikclook image for the first time zone from the scenario model
+
+    var selected = "";
+
+    var firstTimeName = ''; 
+    var firstAsciiGridID = ''; 
+    var firstFullname = '';
+
+
+
+    for (s = 0; s < scenarioModels.length;  s++)
     {
-        switch(d)
+        
+        scenarioModelName = scenarioModels[s];
+        
+        
+        timeStrValues = null;
+        timesStr = "";
+        
+        firstScenarioModelTime = ''; // QuickLookID
+        firstTimeName = ''; 
+        
+        firstAsciiGridID = '';
+        firstFullname = '';
+        
+        // get the timeline from data for this scenario_model
+        for (d in data)
         {
-            case "scenarios":
-                break;
-            case "models":
-                break;
-            case "times":
-                break;
-            case "full_name":
-                break;
-            case "species_id":
-                break;
-            case "model_scenarios":
-                $('#MutliLayerSelector').html(data[d]);
-                break;
+
             
-            default:
-                postAddSpeciesLayers(species_data_id,d,data[d]);
+            if (d.indexOf(scenarioModelName) != -1)
+            {
+                // here should be a time elemnt of the current scenaro_model
+                
+                timeStrValues = string2Array(data[d], '_');
+                
+                
+                selected = "";
+                if (firstScenarioModelTime == '') 
+                {
+                    firstTimeName = timeStrValues[3];
+                    firstScenarioModelTime = timeStrValues[4]; // set first time point    
+                    firstAsciiGridID = timeStrValues[5];
+                    firstFullname = timeStrValues[6];
+                    selected = ' checked="checked"  ';
+                }
+
+                timesStr += '<input onClick="scenarioModelSelectedButtonSet(this)" class="radio_'+speciesID + "_"+scenarioModelName+'" '+selected+' type="radio" name="radio_'+speciesID + "_"+scenarioModelName+'" id="'+data[d]+'" /><label class="time_radio" for="'+data[d]+'">'+ timeStrValues[3]+'</label>';
+                
+            }
+        
+        
         }
+        
+        
+        var loading_img_src = IconSource +'Loading.gif';
+
+        var loading_msg = '<div id="loading_'+firstAsciiGridID +'"><img width="100%" height="20%" src="'+loading_img_src+'"></div>';
+        
+        
+        var firstImageSrc = ApplicationFolderWeb + 'Search/file.php?id=' + firstScenarioModelTime;
+        
+        div_header = '<div style="height: 20px; float:none; clear: both; background-color: black; color: white;" >' + scenarioModelName + '</div>';
+
+        div_content = loading_msg + 
+                      '<div id="'+speciesID + '_' +scenarioModelName+'_image_container" style="height: 220px; float:none; clear: both;  overflow: hidden; " ><img  onload="layerImageLoaded(\''+firstAsciiGridID +'\')"   id="'+speciesID + '_' +scenarioModelName+'_'+ firstTimeName +'_image" style="width: 70%; height: 300px;" src="'+firstImageSrc+'"></div>';
+
+        div_timeline = '<div id="'+speciesID + '_' +scenarioModelName+'_times" style="height: 40px;float:none; clear: both;" >'+timesStr+'</div>';
+
+        div  = '<div class="scenaro_model_container" style="width: 100%; height: 280px;" >';
+        div += div_header + div_content + div_timeline;
+        div += '</div>';
+        
+        
+        $('#'+species_data_id).append(div);
+
+        $('#'+speciesID + '_' +scenarioModelName+'_times').buttonset();
+
+        $('.time_radio')
+            .css("font-size","0.8em");
+
+        var firstImageId = speciesID + '_' +scenarioModelName+'_'+ firstTimeName +'_image';
+        // tie data to first image
+        $('#' + firstImageId).data("speciesID",speciesID);
+        $('#' + firstImageId).data("AsciiGridID",firstAsciiGridID);
+        $('#' + firstImageId).data("FullName",firstFullname);
+
+        $('#' + firstImageId).click(function() {userSelectedLayer(this); return false;})
+
+
+
+
+        
+
+
+    }
+
+}
+
+
+
+
+function scenarioModelSelectedButtonSet(src)
+{
+    
+    var id = src.id.toString();
+    
+    var values = id.split("_");  // speciesID_scenario_model_time_QuickLookFileID_AsciiGridFileID
+
+    var speciesID = values[0];
+    var scenario  = values[1];
+    var model     = values[2];
+    var time      = values[3];
+    var QuickLookFileID = values[4];
+    var AsciiGridFileID = values[5];
+    var FullName = values[6];
+    
+    // I want to replace the src element of speciesID + '_' +scenarioModelName+'_image  with   this  QuickLookFileID
+    var newImageSrc = ApplicationFolderWeb + 'Search/file.php?id=' + QuickLookFileID;   
+    
+    var imageHolder = speciesID + '_' + scenario + "_" + model +'_image_container';
+
+    var newImageID = speciesID + '_' + scenario + "_" + model + '_'+ time + '_image';
+
+    
+    $('#' + imageHolder).children().hide();
+
+    if (exists('#'+newImageID)) 
+    {
+        $('#' + newImageID).show(); // show this one
+    }
+    else
+    {        
+        
+        var loading_img_src = IconSource +'Loading.gif';
+
+        var loading_msg = '<div id="loading_'+AsciiGridFileID +'"><img width="100%" height="20%" src="'+loading_img_src+'"></div>';
+
+        var div = loading_msg + '<img  onload="layerImageLoaded(\''+AsciiGridFileID +'\')"    id="'+newImageID + '" style="width: 70%; height: 300px;" src="'+newImageSrc+'">';
+        
+        // setup image onloaded  - 
+        $('#' + imageHolder).append(div);
+        
+        // tie data to image
+        $('#' + newImageID).data("speciesID",speciesID);
+        $('#' + newImageID).data("AsciiGridID",AsciiGridFileID);
+        $('#' + newImageID).data("FullName",FullName);
+        
+        $('#' + newImageID).click(function() {userSelectedLayer(this); return false;})
         
     }
     
-
-
-    $('.species_layer_image').width("95%");
     
-    $('.species-layer-from-user').height(230).css("overflow","hidden");
-
-    $('.species_layer_image').click(function() { userSelectedLayer(this) });
     
 }
+
 
 function postAddSpeciesLayers(data_div_id,combination,row_str)
 {
@@ -423,14 +528,37 @@ function postAddSpeciesLayers(data_div_id,combination,row_str)
 
     if(typeof QuickLookFileID != 'undefined')
     {
+        
         var imgsrc = ApplicationFolderWeb + 'Search/file.php?id=' + QuickLookFileID;
+        
 
-        var img = '<img id="ascii_'+AsciiGridFileID +'" class="species_layer_image" src="'+imgsrc+'"   >';
+        var loading_msg = '<div id="loading_'+AsciiGridFileID +'"><div style="width: 100%; height: 80%; background-color: white;">'+combination+'</div></div>';
+
+        var img = '<div id="species_layer_image_container_'+AsciiGridFileID +'" class="species_layer_image_container">'+loading_msg+'<img onload="layerImageLoaded(\''+AsciiGridFileID +'\')" id="ascii_'+AsciiGridFileID +'" class="species_layer_image" src="'+imgsrc+'"   ></div>';
+        
+        $('#' + data_div_id).append(img);
+        
+        var loading_img_src = IconSource +'Loading.gif';
+        
+        $('#loading_'+AsciiGridFileID)
+                .height(30)
+                .css("background-image",'url("'+loading_img_src+'")')
+                .css("background-size",'100% 100%')
+                ;
+        
+        
+        // we have to wait for images to load so set the image height to 0
+        // set the container for each layer to "small"
+        $('#ascii_'+AsciiGridFileID ).height(0).width(0);
+        $('#loading_'+AsciiGridFileID ).css("font-size","0.9em").css("font-weight","bold");
 
 
-        var li = $('<li class="species-layer-from-user" id="speciesLayer_'+layerID+'" >'+ img + '</li>');
-
-        $('#' + data_div_id).append(li);
+        // the container holds "loading" message and may be others that are available before image is loaded
+        $('#species_layer_image_container_'+AsciiGridFileID)
+                .width("95%")
+                .height(30)
+                .css("overflow","hidden")
+                .css("margin-bottom","8px");
 
 
         $('#ascii_'+AsciiGridFileID).data("FullName",  FullName);
@@ -446,53 +574,11 @@ function postAddSpeciesLayers(data_div_id,combination,row_str)
 }
 
 
-
-function postAddSpeciesScenarios(data_div_id,data)
+function layerImageLoaded(AsciiGridFileID)
 {
-
-    var items = string2Array(data,'~');
-
-    var li = null;
-    for (s = 0; s < items.length ; s++)
-    {
-        li = $('<li class="species-from-user" id="scenarios_'+ s +'" class="ui-widget-content" >'+items[s] +'</li>');
-        li.button();
-        $('#'+data_div_id).append(li);
-    }
-  
- 
+    // happens once the image is loaded
+    $('#loading_' + AsciiGridFileID).remove();  // remove "Loading"
 }
-
-function postAddSpeciesModels(data_div_id,data)
-{
-    var items = string2Array(data,'~');
-
-    var li = null;
-    for (s = 0; s < items.length ; s++)
-    {
-        li = $('<li class="species-from-user" id="models_'+ s +'" class="ui-widget-content" >'+items[s] +'</li>');
-        li.button();
-        $('#'+data_div_id).append(li);
-    }
-  
-    
-}
-
-function postAddSpeciesTimes(data_div_id,data)
-{
-    var items = string2Array(data,'~');
-
-    var li = null;
-    for (s = 0; s < items.length ; s++)
-    {
-        li = $('<li class="species-from-user" id="times_'+ s +'" class="ui-widget-content" >'+items[s] +'</li>');
-        li.button();
-        $('#'+data_div_id).append(li);
-    }
-    
-}
-
-
 
 
 
@@ -501,19 +587,53 @@ function userSelectedLayer(src)
 {
     var id = src.id.toString();
     
-    var ascii_grid_id = id.split('_')[1];  // get ascii  grid  file id 
-    
+    var ascii_grid_id = $('#' + id).data("AsciiGridID");;  // get ascii  grid  file id 
     var speciesID = $('#' + id).data("speciesID");
     var FullName = $('#' + id).data("FullName");
-    
-    
+
+
     $("#CurrentSpecies").html(FullName);  
     
-    $("#UserLayer").val(ascii_grid_id);    // file_id of grid file
+    $("#UserLayer").val(ascii_grid_id);    // file_id of grid file - sets the fileid to be posted at map server
     $("#SpeciesID").val(speciesID);    
+
+
+    var offset = $('#GUI').offset();
+    var guiHeight = $('#GUI').height();
+    var guiWidth = $('#GUI').width();
+    
+    var loading_img_src = IconSource +'Loading.gif';
+    
+    var map_loading_div = '<div id="MLD">Loading ' 
+                        + FullName 
+                        + '<br><img style="width:100%; height:40%;" src="'+loading_img_src+'"></div>';
+    
+    
+    $('#messages_container').append(map_loading_div);
+    
+    $('#MLD').width(guiWidth * 0.8).height(90);
+    
+    
+    $('#MLD').offset({ top: (offset.top + (guiHeight/2) - ($('#MLD').height() / 2)), left: (offset.left + (guiWidth/2) - ($('#MLD').width() / 2)) }) 
+
+    $('#MLD').button();
+
+    $('#MLD').fadeIn(200);
+
     $('#GUI').contents().find('#MAP_FORM').submit();
     
 }
+
+
+function map_gui_loaded()
+{
+    if (exists('#MLD'))
+    {
+        $('#MLD').fadeOut(200).remove();
+    }    
+    
+}
+
 
 
 function setTools(src)
@@ -545,37 +665,16 @@ function SetFullExtent() {
 }
 
 
-$(document).ready(function(){
 
+$(document).ready(function(){
 
     $( "#species" ).autocomplete({ 
                         source: availableSpecies,
                         select: function(event, ui) 
                         {
-                            
-                            if ( $('#user_species_'+ui.item.value).length ) 
-                            {
-                                $('#user_species_'+ui.item.value).stop().css("background-color", "#FF0000").animate({ backgroundColor: "#FFFFFF"}, 1500);
-                                return false;
-                            }                                
-                            else
-                            {
-                                //var li = $('<li class="species-from-user" id="user_species_'+ui.item.value+'" class="ui-widget-content" ><button class="species-remove-button" id="remove_user_species_'+ui.item.value+'" >remove</button>'+ui.item.label+'</li>');
-                                //$('#selectable_species').append(li);
-                                addSpecies(ui.item.value,ui.item.label);
-                                $(this).val('');
-//                                $('#remove_user_species_' + ui.item.value)
-//                                    .button({
-//                                                icons: { primary: "ui-icon-circle-close" },
-//                                                text: false
-//                                            })
-//                                    .click( function() { removeUserSpecies(this,ui.item.value,ui.item.label); return false;} )
-//                                    ;
-
-                                return false;
-                                
-                            }
-
+                            addSpecies(ui.item.value,ui.item.label);
+                            $(this).val('Species');
+                            return false;
                         }
                      });
     
@@ -598,6 +697,9 @@ $(document).ready(function(){
     $("#species").css("padding","4px");
     $("#species").css("margin","3px");
     $("#species").css("width","93%");
+    $("#species").blur(function() { $(this).val('Species'); return false; });
+    $("#species").focus(function() { $(this).val(''); return false; });
+    
 
 });
     
@@ -605,7 +707,7 @@ $(document).ready(function(){
     
 </head>
 <body>
-    <h1 class="pagehead"><a href="SpeciesSuitability.php"><img src="<?php echo configuration::IconSource()."Header_v1.png" ?>" /></a></h1>
+    <h1 class="pagehead"><a href="SpeciesSuitability.php"><img src="<?php echo configuration::IconSource()."Header_v1.png" ?>" border="0" /></a></h1>
 
 <div class="maincontent">
 
@@ -628,11 +730,13 @@ $(document).ready(function(){
         <iframe class=""  
                    ID="GUI" 
                   src="SearchMap.php" 
-                width="640" 
-               height="560" 
+                width="100%" 
+               height="660" 
           frameBorder="0" 
                border="0" 
-                 style="margin: 0px; overflow:hidden; float:none; clear:both;" >
+                 style="margin: 0px; overflow:hidden; float:none; clear:both;" 
+                onload="map_gui_loaded()"
+                 >
         </iframe>
         
         <div id="ColorKeyContainer" >
@@ -653,7 +757,7 @@ $(document).ready(function(){
     </div>
     <div id="MapLayers" class="ui-widget-content ui-corner-all" >
         <div id="SpeciesBar" class="ui-widget-header ui-corner-all" >
-            <input id="species">
+            <input id="species" value="Species">
         </div>
         <div id="species_data" class="ui-widget-content ui-corner-all" >
         </div>            
@@ -703,6 +807,7 @@ $(document).ready(function(){
     </p>
 </div>
 
+<div id="messages_container" style="height:0px; width:0px;"></div>
 
 </body>
 </html>

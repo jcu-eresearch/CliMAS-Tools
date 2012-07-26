@@ -29,7 +29,7 @@ if (is_null($map_path) || $UserLayer != "")
 
         // remove under threshold
         foreach ($ramp as $key => $rgb) 
-            if ($key < $display_threshold) $ramp[$key] = RGB::transparent ();        
+            if ($key < $display_threshold) $ramp[$key] = RGB::ColorBlack();        
 
 
         $layer->ColorTable($ramp);
