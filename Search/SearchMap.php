@@ -22,8 +22,9 @@ if (is_null($map_path) || $UserLayer != "")
         $layer instanceof MapServerLayerRaster;
         $layer->HistogramBuckets(100);
 
+        
+        // this bit here needs to be moved - and only called if we want maxent 
         $ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
-
 
         $display_threshold = DatabaseMaxent::GetMaxentResult($SpeciesID, DatabaseMaxent::$DisplayThresholdFieldName);
 

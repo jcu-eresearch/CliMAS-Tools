@@ -295,7 +295,11 @@ function addSpecies(speciesID,speciesName)
 
     $("#species_data").append(div);
     
-    $('#species_header_for_'+speciesID).button().click(function() { toggleSpeciesData(this); });
+    $('#species_header_for_'+speciesID)
+        .click(function() { toggleSpeciesData(this); })
+        .css("color","black")
+        .button()
+        ;
     
     var jData = { 
          cmdaction:'SpeciesComputed'
@@ -379,6 +383,9 @@ function postAddSpeciesScenarioModels(species_data_id,speciesID,scenarioModelsSt
         firstAsciiGridID = '';
         firstFullname = '';
         
+        var sm = string2Array(scenarioModelName, '_') 
+
+        
         // get the timeline from data for this scenario_model
         for (d in data)
         {
@@ -409,19 +416,18 @@ function postAddSpeciesScenarioModels(species_data_id,speciesID,scenarioModelsSt
         }
         
         
-        var loading_img_src = IconSource +'Loading.gif';
+        var loading_img_src = IconSource +'wait.gif';
 
-        var loading_msg = '<div id="loading_'+firstAsciiGridID +'"><img width="100%" height="20%" src="'+loading_img_src+'"></div>';
+        var loading_msg = '<div id="loading_'+firstAsciiGridID +'"><img style="margin-left: 70px; margin-top: 50px; width:100px; height=100px;" src="'+loading_img_src+'"></div>';
         
         
         var firstImageSrc = ApplicationFolderWeb + 'Search/file.php?id=' + firstScenarioModelTime;
         
-        div_header = '<div style="height: 20px; float:none; clear: both; background-color: black; color: white;" >' + scenarioModelName + '</div>';
+        div_header = '<div id="'+speciesID + '_' +scenarioModelName+'_image_header" style="padding:3px; height: 24px; float:none; clear: both; background-color: black; color: white;" >' + sm[0] + "&nbsp;&nbsp;&nbsp;&nbsp;" + sm[1] + '</div>';
 
-        div_content = loading_msg + 
-                      '<div id="'+speciesID + '_' +scenarioModelName+'_image_container" style="height: 220px; float:none; clear: both;  overflow: hidden; " ><img  onload="layerImageLoaded(\''+firstAsciiGridID +'\')"   id="'+speciesID + '_' +scenarioModelName+'_'+ firstTimeName +'_image" style="width: 70%; height: 300px;" src="'+firstImageSrc+'"></div>';
+        div_content = '<div id="'+speciesID + '_' +scenarioModelName+'_image_container" style="margin-left: 80px; height: 220px; float:none; clear: both;  overflow: hidden; " >'+loading_msg+'<img  onload="layerImageLoaded(\''+firstAsciiGridID +'\')"   id="'+speciesID + '_' +scenarioModelName+'_'+ firstTimeName +'_image" style="width: 70%; height: 300px;" src="'+firstImageSrc+'"></div>';
 
-        div_timeline = '<div id="'+speciesID + '_' +scenarioModelName+'_times" style="height: 40px;float:none; clear: both;" >'+timesStr+'</div>';
+        div_timeline = '<div id="'+speciesID + '_' +scenarioModelName+'_times" style="margin-left: 1px; height: 40px;float:none; clear: both;" >'+timesStr+'</div>';
 
         div  = '<div class="scenaro_model_container" style="width: 100%; height: 280px;" >';
         div += div_header + div_content + div_timeline;
@@ -432,6 +438,8 @@ function postAddSpeciesScenarioModels(species_data_id,speciesID,scenarioModelsSt
 
         $('#'+speciesID + '_' +scenarioModelName+'_times').buttonset();
 
+        $('#'+speciesID + '_' +scenarioModelName+'_image_header').addClass("ui-corner-all")
+
         $('.time_radio')
             .css("font-size","0.8em");
 
@@ -440,6 +448,14 @@ function postAddSpeciesScenarioModels(species_data_id,speciesID,scenarioModelsSt
         $('#' + firstImageId).data("speciesID",speciesID);
         $('#' + firstImageId).data("AsciiGridID",firstAsciiGridID);
         $('#' + firstImageId).data("FullName",firstFullname);
+
+        
+
+        $('#'+firstImageId).data("scenario",  sm[0]);
+        $('#'+firstImageId).data("model",     sm[1]);
+        $('#'+firstImageId).data("time",      firstTimeName);
+
+
 
         $('#' + firstImageId).click(function() {userSelectedLayer(this); return false;})
 
@@ -488,11 +504,11 @@ function scenarioModelSelectedButtonSet(src)
     else
     {        
         
-        var loading_img_src = IconSource +'Loading.gif';
+        var loading_img_src = IconSource +'wait.gif';
 
-        var loading_msg = '<div id="loading_'+AsciiGridFileID +'"><img width="100%" height="20%" src="'+loading_img_src+'"></div>';
+        var loading_msg = '<div id="loading_'+AsciiGridFileID +'"><img style=" margin-left: 70px; margin-top: 50px;  width:100px; height=100px;" src="'+loading_img_src+'"></div>';
 
-        var div = loading_msg + '<img  onload="layerImageLoaded(\''+AsciiGridFileID +'\')"    id="'+newImageID + '" style="width: 70%; height: 300px;" src="'+newImageSrc+'">';
+        var div = loading_msg + '<img  onload="layerImageLoaded(\''+AsciiGridFileID +'\')"    id="'+newImageID + '" style=" width: 70%; height: 300px;" src="'+newImageSrc+'">';
         
         // setup image onloaded  - 
         $('#' + imageHolder).append(div);
@@ -501,6 +517,10 @@ function scenarioModelSelectedButtonSet(src)
         $('#' + newImageID).data("speciesID",speciesID);
         $('#' + newImageID).data("AsciiGridID",AsciiGridFileID);
         $('#' + newImageID).data("FullName",FullName);
+        $('#' + newImageID).data("scenario",  scenario);
+        $('#' + newImageID).data("model",     model);
+        $('#' + newImageID).data("time",      time);
+        
         
         $('#' + newImageID).click(function() {userSelectedLayer(this); return false;})
         
@@ -590,6 +610,15 @@ function userSelectedLayer(src)
     var ascii_grid_id = $('#' + id).data("AsciiGridID");;  // get ascii  grid  file id 
     var speciesID = $('#' + id).data("speciesID");
     var FullName = $('#' + id).data("FullName");
+
+
+    var current_map_data = 
+        $('#' + id).data("scenario") + " ... " + 
+        $('#' + id).data("model") + " ... " + 
+        $('#' + id).data("time")
+        ;
+
+    $('#MultiLayerSelector').html(current_map_data);
 
 
     $("#CurrentSpecies").html(FullName);  
@@ -743,10 +772,7 @@ $(document).ready(function(){
             <?php echo RGB::RampDisplay($ramp); ?>
         </div>
 
-        <div id="MutliLayerSelector" >
-            Buttons to select what items of multiple;
-        </div>
-        
+        <div id="MultiLayerSelector"></div>        
         
         <FORM METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
             <INPUT TYPE="HIDDEN" ID="ZoomFactor" NAME="ZoomFactor" VALUE="2">
