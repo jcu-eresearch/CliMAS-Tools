@@ -1,0 +1,107 @@
+
+root { 
+    display: block;
+}
+
+/*
+<div id="{DataName}" class="DescriptionCell" >
+    <span class="DescriptionLink">{URI}</span><div class="DescriptionName">{DataName}</div>
+    <div class="DescriptionText">{Description}</div>
+    <div id="Selector{DataName}" class="DescriptionSelector" onclick="descriptionSelect('{DataName}');" ></div>
+    <div class="DescriptionMoreInformation">{MoreInformation}</div>
+</div>
+
+*/
+
+.DescriptionCell
+{
+  border-bottom: 2px solid black;
+  border-right: 2px solid black;
+  border-radius: 10px;
+  display: block;
+  width: 95%;
+  height: 100px;
+  float: left;
+  padding: 5px;
+  background-color: white;
+  margin-bottom: 10px;
+
+}
+
+.DescriptionName
+{
+  height: 12pt;
+  font-size: 12pt;
+/*  width: 30%;*/
+  float: left;
+  overflow-wrap: hyphenate;
+  overflow: hidden;
+  font-weight: bold;
+  padding-right: 10px;
+
+}
+
+.DescriptionText
+{
+   height: 12pt;
+   width:  70%;
+   float: left;
+   font-weight: bold;
+   font-size: 12pt;
+   overflow: hidden;
+   
+}
+
+.DescriptionText a
+{
+    color: darkgoldenrod;
+    text-decoration: none;
+}
+
+.DescriptionSelector
+{
+    border-radius: 10px;
+    display: block;
+    clear: left;
+    float: left;
+    height: 50px;
+    width:  3%;
+    padding-top: 10px;
+    background-color: darkgreen;
+    overflow: hidden;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.DescriptionSelector:hover
+{
+    background-color: red;
+}
+
+.DescriptionMoreInformation
+{
+    display: block;
+    float: left;
+    height: 50px;
+    width:  90%;
+    margin-right: 3%;
+    padding-top: 10px;
+    overflow: hidden;
+}
+
+.DescriptionLink
+{
+    display: block;
+    overflow: hidden;
+    float: left;
+}
+
+
+/**
+* override this style to chnage what happens to items that are selected
+* this will be added a secondary class
+*/
+.selected
+{
+    background-color: red;
+}

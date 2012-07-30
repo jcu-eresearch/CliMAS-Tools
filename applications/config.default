@@ -1,0 +1,49 @@
+<?php
+
+/**
+ *
+ *  DEFAULT VALUES FOR CONFIG VARIABLES
+ *  
+ */
+
+$conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." default";
+
+$conf[Parameter::$TempFolder ] = "/tmp/";
+
+$conf[Parameter::$PathDelimiter]       = "/";
+$conf[Parameter::$ExtensionDelimiter]  = ".";
+
+$conf[Parameter::$APPLICATION_NAME]      = "TDH-TOOLS";
+
+$conf[Parameter::$APPLICATION_FOLDER]    = "/app/";
+
+$conf[Parameter::$APPLICATION_FOLDER_WEB] = "http://localhost/app/";
+
+$conf[Parameter::$UTILITIES_CLASSES]     = "/app/Utilities/includes.php";
+
+$conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://SomeServer/eresearch/TDH-Tools/output/";
+$conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/app/output/";
+$conf[Parameter::$RESOURCES_FOLDER]      = "/app/Resources/";
+$conf[Parameter::$ICONS_FOLDER]          = "/app/Resources/icons/";
+
+$conf[Parameter::$SOURCE_DATA_FOLDER]    = "/app/source/";
+
+$conf[Parameter::$COMMAND_QUEUE_ID       ] = "default_queue_id";
+$conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/app/logs/queue.log";
+$conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/app/scripts/";
+$conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = "/app/applications/CommandActionExecute.php";
+
+
+$conf[Parameter::$COMMAND_EXTENSION      ] = $conf[Parameter::$ExtensionDelimiter]."command";
+$conf[Parameter::$COMMAND_SCRIPTS_PREFIX ] = "command_";
+$conf[Parameter::$COMMAND_SCRIPTS_SUFFIX ] = $conf[Parameter::$ExtensionDelimiter]."sh";
+
+$conf[Parameter::$MaxentJar ] = "/app/maxent.jar";
+
+$conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975/";
+$conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe/";
+$conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/ctbccr/TDH/";
+$conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output/";
+$conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
+
+?>
