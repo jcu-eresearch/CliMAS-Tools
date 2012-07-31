@@ -25,6 +25,8 @@ class spatial_util
         //print_r($filename);
         if (!file_exists($filename))  return null;
 
+        if (util::contains($filename, "shp")) return false;
+        
         $result = array();
         $cmd = "gdalinfo '{$filename}' | head -n1";
         exec($cmd, $result);
@@ -66,6 +68,9 @@ class spatial_util
      */
     public static function RasterType($filename)
     {
+        
+        if (util::contains($filename, "shp")) return null;
+        
         $result = array();
         $cmd = "gdalinfo '{$filename}' | head -n1";
         exec($cmd, $result);
@@ -80,6 +85,8 @@ class spatial_util
     public static function RasterStatisticsPrecision($filename,$band = "1")
     {
 
+        if (util::contains($filename, "shp")) return null;
+        
         $result = array();
         $cmd = "gdalinfo -stats {$filename} | grep 'Band {$band}' -A 8 | grep 'STATISTICS_'";
         exec($cmd, $result);
@@ -130,6 +137,8 @@ class spatial_util
         $precision = self::RasterStatisticsPrecision($filename,$band);
         if (!is_null($precision)) return $precision;
 
+        if (util::contains($filename, "shp")) return null;
+        
         $result = array();
         $cmd = "gdalinfo -stats {$filename} | grep 'Band {$band}' -A 3";
         exec($cmd, $result);

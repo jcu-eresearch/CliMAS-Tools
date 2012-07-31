@@ -1,168 +1,6 @@
-<?php
-session_start();
-include_once dirname(__FILE__).'/includes.php';
-
-$ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
-
-?>
-<!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Species Suitability</title>
-
-<link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
-<link type="text/css" href="css/selectMenu.css" rel="stylesheet" />
-<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
-<script type="text/javascript" src="js/selectMenu.js"></script>
-<script type="text/javascript" src="js/Utilities.js"></script>
-
-<link href="styles.css" rel="stylesheet" type="text/css">
-
-<style>
-#selectable_layers .ui-selecting { background: #FECA40; }
-#selectable_layers .ui-selected { background: #F39814; color: white; }
-#selectable_layers { list-style-type: none; margin: 0; padding: 0; width: 90%; }
-#selectable_layers li { margin: 3px; padding: 0.4em; font-size: 0.8em; height: 90px; }
-
-.ui-autocomplete {
-		max-height: 150px;
-		overflow-y: auto;
-		overflow-x: hidden;
-		padding-right: 20px;
-	}
-
-#ColorKeyContainer
-{
-    width: 100%;
-    padding: 0px; 
-    margin: 0px; 
-    height: 24px; 
-    overflow:hidden; 
-    clear:both;
-    
-}
-
-#ColorKey 
-{
-    float: right; 
-}
-
-#MutliLayerSelector
-{
-    width: 100%;
-    padding: 0px; 
-    margin: 0px; 
-    height: 30px; 
-    overflow:hidden; 
-    clear:both;
-}
-
-#species
-{
-    padding: 0px;
-    margin: 0px;
-    
-}
-
-#lhs
-{
-    float: none; 
-    height: 800px;
-    width: 1200px; 
-    overflow: hidden;    
-    clear:both;
-}
-
-#MapContainer
-{
-    float: left; 
-    
-    height: 100%; 
-    width: 710px; 
-    overflow: hidden;
-    
-}
-
-#MapLayers
-{
-    float: left; 
-    height: 100%; 
-    width: 450px; 
-    overflow: hidden;    
-}
-
-
-#ToolBar 
-{
-    padding-top: 4px;
-    padding-left: 4px;
-    height: 44px;
-}
-
-
-#SpeciesBar
-{
-    padding-top: 4px;
-    padding-left: 4px;
-    height: 6.5%;
-    width:100%;
-    
-}
-
-#species_data
-{
-    height: 92%;
-    width:100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-
-
-
-.species_container
-{
-    
-}
-
-.species_header
-{
-    height: 40px;
-    font-size: 0.8em;
-    width:100%;
-    
-}
-
-.species_data
-{
-    height: 660px;
-    overflow: auto;
-}
-
-
-#MapTools
-{
-    float:left;
-    height: 40px;
-}
-
-
-</style>
-<script>
-
 // GLOBAL VARIABLES
-<?php 
-echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),'ApplicationFolderWeb');
-echo htmlutil::AsJavaScriptObjectArray(SpeciesData::speciesList(),"full_name","species_id","availableSpecies");    
-echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSource');
 
-
-?>
-
-
-
+var SpeciesEntryBoxMessage = "Enter a species name here";
 
 function GetZoom() {
     document.getElementById('ZoomFactor').value = parent.document.getElementById('ZoomFactor').value;
@@ -519,7 +357,7 @@ $(document).ready(function(){
                         select: function(event, ui) 
                         {
                             addSpecies(ui.item.value,ui.item.label);
-                            $(this).val('Species');
+                            $(this).val(SpeciesEntryBoxMessage);
                             return false;
                         }
                      });
@@ -553,100 +391,19 @@ $(document).ready(function(){
         .css("padding","4px")
         .css("margin","3px")
         .css("width","93%")
-        .blur(function() { $(this).val('Species'); return false; })
+        .blur(function() { $(this).val(SpeciesEntryBoxMessage); return false; })
         .focus(function() { $(this).val(''); return false; })
+        .val(SpeciesEntryBoxMessage)
         ;
 
+
+    $(".ToolBarItem")
+        .css("width","19%")
+        .css("float","left")
+        .button()
+        .css("height","40px")
+        ;
+
+
+
 });
-    
-</script>
-    
-</head>
-<body>
-    <h1 class="pagehead"><a href="index.php"><img src="<?php echo configuration::IconSource()."Suitability.png" ?>" border="0" /></a></h1>
-
-<div class="maincontent">
-
-    
-<div id="lhs" class="ui-widget-content" >
-
-    <div id="MapContainer" class="ui-widget-content" >
-
-        <div id="ToolBar" class="ui-widget-header ui-corner-all" >
-            <div id="MapTools">
-                <button id="ToolFullExtent" onclick="SetFullExtent();" >Reset Map</button>
-                <input name="MapsTools" type="radio" id="ToolZoomOut"  onclick="SetZoom(this,-2.0);"                   /><label for="ToolZoomOut">Zoom Out</label>
-                <input name="MapsTools" type="radio" id="ToolCentre"   onclick="SetZoom(this,1.0)"                     /><label for="ToolCentre" >Centre</label>
-                <input name="MapsTools" type="radio" id="ToolZoomIn"   onclick="SetZoom(this,2.0)"   checked="checked" /><label for="ToolZoomIn" >Zoom In</label>
-                <span id="CurrentSpecies"></span>
-            </div>
-
-        </div>
-        
-        <iframe class=""  
-                   ID="GUI" 
-                  src="SpeciesSuitabilityMap.php" 
-                width="100%" 
-               height="660" 
-          frameBorder="0" 
-               border="0" 
-                 style="margin: 0px; overflow:hidden; float:none; clear:both;" 
-                onload="map_gui_loaded()"
-                 >
-        </iframe>
-        
-        <div id="ColorKeyContainer" ><?php echo RGB::RampDisplay($ramp); ?></div>
-
-        <div id="MultiLayerSelector"></div>        
-        
-        <FORM METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
-            <INPUT TYPE="HIDDEN" ID="ZoomFactor" NAME="ZoomFactor" VALUE="2">
-            <INPUT TYPE="HIDDEN" ID="UserLayer"  NAME="UserLayer"  VALUE="">
-            <INPUT TYPE="HIDDEN" ID="SpeciesID"  NAME="SpeciesID"  VALUE="">
-        </FORM>
-
-    </div>
-    <div id="MapLayers" class="ui-widget-content ui-corner-all" >
-        <div id="SpeciesBar" class="ui-widget-header ui-corner-all" >
-            <input id="species" value="Species">
-        </div>
-        <div id="species_data" class="ui-widget-content ui-corner-all" >
-        </div>            
-
-    </div>
-
-</div>
-    
-    
-    
-    
-</div>
-
-<div class="credits">
-    <a href="http://www.jcu.edu.au/ctbcc/">
-        <img src="../images/ctbcc_sm.png" alt="Centre for Tropical Biodiversity and Climate Change">
-    </a>
-    <a href="http://www.tyndall.ac.uk/">
-        <img src="../images/themenews_logo.jpg" alt="Tyndall Centre for Climate Change Research">
-    </a>
-    <a href="http://www.jcu.edu.au">
-        <img src="../images/jcu_logo_sm.png" alt="JCU Logo">
-    </a>
-    <a href="http://eresearch.jcu.edu.au/">
-        <img src="../images/eresearch.png" alt="eResearch Centre, JCU">
-    </a>
-</div>
-
-
-<div class="footer">
-    <p class="contact">
-        please contact Jeremy VanDerWal
-        (<a href="mailto:jeremy.vanderwal@jcu.edu.au">jeremy.vanderwal@jcu.edu.au</a>)
-        with any queries.
-    </p>
-</div>
-
-<div id="messages_container" style="height:0px; width:0px;"></div>
-
-</body>
-</html>
