@@ -1,0 +1,20 @@
+Name,Description,MoreInformation,URI
+BIO1 ,Annual Mean Temperature,Annual Mean Temperature,http://www.worldclim.org/bioclim
+BIO2 ,Mean Diurnal Range (Mean of monthly (max temp - min temp)),Mean Diurnal Range (Mean of monthly (max temp - min temp)),http://www.worldclim.org/bioclim
+BIO3 ,Isothermality (BIO2/BIO7) (* 100),Isothermality (BIO2/BIO7) (* 100),http://www.worldclim.org/bioclim
+BIO4 ,Temperature Seasonality (standard deviation *100),Temperature Seasonality (standard deviation *100),http://www.worldclim.org/bioclim
+BIO5 ,Max Temperature of Warmest Month,Max Temperature of Warmest Month,http://www.worldclim.org/bioclim
+BIO6 ,Min Temperature of Coldest Month,Min Temperature of Coldest Month,http://www.worldclim.org/bioclim
+BIO7 ,Temperature Annual Range (BIO5-BIO6),Temperature Annual Range (BIO5-BIO6),http://www.worldclim.org/bioclim
+BIO8 ,Mean Temperature of Wettest Quarter,Mean Temperature of Wettest Quarter,http://www.worldclim.org/bioclim
+BIO9 ,Mean Temperature of Driest Quarter,Mean Temperature of Driest Quarter,http://www.worldclim.org/bioclim
+BIO10 ,Mean Temperature of Warmest Quarter,Mean Temperature of Warmest Quarter,http://www.worldclim.org/bioclim
+BIO11 ,Mean Temperature of Coldest Quarter,Mean Temperature of Coldest Quarter,http://www.worldclim.org/bioclim
+BIO12 ,Annual Precipitation,Annual Precipitation,http://www.worldclim.org/bioclim
+BIO13 ,Precipitation of Wettest Month,Precipitation of Wettest Month,http://www.worldclim.org/bioclim
+BIO14 ,Precipitation of Driest Month,Precipitation of Driest Month,http://www.worldclim.org/bioclim
+BIO15 ,Precipitation Seasonality (Coefficient of Variation),Precipitation Seasonality (Coefficient of Variation),http://www.worldclim.org/bioclim
+BIO16 ,Precipitation of Wettest Quarter,Precipitation of Wettest Quarter,http://www.worldclim.org/bioclim
+BIO17 ,Precipitation of Driest Quarter,Precipitation of Driest Quarter,http://www.worldclim.org/bioclim
+BIO18 ,Precipitation of Warmest Quarter,Precipitation of Warmest Quarter,http://www.worldclim.org/bioclim
+BIO19 ,Precipitation of Coldest Quarter,Precipitation of Coldest Quarter,http://www.worldclim.org/bioclim

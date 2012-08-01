@@ -159,9 +159,19 @@ class MapserverGUI extends Object {
         return $extent_to_html;
     }
 
-    public function ImageWidth() { return $this->getProperty(); }
+    public function ImageWidth() 
+    { 
+        if (func_num_args() == 0) return $this->getProperty(); 
+        if (is_null(func_get_arg(0))) return;
+        return $this->setProperty(func_get_arg(0));
+    }
     
-    public function ImageHeight() { return $this->getProperty(); }
+    public function ImageHeight() 
+    {    
+        if (func_num_args() == 0) return $this->getProperty(); 
+        if (is_null(func_get_arg(0))) return;
+        return $this->setProperty(func_get_arg(0));
+    }
 
     public function ImageX() { return $this->getProperty(); }
     

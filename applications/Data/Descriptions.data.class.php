@@ -201,6 +201,22 @@ class Descriptions extends Data {
         return $result;
     }
 
+    
+    
+    public function asFormattedString($format = null,$delim = "\n")
+    {
+     
+        $result = array();
+        foreach ($this->descriptions as $desc) 
+        {
+            $desc instanceof Description;
+            $result[] = $desc->asFormattedString($format);
+        }
+        
+        return implode($delim, $result);
+        
+    }
+    
 
     public function has($key)
     {

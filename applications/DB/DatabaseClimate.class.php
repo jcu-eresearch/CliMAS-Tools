@@ -7,7 +7,12 @@
 class DatabaseClimate {
     
     
-    // $scenario = null, $model = null, $time = null    
+    public static   function getBioclimID($bioclim) 
+    {
+        return DBO::GetSingleRowValue("select id from bioclim where dataname = ".util::dbq($bioclim),'id');
+    }
+    
+    
     public static   function getScenarioID($scenario) 
     {
         return DBO::GetSingleRowValue("select id from scenarios where dataname = ".util::dbq($scenario),'id');
@@ -23,7 +28,13 @@ class DatabaseClimate {
         return DBO::GetSingleRowValue("select id from times where dataname = ".util::dbq($time),'id');
     }
     
-    // $scenario = null, $model = null, $time = null    
+    public static  function GetBioclims() 
+    {
+        $results = matrix::Column(DBO::Unique('bioclim', 'dataname'),'dataname');
+        return $results;
+    }
+    
+    
     public static  function GetScenarios() 
     {
         $results = matrix::Column(DBO::Unique('scenarios', 'dataname'),'dataname');
@@ -42,7 +53,27 @@ class DatabaseClimate {
         return $results;
 
     }
+
+    public static  function GetBioclimDescriptions() 
+    {
+        return Descriptions::fromTable("bioclim");
+    }
     
+    
+    public static  function GetScenarioDescriptions() 
+    {
+        return Descriptions::fromTable("scenarios");
+    }
+
+    public static  function GetModelsDescriptions() 
+    {
+        return Descriptions::fromTable("models");
+    }
+
+    public static  function GetTimesDescriptions() 
+    {
+        return Descriptions::fromTable("times");
+    }
     
     
 }

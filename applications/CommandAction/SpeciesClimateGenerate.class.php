@@ -251,7 +251,7 @@ SQL;
         if (!DBO::HasTable('models')) throw new Exception("FAILED to create table models - Can't find table with describe ");
         
         
-        $descs = Descriptions::fromFile(configuration::Descriptions_ClimateModels());
+        $descs = Descriptions::fromFile(configuration::ResourcesFolder()."descriptions/gcm.csv");
         $descs instanceof Descriptions;
         
         $format = "insert into models (dataname,description,moreinfo,uri) values ({DataName},{Description},{MoreInformation},{URI});";
@@ -326,7 +326,7 @@ SQL;
         if (!DBO::HasTable('scenarios')) throw new Exception("FAILED to create table scenarios - Can't find table with describe ");
         
         
-        $descs = Descriptions::fromFile(configuration::Descriptions_EmissionScenarios());
+        $descs = Descriptions::fromFile(configuration::ResourcesFolder()."descriptions/scenario.csv");
         $descs instanceof Descriptions;
         
         $format = "insert into scenarios (dataname,description,moreinfo,uri) values ({DataName},{Description},{MoreInformation},{URI});";
@@ -402,7 +402,7 @@ SQL;
         
         //echo "table_result = $table_result\n";
         
-        $descs = Descriptions::fromFile(configuration::Descriptions_Years());
+        $descs = Descriptions::fromFile(configuration::ResourcesFolder()."descriptions/year.txt");
         $descs instanceof Descriptions;
         
         $format = "insert into times (dataname,description,moreinfo,uri) values ({DataName},{Description},{MoreInformation},{URI});";
@@ -584,6 +584,80 @@ SQL;
         return true;
         
     }
+    
+    
+    public function Stage08($name_only = false)     
+    {
+        
+        $name = 'Bioclim Descriptions';
+
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
+        
+        $this->header($name);
+    
+        // might not be a good idea to drop table - really need  to copy as we will have update 
+        // the models_id in other tables from old to new
+        
+        
+        
+$table_sql = <<<SQL
+DROP TABLE IF EXISTS bioclim;
+CREATE TABLE bioclim
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,dataname          varchar(60)
+    ,description       varchar(256)  
+    ,moreinfo          varchar(900)
+    ,uri               varchar(500) 
+    ,metadata_ref      varchar(500) 
+    ,update_datetime   timestamp without time zone 
+);
+GRANT ALL PRIVILEGES ON bioclim TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE bioclim_id_seq TO ap02;        
+SQL;
+
+        
+        $table_result = DBO::CreateAndGrant($table_sql);
+        
+        if (is_null($table_result)) throw new Exception("FAILED to create table bioclim - null result from query ");
+        if (!DBO::HasTable('bioclim')) throw new Exception("FAILED to create table bioclim - Can't find table with describe ");
+        
+        
+        $descs = Descriptions::fromFile(configuration::ResourcesFolder()."descriptions/bioclim.csv");
+        $descs instanceof Descriptions;
+        
+        $format = "insert into bioclim (dataname,description,moreinfo,uri) values ({DataName},{Description},{MoreInformation},{URI});";
+         
+        $inserted_count = 0;
+        foreach ($descs->Descriptions() as $desc) {
+            
+            $desc instanceof Description;
+            $values_sql = $desc->asFormattedString($format,true);
+            
+            //echo "\n\n$values_sql\n\n"; 
+            
+            $values_result = DBO::Insert($values_sql);
+            
+            if (is_null($values_result)) throw new Exception("\nFAILED insert bioclim Descriptions using sql = {$values_sql}\n result = $values_result\n\n");
+            
+            if (!is_numeric($values_result))  throw new Exception("\nFAILED insert bioclim Descriptions using sql = {$values_sql} [{$values_result}] is not a number\n");
+            
+            //echo "  UR = {$values_result}"; 
+            
+            $inserted_count++;
+        
+        }
+        
+        if ($inserted_count != $descs->count())
+        {
+            throw new Exception("\n### ERROR:: Failed to insert bioclim Description properly {$inserted_count} != {$descs->count()}\n");
+            return FALSE;
+        }
+        
+        return true;
+        
+    }
+    
     
 
     private  function header($str = "")

@@ -210,7 +210,11 @@ class DatabaseFile extends Object
      */
     public static function ReadFile2Filesystem($file_unique_id,$dest_filename = null,$overwrite = true,$reuse = false) 
     {
+        
         if (is_null($dest_filename)) $dest_filename = file::random_filename(); // 
+
+        if (!$reuse ) file::Delete($dest_filename);
+
         
         if ($overwrite)  file::Delete ($dest_filename);
 

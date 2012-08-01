@@ -82,6 +82,9 @@ class MapServerWrapper extends Object {
         
         //** if width set to out of bounds chnage to default values
         $value = func_get_arg(0); 
+        
+        if (is_null($value)) $value = -1;
+        
         if ($value < MapServerConfiguration::imageMinWidth()) $value = MapServerConfiguration::imageMinWidth();
         if ($value > MapServerConfiguration::imageMaxWidth()) $value = MapServerConfiguration::imageMaxWidth();
         
@@ -89,17 +92,19 @@ class MapServerWrapper extends Object {
     }
 
     
-    public function OutputImageHeight($height = null) 
+    public function OutputImageHeight() 
     {
         if (func_num_args() == 0) return $this->getProperty();        
         
         $value = func_get_arg(0); 
+        
+        if (is_null($value)) $value = -1;
+        
         if ($value < MapServerConfiguration::imageMinHeight()) $value = MapServerConfiguration::imageMinHeight();
         if ($value > MapServerConfiguration::imageMaxHeight()) $value = MapServerConfiguration::imageMaxHeight();
         
         return  $this->setProperty($value);
     }
-    private $outputImageHeight = NULL; 
 
     
     /***

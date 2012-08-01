@@ -24,3 +24,49 @@ function exists(selector)
 }
 
 
+/**
+ *  From the list of elements via findSelector
+ *  
+ *  @param rootSelector    find starts here
+ *  @param findSelector    find this selector
+ *  @param findClass,      considerit selected if it has this class
+ *  @return array          IDs of selected elements
+ *  
+ */
+function selected(rootSelector,findSelector, findClass)
+{
+    if (rootSelector == null) return null;
+    if (findSelector == null) return null;
+    if (findClass == null) return null;
+
+    rootSelector = jQuery.trim(rootSelector);
+    findSelector = jQuery.trim(findSelector);
+    findClass = jQuery.trim(findClass);
+ 
+    if (rootSelector == "") return null;
+    if (findSelector == "") return null;
+    if (findClass == "") return null;
+    
+    $("#temp").html('');
+    
+    var ids = new Array();
+    var count = 0;
+    jQuery.each(
+        $(rootSelector).find(findSelector),
+        function() 
+        {
+            if ($(this).hasClass(findClass))
+            {
+                ids[count] = this.id.toString();
+                count++;
+            }
+            
+        }
+    );
+    
+
+    return ids;
+}
+
+
+

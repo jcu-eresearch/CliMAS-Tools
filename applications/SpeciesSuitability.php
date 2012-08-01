@@ -167,7 +167,6 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 function GetZoom() {
     document.getElementById('ZoomFactor').value = parent.document.getElementById('ZoomFactor').value;
 }
-    
 
 
 function addSpecies(speciesID,speciesName)

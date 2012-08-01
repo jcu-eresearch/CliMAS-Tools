@@ -1,158 +1,105 @@
-#selectable_layers .ui-selecting { background: #FECA40; }
-#selectable_layers .ui-selected { background: #F39814; color: white; }
-#selectable_layers { list-style-type: none; margin: 0; padding: 0; width: 90%; }
-#selectable_layers li { margin: 3px; padding: 0.4em; font-size: 0.8em; height: 90px; }
 
-
-.thecontent
+#thecontent
 {
-
-    height: 800px;
-    width: 1000px; 
-    overflow: hidden;    
-    margin: 1%;
-    z-index: 1;
-}
-
-
-.thecontent #toolbar
-{
-    float: left; 
-    height: 40px;
+    height: 600px;
     width: 100%; 
-    padding: 3px;
     overflow: hidden;
+    margin: 5px;
 }
 
-
-.ToolBarItem
-{
-
-}
 
 #MapContainer
 {
-    float: left; 
-    
-    height: 100%; 
-    width: 100%; 
+    padding: 2px;
+    float: none; 
+    height: 99%; 
+    width: 826px; 
+    overflow: hidden;
+    display: none;
+}
+
+#MapTools
+{
+    height: 40px;
+    width: 100%;
+}
+
+#MapInteractionData
+{
+    display: none;
+}
+
+.ui-selecting { 
+    background: #FECA40; 
+}
+
+.ui-selected { 
+    background: #F39814; 
+    color: white; 
+}
+
+.selectable { 
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0; 
+    height: 95%;
+    width: 100%;  
+
+}
+
+.selectable li { 
+    margin: 3px; 
+    padding: 0.4em; 
+    font-size: 1.0em; 
+    height: 70px; 
+    width: 20%;
+    float: left;
     overflow: hidden;
     
 }
 
+.selectable li  h4 { 
+    margin: 0em; 
+    padding: 0em; 
+    font-size: 1.0em; 
+}
 
-.maincontent
-{
-    float: none; 
-    height: 800px;
-    width: 100%; 
-    overflow: hidden;    
-    clear:both;
+.selectable li p { 
+    margin: 0em; 
+    padding: 0em; 
+    font-size: 0.8em; 
+    font-style: italic;
+    overflow: hidden
 }
 
 
-.ui-autocomplete {
-		max-height: 150px;
-		overflow-y: auto;
-		overflow-x: hidden;
-		padding-right: 20px;
-	}
-
-#ColorKeyContainer
+.selector
 {
-    width: 100%;
-    padding: 0px; 
-    margin: 0px; 
-    height: 24px; 
-    overflow:hidden; 
-    clear:both;
-    
+    width: 10%;  
+    float:left; 
+    height: 100%;
 }
 
-#ColorKey 
+.selector h3
 {
-    float: right; 
-}
-
-#MutliLayerSelector
-{
-    width: 100%;
-    padding: 0px; 
-    margin: 0px; 
-    height: 30px; 
-    overflow:hidden; 
-    clear:both;
-}
-
-#species
-{
-    padding: 0px;
-    margin: 0px;
-    
+    height: 50px;
 }
 
 
-
-#MapLayers
+#InputsSearchBar
 {
-    float: left; 
-    height: 100%; 
-    width: 450px; 
-    overflow: hidden;    
+    height: 80px;
 }
 
 
-#ToolBar 
-{
-    padding-top: 4px;
-    padding-left: 4px;
-    height: 44px;
-}
-
-
-#SpeciesBar
-{
-    padding-top: 4px;
-    padding-left: 4px;
-    height: 6.5%;
-    width:100%;
-    
-}
-
-#species_data
-{
-    height: 92%;
-    width:100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-
-
-
-.species_container
-{
-    
-}
-
-.species_header
+.SelectionToolBar
 {
     height: 40px;
+}
+
+.SelectionToolBar button{
+    
+    float: left;
+    height: 30px;
     font-size: 0.8em;
-    width:100%;
-    
 }
-
-.species_data
-{
-    height: 660px;
-    overflow: auto;
-}
-
-
-#MapTools
-{
-    float:left;
-    height: 40px;
-}
-

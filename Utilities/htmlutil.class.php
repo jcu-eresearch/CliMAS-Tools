@@ -15,7 +15,7 @@ class htmlutil {
         foreach ($src as $value) $values[] = '"'.$value.'"';
         $result = "var {$variableName} = [".join(",",$values)."];";
         unset($values);
-        return $result;
+        return $result."\n";
     }
 
     
@@ -43,7 +43,7 @@ class htmlutil {
             
         $result = "var {$variableName} = [".join(",",$values)."];";
         unset($values);
-        return $result;
+        return $result."\n";
     }
     
     
