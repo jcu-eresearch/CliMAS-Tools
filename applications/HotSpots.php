@@ -8,17 +8,17 @@ include_once dirname(__FILE__).'/includes.php';
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Species Suitability</title>
-
-    <link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
-    <link type="text/css" href="css/selectMenu.css" rel="stylesheet" />
+    <title>Hotspots</title>
     <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery.pulse.min.js"></script>
     <script type="text/javascript" src="js/selectMenu.js"></script>
     <script type="text/javascript" src="js/Utilities.js"></script>
 
-    <link href="styles.css" rel="stylesheet" type="text/css">
-    <link href="HotSpots.css" rel="stylesheet" type="text/css">
+    <link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
+    <link type="text/css" href="css/selectMenu.css" rel="stylesheet" />
+    <link type="text/css" href="styles.css"         rel="stylesheet" />
+    <link type="text/css" href="HotSpots.css"       rel="stylesheet" />
     
     <script type="text/javascript" >
     <?php     
@@ -85,7 +85,7 @@ include_once dirname(__FILE__).'/includes.php';
             <li><a href="#tabs-3">Emission Scenarios</a></li>
             <li><a href="#tabs-4">Years</a></li>
             <li><a href="#tabs-5">Bioclimatic Layers</a></li>
-            <li><a href="#tabs-6">Process</a></li>
+            <li><a href="#tabs-6">Data Calculation</a></li>
         </ul>
         <div id="tabs-1">
             
@@ -103,9 +103,11 @@ include_once dirname(__FILE__).'/includes.php';
                 </form>                
             </h3>
             
-            <ul id="InputsSelection" class="selectable">
-
-            </ul>
+            <ul id="TaxaSelection"     class="UserInputs"></ul>
+            <ul id="FamilySelection"   class="UserInputs"></ul>
+            <ul id="GenusSelection"    class="UserInputs"></ul>
+            <ul id="SpeciesSelection"  class="UserInputs"></ul>
+            <ul id="LocationSelection" class="UserInputs"></ul>
             
             <div id="MapContainer" class="ui-widget-content ui-corner-all" >
 
@@ -129,14 +131,22 @@ include_once dirname(__FILE__).'/includes.php';
             <div class="SelectionToolBar ui-widget-header ui-corner-all">
                 <button id="SelectAllModels"  >select all</button>
                 <button id="SelectNoneModels" >deselect all</button>
+                <button id="SelectDefaultModels" >Defaults</button>
             </div>       
             
             <ul id="ModelsSelection" class="selectable">
             <?php 
-                $liFormat = '<li id="Models_{DataName}" class="ui-widget-content ui-corner-all " ><h4>{DataName}</h4><p>{Description}</p> </li>'; 
+                $liFormat = '<li id="Models_{DataName}" class="ui-widget-content ui-corner-all " ><h4>{DataName}</h4><p>{Description}</p></li>'; 
                 echo DatabaseClimate::GetModelsDescriptions()->asFormattedString($liFormat); 
             ?>
             </ul>
+            
+            
+            <ul class="references">
+                <li>references:</li>
+                <?php echo DatabaseClimate::GetModelsDescriptions()->asFormattedString('<li><a targte="_ref" href="{URI}">{DataName}</a></li>'); ?>
+            </ul>
+            
             
         </div>
         
@@ -144,6 +154,9 @@ include_once dirname(__FILE__).'/includes.php';
             <div class="SelectionToolBar ui-widget-header ui-corner-all">
                 <button id="SelectAllScenarios"  >select all</button>
                 <button id="SelectNoneScenarios" >deselect all</button>
+                <button id="SelectDefaultScenarios" >Defaults</button>
+                <button id="SelectSomeScenarios_SRES" >select SRES*</button>
+                <button id="SelectSomeScenarios_RCP" >select RCP*</button>
             </div>       
             
             <ul id="ScenariosSelection" class="selectable" >
@@ -152,25 +165,34 @@ include_once dirname(__FILE__).'/includes.php';
                 echo DatabaseClimate::GetScenarioDescriptions()->asFormattedString($liFormat); 
             ?>
             </ul>
+            <ul class="references">
+                <li>references:</li>
+                <?php echo DatabaseClimate::GetScenarioDescriptions()->asFormattedString('<li><a targte="_ref" href="{URI}">{DataName}</a></li>'); ?>
+            </ul>
+            
+            
         </div>
 
         <div id="tabs-4">
             <div class="SelectionToolBar ui-widget-header ui-corner-all">
                 <button id="SelectAllTimes"  >select all</button>
                 <button id="SelectNoneTimes" >deselect all</button>
+                <button id="SelectDefaultTimes" >Defaults</button>
             </div>       
             <ul id="TimesSelection" class="selectable" >
             <?php 
                 $liFormat = '<li id="Times_{DataName}" class="ui-widget-content ui-corner-all " ><h4>{DataName}</h4><p>{Description}</p> </li>'; 
                 echo DatabaseClimate::GetTimesDescriptions()->asFormattedString($liFormat); 
-            ?>
+            ?>                
             </ul>    
+            
         </div>
 
         <div id="tabs-5">
             <div class="SelectionToolBar ui-widget-header ui-corner-all">
                 <button id="SelectAllBioclims"  >select all</button>
                 <button id="SelectNoneBioclims" >deselect all</button>
+                <button id="SelectDefaultBioclims" >Defaults</button>
             </div>       
             <ul id="BioclimsSelection" class="selectable" >
             <?php 
@@ -178,13 +200,75 @@ include_once dirname(__FILE__).'/includes.php';
                 echo DatabaseClimate::GetBioclimDescriptions()->asFormattedString($liFormat); 
             ?>
             </ul>
+            <ul class="references">
+                <li>references:</li>
+                <?php echo DatabaseClimate::GetBioclimDescriptions()->asFormattedString('<li><a targte="_ref" href="{URI}">{DataName}</a></li>'); ?>
+            </ul>
+            
         </div>
 
         <div id="tabs-6">
-            <button id="CreateProcess">Process Climates</button>
-            <div id="CreateProcessData" class="ui-corner-all">
+            
+            <div id="CountPanels ui-corner-all">
                 
-            </div>       
+                <div id="CountPanel1" class="CountPanel ui-widget-content ui-corner-all">
+                    <div class="Header ui-widget-header ui-corner-all">
+                        <h1 id="CountInputTotals" >0</h1><h2>User<br>Inputs</h2>    
+                    </div>
+                    <div class="Value ui-widget-content ui-corner-all">
+                        <h3 id="CountTaxa" class="Count">0</h3><h4>Taxa</h4>    
+                    </div>
+                    <div class="Value ui-widget-content ui-corner-all">
+                        <h3 id="CountFamily" class="Count">0</h3><h4>Family</h4>    
+                    </div>
+                    <div class="Value ui-widget-content ui-corner-all">
+                        <h3 id="CountGenus" class="Count">0</h3><h4>Genus</h4>    
+                    </div>
+                    <div class="Value ui-widget-content ui-corner-all">
+                        <h3 id="CountSpecies" class="Count" >0</h3><h4>Species</h4>                    
+                    </div>
+
+                </div>       
+
+                <div id="CountPanel2" class="CountPanel ui-widget-content ui-corner-all">
+                    <div class="Header ui-widget-header ui-corner-all">
+                        <h1 id="CountFutureTotals" >0</h1><h2>Future<br>Calculations</h2>    
+                    </div>
+
+                    <div class="Value ui-widget-content ui-corner-all">
+                        <h3 id="CountModels" >0</h3><h4>Climate Models</h4>    
+                    </div>
+                    <div class="Value ui-widget-content ui-corner-all">
+                        <h3 id="CountScenarios" >0</h3><h4>Scenarios</h4>    
+                    </div>
+                    <div class="Value ui-widget-content ui-corner-all">
+                        <h3 id="CountTimes" >0</h3><h4>Times</h4>    
+                    </div>
+                    <div class="Value ui-widget-content ui-corner-all" style="margin-top: 40px;">
+                        <h3 id="CountBioclims" >0</h3><h4>Bioclim Layers</h4>    
+                    </div>
+
+                </div>       
+
+                <div id="CountPanel4" class="CountPanel ui-widget-content ui-corner-all">
+
+                    <div class="GrandTotal ui-widget-header ui-corner-all">
+                        <h1 id="CountGrandTotal" >0</h1><h2 >Datasets to<br>Calculate</h2>    
+                    </div>
+
+                    <button id="CreateProcess">Submit for Calculation</button>
+                </div>    
+                
+            </div>
+
+            <br style="clear: both; float: none;">
+            <div id="RunningProcessesToolBar" class="ui-widget-header ui-corner-all">
+                <button id="UpdateProcess">Update Status</button>
+            </div>
+            <ul id="RunningProcessesTable" class="ui-widget-content ui-corner-all">
+                
+            </ul>
+            
         </div>
 
 

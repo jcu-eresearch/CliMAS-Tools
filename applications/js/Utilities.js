@@ -30,24 +30,29 @@ function exists(selector)
  *  @param rootSelector    find starts here
  *  @param findSelector    find this selector
  *  @param findClass,      considerit selected if it has this class
+ *  @param removeString    remove This string from the ID
+ *  @param replaceString   replace removed string with this one (default = "")
+ *  
  *  @return array          IDs of selected elements
  *  
  */
-function selected(rootSelector,findSelector, findClass)
+function selected(rootSelector,findSelector, findClass,removeString, replaceString)
 {
+    
+    
     if (rootSelector == null) return null;
     if (findSelector == null) return null;
-    if (findClass == null) return null;
 
     rootSelector = jQuery.trim(rootSelector);
     findSelector = jQuery.trim(findSelector);
-    findClass = jQuery.trim(findClass);
  
     if (rootSelector == "") return null;
     if (findSelector == "") return null;
-    if (findClass == "") return null;
     
-    $("#temp").html('');
+    
+    if (replaceString == null)  replaceString = '';
+    
+    var resultID = "";
     
     var ids = new Array();
     var count = 0;
@@ -55,11 +60,33 @@ function selected(rootSelector,findSelector, findClass)
         $(rootSelector).find(findSelector),
         function() 
         {
-            if ($(this).hasClass(findClass))
+            
+            
+            if (findClass == null)
             {
-                ids[count] = this.id.toString();
+                resultID = this.id.toString();
+                if (removeString != null )
+                    resultID = resultID.replace(removeString,replaceString);
+
+                ids[count] = resultID;
                 count++;
+
             }
+            else
+            {
+                if ($(this).hasClass(findClass))
+                {
+                    resultID = this.id.toString();
+                    if (removeString != null )
+                        resultID = resultID.replace(removeString,replaceString);
+
+                    ids[count] = resultID;
+                    count++;
+                }
+                
+            }
+            
+            
             
         }
     );
@@ -68,5 +95,17 @@ function selected(rootSelector,findSelector, findClass)
     return ids;
 }
 
+
+function selectedAsString(rootSelector,findSelector, findClass,delim,removeString, replaceString)
+{
+    if (delim == null) return null;
+
+    var result = selected(rootSelector,findSelector, findClass,removeString, replaceString);
+    
+    if (result == null) return null;
+    
+    return result.join(delim);
+    
+}
 
 

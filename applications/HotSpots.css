@@ -1,7 +1,7 @@
 
 #thecontent
 {
-    height: 600px;
+    height: 700px;
     width: 100%; 
     overflow: hidden;
     margin: 5px;
@@ -102,4 +102,333 @@
     float: left;
     height: 30px;
     font-size: 0.8em;
+}
+
+.references
+{
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0; 
+    width: 100%;  
+    height: 80px;
+    float: none;
+    clear: both;
+}
+
+.references li
+{
+    float: left;
+    margin: 2px; 
+    padding: 0; 
+    
+}
+
+.references li a
+{
+    
+}
+
+.references li a:hover
+{
+    color: red;
+}
+
+
+
+.UserInputs { 
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0; 
+    height: 95%;
+    width: 100%;  
+
+}
+
+.UserInputs li { 
+    margin: 3px; 
+    padding: 0.4em; 
+    font-size: 1.0em; 
+    height: 70px; 
+    width: 20%;
+    float: left;
+    overflow: hidden;
+    
+}
+
+.UserInputs li  h4 { 
+    margin: 0em; 
+    padding: 0em; 
+    font-size: 1.0em; 
+}
+
+.UserInputs li p { 
+    margin: 0em; 
+    padding: 0em; 
+    font-size: 0.8em; 
+    font-style: italic;
+    overflow: hidden
+}
+
+
+.CountPanels {
+    height:  250px;
+    overflow: hidden;
+    float:  none;
+    clear: both;
+}
+
+.CountPanel { 
+    height:  250px;
+    width:   24%;  
+    float:   left;
+    overflow: hidden;
+    margin-right: 1%;
+    padding: 5px;
+    
+}
+
+.CountPanel .Header
+{
+    height: 60px;
+    float: none;
+    clear: both;
+}
+
+.CountPanel .Value
+{
+    height: 30px;
+    float: none;
+    clear: both;
+    margin-top: 5px;
+    
+}
+
+
+
+.CountPanel div h1
+{
+    height: 100%;
+    width: 35%;
+    margin: 0em; 
+    padding: 0em; 
+    font-size: 2.5em; 
+    font-style: normal;
+    font-weight: bold;
+    overflow: hidden;
+    float: left;
+    margin-left: 5px;
+    display: block;
+    color: #F39814;
+    border-width: 2px;
+    text-align: center;
+    
+    
+}
+
+.CountPanel div h2
+{
+    height: 100%;
+    width: 55%;
+    margin: 0em; 
+    padding: 0em; 
+    font-size: 1.2em; 
+    font-style: italic;
+    font-weight: bold;
+    overflow: hidden;
+    float: left;
+    margin-left: 5px;
+    display: block;
+    float: left;
+    margin-left: 20px;
+    border-width: 2px;
+    
+}
+
+
+
+.CountPanel div h3
+{
+    height: 100%;
+    width: 30%;
+    margin: 0em; 
+    padding: 0em; 
+    font-size: 1.1em; 
+    font-style: normal;
+    font-weight: bold;
+    overflow: hidden;
+    float: left;
+    margin-left: 5px;
+    display: block;
+    text-align: center;
+
+}
+
+.CountPanel div h4
+{
+    height: 100%;
+    width: 60%;
+    margin: 0em; 
+    padding: 0em; 
+    font-size: 1.0em; 
+    font-style: italic;
+    font-weight: bold;
+    overflow: hidden;
+    float: left;
+    margin-left: 5px;
+    display: block;
+    float: left;
+    margin-left: 20px;
+    padding-top: 3px;
+}
+
+
+.CountPanel .GrandTotal
+{
+    height: 60px;
+    float: none;
+    clear: both;
+}
+
+
+.CountPanel .GrandTotal h1
+{
+    height: 100%;
+    width: 40%;
+    margin: 0em; 
+    padding: 0em; 
+    font-size: 2.5em; 
+    font-style: normal;
+    font-weight: bold;
+    overflow: hidden;
+    float: left;
+    margin-left: 5px;
+    display: block;
+    color: #F39814;
+    border-width: 2px;
+    text-align: center;
+    
+    
+}
+
+.CountPanel .GrandTotal h2
+{
+    height: 100%;
+    width: 50%;
+    margin: 0em; 
+    padding: 0em; 
+    font-size: 1.0em; 
+    font-style: italic;
+    font-weight: bold;
+    overflow: hidden;
+    display: block;
+    float: left;
+    margin-left: 20px;
+    border-width: 2px;
+    
+}
+
+#RunningProcessesToolBar
+{
+    margin-top: 10px;
+    width: 100%;
+    height: 40px;
+    float: none;
+    clear: both;
+    
+}
+
+
+
+#RunningProcessesTable
+{
+    list-style-type: none; 
+    margin: 0em; 
+    padding: 0em; 
+    width: 100%;
+    height: 200px;
+    float: none;
+    clear: both;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+    
+}
+
+#RunningProcessesTable ul
+{
+    list-style-type: none; 
+    margin: 0em; 
+    padding: 0em; 
+    width: 100%;
+    height: 200px;
+    float: none;
+    clear: both;
+    overflow-x: hidden;
+    overflow-y: auto;
+    
+}
+
+
+#RunningProcessesTable li
+{
+    
+    height: 25px;
+    width: 100%;
+    margin: 0em; 
+    padding: 0em; 
+    font-size: 1.0em; 
+    font-style: normal;
+    font-weight: bold;
+    overflow: hidden;
+    display: block;
+    float: none;
+    clear: both;
+    
+}
+
+#RunningProcessesTable li h1
+{
+    display: block;
+    height: 100%;
+    width: 25%;
+    margin: 0em; 
+    padding: 0em;     
+    float: left;
+    font-size: 12pt;
+    font-style: normal;
+    font-weight: bold;
+    overflow: hidden;
+    
+}
+
+#RunningProcessesTable li h2
+{
+    display: block;
+    margin: 0em; 
+    padding: 0em;     
+    height: 100%;
+    width: 25%;
+    float: left;
+    font-size: 12pt;
+    font-style: normal;
+    font-weight: bold;
+    overflow: hidden;
+    
+    
+}
+
+#RunningProcessesTable li span
+{
+    display: block;
+    margin: 0em; 
+    padding: 0em;     
+    height: 100%;
+    width: 48%;
+    float: left;
+    font-size: 12pt;
+    font-style: normal;
+    font-weight: bold;
+    overflow: hidden;
+    
+    
 }

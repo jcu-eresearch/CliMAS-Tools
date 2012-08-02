@@ -88,32 +88,76 @@ function mapToolsInit()
     
 }
 
-function InputTaxa(dataID,dataName)
+
+function addInput(dataType,dataID,dataName)
 {
-    alert("InputTaxa " + dataID + " ... " + dataName);
+    
+    
+    var addID = dataType + '_'+dataID;
+    
+    // check to see that ID doesn'y already exists
+    
+    if ( exists('#' + addID)) 
+    {
+        var properties = {
+            color : '#FF0000',
+            fontWeight : 'bold'
+        };
+
+        $('#' + addID).pulse(properties, { pulses : 2 });        
+        return ;
+    }
+
+    
+    var removeID = 'remove_'+addID;
+    $('#'+dataType+'Selection').append('<li id="'+addID+'" class="ui-widget-content ui-corner-all " ><button id="'+removeID+'" class="RemoveInput">remove</button><p>'+dataName+'</p> </li>');
+    
+    addSelectedTo('#' + addID);
+    updateCurrentPackage();
+    
+    
+    $( '#'+ removeID)
+        .button({text: false, icons: {primary: "ui-icon-close"}})
+        .css('height','20px')
+        .css('width','20px')
+        .css('float','left')
+        .click(function () {
+                
+                var toRemove = this.id.toString().replace('remove_','');
+                $('#' + toRemove).remove();
+                updateCurrentPackage();
+            }
+     );
+    
+    
+    
+}
+
+function addSelectedTo(selector)
+{
+    $(selector).hover(function () {hoverSelectElementsIn(this);},function () {hoverSelectElementsOut(this);});
+    
 }
 
 
-function InputFamily(dataID,dataName)
+function inputTypesSetClick(src)
 {
-    alert("InputFamily " + dataID + " ... " + dataName);
-}
+    var changeTo = src.id.toString().replace("InputType","");  // chnage input to 
+    
+    switch(changeTo)
+    {
+        case 'Taxa':     ChangeInputToTaxa();     break;
+        case 'Family':   ChangeInputToFamily();   break;
+        case 'Genus':    ChangeInputToGenus();    break;
+        case 'Species':  ChangeInputToSpecies();  break;
+        case 'Location': ChangeInputToLocation(); break;
+    }    
 
-function InputGenus(dataID,dataName)
-{
-    alert("InputGenus " + dataID + " ... " + dataName);
-}
 
-function InputSpecies(dataID,dataName)
-{
-    alert("InputSpecies " + dataID + " ... " + dataName);
-}
 
-function InputLocation(dataID,dataName)
-{
-    alert("InputLocation " + dataID + " ... " + dataName);
-}
+    $( "#InputText" ).focus();
 
+}
 
 function ChangeInputToTaxa()
 {
@@ -127,7 +171,7 @@ function ChangeInputToTaxa()
                         source: availableTaxa,
                         select: function(event, ui) 
                         {
-                            InputTaxa(ui.item.value,ui.item.label);
+                            addInput('Taxa',ui.item.value,ui.item.label);
                             $(this).val(blurMessage);
                             return false;
                         }
@@ -150,7 +194,7 @@ function ChangeInputToFamily()
                         source: availableFamily,
                         select: function(event, ui) 
                         {
-                            InputFamily(ui.item.value,ui.item.label);
+                            addInput('Family',ui.item.value,ui.item.label);
                             $(this).val(blurMessage);
                             return false;
                         }
@@ -172,7 +216,7 @@ function ChangeInputToGenus()
                         source: availableGenus,
                         select: function(event, ui) 
                         {
-                            InputGenus(ui.item.value,ui.item.label);
+                            addInput('Genus',ui.item.value,ui.item.label);
                             $(this).val(blurMessage);
                             return false;
                         }
@@ -196,7 +240,7 @@ function ChangeInputToSpecies()
                         source: availableSpecies,
                         select: function(event, ui) 
                         {
-                            InputSpecies(ui.item.value,ui.item.label);
+                            addInput('Species',ui.item.value,ui.item.label);
                             $(this).val(blurMessage);
                             return false;
                         }
@@ -218,7 +262,7 @@ function ChangeInputToLocation()
                         source: availableLocation,
                         select: function(event, ui) 
                         {
-                            InputLocation(ui.item.value,ui.item.label);
+                            addInput('Location',ui.item.value,ui.item.label);
                             $(this).val(blurMessage);
                             return false;
                         }
@@ -229,34 +273,6 @@ function ChangeInputToLocation()
     
 }
 
-function inputTypesSetClick(src)
-{
-
-    // chnage input to 
-    var changeTo = src.id.toString().replace("InputType","");
-    
-    switch(changeTo)
-    {
-        case 'Taxa':
-            ChangeInputToTaxa();
-        break;
-        case 'Family':
-            ChangeInputToFamily();
-        break;
-        case 'Genus':
-            ChangeInputToGenus();
-        break;
-        case 'Species':
-            ChangeInputToSpecies();
-        break;
-        case 'Location':
-            ChangeInputToLocation();
-        break;
-    }    
-
-    $( "#InputText" ).focus();
-
-}
 
 function setupInputs()
 {
@@ -316,7 +332,7 @@ function selectElements(src)
         $('#' + ofWhat + "Selection").find('li').addClass('ui-selected') ;
         $('#' + ofWhat + "Selection").find('h4').addClass('ui-selected') ;
         $('#' + ofWhat + "Selection").find('p').addClass('ui-selected') ;
-
+        updateCurrentPackage();
     }
     
     if(id.indexOf("SelectNone") != -1)
@@ -325,63 +341,252 @@ function selectElements(src)
         $('#' + ofWhat + "Selection").find('li').removeClass('ui-selected') ;
         $('#' + ofWhat + "Selection").find('h4').removeClass('ui-selected') ;
         $('#' + ofWhat + "Selection").find('p').removeClass('ui-selected') ;
+        updateCurrentPackage();
+    }    
+    
+    if(id.indexOf("SelectDefault") != -1)
+    {
+        ofWhat = id.replace("SelectDefault","");    
+        selectElementsDefault(ofWhat);
+        updateCurrentPackage();
+    }    
 
+
+    if(id.indexOf("SelectSome") != -1)
+    {
+        ofWhat = id.replace("SelectSome","");    
+        selectElementsSome(ofWhat.split("_")[0],ofWhat.split("_")[1]);
+        updateCurrentPackage();
+    }    
+
+
+
+}
+
+
+function selectWhereIDContains(rootSelector,listElementSelector,toFind,addClass)
+{
+    $(rootSelector).find(listElementSelector)
+        .each(function(index) {
+            if (toFind == null)
+            {
+                root = $("#"+this.id.toString());
+                root.addClass(addClass) ;
+                root.find('*').addClass(addClass) ;
+            }
+            else
+            {
+                if(this.id.toString().indexOf(toFind) != -1)
+                {
+                    root = $("#"+this.id.toString());
+                    root.addClass(addClass) ;
+                    root.find('*').addClass(addClass) ;
+                }
+            }
+
+        })
+}
+
+
+function deselectWhereIDContains(rootSelector,listElementSelector,toFind,removeClass)
+{
+    $(rootSelector).find(listElementSelector)
+        .each(function(index) {
+            
+            if (toFind == null)
+            {
+                root = $("#"+this.id.toString());
+                root.removeClass(removeClass) ;
+                root.find('*').removeClass(removeClass) ;
+            }
+            else
+            {
+                if(this.id.toString().indexOf(toFind) != -1)
+                {
+                    root = $("#"+this.id.toString());
+                    root.removeClass(removeClass) ;
+                    root.find('*').removeClass(removeClass) ;
+                }
+            }
+
+        })
+}
+
+
+
+function selectElementsDefault(selectFor)
+{
+    
+    switch(selectFor)
+    {
+        case 'Models':  
+            deselectWhereIDContains('#' + selectFor + 'Selection','li',null  ,'ui-selected')
+              selectWhereIDContains('#' + selectFor + 'Selection','li',"ccsr",'ui-selected');
+            break;
+        
+        case 'Scenarios': 
+            deselectWhereIDContains('#' + selectFor + 'Selection','li',null  ,'ui-selected')
+              selectWhereIDContains('#' + selectFor + 'Selection','li',"RCP",'ui-selected');
+            
+            break;
+        
+        case 'Times':     
+            deselectWhereIDContains('#' + selectFor + 'Selection','li',null,'ui-selected')
+              selectWhereIDContains('#' + selectFor + 'Selection','li',null,'ui-selected');
+            
+            break;
+        
+        case 'Bioclims':  
+            deselectWhereIDContains('#' + selectFor + 'Selection','li',null,'ui-selected')
+              selectWhereIDContains('#' + selectFor + 'Selection','li',null,'ui-selected');
+            
+            break;
     }    
     
     
 }
 
-
-function getSelected()
+function selectElementsSome(selectFor,selectSomeFilterString)
 {
     
-    var species  = new Array();
-    species[0] = 50;
+    switch(selectFor)
+    {
+        case 'Models':    
+            break;
+        
+        case 'Scenarios': 
+              deselectWhereIDContains('#' + selectFor + 'Selection','li',null  ,'ui-selected')
+                selectWhereIDContains('#' + selectFor + 'Selection','li',selectSomeFilterString,'ui-selected');
+            break;
+        
+        case 'Years':     
+            break;
+        
+        case 'Bioclims':  
+            break;
+    }    
     
-    var models    = selected('#ModelsSelection'   ,"li", "ui-selected");
-    var scenarios = selected('#ScenariosSelection',"li", "ui-selected");
-    var times     = selected('#TimesSelection'    ,"li", "ui-selected");
-    var bioclims  = selected('#BioclimsSelection' ,"li", "ui-selected");
     
+    
+}
+
+function currentData()
+{
     var jData = { 
          cmdaction:'SpeciesMaxent'
-        ,species: species.join(" ")
-        ,models: models.join(" ")
-        ,scenarios: scenarios.join(" ")
-        ,times: times.join(" ")
-        ,bioclims: bioclims.join(" ")
+             ,taxa: selected('#TaxaSelection'     ,"li", null," ",'Taxa_'     ,null)
+           ,family: selected('#FamilySelection'   ,"li", null," ",'Family_'   ,null)
+            ,genus: selected('#GenusSelection'    ,"li", null," ",'Genus_'    ,null)
+          ,species: selected('#SpeciesSelection'  ,"li", null," ",'Species_'  ,null)
+         ,location: selected('#LocationSelection' ,"li", null," ",'Location_' ,null)
+           ,models: selected('#ModelsSelection'   ,"li", "ui-selected"," ",'Models_'   ,null)
+        ,scenarios: selected('#ScenariosSelection',"li", "ui-selected"," ",'Scenarios_',null)
+            ,times: selected('#TimesSelection'    ,"li", "ui-selected"," ",'Times_'    ,null)
+         ,bioclims: selected('#BioclimsSelection' ,"li", "ui-selected"," ",'Bioclims_' ,null)
     }
-
+    
+    console.log(jData);
     
     return jData;
     
 }
 
+
+
+
+/**
+ *  Current Display of selected items
+ * 
+ */
+function updateCurrentPackage()
+{
+    console.log("Update updateCurrentPackage");
+    
+    
+    var jData = currentData();
+    
+         $('#CountTaxa').html(jData.taxa.length);
+       $('#CountFamily').html(jData.family.length);
+        $('#CountGenus').html(jData.genus.length);
+      $('#CountSpecies').html(jData.species.length);
+     
+     
+       $('#CountModels').html(jData.models.length);
+    $('#CountScenarios').html(jData.scenarios.length);
+        $('#CountTimes').html(jData.times.length);
+     $('#CountBioclims').html(jData.bioclims.length);
+
+
+     var inputsCount = jData.taxa.length +  jData.family.length + jData.genus.length + jData.species.length;
+     var futureCount = jData.models.length * jData.scenarios.length * jData.times.length;
+     
+
+    $('#CountInputTotals').html(inputsCount);
+    $('#CountFutureTotals').html(futureCount);
+    $('#CountGrandTotal').html(inputsCount * futureCount);
+
+}
+
+
+
 function CreateProcess()
+{
+    
+    // check currentDataPackage() to mak sure we have al;l the data we need to running
+    
+    var currentID = $('#RunningProcessesTable').find('li').length + 1; 
+    
+    var jData = currentData();
+
+    
+
+    var inputsCount = jData.taxa.length +  jData.family.length + jData.genus.length + jData.species.length;
+    var futureCount = jData.models.length * jData.scenarios.length * jData.times.length;
+    var totalCount = inputsCount * futureCount ;
+
+    var html = '<li><button id="job_'+currentID+'">details</button><h1>nnnnn</h1><h2>DD/MM/YYYYY</h2><span>progress...['+totalCount+']</span></li>'+"\n";
+
+    $('#RunningProcessesTable').append(html);
+
+    $('#job_' + currentID)
+        .button()
+        .css('float','left')
+        ;
+
+
+    //$.post("ExecuteCommandAjax.php", jData , function(data) { postAddSpecies(data); },"json");
+
+    // json / ajax calls here to execute this process
+    
+    // clear selected and - gray out the run button again
+
+
+}
+
+
+
+function UpdateProcess()
 {
     // get selected 
     
-    jData = getSelected();
-
-    var html  = '<div class="ProcessData">';
-        html += '<li><h4>Species</h4>'   + '<p>' + jData.species    + '</p></li>' 
-        html += '<li><h4>Models</h4>'    + '<p>' + jData.models     + '</p></li>' 
-        html += '<li><h4>Scenarios</h4>' + '<p>' + jData.scenarios  + '</p></li>' 
-        html += '<li><h4>Times</h4>'     + '<p>' + jData.times      + '</p></li>' 
-        html += '<li><h4>Bioclims</h4>'  + '<p>' + jData.bioclims   + '</p></li>' 
-        html += '</div>';
-
-
-    $('#CreateProcessData').html(html);
+    console.log("Update Process - get status of all running jobs and report");
 
 }
+
+
 
 $(document).ready(function(){
 
     screenSetup();
 
-    $('#tabs').height(600).tabs();
-    $('.selectable').selectable();
+    $('#tabs').height(699).tabs();
+    $('.selectable')
+        .selectable()
+        .selectable(
+              {  stop: function(event, ui) { updateCurrentPackage(); } 
+            })
+    ;
+
 
     mapToolsInit();
 
@@ -407,7 +612,20 @@ $(document).ready(function(){
     $('.selectable li').hover(function () {hoverSelectElementsIn(this);},function () {hoverSelectElementsOut(this);});
 
 
-    $('#CreateProcess').click(function() {CreateProcess();});
+    $('#CreateProcess')
+        .button()
+        .click(function() {CreateProcess();})
+        .css('margin',"10%")
+        ;
+
+    $('#UpdateProcess')
+        .button()
+        .click(function() {UpdateProcess();})
+        ;
+
+
+
+
 
     $('#InputTypeSpecies').click();
 
