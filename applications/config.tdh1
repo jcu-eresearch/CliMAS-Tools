@@ -23,7 +23,7 @@ if (stripos( $hostname, "tdh-tools-1") !== FALSE)
     
     $conf[Parameter::$ICONS_FOLDER]          = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/tdhtools/Resources/icons/";
     
-    $conf[Parameter::$COMMAND_QUEUE_ID       ]= "tdh1";
+    $conf[Parameter::$COMMAND_QUEUE_ID       ]= "tdh";
     $conf[Parameter::$COMMAND_QUEUE_LOG]      = "/scratch/jc166922/tdh1/logs/queue.log";
     $conf[Parameter::$COMMAND_SCRIPTS_FOLDER] = "/scratch/jc166922/tdh1/scripts/";
     $conf[Parameter::$COMMAND_SCRIPTS_EXE]    = "/www/html/eresearch/tdhtools/applications/CommandActionExecute.php";

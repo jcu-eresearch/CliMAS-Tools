@@ -11,9 +11,11 @@ class util {
     public static $EXTRA_CHARS = '@##$%^&*()_+-={}[]\|:";\'\\<>,.?/`~';
 
 
-    public static function dbq($str)
+    public static function dbq($str,$forceCharacter = false)
     {
-        $str = str_replace('"', "'", $str);
+        if ($forceCharacter) return "E'".  str_replace("'", "\'", $str)."'";
+        
+        if (is_numeric($str)) return $str;
         
         return "E'".  str_replace("'", "\'", $str)."'";
     }

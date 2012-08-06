@@ -8,7 +8,7 @@
  * 
  * 
  */
-class SpeciesMaxent extends CommandAction {
+class SpeciesHotSpots extends CommandAction {
     
     
     
@@ -42,39 +42,38 @@ class SpeciesMaxent extends CommandAction {
      */
     public function initialise($src = null) 
     {
-        
-        if (is_null($src)) return null;
-        
-        $this->SpeciesCombinations(null);
+
+        $this->Combinations(null);
         $this->ResultsComplete(false);
         $this->ScriptsToRun();
+
+        $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_READY);      // if we already have the dat - no reason to go to the server        
         
-        
-                 $this->SpeciesIDs(array_util::Value($src,'species',null,true));
-        $this->EmissionScenarioIDs(array_util::Value($src,'scenario',null,true));
-            $this->ClimateModelIDs(array_util::Value($src,'model',null,true));
-                    $this->TimeIDs(array_util::Value($src,'time',null,true));
-                    
-        // check here to see if we are missing some data
-        
+        if (!is_null($src))
+        {
+            // init properties
+            foreach ($src as $property_name => $value) 
+            {
+                $this->setPropertyByName($property_name, $value);
+            }
+            
+        }
         
         $this->buildCombinations(); 
-
+        
         $this->initialised(true);
         
-        if (!$this->isServerRun())
-            $this->GetResults();  // then populates the combinations with anything that has already been done
+        if (!$this->isServerRun()) // Server run is true only if this is run from a Command Oine at the server
+            $this->GetResults();   // then populates the combinations with anything that has already been done
         
         if ($this->ResultsComplete())
-        {
             $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);      // if we already have the dat - no reason to go to the server
-            self::Queue($this);
-            return $this->Result();   // we are done 
-        }
+        
         
         return true;
         
     }
+    
     
     
     /**
@@ -82,34 +81,26 @@ class SpeciesMaxent extends CommandAction {
      */
     private function buildCombinations()
     {
-        $species   = explode(" ",$this->SpeciesIDs());
-        $scenarios = explode(" ",$this->EmissionScenarioIDs());
-        $models    = explode(" ",$this->ClimateModelIDs());
-        $times     = explode(" ",$this->TimeIDs());
         
-        $full_count =1;
+        $full_count =0;
         $result = array();
-        foreach ($species as $speciesID)
-        {
-            $result[$speciesID] = array();
-            foreach ($scenarios as $scenarioID)
-                foreach ($models  as $modelID)
-                    foreach ($times as $timeID)
-                    {
-                        $result[$speciesID]["{$scenarioID}_{$modelID}_{$timeID}"] = null;
-                        $full_count++;
-                    }
-                        
-                        
-                        
-        }
-
-        $this->SpeciesCombinations($result); // sets up the default empty result set
         
-        $this->ResultsFullCountString($full_count - 1);
+        foreach ($this->scenarios() as $scenarioID)
+            foreach ($this->models()  as $modelID)
+                foreach ($this->times() as $timeID)
+                {
+                    $result["{$scenarioID}_{$modelID}_{$timeID}"] = null;
+                    $full_count++;
+                }
+
+        $this->Combinations($result); // sets up the default empty result set
+        
+        $this->ResultsFullCountString($full_count);
         
         
     }
+    
+    
     
     
     
@@ -128,7 +119,7 @@ class SpeciesMaxent extends CommandAction {
         $this->QsubCollectionID(substr(uniqid(),0,10));
         
         // rebuild combos i we don't have them
-        if (is_null($this->SpeciesCombinations()) ||  count($this->SpeciesCombinations()) == 0  ) 
+        if (is_null($this->Combinations()) ||  count($this->Combinations()) == 0  ) 
         {
             $this->buildCombinations();
             DBO::LogError(__METHOD__."(".__LINE__.")","Has to rebuild Combinations as thery were not build - Odd ??\n");
@@ -139,7 +130,7 @@ class SpeciesMaxent extends CommandAction {
         // but only load the data if we are running as "Large Server Process"
         // we don't want to inflict this on the user
         if ($this->isServerRun())
-            foreach (array_keys($this->SpeciesCombinations()) as $speciesID) 
+            foreach (array_keys($this->Combinations()) as $speciesID) 
                 DatabaseMaxent::InsertMainMaxentResults($speciesID);  // this will load for all 
 
         
@@ -147,13 +138,12 @@ class SpeciesMaxent extends CommandAction {
         $this->GetResults();
         
         
-        
         if ($this->ResultsComplete())  // check now to see if we have to  call the GRID
         {            
             $this->Status("ALL DONE");
             $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
             self::Queue($this);
-            return $this->Result();   // we are done 
+            return true;   // we are done 
         }
 
         //
@@ -166,10 +156,8 @@ class SpeciesMaxent extends CommandAction {
         $occurences_ok = $this->getOccurances();
         if (!$occurences_ok) 
         {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to get Occurences \n".print_r($this->SpeciesCombinations(),true));
-
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to get Occurences \n".print_r($this->Combinations(),true));
             $this->Status("An Error Occured ".__METHOD__."(".__LINE__.")"." - 1");
-            $this->Result(null);
             self::Queue($this);
             return null;
         }
@@ -179,10 +167,9 @@ class SpeciesMaxent extends CommandAction {
         $compute_ok = $this->ComputeSelectedSpecies();
         if (!$compute_ok) 
         {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to compute Scripts \n".print_r($this->SpeciesCombinations(),true));
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to compute Scripts \n".print_r($this->Combinations(),true));
             
             $this->Status("An Error Occured ".__METHOD__."(".__LINE__.")"." - 2");
-            $this->Result(null);
             self::Queue($this);
             return null;
         }
@@ -193,7 +180,7 @@ class SpeciesMaxent extends CommandAction {
             $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
             $this->GetResults();
             self::Queue($this);
-            return $this->Result();
+            return true;
         }
         
         sleep(10); // wait for Qstat to catch up - before we start poling it
@@ -219,7 +206,6 @@ class SpeciesMaxent extends CommandAction {
 
     }
     
-    
     /**
      * 
      * @return array QSTAT output for all jobs with the same CollectionID 
@@ -243,7 +229,7 @@ class SpeciesMaxent extends CommandAction {
     private function getOccurances()
     {
         
-        $speciesIDs = array_keys($this->SpeciesCombinations());
+        $speciesIDs = array_keys($this->Combinations());
         
         foreach ($speciesIDs as $speciesID) 
         {
@@ -303,73 +289,66 @@ class SpeciesMaxent extends CommandAction {
         $result = array();
         $complete = true;
         
+       // since the maxent log is not done we want to  just copy the current results over                
+        if (!$this->MaxentLogDone()) 
+            foreach ($this->Combinations() as $combination => $file_id)  
+                $result[$combination] = $file_id;
+        
         $done_count = 0;
         
-        foreach ($this->SpeciesCombinations() as $speciesID => $combinations) 
-        {
-
-            DBO::LogError(__METHOD__."(".__LINE__.")","Checking on results for {$speciesID}");
-            
-            
-            $speciesID = trim($speciesID);
-            if ($speciesID == "") continue;
-            
-            if (!$this->MaxentLogDone($speciesID)) 
-            {
-                $complete = false;
-                
-                // since the maxent log does not exiosts we want to  just copy the current results over                
-                foreach ($combinations as $combination => $file_id) 
-                    $result[$speciesID][$combination] = $file_id;
-                
-                continue;  // Next SpeciesID don't check outputs when we don't have a complete maxent log
-            }
-            
-            
-            
-            foreach ($combinations as $combination => $file_id) 
-            {
-                
-                $result[$speciesID][$combination] = $file_id; // copy current values into new result - will copy over null values as well
-                
-                
-                DBO::LogError(__METHOD__."(".__LINE__.")","Checking on results for {$speciesID} ... {$combination}");
-                
-                // the current file_id for this combinartion is not set - go get it / check for it
-                if (is_null($file_id))
-                {
-                    
-                    list($scenario, $model, $time) = explode("_",$combination);    
-                                                                                             
-                    $file_id = $this->GetModelledData($speciesID, $scenario, $model, $time); // we don't know if we have database data for this comnination so go acheck
-                    
-                    if (is_null($file_id))
-                    {
-                        $result[$speciesID][$combination] = null;  // we check for the file / db row and we did not find it so set this combinatrion to null
-                        $complete = false; // we still don't have all results requested
-                    }
-                    else
-                    {
-                        $result[$speciesID][$combination] = $file_id;    
-                    }
-                    
-                }
-                
-                if (strlen($file_id) > 0) $done_count++; // count what ahs been done
-                
-            }
-                        
-        }
         
-        $this->SpeciesCombinations($result);
+        foreach ($this->Combinations() as $combination => $file_id) 
+        {
+            
+            $result[$combination] = $file_id; // copy current values into new result - will copy over null values as well
+            
+            if (is_null($file_id))  // the current file_id for this combinartion is not set - go get it / check for it
+            {
 
-        $this->Result($result);
+                $result[$combination] = $this->GetModelledData($combination); // we don't know if we have database data for this comnination so go acheck
+                
+                if (is_null($result[$combination])) // we check for the file / db row and we did not find it so set this combinatrion to null
+                    $complete = false;              // we still don't have all results requested
+                else
+                    $done_count++; // count what ahs been done
+
+            }
+
+        }
+
+        
+        $this->Combinations($result);
         
         $this->ResultsComplete($complete);
-        
+//        
         $this->ResultsDoneCountString($done_count);
         
         $this->Status("Items processed ".$this->ResultsDoneCountString()." of ".$this->ResultsFullCountString() );
+        
+    }
+    
+    
+    private function MaxentLogDone()
+    {
+        
+        switch (strtolower($this->inputType())) {
+            case "taxa":
+                break;
+
+            case "family":
+                break;
+            
+            case "genus":
+                break;
+            
+            case "species":
+                return $this->MaxentLogDoneSpecies($this->inputID());
+                break;
+
+            default:
+                break;
+        }
+        
         
     }
     
@@ -381,7 +360,7 @@ class SpeciesMaxent extends CommandAction {
      * @param type $speciesID
      * @return boolean 
      */
-    private function MaxentLogDone($speciesID)
+    private function MaxentLogDoneSpecies($speciesID)
     {
         
         $maxentLog =    configuration::Maxent_Species_Data_folder().
@@ -448,7 +427,7 @@ class SpeciesMaxent extends CommandAction {
         // for each species we need to run all the combinations
         
         $scripts = array();
-        foreach ($this->SpeciesCombinations() as $speciesID => $combinations)
+        foreach ($this->Combinations() as $speciesID => $combinations)
         {
             $singleScriptName = $this->writeMaxentSingleSpeciesProjectionScriptFile($speciesID,$combinations); // all combinations for a single species
             
@@ -602,7 +581,7 @@ class SpeciesMaxent extends CommandAction {
     private function maxentScript($speciesID)
     {
         
-        if ($this->MaxentLogDone($speciesID)) return ""; // if we already have the maxent data then don't run this part 
+        if ($this->MaxentLogDoneSpecies($speciesID)) return ""; // if we already have the maxent data then don't run this part 
         
         $species_folder = $this->species_data_folder($speciesID);
         
@@ -747,6 +726,58 @@ AAA;
     
 
     
+    public function cmdaction() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    public function inputType() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+    public function inputID() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+    public function inputName() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    public function models() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    public function scenarios() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    
+    public function times() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    
+    public function bioclims() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    
+    
     public function SpeciesIDs() {
         if (func_num_args() == 0)
         return $this->getProperty();
@@ -804,7 +835,7 @@ AAA;
      * 
      * @return type 
      */
-    public function SpeciesCombinations() {
+    public function Combinations() {
         if (func_num_args() == 0)
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
@@ -882,16 +913,38 @@ AAA;
      * @param type $time
      * @return null 
      */
-    public function GetModelledData($species,$scenario, $model, $time)
+    public function GetModelledData($combination)
     {
+
+        list($scenario, $model, $time) = explode("_",$combination);            
         
-        $asc_file_id        = SpeciesData::GetModelledData($species, $scenario, $model, $time,'ASCII_GRID');
-        $quickLook_file_id  = SpeciesData::GetModelledData($species, $scenario, $model, $time,'QUICK_LOOK');
+        $asc_file_id        = null;
+        $quickLook_file_id  = null;
         
-        if (is_null($asc_file_id) || is_null($quickLook_file_id) )return null;
+        switch (strtolower($this->inputType())) {
+            case "taxa":
+                break;
+
+            case "family":
+                break;
+            
+            case "genus":
+                break;
+            
+            case "species":
+                $asc_file_id        = SpeciesData::GetModelledData($this->inputID(), $scenario, $model, $time,'ASCII_GRID');
+                $quickLook_file_id  = SpeciesData::GetModelledData($this->inputID(), $scenario, $model, $time,'QUICK_LOOK');
+                break;
+
+            default:
+                break;
+        }
+        
+        if (is_null($asc_file_id) || is_null($quickLook_file_id) ) return null;
         
         return $asc_file_id;
     }
+
     
 }
 

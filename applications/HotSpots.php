@@ -264,6 +264,7 @@ include_once dirname(__FILE__).'/includes.php';
             <br style="clear: both; float: none;">
             <div id="RunningProcessesToolBar" class="ui-widget-header ui-corner-all">
                 <button id="UpdateProcess">Update Status</button>
+                <button id="Defaults">Set Defaults</button>
             </div>
             <ul id="RunningProcessesTable" class="ui-widget-content ui-corner-all">
                 

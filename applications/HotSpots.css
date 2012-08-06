@@ -345,7 +345,7 @@
     margin: 0em; 
     padding: 0em; 
     width: 100%;
-    height: 200px;
+    height: 300px;
     float: none;
     clear: both;
 
@@ -360,7 +360,7 @@
     margin: 0em; 
     padding: 0em; 
     width: 100%;
-    height: 200px;
+    height: 300px;
     float: none;
     clear: both;
     overflow-x: hidden;
@@ -372,7 +372,7 @@
 #RunningProcessesTable li
 {
     
-    height: 25px;
+    height: 50px;
     width: 100%;
     margin: 0em; 
     padding: 0em; 
@@ -383,52 +383,58 @@
     display: block;
     float: none;
     clear: both;
-    
+    margin-bottom: 4px;
 }
+
 
 #RunningProcessesTable li h1
 {
     display: block;
     height: 100%;
-    width: 25%;
+    width: 90px;
     margin: 0em; 
-    padding: 0em;     
+    padding: 2px;     
     float: left;
-    font-size: 12pt;
+    font-size: 16pt;
     font-style: normal;
     font-weight: bold;
     overflow: hidden;
+    text-shadow: none;
+    text-align: center;
     
+}
+
+#RunningProcessesTable li h1 p
+{
+    font-size: 10pt;
+    font-style: italic;
+    font-weight: normal;
+    margin: 0em; 
+    padding: 0px;     
 }
 
 #RunningProcessesTable li h2
 {
-    display: block;
-    margin: 0em; 
-    padding: 0em;     
+    display: block;    
     height: 100%;
-    width: 25%;
+    width: 300px;
+    margin: 0em; 
+    padding: 1px;     
     float: left;
-    font-size: 12pt;
-    font-style: normal;
-    font-weight: bold;
+    font-size: 10pt;
+    font-style: italic;
+    font-weight: normal;
     overflow: hidden;
-    
-    
+    vertical-align: middle;
+    text-align: left;
 }
 
-#RunningProcessesTable li span
+#RunningProcessesTable li p
 {
-    display: block;
-    margin: 0em; 
-    padding: 0em;     
     height: 100%;
-    width: 48%;
-    float: left;
-    font-size: 12pt;
-    font-style: normal;
-    font-weight: bold;
-    overflow: hidden;
-    
-    
+    font-size: 11pt;
+    font-style: italic;
+    font-weight: normal;
+    margin: 0em; 
+    padding: 1px;     
 }

@@ -18,6 +18,8 @@ class CommandAction extends Object implements Serializable
         $this->ExecutionFlag(self::$EXECUTION_FLAG_READY);
 
         $this->initialised(false);
+
+        $this->LastQueueResult(null);
         
     }
 
@@ -269,7 +271,21 @@ class CommandAction extends Object implements Serializable
       */
      public static $EXECUTION_FLAG_COMPLETE = "EXECUTION_FLAG_COMPLETE";
 
+     
+    public function LastQueueResult() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+     
     
+    public static function Queue(CommandAction $obj)
+    {
+        $obj->LastQueueResult(DatabaseCommands::CommandActionQueue($obj));
+    }
+    
+     
+     
     
 }
 

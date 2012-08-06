@@ -104,7 +104,7 @@ function addInput(dataType,dataID,dataName)
             fontWeight : 'bold'
         };
 
-        $('#' + addID).pulse(properties, { pulses : 2 });        
+        $('#' + addID).pulse(properties, {pulses : 2});        
         return ;
     }
 
@@ -146,11 +146,11 @@ function inputTypesSetClick(src)
     
     switch(changeTo)
     {
-        case 'Taxa':     ChangeInputToTaxa();     break;
-        case 'Family':   ChangeInputToFamily();   break;
-        case 'Genus':    ChangeInputToGenus();    break;
-        case 'Species':  ChangeInputToSpecies();  break;
-        case 'Location': ChangeInputToLocation(); break;
+        case 'Taxa':ChangeInputToTaxa();break;
+        case 'Family':ChangeInputToFamily();break;
+        case 'Genus':ChangeInputToGenus();break;
+        case 'Species':ChangeInputToSpecies();break;
+        case 'Location':ChangeInputToLocation();break;
     }    
 
 
@@ -419,24 +419,24 @@ function selectElementsDefault(selectFor)
     
     switch(selectFor)
     {
-        case 'Models':  
+        case 'Models':
             deselectWhereIDContains('#' + selectFor + 'Selection','li',null  ,'ui-selected')
               selectWhereIDContains('#' + selectFor + 'Selection','li',"ccsr",'ui-selected');
             break;
         
-        case 'Scenarios': 
+        case 'Scenarios':
             deselectWhereIDContains('#' + selectFor + 'Selection','li',null  ,'ui-selected')
               selectWhereIDContains('#' + selectFor + 'Selection','li',"RCP",'ui-selected');
             
             break;
         
-        case 'Times':     
+        case 'Times':
             deselectWhereIDContains('#' + selectFor + 'Selection','li',null,'ui-selected')
               selectWhereIDContains('#' + selectFor + 'Selection','li',null,'ui-selected');
             
             break;
         
-        case 'Bioclims':  
+        case 'Bioclims':
             deselectWhereIDContains('#' + selectFor + 'Selection','li',null,'ui-selected')
               selectWhereIDContains('#' + selectFor + 'Selection','li',null,'ui-selected');
             
@@ -451,18 +451,18 @@ function selectElementsSome(selectFor,selectSomeFilterString)
     
     switch(selectFor)
     {
-        case 'Models':    
+        case 'Models':
             break;
         
-        case 'Scenarios': 
+        case 'Scenarios':
               deselectWhereIDContains('#' + selectFor + 'Selection','li',null  ,'ui-selected')
                 selectWhereIDContains('#' + selectFor + 'Selection','li',selectSomeFilterString,'ui-selected');
             break;
         
-        case 'Years':     
+        case 'Times':
             break;
         
-        case 'Bioclims':  
+        case 'Bioclims':
             break;
     }    
     
@@ -531,38 +531,133 @@ function updateCurrentPackage()
 
 function CreateProcess()
 {
-    
     // check currentDataPackage() to mak sure we have al;l the data we need to running
-    
-    var currentID = $('#RunningProcessesTable').find('li').length + 1; 
-    
     var jData = currentData();
 
+
+    var sData = null;
+
+    // loop over each of the values of taxa, family, genus, and species
+    // species first
     
+    var inputType   = 'species';
+    var inputPrefix = 'Species_';
+    var cmdaction   = 'SpeciesHotSpots';
+    var inputID = null
+    $.each(jData[inputType], function(index, value) 
+    { 
+        
+         inputID = value.replace(inputPrefix,"");
+        
+         sData = { 
+                 cmdaction: cmdaction
+                ,inputType: inputType
+                  ,inputID: inputID
+                ,inputName: $('#' + value).find('p').html()
+                   ,models: array_replace(jData.models,    "Models_","")  
+                ,scenarios: array_replace(jData.scenarios, "Scenarios_","")  
+                    ,times: array_replace(jData.times,     "Times_","")  
+                 ,bioclims: array_replace(jData.bioclims,  "Bioclims_BIO","")  
+                ,elementID: inputType + "_" + inputID
+         }
+        
+        
+        addSingleProcess(sData);
+    });
 
-    var inputsCount = jData.taxa.length +  jData.family.length + jData.genus.length + jData.species.length;
-    var futureCount = jData.models.length * jData.scenarios.length * jData.times.length;
-    var totalCount = inputsCount * futureCount ;
+}
 
-    var html = '<li><button id="job_'+currentID+'">details</button><h1>nnnnn</h1><h2>DD/MM/YYYYY</h2><span>progress...['+totalCount+']</span></li>'+"\n";
+function addSingleProcess(sData)
+{
+    
+    console.log("Create for  " );
+    console.log(sData);
+
+
+    var cancelButton = '<button id="cancel_'+ sData.elementID +'">CANCEL</button>';
+
+    var calcCount   = '<h1 class="ui-widget-content ui-corner-all">' + (sData.models.length * sData.scenarios.length * sData.times.length) +'<p>datasets</p> </h1>';
+    
+    var displayName = '<h2>' + sData.inputName + '</h2>';
+    
+    var button = '<button id="info_'+ sData.elementID +'">'+datetime_now()+'</button>';
+    
+    var progress = '<div id="progress_'+ sData.elementID +'"><img style="width: 100%; height: 100%" src="'+IconSource+'Loading.gif"></div>';
+    
+    var html = '<li class="ui-widget-content">' + cancelButton + button + calcCount + displayName +  progress + '<p id="status_'+sData.elementID+'">........</p></li>'+"\n";
 
     $('#RunningProcessesTable').append(html);
 
-    $('#job_' + currentID)
+    $('#info_' + sData.elementID)
         .button()
         .css('float','left')
+        .css('width','200px')
+        .css('height','97%')
+        .css('margin','2px')
+        .css('text-align','center')
+        .click(function() {infoDialog(this);return false;})
+        .button( "option", "disabled", true );
+        ;
+
+    $('#cancel_' + sData.elementID)
+        .button()
+        .button({text: false, icons: {primary: "ui-icon-closethick"}})
+        .css('float','left')
+        .css('width','40px')
+        .css('height','97%')
+        .css('margin','2px')
+        .css('text-align','center')
         ;
 
 
-    //$.post("ExecuteCommandAjax.php", jData , function(data) { postAddSpecies(data); },"json");
+    $('#progress_' + sData.elementID)
+        .css('float','left')
+        .css('width','100px')
+        .css('height','40%')
+        .css('margin-top','20px')
+        ;
+
+
+    $.post("HotSpotsAjaxExecute.php", sData , function(data) {postAddSingleProcess(data);},"json");
 
     // json / ajax calls here to execute this process
     
     // clear selected and - gray out the run button again
-
-
+    
 }
 
+function postAddSingleProcess(data)
+{
+    
+    // get error message and put in dialog 
+    // data.error
+    
+    var progressStr = "";
+    
+    if (isNull(data.ResultsFullCountString) && isNull(data.ResultsDoneCountString) )
+        progressStr = "Can't read progress";
+    else
+        progressStr = Value(data.ResultsDoneCountString,null)  + " of " +  Value(data.ResultsFullCountString,null);
+
+    // give the php Object id to the Info button
+    $('#info_' + data.elementID)
+        .data('action_id',Value(data.ID))
+        .data('inputName',Value(data.inputName))
+        ;  
+
+    $('#info_' + data.elementID).button( "option", "disabled", false );
+
+
+    $('#progress_' + data.elementID).html(progressStr);    
+    $('#status_' + data.elementID).html(Value(data.Status,""));
+    
+    $.each(data, function(index, value) 
+    { 
+        console.log(index + " = " +value);
+
+    });
+    
+}
 
 
 function UpdateProcess()
@@ -573,6 +668,80 @@ function UpdateProcess()
 
 }
 
+var dialog = null;
+
+
+function infoDialog(src)
+{
+    
+    var dialogContent = 'Reteiving Job Information<br>' + 
+                        '<img src="'+IconSource+'wait.gif">';
+    
+    var infoButtonID = src.id.toString();
+    
+
+    dialog = $('<div></div>')
+            .html(dialogContent)
+            .dialog({
+                    autoOpen: false,
+                    title: $('#' + infoButtonID).data('inputName'),
+                    modal: true
+            });
+
+    dialog.dialog('open');
+    
+    
+    // send to server command_id and the ID of the element that sent it.
+    
+        jData = { 
+                 cmdID: $('#' + infoButtonID).data('action_id')
+            ,elementID: src.id.toString()
+        }
+    
+    
+    $.post("HotSpotsCommandInfoAjax.php", jData , function(data) {postInfoDialog(data);},"json");    
+    
+    
+    
+}
+
+
+
+
+function postInfoDialog(data)
+{
+    
+    var msg = '';
+    
+    console.log('postInfoDialog ');
+    
+    $.each(data, function(index, value) 
+    { 
+        console.log('postInfoDialog .. ' + index + " = " +value);
+
+    });    
+    
+    $(dialog).html('' + Value(data.msg.toString().replace('\n','<br>\n')));
+    
+    dialog = null;
+    
+}
+
+
+
+function setDefaults()
+{
+    selectElementsDefault('Models');
+    selectElementsDefault('Scenarios');
+    selectElementsDefault('Times'  );
+    selectElementsDefault('Bioclims');
+    
+    
+    addInput('Species',50,"Pacific Black Duck (Anas (Anas) superciliosa)");
+    addInput('Species',1999,"Red Wattlebird (Anthochaera (Anthochaera) carunculata)");
+    
+    updateCurrentPackage();
+}
 
 
 $(document).ready(function(){
@@ -583,7 +752,7 @@ $(document).ready(function(){
     $('.selectable')
         .selectable()
         .selectable(
-              {  stop: function(event, ui) { updateCurrentPackage(); } 
+              {stop: function(event, ui) {updateCurrentPackage();} 
             })
     ;
 
@@ -623,6 +792,10 @@ $(document).ready(function(){
         .click(function() {UpdateProcess();})
         ;
 
+    $('#Defaults')
+        .button()
+        .click(function() {setDefaults();})
+        ;
 
 
 

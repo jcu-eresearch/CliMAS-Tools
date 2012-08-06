@@ -123,7 +123,7 @@ class SpeciesData extends Object {
                   and mc.file_unique_id = f.file_unique_id
                   and m.dataname = ".util::dbq($model)."
                   and s.dataname = ".util::dbq($scenario)."
-                  and t.dataname = ".util::dbq($time)." {$filetypeAnd} {$descAnd}
+                  and t.dataname = ".util::dbq($time,true)." {$filetypeAnd} {$descAnd}
                   limit 1
                 ;";
         

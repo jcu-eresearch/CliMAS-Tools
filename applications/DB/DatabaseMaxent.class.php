@@ -590,7 +590,7 @@ class DatabaseMaxent extends Object
                   and mc.times_id      = t.id
                   and m.dataname = ".util::dbq($model)."
                   and s.dataname = ".util::dbq($scenario)."
-                  and t.dataname = ".util::dbq($time)."
+                  and t.dataname = ".util::dbq($time,true)."
                   {$filetype_and}
                  limit 1
                 ;";

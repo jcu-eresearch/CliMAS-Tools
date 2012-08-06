@@ -42,24 +42,6 @@ if (!is_dir(configuration::ResourcesFolder()))
     exit(1);
 }
 
-if (!file_exists(configuration::Descriptions_ClimateModels() ))
-{
-    echo "Descriptions for ClimateModels does not exist: ".configuration::Descriptions_ClimateModels()."\n";
-    exit(1);
-}
-
-if (!file_exists(configuration::Descriptions_EmissionScenarios() ))
-{
-    echo "Descriptions for EmissionScenarios does not exist: ".configuration::Descriptions_EmissionScenarios()."\n";
-    exit(1);
-}
-
-if (!file_exists(configuration::Descriptions_Years() ))
-{
-    echo "configuration::Descriptions_Years() does not exist: ".configuration::Descriptions_Years()."\n";
-    exit(1);
-}
-
 if (!is_dir(configuration::SourceDataFolder() ))
 {
     echo "Source Data Folder does not exist: ".configuration::SourceDataFolder()."\n";
@@ -69,13 +51,6 @@ if (!is_dir(configuration::SourceDataFolder() ))
 if (!is_dir(configuration::ContextSpatialLayersFolder()))
 {
     echo "Context Spatial Layers Folder does not exist: ".configuration::ContextSpatialLayersFolder()."\n";
-    exit(1);
-}
-
-
-if (!is_dir(configuration::CommandQueueFolder()  ))
-{
-    echo "Command Queue Folder does not exist: ".configuration::CommandQueueFolder()."\n";
     exit(1);
 }
 

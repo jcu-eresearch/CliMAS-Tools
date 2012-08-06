@@ -42,8 +42,6 @@ class Object  {
         else
             $this->setPropertyByName("ID",  $id);
         
-        $tags = array();
-        $this->setPropertyByName("Tags", $tags );
         
     }
 
@@ -168,7 +166,6 @@ class Object  {
     public function PropertyNames()
     {
         $result = array_flip(array_keys($this->property));
-        unset($result['Tags']);
         return array_keys($result);
     }
 
@@ -183,7 +180,6 @@ class Object  {
         foreach ($this->property as $key => $value) {
             $result[$key] = $value;
         }
-        unset($result['Tags']);
         return $result;
     }
 

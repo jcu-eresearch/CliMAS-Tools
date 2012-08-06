@@ -39,7 +39,10 @@ class DatabaseCommands extends Object
     public static function CommandActionQueue(CommandAction $cmd) 
     {
         
+        //file_put_contents('/tmp/afakes.txt', print_r($cmd,true)."\n",FILE_APPEND);
+        
         $data = base64_encode(serialize($cmd));
+        
         
         // check to see if we already have it.
         $w = array();
@@ -48,12 +51,13 @@ class DatabaseCommands extends Object
         
         $count = DBO::Count(self::ActionsTableName(), $w);
         
-        
         if (is_null($count)) 
         {
             DBO::LogError(__METHOD__."(".__LINE__.")","Failed to count Command Actions \n w = ".print_r($w,true)."\n" );
             return null;
         }
+        
+        DBO::LogError(__METHOD__."(".__LINE__.")"," counting CDCMa ction count = ".  $count);
         
         
         if ($count > 0)
@@ -106,17 +110,16 @@ class DatabaseCommands extends Object
         if (is_null($src) || is_null($valueName))
         {
             DBO::LogError(__METHOD__."(".__LINE__.")","src or value passed as null  src = [{$src}]  valueName = [{$valueName}]  \n" );
+            
             return null;
         }
         
-        
         $qn = array();
-        $qn['objectid'] = ($src instanceof CommandAction) ? $id->ID() : $src;
+        $qn['objectid'] = ($src instanceof CommandAction) ? $src->ID() : $src;
         $qn['queueid']  = self::QueueID();
         $qn[$valueName]  = null;
         
         $result = DBO::QueryArray(self::ActionsTableName(), $qn, 'objectid');
-        
         
         if (is_null($result))
         {
@@ -140,10 +143,25 @@ class DatabaseCommands extends Object
     public static function CommandActionRead($commandID) 
     {
         
-        $data = self::CommandActionValue($commandID,'data');
+        if (is_null($commandID)) 
+        {
+            echo "commandID is null\n";
+            return null;
+        }
         
-        $object = unserialize(base64_decode($data));
-        $object instanceof CommandAction;
+        try {
+            
+            $data = self::CommandActionValue($commandID,'data');
+            
+            if (is_null($data)) return null;
+
+            $object = unserialize(base64_decode($data));
+            $object instanceof CommandAction;
+            
+            
+        } catch (Exception $exc) {
+             return $exc;
+        }
         
         return  $object;        
         

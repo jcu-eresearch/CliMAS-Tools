@@ -117,13 +117,14 @@ class DBO {
     
     
     
-    public static function InsertArray($table,$array) 
+    public static function InsertArray($table,$array,$forceCharacter = false) 
     {
 
         $keys = array_keys($array);
 
         $values = array();
-        foreach (array_values($array) as $value)  $values[] = util::dbq($value);
+        foreach (array_values($array) as $value)  
+            $values[] = util::dbq($value,$forceCharacter);
         
         $sql = "INSERT INTO {$table} (".  implode(",", $keys) .") values (".  implode(",", $values).")";
 
@@ -306,20 +307,18 @@ class DBO {
     {
         $db = new PGDB();     
         
-        $dt = util::dbq(datetimeutil::NowDateTime());
-        $from = util::dbq($from);
+        $dt = util::dbq(datetimeutil::NowDateTime().true);
+        $from = util::dbq($from,true);
         
-        if (is_array($str) || is_object($str))
-            $str =  substr( util::dbq(str_replace("'", "'", print_r($str,true))),0,3000);
-        else
-            $str =  substr( util::dbq(str_replace("'", "'", $str)),0,3000);        
+        if (is_array($str) || is_object($str)) $str =  print_r($str,true);
+            
+        $str =  util::dbq(substr($str,0,3000));  
         
         $sql = "insert into error_log (error_date_time,source_code_from,error_message) values ({$dt},{$from},{$str})";
         
         $result = $db->insert($sql,false);
         
-        
-        echo "$from ... $str\n";
+        //echo "$str\n";
         
         unset($db);
         return $result;
