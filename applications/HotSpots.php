@@ -23,42 +23,18 @@ include_once dirname(__FILE__).'/includes.php';
     <script type="text/javascript" >
     <?php     
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),'ApplicationFolderWeb');
+        
+        echo htmlutil::AsJavaScriptArray(SpeciesData::Clazz(),'availableTaxa');
+
+        echo htmlutil::AsJavaScriptArray(SpeciesData::Family(),'availableFamily');
+
+        echo htmlutil::AsJavaScriptArray(SpeciesData::Genus(),'availableGenus');
+        
         echo htmlutil::AsJavaScriptObjectArray(SpeciesData::speciesList(),"full_name","species_id","availableSpecies");    
+        
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSource');
      ?>
          
-    var availableTaxa = [
-         { label: "Amphibia", value: "1" }
-        ,{ label: "Aves",     value: "2" }
-        ,{ label: "Mammalia", value: "3" }
-        ,{ label: "Plantae",  value: "4" }
-        ,{ label: "Reptilia", value: "5" }
-        ];
-
-    var availableFamily = [
-         { label: "Amphibia", value: "1" }
-        ,{ label: "Aves",     value: "2" }
-        ,{ label: "Mammalia", value: "3" }
-        ,{ label: "Plantae",  value: "4" }
-        ,{ label: "Reptilia", value: "5" }
-        ];
-
-    var availableGenus = [
-         { label: "Amphibia", value: "1" }
-        ,{ label: "Aves",     value: "2" }
-        ,{ label: "Mammalia", value: "3" }
-        ,{ label: "Plantae",  value: "4" }
-        ,{ label: "Reptilia", value: "5" }
-        ];
-
-    var availableLocation = [
-         { label: "Cairns", value: "1" }
-        ,{ label: "Queensland",     value: "2" }
-        ,{ label: "Sydney", value: "3" }
-        ,{ label: "Melbourne",  value: "4" }
-        ,{ label: "Perth", value: "5" }
-        ];
-
 
     </script>
     
@@ -97,7 +73,7 @@ include_once dirname(__FILE__).'/includes.php';
                         <input type="radio" id="InputTypeFamily"   name="InputTypes" /><label for="InputTypeFamily">Family</label>
                         <input type="radio" id="InputTypeGenus"    name="InputTypes" /><label for="InputTypeGenus">Genus</label>
                         <input type="radio" id="InputTypeSpecies"  name="InputTypes" /><label for="InputTypeSpecies">Species</label>
-                        <input type="radio" id="InputTypeLocation" name="InputTypes" /><label for="InputTypeLocation">Location</label>
+                        <!--  <input type="radio" id="InputTypeLocation" name="InputTypes" /><label for="InputTypeLocation">Location</label> -->
                         <input type="input" id="InputText"         name="InputText" class="ui-corner-all">
                     </div>
                 </form>                
@@ -132,6 +108,7 @@ include_once dirname(__FILE__).'/includes.php';
                 <button id="SelectAllModels"  >select all</button>
                 <button id="SelectNoneModels" >deselect all</button>
                 <button id="SelectDefaultModels" >Defaults</button>
+                <span class="text" >median dataset will be calculated across selected models</span>
             </div>       
             
             <ul id="ModelsSelection" class="selectable">
@@ -213,7 +190,7 @@ include_once dirname(__FILE__).'/includes.php';
                 
                 <div id="CountPanel1" class="CountPanel ui-widget-content ui-corner-all">
                     <div class="Header ui-widget-header ui-corner-all">
-                        <h1 id="CountInputTotals" >0</h1><h2>User<br>Inputs</h2>    
+                        <h1 id="CountInputTotals" >0</h1><h2>User<br>selections</h2>    
                     </div>
                     <div class="Value ui-widget-content ui-corner-all">
                         <h3 id="CountTaxa" class="Count">0</h3><h4>Taxa</h4>    
@@ -232,7 +209,7 @@ include_once dirname(__FILE__).'/includes.php';
 
                 <div id="CountPanel2" class="CountPanel ui-widget-content ui-corner-all">
                     <div class="Header ui-widget-header ui-corner-all">
-                        <h1 id="CountFutureTotals" >0</h1><h2>Future<br>Calculations</h2>    
+                        <h1 id="CountFutureTotals" >0</h1><h2>Future<br>Datasets</h2>    
                     </div>
 
                     <div class="Value ui-widget-content ui-corner-all">
@@ -253,7 +230,7 @@ include_once dirname(__FILE__).'/includes.php';
                 <div id="CountPanel4" class="CountPanel ui-widget-content ui-corner-all">
 
                     <div class="GrandTotal ui-widget-header ui-corner-all">
-                        <h1 id="CountGrandTotal" >0</h1><h2 >Datasets to<br>Calculate</h2>    
+                        <h1 id="CountGrandTotal" >0</h1><h2 >Datasets to<br>Examine</h2>    
                     </div>
 
                     <button id="CreateProcess">Submit for Calculation</button>

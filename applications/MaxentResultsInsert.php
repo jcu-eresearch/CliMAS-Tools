@@ -17,6 +17,14 @@ function usage($prog)
 }
 // MAIN
 // --------------------------------------------------------------
-DatabaseMaxent::InsertAllMaxentResults($species_id);
+
+
+$result = DatabaseMaxent::InsertMainMaxentResults($species_id);
+if ($result instanceof ErrorMessage)
+{
+    echo $result;
+    exit(1);
+}
+
 
 ?>        

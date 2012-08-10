@@ -503,7 +503,6 @@ class array_util
         if (count($elements) == 0 ) return null;
         
         $vals = array_values($elements);
-        
 
         return $vals[0];
     }

@@ -154,7 +154,10 @@ class Object  {
         
         $result = $this->name."::\n";
         foreach ($this->property as $key => $value) 
+        {            
             $result .= "* $key => $value\n";
+        }
+            
         
         return $result;
     }

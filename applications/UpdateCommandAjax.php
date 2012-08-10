@@ -4,17 +4,10 @@ include_once 'includes.php';
 
 $result = array();
 
-
 $queueID = array_util::Value($_POST, "queueID", null);
-
-$result['msg'] = "Server time ".datetimeutil::NowDateTime();
-echo json_encode($result);
-return;   // will stop here and return if we have all results requested.
-
-
 if (is_null($queueID))
 {
-    $result['msg'] = "The job with {$queueID} is not available";
+    $result['msg'] = "queueID passed as NULL";
     echo json_encode($result);
     return;   // will stop here and return if we have all results requested.
 }
@@ -25,9 +18,9 @@ $result['queueID'] = $queueID;
 $cmd = DatabaseCommands::CommandActionRead($queueID);
 
 
-if (is_null($cmd))
+if ($cmd instanceof ErrorMessage)
 {
-    $result['msg'] = "The job with {$queueID} is not available 2";
+    $result['error'] = $cmd;
     echo json_encode($result);
     return;   // will stop here and return if we have all results requested.
 }

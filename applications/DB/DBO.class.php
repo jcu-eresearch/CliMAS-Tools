@@ -38,11 +38,10 @@ class DBO {
         $sql = "select ".implode(", ",array_keys($columns_values))." from {$table} {$where} ";
         
         $result = self::Query($sql,$keyColumn);
-        if (is_null($result)) 
-        {    
-            DBO::LogError(__METHOD__."(".__LINE__.")","SQL FAILED: \n sql = {$sql} \n result = ".print_r($result,true)."  \n");
-            return null;
-        }
+        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"SQL FAILED: \n sql = {$sql}", true,$result);
+
         
         return $result;
         
@@ -54,11 +53,8 @@ class DBO {
         $result = $db->query($sql, $keyColumn);
         unset($db);
         
-        if (is_null($result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Run SQL \nkeyColumn = [{$keyColumn}]  \nsql =[{$sql}]\n result = ".print_r($result,true)."  \n");
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Run SQL \nkeyColumn = [{$keyColumn}]  \nsql =[{$sql}]", true,$result);
         
         
         return $result;
@@ -71,11 +67,9 @@ class DBO {
         
         $result = self::Query($sql, $keyColumn);
         
-        if (is_null($result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Run SQL \nkeyColumn = [{$keyColumn}]  \nsql =[{$sql}]\n  result = ".print_r($result,true)."  \n");
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Run SQL \nkeyColumn = [{$keyColumn}]  \nsql =[{$sql}]", true,$result);
+        
             
         if (count($result) == 0 ) return null;
         
@@ -86,15 +80,10 @@ class DBO {
     {
         $result = self::query($sql);
         
-        if (is_null($result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Run SQL \ncolumn = [{$column}]  \ndefault = {$default}  \nsql =[{$sql}]\n");
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Run SQL \ncolumn = [{$column}]  \ndefault = {$default}  \nsql =[{$sql}]", true,$result);
         
-        $first = util::first_element($result);
-        
-        return array_util::Value($first, $column, $default);
+        return array_util::Value(util::first_element($result), $column, $default);
     }
     
 
@@ -105,14 +94,13 @@ class DBO {
         
         $sql = "update {$table}  set ".util::dbqKeyedArray($array)." {$where}";
         
-        $updateCount = self::Update($sql);
-        if (is_null($updateCount))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Run SQL \nsql =[{$sql}]\n");
-            return null;
-        }
+        $result = self::Update($sql);
         
-        return $updateCount;
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Run SQL \nsql =[{$sql}]\n", true,$result);
+        
+        
+        return $result;
     }
     
     
@@ -129,11 +117,9 @@ class DBO {
         $sql = "INSERT INTO {$table} (".  implode(",", $keys) .") values (".  implode(",", $values).")";
 
         $result = self::Insert($sql);
-        if (is_null($result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Run SQL \nsql =[{$sql}]\n result = ".print_r($result,true)."  \n");
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to INSERT ARRAY via SQL \nsql =[{$sql}]\n", true,$result);
+        
         
         unset($values,$keys);
         
@@ -146,11 +132,8 @@ class DBO {
         $db = new PGDB();        
         $result = $db->insert($sql);
         
-        if (is_null($result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to INSERT SQL \nsql =[{$sql}]\n result = ".print_r($result,true)."  \n");
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to INSERT SQL \nsql =[{$sql}] \n", true,$result);
         
         unset($db);
         return $result;
@@ -163,12 +146,8 @@ class DBO {
         $result = $db->update($sql);
         unset($db);
         
-        if (is_null($result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Update  SQL \nsql =[{$sql}]\n result = ".print_r($result,true)."  \n");
-            return null;
-        }
-        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Update  SQL \nsql =[{$sql}]", true,$result);
         
         return $result;
         
@@ -179,11 +158,10 @@ class DBO {
         $db = new PGDB();        
         $result = $db->CreateAndGrant($sql);
         unset($db);
-        if (is_null($result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Create or Grant Access to table   SQL \nsql =[{$sql}]\n result = ".print_r($result,true)."  \n");
-            return null;
-        }
+        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Create or Grant Access to table   SQL \nsql =[{$sql}]", true,$result);
+        
         
         return $result;
         
@@ -195,11 +173,8 @@ class DBO {
         $result = $db->delete($table,$where);
         unset($db);
 
-        if (is_null($result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Delete from table = $table  where = [{$where}]  result = ".print_r($result,true)."  \n");
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Delete from table = $table  where = [{$where}]", true,$result);
         
         
         return $result;
@@ -210,12 +185,9 @@ class DBO {
         $db = new PGDB();        
         $result = $db->delete_all($table);
         unset($db);
-        
-        if (is_null($result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Delete ALL from table = $table result = ".print_r($result,true)."  \n");
-            return null;
-        }
+
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Delete ALL from table = $table", true,$result);
         
         return $result;
     }
@@ -223,17 +195,14 @@ class DBO {
     public static function Count($table,$where) 
     {        
         $db = new PGDB();
-        $count = $db->count($table,$where);
+        $result = $db->count($table,$where);
         unset($db);
         
-        if (is_null($count))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Count from table = $table  where = [{$where}]  result = ".print_r($count,true)."  \n");
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Count from table = $table  where = [{$where}] ", true,$result);
         
         
-        return $count;
+        return $result;
     }
 
     
@@ -244,12 +213,8 @@ class DBO {
         $result = $db->getSingleRowValue($sql,$column);
         unset($db);
         
-        if (is_null($result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to get data column = $column \n sql = $sql  \n result = ".print_r($result,true)."  \n");
-            return null;
-        }
-        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to get data column = $column \n sql = $sql", true,$result);
         
         return $result;
 
@@ -297,6 +262,9 @@ class DBO {
         $db = new PGDB();
         $result = $db->has_table($table_name);
         unset($db);
+
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to get data for Has_table \n", true,$result);
         
         return $result;
     }
@@ -309,16 +277,15 @@ class DBO {
         
         $dt = util::dbq(datetimeutil::NowDateTime().true);
         $from = util::dbq($from,true);
-        
-        if (is_array($str) || is_object($str)) $str =  print_r($str,true);
             
-        $str =  util::dbq(substr($str,0,3000));  
+        $str =  util::dbq(substr(print_r($str,true),0,3000));  
         
         $sql = "insert into error_log (error_date_time,source_code_from,error_message) values ({$dt},{$from},{$str})";
         
-        $result = $db->insert($sql,false);
+        $result = $db->insert($sql,false,false);
+        if ($result instanceof ErrorMessage ) throw new Exception($result);
+        if ($result instanceof Exception ) throw new Exception($result->getMessage());
         
-        //echo "$str\n";
         
         unset($db);
         return $result;
@@ -328,8 +295,12 @@ class DBO {
     public static function Unique($table,$field,$where = null,$as_array = false) 
     {
         $db = new PGDB();
-        $result = $db->Unique($table,$field,$where = null,$as_array = false);
+        $result = $db->Unique($table,$field,$where,$as_array);        
         unset($db);
+        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to get data for  Unique  table =  $table,$field = field, where =".print_r($where,true), true,$result);
+        
         return $result;   
     }
     

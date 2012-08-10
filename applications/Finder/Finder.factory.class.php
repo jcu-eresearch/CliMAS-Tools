@@ -19,32 +19,53 @@ class FinderFactory {
      */
     public static function Find($srcClassname)
     {
+        if (is_null( $srcClassname))  
+            return new ErrorMessage(__METHOD__, __LINE__, "srcClassname is Null");
+        
+        if (self::isFinder($srcClassname))  
+        {
+            $finder = self::Finder($srcClassname);
+            if ($finder instanceof Finder) return $finder;
+            
+            if ($finder instanceof ErrorMessage)
+                return ErrorMessage::Stacked(__METHOD__, __LINE__, "srcClassname is Null",true,$finder);
+        }
 
-        if (self::isFinder($srcClassname)) return self::Finder ($srcClassname);
-
+        
         $action = self::Action($srcClassname);
-        if (!is_null($action)) return $action;
+        
+        if ($action instanceof ErrorMessage) return new ErrorMessage(__METHOD__, __LINE__, "No class found called {$srcClassname}");
+        
+            
+        return $action;
 
-        return null;
+        
     }
 
 
 
     private static function Finder($finderClassname)
     {
-        if (!self::isFinder($finderClassname)) return null; //TODO: LOG
+        
+        if (is_null($finderClassname)) return new ErrorMessage(__METHOD__, __LINE__, "finderClassname is Null");
+        
+        if (!self::isFinder($finderClassname))  return null;
+        
+        if (!self::FinderFilenameExists($finderClassname)) return new ErrorMessage(__METHOD__, __LINE__, "Can't find file for $finderClassname ");
 
-        if (!self::FinderFilenameExists($finderClassname)) return null; //TODO: LOG
+        
+        // INCLUDE this finder
+        include_once self::FinderFilename($finderClassname);  
 
-        include_once self::FinderFilename($finderClassname);  // INCLUDE this finder
-
-        if (!self::FinderClassExists($finderClassname)) return null; //TODO: LOG
+        
+        if (!self::FinderClassExists($finderClassname))  return new ErrorMessage(__METHOD__, __LINE__, "Included $finderClassname butr Class not available ");
 
 
         // Instantiate an object from the Class
         $result = new $finderClassname();
 
-        if (!($result instanceof Finder)) return null; //TODO: LOG
+        if (!($result instanceof Finder)) return new ErrorMessage(__METHOD__, __LINE__, "Instantiate an object from the Class ({$finderClassname}) but it was not a Finder");
+
         $result instanceof Finder;
 
         return $result;
@@ -126,41 +147,34 @@ class FinderFactory {
     public static function Action($actionClassname)
     {
 
-        if (is_null($actionClassname)) 
-        {
-            return new Exception("actionClassname is null");            
-        }
-            
+        if (is_null($actionClassname))  return new ErrorMessage(__METHOD__,__LINE__,"actionClassname is null");            
         
         $actionClassname = trim($actionClassname);
-        if ($actionClassname == "") 
-        {
-            return new Exception("actionClassname is EMPTY");            
-        }
-            
+        if ($actionClassname == "")  return new ErrorMessage(__METHOD__,__LINE__,"actionClassname is EMPTY");            
 
         $actionFilename = array_util::Value(self::Actions(), $actionClassname, null);
-
-        if (is_null($actionFilename)) 
-        {
-            return new Exception("actionFilename is NULL");
-        }
+        if (is_null($actionFilename))  return new ErrorMessage(__METHOD__,__LINE__,"actionFilename is NULL");
             
 
         include_once $actionFilename;  // INCLUDE this action Class
 
+        
         $result = new $actionClassname();
-
-        if (!( ($result instanceof iAction) || ($result instanceof CommandAction) ) ) 
+        
+        if ($result instanceof iAction )
         {
-            return new Exception("Included Action is NOT an Action");
-
+            $result instanceof iAction;
+            return $result;
         }
-            
 
-        $result instanceof iAction;
+        if ($result instanceof CommandAction )
+        {
+            $result instanceof CommandAction;
+            return $result;
+        }
+        
+        return new ErrorMessage(__METHOD__,__LINE__,"{$actionClassname} is NOT iAction or CommandAction ");
 
-        return $result;
         
     }
 
@@ -172,14 +186,10 @@ class FinderFactory {
      */
     public static function Execute($actionClassname)
     {
-        if (is_null($actionClassname)) return null;
+        if (is_null($actionClassname))  return new ErrorMessage(__METHOD__,__LINE__,"ActionClassname is null");                    
 
         $A = self::Action($actionClassname);
-        if (is_null($A))
-        {
-            //echo "FAILED: Execute {$actionClassname}";  //TODO: logg
-            return null;   // Return Null
-        }
+        if ($A instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "Can't execute",true,$A);
 
         $A instanceof iAction;
         $A->Execute();
@@ -195,14 +205,10 @@ class FinderFactory {
     public static function Result($actionClassname)
     {
 
-        if (is_null($actionClassname)) return null;
+        if (is_null($actionClassname))  return new ErrorMessage(__METHOD__,__LINE__,"ActionClassname is null");                    
 
         $A = self::Execute($actionClassname);
-        if (is_null($A))
-        {
-           // echo "FAILED: Result {$actionClassname}";  //TODO: logg
-            return null;   // Return Null
-        }
+        if ($A instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "Can't get Result",true,$A);        
 
         return $A->Result();
     }
@@ -211,23 +217,30 @@ class FinderFactory {
 
     public static function Description($actionClassname)
     {
-        if (is_null($actionClassname)) return null;
+        if (is_null($actionClassname))  return new ErrorMessage(__METHOD__,__LINE__,"ActionClassname is null");                    
 
-        $action = self::Action($actionClassname);
-        if (is_null($action)) return null; //TODO log
+        $A = self::Action($actionClassname);
+        if ($A instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "Can't get Description",true,$A);        
 
-        return $action->Description();
+        return $A->Description();
 
     }
 
     public static function Descriptions($actionClassnames)
     {
-        if (is_null($actionClassnames)) return null;
+        if (is_null($actionClassnames))  return new ErrorMessage(__METHOD__,__LINE__,"actionClassnames is null");
+        
         if (!is_array($actionClassnames)) self::Description($actionClassnames);
 
         $result = array();
         foreach ($actionClassnames as $actionClassname)
-            $result[$actionClassname] = self::Description($actionClassname);
+        {
+            $desc = self::Description($actionClassname);
+            
+            if ( !($desc instanceof ErrorMessage)) 
+                $result[$actionClassname] = $desc;
+        }
+            
 
         return $result;
     }
@@ -242,11 +255,17 @@ class FinderFactory {
      */
     public static function GetMethodResult($className,$methodName,$params = null)
     {
+        
+        if (is_null($className))  return new ErrorMessage(__METHOD__,__LINE__,"$className is null");                            
+        if (is_null($methodName))  return new ErrorMessage(__METHOD__,__LINE__,"$methodName is null");                            
+        
         $object = self::Find($className);
-        if (is_null($object)) return null;
+        if ($object instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__, "", true, $object);
 
-        if (!method_exists($object, $methodName)) return null;
 
+        if (!method_exists($object, $methodName)) 
+            new ErrorMessage(__METHOD__,__LINE__,"Method [{$methodName}] does not exists inside class [{$className}]");
+                
 
         return $object->$methodName($params);
 

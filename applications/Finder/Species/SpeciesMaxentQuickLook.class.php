@@ -63,13 +63,17 @@ class SpeciesMaxentQuickLook {
     //    echo "\ncolour_combined_png = ".$colour_combined_png ;
     //    echo "\ncolour_legend_png = ".$colour_legend_png ;
 
-
+        
         $indexes = array_keys($ramp);
         if (is_null($low_threshold))   // try to get value from  Maxent Results self::$DisplayThresholdFieldName
         {
             $low_threshold = $indexes[1]; // if they did not pass low end threshold then just show everything above lowest value    
+            
             $maxent_threshold = DatabaseMaxent::GetMaxentResult(   $species_id,DatabaseMaxent::$DisplayThresholdFieldName);
-            if (!is_null($maxent_threshold))  $low_threshold = $maxent_threshold;
+            
+            if ($maxent_threshold instanceof ErrorMessage) 
+                return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Maxentr Threshold to build quick look\n", true, $maxent_threshold);
+            
         }
         
         // create colour "lookup table"    
@@ -81,25 +85,28 @@ class SpeciesMaxentQuickLook {
         {
             $rgb instanceof RGB;
             if ($index < $low_threshold)
-            {
                 $color_table .= $pcent."% 0 0 0 0\n";
-            }
             else
-            {
                 $color_table .= $pcent."% ".$rgb->Red()." ".$rgb->Green()." ".$rgb->Blue()." {$transparency}\n";    
                 
-            }
             $pcent += $step;
         }
 
         // save the colour lookup table 
-        file_put_contents($colour_txt, $color_table);
+        $fpc = file_put_contents($colour_txt, $color_table);
+        if ($fpc === false) return new ErrorMessage(__METHOD__,__LINE__,"Failed to write to colour_txt {$colour_txt}");
+            
         
         $cmd = "gdaldem  color-relief {$src_grid_filename} {$colour_txt} -nearest_color_entry -alpha -of PNG {$colour_png}";
         exec($cmd);  // generate a coloured image using colour lookup 
 
+        
+        
         // create backgound to put coloured image on top of
-        file_put_contents($colour_zero_txt, "nv 0 0 0 0\n0% {$background_colour}\n100% {$background_colour}\n"); // default is ALL Values = $background_colour  & No Value  = transparent  
+        $fpc = file_put_contents($colour_zero_txt, "nv 0 0 0 0\n0% {$background_colour}\n100% {$background_colour}\n"); // default is ALL Values = $background_colour  & No Value  = transparent  
+        if ($fpc === false) return new ErrorMessage(__METHOD__,__LINE__,"Failed to create backgound to put coloured image on {$colour_zero_txt}");
+        
+        
         $cmd = "gdaldem  color-relief {$src_grid_filename} $colour_zero_txt -nearest_color_entry -alpha -of PNG {$colour_background_png}";
         exec($cmd);
 
@@ -110,6 +117,10 @@ class SpeciesMaxentQuickLook {
 
         
         $species_info = SpeciesData::SpeciesInfoByID($species_id);
+        if ($species_info instanceof ErrorMessage)
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Could not get Species Info for species_id = $species_id\n", true, $species_info);
+        
+        
         $species_info = array_util::Replace($species_info, "'", "");
         
         
@@ -185,7 +196,9 @@ HEADER;
         file::Delete($colour_combined_png);
         file::Delete($colour_legend_png);
 
-        if (!file_exists($output_image_filename)) return null;
+        if (!file_exists($output_image_filename))
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to write/ create  outputfile as {$output_image_filename}"); 
+            
         
         return $output_image_filename; // filename of png that can be used - 
 

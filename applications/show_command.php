@@ -3,6 +3,12 @@ include_once dirname(__FILE__).'/includes.php';
 
 $S = FinderFactory::Find('SpeciesHotSpots');
 
+if ($S instanceof ErrorMessage)
+{
+    echo $S;
+    exit();
+}
+
 $id = array_util::Value($argv, 1);
 
 if (is_null($id))
@@ -23,11 +29,22 @@ if (is_null($id))
     $S->initialise();
     
     $queue_result = DatabaseCommands::CommandActionQueue($S);
+    if ($queue_result instanceof ErrorMessage)
+    {
+        echo $queue_result;
+        exit(1);
+    }
+    
     
     $id = $S->ID();
 }
 
 $cmd = DatabaseCommands::CommandActionRead($id);
+if ($cmd instanceof ErrorMessage)
+{
+    echo $cmd;
+    exit(1);
+}
 
 print_r($cmd);
 

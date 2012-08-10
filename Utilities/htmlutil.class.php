@@ -4,6 +4,11 @@ class htmlutil {
 
     public static function AsJavaScriptSimpleVariable($src,$variableName)
     {
+        if (is_null($src)) return "";
+        if (is_null($variableName)) return "";
+
+        if (is_array($src)) return self::AsJavaScriptArray($src,$variableName);
+        
         return "var {$variableName} = '{$src}';\n";
     }    
     
@@ -11,9 +16,16 @@ class htmlutil {
     public static function AsJavaScriptArray($src,$variableName)
     {
 
+        if (is_null($src)) return "";
+        if (is_null($variableName)) return "";
+
+        if (!is_array($src)) return "/* DATA ERROR \n ".  print_r($src, true)." \n*/\n";
+        
         $values = array();
+        
         foreach ($src as $value) $values[] = '"'.$value.'"';
         $result = "var {$variableName} = [".join(",",$values)."];";
+        
         unset($values);
         return $result."\n";
     }
@@ -31,6 +43,8 @@ class htmlutil {
     {
 
         //[ { label: "Choice1", value: "value1" }, ... ]
+        
+        if (!is_array($src)) return "/* DATA ERROR \n ".  print_r($src, true)." \n*/\n";
         
         $values = array();
         foreach ($src as $index => $row) 

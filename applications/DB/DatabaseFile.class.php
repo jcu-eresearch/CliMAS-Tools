@@ -32,33 +32,17 @@ class DatabaseFile extends Object
     public static  function FileInfo($file_unique_id) 
     {
         
-        $q = "select * from ".self::FilesTable()." where file_unique_id = ".util::dbq($file_unique_id)." limit 1";
-        $result = DBO::Query($q);
+        $q = "select * from ".self::FilesTable()." where file_unique_id = ".util::dbq($file_unique_id,true)." limit 1";
+        $result = DBO::QueryFirst($q);
         
-        if (is_null($result)) 
-        {    
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to File Info for file_unique_id =  $file_unique_id \n sql = {$q} \n");
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to File Info for file_unique_id =  $file_unique_id \n sql = {$q} ", true,$result);
         
-        return util::first_element($result);
+        return $result;
         
     }
     
     
-    /**
-     *
-     * Check that all parts for a file exist
-     * 
-     * @param type $file_unique_id 
-     */
-    public static   function CheckFile($file_unique_id) 
-    {
-        
-        
-        
-        
-    }
     
     
     
@@ -70,13 +54,23 @@ class DatabaseFile extends Object
      * @return string unique_file_id - use this id to get file backl from database;
      * @throws Exception 
      */
-    public static  function InsertFile($srcFilename,$description,$filetype = null) 
+    public static function InsertFile($srcFilename,$description,$filetype = null,$compressed = false) 
     {
         
         if (!file_exists($srcFilename)) 
-        {    
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Add file to database file does not exist Filename = [{$srcFilename}] description = $description,filetype =  $filetype  \n");
-            return null;
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to Add file to database file does not exist Filename = [{$srcFilename}] description = $description,filetype =  $filetype  \n");
+        
+        if ($compressed)
+        {
+            $tmp = file::random_filename().".zip";
+            $cmd = "zip {$tmp} {$srcFilename}";
+
+            exec($cmd);
+            if (!file_exists($tmp))  
+                return new ErrorMessage(__METHOD__,__LINE__,"Compression Requested Failed to create zip file for {$srcFilename}");
+            
+            $srcFilename = $tmp;
+            
         }
         
         
@@ -99,41 +93,42 @@ class DatabaseFile extends Object
             
             $total_read += strlen($contents);
             
-            $data = base64_encode($contents);
+            $data = util::dbq(base64_encode($contents),true);
 
-            $sql  = "insert into ".self::FilesDataTable()."  (file_unique_id,partnum,totalparts,data) values (".util::dbq($file_unique_id).",{$partnum},{$totalparts},'{$data}')";
+            $sql  = "insert into ".self::FilesDataTable()."  (file_unique_id,partnum,totalparts,data) values (".util::dbq($file_unique_id,true).",{$partnum},{$totalparts},{$data})";
             
             $insertResult = DBO::Insert($sql);
-            if (is_null($insertResult)) 
+            if ($insertResult instanceof ErrorMessage) 
             {    
-                DBO::LogError(__METHOD__."(".__LINE__.")","FAILED:: to insert ".self::FilesDataTable()." in to DB {$srcFilename} with description {$description} at part {$partnum} using a comand line call\n sql = {$sql}");
-                
-                // remove bits of file that where inserted 
-                $delete_result = DBO::Delete(self::FilesDataTable(), "file_unique_id = ".util::dbq($file_unique_id));
-                if (is_null($delete_result)) 
-                {
-                    DBO::LogError(__METHOD__."(".__LINE__.")","FAILED:: Tried to remove bits from failed file insert and failed as well to insert file in to DB {$srcFilename} with description {$description} at part {$partnum} using a comand line call");                    
-                }        
-                
-                return null;
+                self::RemoveFile($file_unique_id); // remove bits of file that where inserted                 
+                $qe = "insert into ".self::FilesDataTable()."  (file_unique_id,partnum,totalparts,data) values (".util::dbq($file_unique_id,true).",{$partnum},{$totalparts},'Encoded Data Removed')";
+                return ErrorMessage::Stacked (__METHOD__,__LINE__,$qe, true,$insertResult);
             }
             
             $partnum++;
         }        
 
-
+        if ($compressed) file::Delete($tmp); // remove compressed file
         
-        // write the description of the file 
-        $sql  = "insert into ".self::FilesTable()." (file_unique_id,mimetype,totalparts,total_filesize,description,filetype)  values ".
-                "(".util::dbq($file_unique_id).",".util::dbq($mimetype).",{$totalparts},$total_filesize,".util::dbq($description).",".util::dbq($filetype).")";
 
+        if ($compressed)
+        {
+            // write the description of the file - compressed file
+            $sql  = "insert into ".self::FilesTable()." (file_unique_id,mimetype,totalparts,total_filesize,description,filetype,compressed)  values ".
+                    "(".util::dbq($file_unique_id,true).",".util::dbq($mimetype,true).",{$totalparts},{$total_filesize},".util::dbq($description,true).",".util::dbq($filetype,true).",".util::dbq("zip").")";
+            
+        }
+        else
+        {
+            // write the description of the file 
+            $sql  = "insert into ".self::FilesTable()." (file_unique_id,mimetype,totalparts,total_filesize,description,filetype)  values ".
+                    "(".util::dbq($file_unique_id,true).",".util::dbq($mimetype,true).",{$totalparts},{$total_filesize},".util::dbq($description,true).",".util::dbq($filetype,true).")";
+        }
                 
         $insertResult = DBO::Insert($sql);
-        if (is_null($insertResult)) 
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","FAILED:: to insert file (fileinfo) in to DB {$srcFilename} with description {$description} at part {$partnum} using a comand line call"); 
-            return null;
-        }        
+        if ($insertResult instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"FAILED:: to insert file (fileinfo) in to DB {$srcFilename} with description {$description} at part {$partnum} using a comand line call", true,$insertResult);
+                
         
         return $file_unique_id;
 
@@ -143,17 +138,15 @@ class DatabaseFile extends Object
     public static   function HasFile($file_unique_id) 
     {
         
-        $sql = "select * from ".self::FilesTable()." where file_unique_id = ".util::dbq($file_unique_id)." limit 1";
+        $sql = "select * from ".self::FilesTable()." where file_unique_id = ".util::dbq($file_unique_id,true)." limit 1";
         
-        $query_result = DBO::Query($sql);
+        $result = DBO::Query($sql);
         
-        if (is_null($query_result)) 
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","FAILED:: to check if a file id exists {$file_unique_id} using sql = {$sql}"); 
-            return null;
-        }        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"FAILED:: to check if a file id exists {$file_unique_id} using sql = {$sql}", true,$result);
 
-        if (count($query_result) > 0 ) return true;
+
+        if (count($result) <= 0 ) return false;
         
         return true;
 
@@ -173,18 +166,16 @@ class DatabaseFile extends Object
     public static   function ReadFile($file_unique_id,$echo_data = false,$collect_data = true) 
     {
         
-        $sql = "select data from ".self::FilesDataTable()." where file_unique_id = ".util::dbq($file_unique_id)." order by partnum;";
+        $sql = "select data from ".self::FilesDataTable()." where file_unique_id = ".util::dbq($file_unique_id,true)." order by partnum;";
         
-        $query_result = DBO::Query($sql);
-        if (is_null($query_result)) 
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","FAILED:: Toread a file back from DB {$file_unique_id} with parameters  echo_data = [$echo_data], collect_data = [$collect_data] \n"); 
-            return null;
-        }        
+        $result = DBO::Query($sql);
+        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"FAILED:: To read a file back from DB {$file_unique_id} with parameters  echo_data = [$echo_data], collect_data = [$collect_data] ", true,$result);
 
         
         if ($collect_data) $result_file = '';
-        foreach ($query_result as $row) 
+        foreach ($result as $row) 
         {    
             $datapart =  base64_decode($row['data']);
             if ($collect_data) $result_file .= $datapart;
@@ -192,7 +183,7 @@ class DatabaseFile extends Object
         }
         
         unset($row);
-        unset($query_result);        
+        unset($result);        
         
         if ($collect_data) return $result_file;
         
@@ -219,27 +210,29 @@ class DatabaseFile extends Object
         if ($overwrite)  file::Delete ($dest_filename);
 
         if ($reuse && file_exists($dest_filename)) return $dest_filename;
+
         
         $result_file =  self::ReadFile($file_unique_id);
+        if ($result_file instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"FAILED:: To read a file back from DB {$file_unique_id} on way to writing to filesystem  dest_filename =  [$dest_filename] \n", true,$result_file);
         
-        if (is_null($result_file)) 
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","FAILED:: To read a file back from DB {$file_unique_id} on way to writing to filesystem  dest_filename =  [$dest_filename] \n"); 
-            return null;
-        }        
-        
+            
         $info = self::FileInfo($file_unique_id);
+        if ($info instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't get fileinfo for {$file_unique_id}", true,$info);
         
-        $fw = fopen($dest_filename,'wb');
+        
+        try {
+            $fw = fopen($dest_filename,'wb');    
+        } catch (Exception $exc) {
+            return new ErrorMessage(__METHOD__,__LINE__,"Tried to open file for writing {$dest_filename} \n".$exc->getTraceAsString() );
+        }
+        
         fwrite($fw,$result_file,$info['total_filesize']);
         fclose($fw);
 
         if (!file_exists($dest_filename))  
-        if (is_null($result_file)) 
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","FAILED:: read a file back from DB {$file_unique_id} OK  failed to write to filesystem  dest_filename =  [$dest_filename] \n"); 
-            return null;
-        }        
+            return new ErrorMessage(__METHOD__,__LINE__,"FAILED:: read a file back from DB {$file_unique_id} could not write to {$dest_filename} \n");
         
         return $dest_filename;
         
@@ -250,33 +243,107 @@ class DatabaseFile extends Object
      * 
      * @param type $file_unique_id 
      */
-    public static   function ReadFile2Stream($file_unique_id) 
+    public static  function ReadFile2Stream($file_unique_id) 
     {        
         self::ReadFile($file_unique_id,true,false);  // read file stream and dont collect data - ignore return varaibales
     }
     
     public static   function ReadFileMimeType($file_unique_id) 
     {        
-        $sql = "select mimetype from ".self::FilesTable()." where file_unique_id = ".util::dbq($file_unique_id)." limit 1";
+        $sql = "select mimetype from ".self::FilesTable()." where file_unique_id = ".util::dbq($file_unique_id,true)." limit 1";
         
-        return DBO::QueryFirstValue($sql, 'mimetype');
+        $result = DBO::QueryFirstValue($sql, 'mimetype');
+        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't read mimetype for {$file_unique_id} using sql [{$sql}]", true,$result);
+        
+        return $result;
     }
 
     
     public static  function ReadFileDescription($file_unique_id) 
     {        
-        $sql = "select description from ".self::FilesTable()." where file_unique_id = ".util::dbq($file_unique_id)." limit 1";
-        return DBO::QueryFirstValue($sql, 'description');
+        $sql = "select description from ".self::FilesTable()." where file_unique_id = ".util::dbq($file_unique_id,true)." limit 1";
+        
+        $result = DBO::QueryFirstValue($sql, 'description');
+        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't read ReadFileDescription for {$file_unique_id} using sql [{$sql}]", true,$result);
+        
+        return $result;
     }
     
     public static  function RemoveFile($file_unique_id) 
     {        
-        DBO::Delete(self::FilesTable(),    "file_unique_id = ".util::dbq($file_unique_id));
-        DBO::Delete(self::FilesDataTable(),"file_unique_id = ".util::dbq($file_unique_id));        
+        
+        $result = DBO::Delete(self::FilesTable(),    "file_unique_id = ".util::dbq($file_unique_id,true));
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't remove file with id  {$file_unique_id} ", true,$result);
+
+        
+        $result = DBO::Delete(self::FilesDataTable(),"file_unique_id = ".util::dbq($file_unique_id,true));        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't remove file with id  {$file_unique_id} ", true,$result);
+        
+        
         if (self::HasFile($file_unique_id)) return false; // if file still exists in DB then delet failed
         return true;
     }
 
+    
+    public static function RemoveFileAll($id)
+    {
+        $results = array();
+        $results['files_data']             = DBO::Delete('files_data',             'file_unique_id = '.util::dbq($id,true));
+        $results['files']                  = DBO::Delete('files',                  'file_unique_id = '.util::dbq($id,true));
+        $results['modelled_climates']      = DBO::Delete('modelled_climates',      'file_unique_id = '.util::dbq($id,true));
+        $results['modelled_species_files'] = DBO::Delete('modelled_species_files', 'file_unique_id = '.util::dbq($id,true));        
+        
+        foreach ($results as $key => $value) 
+        {
+            if ($value instanceof ErrorMessage)
+                return new ErrorMessage(__METHOD__,__LINE__,"FAILED:: RemoveFileAll for i {$file_unique_id} \n ".print_r($results,true));
+                
+        }
+        
+        
+        return $results;
+    }
+           
+    public static function RemoveFaultyFiles()
+    {
+        $q = 'select f.file_unique_id,f.filetype,f.totalparts,count(*) as parts_count from files f, files_data fd  where f.file_unique_id = fd.file_unique_id group by f.file_unique_id,f.filetype,f.totalparts having count(*) != f.totalparts;';
+
+        $result = DBO::Query($q);
+        if ($result instanceof ErrorMessage)
+                return new ErrorMessage(__METHOD__,__LINE__,"FAILED:: Remove to get list of Fault Files \n sql = [{$q}] ",true);
+        
+        
+        foreach ($result  as $key => $row) 
+        {
+            $subResult = self::RemoveFileAll($row['file_unique_id']);
+            
+            if ($subResult instanceof ErrorMessage)
+                return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't remove files with id {$row['file_unique_id']}", true,$subResult);
+            
+        }
+        
+        return $result;
+        
+    }
+    
+    
+    
+    public static function InsertCompressedFile($srcFilename,$description = null,$filetype = null) 
+    {
+        $file_unique_id = self::InsertFile($srcFilename, $description, $filetype,true);
+        
+        if ($file_unique_id instanceof ErrorMessage)
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to insert Compressed File srcFilename = [$srcFilename], description =[$description],filetype = [$filetype]", true,$file_unique_id);
+        
+        return $file_unique_id;
+        
+    }
     
     
 }

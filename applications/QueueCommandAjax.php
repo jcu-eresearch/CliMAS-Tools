@@ -13,6 +13,13 @@ $action = array_util::Value($_POST, "cmdaction", null);
 
 $cmd = FinderFactory::Action($action);  
 
+if ($cmd instanceof ErrorMessage )
+{
+    $result['error'] = print_r($cmd,true);
+    echo json_encode($result);
+    return;    
+}
+
 
 if ( !($cmd instanceof CommandAction) )
 {
@@ -25,14 +32,21 @@ if ( !($cmd instanceof CommandAction) )
 
 $initResult = $cmd->initialise($_POST);
 
+if ($cmd instanceof ErrorMessage )
+{
+    $result['error'] = print_r($cmd,true);
+    echo json_encode($result);
+    return;    
+}
 
 
 if ($initResult instanceof Exception)
 {
-    $result['msg'] = "ERROR:: Action is did not initalised {$action}";
+    $result['error'] = $initResult->getMessage();
     echo json_encode($result);
     return;  
 }
+
 
 
 if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE)

@@ -281,7 +281,12 @@ class CommandAction extends Object implements Serializable
     
     public static function Queue(CommandAction $obj)
     {
-        $obj->LastQueueResult(DatabaseCommands::CommandActionQueue($obj));
+        
+        $result = DatabaseCommands::CommandActionQueue($obj);
+        if ($result instanceof ErrorMessage) 
+            return  ErrorMessage::Stacked (__METHOD__, __LINE__, "Trying to queue Command action", true, $result);
+        
+        $obj->LastQueueResult();
     }
     
      

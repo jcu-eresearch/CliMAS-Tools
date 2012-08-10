@@ -4,6 +4,18 @@ include_once dirname(__FILE__).'/includes.php';
 
 $result = array();
 
+$cmdaction = array_util::Value($_POST, "cmdaction", null);
+if (is_null($cmdaction))
+{
+    $result['error'] = "cmdaction passed as NULL";
+    echo json_encode($result);
+    return;  
+}
+
+
+FinderFactory::Find($cmdaction);
+
+
 $commandID = array_util::Value($_POST, "cmdID",     null);
 $elementID = array_util::Value($_POST, "elementID", null);
 
@@ -11,6 +23,8 @@ $result['msg'] = print_r($_POST,true);
     
 $result['commandID'] = $commandID;
 $result['elementID'] = $elementID;
+
+
 
 $cmd = DatabaseCommands::CommandActionRead($commandID);
 if ($cmd instanceof Exception)
@@ -22,7 +36,6 @@ if ($cmd instanceof Exception)
 }
 
 $cmd instanceof CommandAction;
-
 
 $result['msg'] = print_r($cmd,true);
 

@@ -370,7 +370,7 @@ class matrix
         $lines = explode("\n",$asciiFile);
 
         $result = array();
-        $headerNames = array_util::Trim(explode($delim,$lines[0]));
+        $headerNames = array_util::Trim(str_getcsv($lines[0],$delim));
 
         // find lat and long column names and row indexs
         $lat_index = -1;
@@ -393,7 +393,7 @@ class matrix
         {
             if (trim($lines[$index]) == "") continue;
 
-            $cells = explode($delim,$lines[$index]);
+            $cells = str_getcsv($lines[$index],$delim) ;
 
             if (count($cells) != count($headerNames))
             {
@@ -433,7 +433,7 @@ class matrix
         $lines = explode("\n",$asciiFile);
 
         $result = array();
-        $headerNames = array_util::Trim(explode($delim,$lines[0]));
+        $headerNames = array_util::Trim(str_getcsv($lines[0],$delim));
 
         // find lat and long column names and row indexs
         $lat_index = -1;
@@ -454,7 +454,7 @@ class matrix
         {
             if (trim($lines[$index]) == "") continue;
 
-            $cells = explode($delim,$lines[$index]);
+            $cells = str_getcsv($lines[$index],$delim);
 
             if (count($cells) != count($headerNames))
             {
@@ -557,8 +557,8 @@ class matrix
         // get the first line - as the headings
         $first = fgets($fh);
         $first = trim(str_replace('"','',$first));
-        $headerNames = explode($delim,$first);
-
+        $headerNames = str_getcsv($first, $delim);
+        
         // print_r($headerNames);
 
         $lineCount = 1;
@@ -577,7 +577,7 @@ class matrix
 
             $line = fgets($fh);
             $line = str_replace('"','',$line);
-            $cells = explode($delim,$line);
+            $cells = str_getcsv($line, $delim);
 
             // print_r($cells);
 
@@ -629,8 +629,7 @@ class matrix
             while (!feof($fh))
             {
                 $line = fgets($fh);
-                $line = str_replace('"','',$line);
-                $cells = explode($delim,$line);
+                $cells = str_getcsv($line,$delim) ;
 
                 $lineCount++;
 
@@ -986,7 +985,7 @@ class matrix
     {
         $result = array();
         foreach (self::ColumnNames($src) as $columnName)
-            $result[$columnName] = stats::median(array_util::Column($src, $column_name),$nullValue);
+            $result[$columnName] = stats::median(array_util::Column($src, $columnName),$nullValue);
 
         return $result;
     }
@@ -1045,7 +1044,8 @@ class matrix
         fgets($f); // read first line - skip first line
         while (!feof($f))
         {
-            $cells = explode($delim, fgets($f));
+            
+            $cells = fgetcsv($f, 10000, $delim);
             if (count($cells) <= 1) continue;
 
             $rowID = trim($cells[0]);
@@ -1813,7 +1813,7 @@ class matrix
         if (is_array($first))
             if (!array_key_exists($column_name,array_flip(array_keys($first))))
             {
-                echo "##Error:: matrix::Column the column named [$column_name] does not exists in matrix";
+                //echo "##Error:: matrix::Column the column named [$column_name] does not exists in matrix";
                 return NULL;
             }
 
@@ -2005,11 +2005,11 @@ class matrix
     // $columns = comma delimited string of column namesstring
     //   or
     //$columns = array of column names
-    public static function SelectedColumns($matrix,$columns)
+    public static function SelectedColumns($matrix,$columns,$delim = ',')
     {
 
         if (is_string($columns))
-            $columns = explode(',',$columns);
+            $columns = str_getcsv($columns,$delim);
 
         $result = array();
         foreach ($matrix as $row_id => $row)
@@ -2022,10 +2022,10 @@ class matrix
     // $columns = comma delimited string of column namesstring
     //   or
     //$columns = array of column names
-    public static function ColumnAdd($matrix,$column_name,$default_value = null)
+    public static function ColumnAdd($matrix,$column_name,$default_value = null,$delim = ',')
     {
         if (!is_array($column_name))
-            $column_names = explode(',',$column_name);
+            $column_names = str_getcsv( $column_name,$delim);
         else
             $column_names = $column_name;
 

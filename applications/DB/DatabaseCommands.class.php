@@ -39,10 +39,7 @@ class DatabaseCommands extends Object
     public static function CommandActionQueue(CommandAction $cmd) 
     {
         
-        //file_put_contents('/tmp/afakes.txt', print_r($cmd,true)."\n",FILE_APPEND);
-        
         $data = base64_encode(serialize($cmd));
-        
         
         // check to see if we already have it.
         $w = array();
@@ -50,14 +47,8 @@ class DatabaseCommands extends Object
         $w["objectid"] = $cmd->ID();
         
         $count = DBO::Count(self::ActionsTableName(), $w);
-        
-        if (is_null($count)) 
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to count Command Actions \n w = ".print_r($w,true)."\n" );
-            return null;
-        }
-        
-        DBO::LogError(__METHOD__."(".__LINE__.")"," counting CDCMa ction count = ".  $count);
+        if ($count instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to count Command Actions \n w = ".print_r($w,true), true,$count);
         
         
         if ($count > 0)
@@ -70,11 +61,8 @@ class DatabaseCommands extends Object
             
             $updateCount = DBO::SetArray( self::ActionsTableName(),$uv, "objectid  = ".util::dbq($cmd->ID()) );
             
-            if ($updateCount != 1 )
-            {
-                DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Update Command \n $uv = ".print_r($uv,true)."\n updateCount = ".print_r($updateCount,true)."\n" );
-                return null;
-            }
+            if ($updateCount instanceof ErrorMessage)  
+                return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Update Command \n $uv = ".print_r($uv,true)."\n updateCount = ".print_r($updateCount,true), true,$updateCount);
             
             
             return  $cmd->ID(); // will hold the row id of the object that was just updated.
@@ -92,12 +80,12 @@ class DatabaseCommands extends Object
         $ins['execution_flag'] = $cmd->ExecutionFlag();
 
         $insert_result = DBO::InsertArray(self::ActionsTableName(), $ins);
+        if ($insert_result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Insert Command \n $ins = ".print_r($ins,true)."\n insert_result = ".print_r($insert_result,true), true,$insert_result);
         
-        if (is_null($insert_result) || !is_numeric($insert_result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Insert Command \n $ins = ".print_r($ins,true)."\n insert_result = ".print_r($insert_result,true)."\n" );
-            return null;
-        }
+        if (!is_numeric($insert_result))  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Insert Command insert_result is not numeric \n insert_result = ".print_r($insert_result,true), true,$insert_result);
+        
         
         return $insert_result;
         
@@ -108,24 +96,17 @@ class DatabaseCommands extends Object
     {
         
         if (is_null($src) || is_null($valueName))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","src or value passed as null  src = [{$src}]  valueName = [{$valueName}]  \n" );
+            return new ErrorMessage(__METHOD__,__LINE__,"src or value passed as null  src = [{$src}]  valueName = [{$valueName}]  \n");
+
             
-            return null;
-        }
-        
         $qn = array();
         $qn['objectid'] = ($src instanceof CommandAction) ? $src->ID() : $src;
         $qn['queueid']  = self::QueueID();
         $qn[$valueName]  = null;
         
         $result = DBO::QueryArray(self::ActionsTableName(), $qn, 'objectid');
-        
-        if (is_null($result))
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","QueryArray Failed \n qn = ".print_r($qn,true)."\n");
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"QueryArray Failed \n qn = ".print_r($qn,true), true,$result);
         
         return array_util::Value(util::first_element($result), $valueName, null);
         
@@ -143,24 +124,23 @@ class DatabaseCommands extends Object
     public static function CommandActionRead($commandID) 
     {
         
-        if (is_null($commandID)) 
-        {
-            echo "commandID is null\n";
-            return null;
-        }
+        if (is_null($commandID) ) return new ErrorMessage(__METHOD__,__LINE__,"commandID passed as NULL");
+
         
         try {
             
             $data = self::CommandActionValue($commandID,'data');
             
-            if (is_null($data)) return null;
+            if ($data instanceof ErrorMessage) 
+                return new ErrorMessage(__METHOD__,__LINE__,"Failed to read data for command ID {$commandID}");
+
 
             $object = unserialize(base64_decode($data));
             $object instanceof CommandAction;
             
             
         } catch (Exception $exc) {
-             return $exc;
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to read data for command ID {$commandID} execption = ".$exc->getMessage());
         }
         
         return  $object;        
@@ -180,12 +160,8 @@ class DatabaseCommands extends Object
         if (!$really) return;
         
         $delete = DBO::Delete(self::ActionsTableName(), "queueid = ".util::dbq(self::QueueID()) );
-        
-        if (is_null($delete) )
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Remove All Commands \n queueid = ".util::dbq(self::QueueID())."\n" );
-            return null;
-        }
+        if ($delete instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Remove All Commands \n queueid = ".util::dbq(self::QueueID()), true,$delete);
         
         return  $delete;
     }
@@ -199,12 +175,10 @@ class DatabaseCommands extends Object
         $where = " queueid = ".util::dbq(self::QueueID())." and objectid = ".util::dbq($commandID);
         
         $num_removed = DBO::Delete(self::ActionsTableName(),$where );
-        if (is_null($num_removed) )
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Remove  Command  commandID = $commandID \n where = [{$where}] \n" );
-            return null;
-        }
         
+        if ($num_removed instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Remove  Command  commandID = $commandID \n where = [{$where}] \n", true,$num_removed);
+                
         
         return  $num_removed;
     }
@@ -219,12 +193,9 @@ class DatabaseCommands extends Object
 
         
         $result = DBO::QueryArray(self::ActionsTableName(), $qn, 'objectid');
-        
-        if (is_null($result) )
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Get List of Commands \n qn = ".print_r($qn,true)." \n" );
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Get List of Commands \n qn = ".print_r($qn,true), true,$result);
+
         
         return array_keys($result);
         
@@ -233,15 +204,12 @@ class DatabaseCommands extends Object
     
     public static function CommandActionCount() 
     {
-        $list = self::CommandActionListIDs();
+        $result = self::CommandActionListIDs();
         
-        if (is_null($list) )
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Get List for Counting of Commands \n" );
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Get List for Counting of Commands \n", true,$result);
 
-        return count($list);
+        return count($result);
         
         
     }
@@ -249,7 +217,6 @@ class DatabaseCommands extends Object
     
     public static function CommandActionExecutionFlag($id = null) 
     {
-        
         
         $qid = configuration::CommandQueueID();
         
@@ -259,7 +226,10 @@ class DatabaseCommands extends Object
             $q = "select objectid,execution_flag from ".self::ActionsTableName()." where queueid='{$qid}'";    
         
             
-        $result = DBO::Query($q);
+        $result = DBO::Query($q);        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Get Execution flag for command {$id}\n using sql = [$q]", true,$result);
+        
         
         $efresult = null;
         

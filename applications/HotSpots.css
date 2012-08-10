@@ -29,6 +29,14 @@
     display: none;
 }
 
+
+.ui-autocomplete {
+		max-height: 200px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		padding-right: 20px;
+	}
+
 .ui-selecting { 
     background: #FECA40; 
 }
@@ -37,6 +45,8 @@
     background: #F39814; 
     color: white; 
 }
+
+
 
 .selectable { 
     list-style-type: none; 
@@ -437,4 +447,15 @@
     font-weight: normal;
     margin: 0em; 
     padding: 1px;     
+}
+
+
+.SelectionToolBar .text
+{
+    float: right;
+    font-size: 15pt;
+    font-style: italic;
+    font-weight: bold;
+    color: black;
+    
 }

@@ -47,12 +47,11 @@ class CommandProcessor
     public static function ProcessQueue()
     {
         
-        
         $processor_running_filename = configuration::ApplicationFolder()."processor_running.flag";
         
         if (file_exists($processor_running_filename))
         {
-            echo "Processor already running\n";
+            echo "Processor already running using filename [{$processor_running_filename}] \n";
             exit(0);            
         }
         
@@ -65,18 +64,27 @@ class CommandProcessor
         file_put_contents($processor_running_filename,$str);
 
         
+        
+        
         if (!file_exists($processor_running_filename)) 
         {
-            echo "Failed to sart command processor for TDH TOOLS Queue:".configuration::CommandQueueID()."\n";
+            $msg = "Failed to sart command processor for TDH TOOLS Queue:".configuration::CommandQueueID()."\n";
+            $E = new ErrorMessage(__METHOD__, __LINE__,$msg );
+            echo "ERROR:: $msg.\n";
             exit(1);
         }
+        
         
         echo "Reading queue for ".configuration::CommandQueueID()."\n";
         echo "To gracefully stop process delete {$processor_running_filename}\n";
         
         while(file_exists($processor_running_filename))
         {
+            
             $commands = DatabaseCommands::CommandActionListIDs();
+            if ($commands instanceof ErrorMessage)  
+                return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true,$commands); 
+
             
             if (count($commands) > 0)
                 foreach ($commands as $commandID) 
@@ -105,44 +113,39 @@ class CommandProcessor
     {
 
         $command = DatabaseCommands::CommandActionRead($commandID) ;
+        if ($command instanceof ErrorMessage)  return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true,$command); 
+
         
-        
-        if (is_null($command))
-        {
-            // echo datetimeutil::now()."checking $filepath\nCommand was NULL\n\n";
-            return; // todo:: Log as exception /??
-        }
+        if (!($command instanceof CommandAction))
+            return new ErrorMessage(__METHOD__,__LINE__,"command read from Queue was Not CommandAction commandID = [{$commandID}]", true); 
 
         echo "\n".$command->ID()."  == ".$command->ExecutionFlag()." .. ".$command->Status();
-
-        if (!($command instanceof CommandAction))
-        {
-            return null; // todo:: Log as exception /??
-        }
-
+            
+            
         switch ($command->ExecutionFlag()) {
             case CommandAction::$EXECUTION_FLAG_READY:
-                self::Ready($command);
+                $result = self::Ready($command);
                 break;
 
             case CommandAction::$EXECUTION_FLAG_RUNNING:
-                self::Running($command);
+                $result = self::Running($command);
                 break;
 
             case CommandAction::$EXECUTION_FLAG_QUEUE_DONE:
-                self::Finalise($command);   //  the QSUB Queue said it was completd
+                $result = self::Finalise($command);   //  the QSUB Queue said it was completd
                 break;
 
             case CommandAction::$EXECUTION_FLAG_FINALISE:
-                self::Finalise($command);   //  proces said that we had completed
+                $result = self::Finalise($command);   //  proces said that we had completed
                 break;
 
             case CommandAction::$EXECUTION_FLAG_COMPLETE:
-                self::Completed($command);
+                $result = self::Completed($command);
                 break;
 
         }
 
+        return $result;
         
 
     }
@@ -158,8 +161,18 @@ class CommandProcessor
     private static function Ready(CommandAction $cmd)
     {
         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_RUNNING);
-        self::scriptIt($cmd);
-        DatabaseCommands::CommandActionQueue($cmd);
+        $result = self::scriptIt($cmd);
+        
+        
+        
+        $result = DatabaseCommands::CommandActionQueue($cmd);
+        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't update command action into Queue ".print_r($cmd,true), true,$result); 
+
+        
+        return $result;
+        
     }
 
     
@@ -203,8 +216,11 @@ class CommandProcessor
                     if (trim($split[1]) == self::$QSTAT_COMPLETED)
                     {
                         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
-                        DatabaseCommands::CommandActionQueue($cmd);
-                        // echo "\nQueue said job is finished= \n".$result."\n\n";
+                        $result = DatabaseCommands::CommandActionQueue($cmd);
+                        
+                        if ($result instanceof ErrorMessage)  
+                            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Could not update Command to Queue", true,$result); 
+                        
                     }
                     
                 }
@@ -213,6 +229,7 @@ class CommandProcessor
 
         }
 
+        return $result;
 
     }
 
@@ -239,31 +256,6 @@ class CommandProcessor
     
 
     /**
-     *
-     * For debugging to see progess and state of command as it flows thru
-     * 
-     * @param CommandAction $command
-     * @param type $msg 
-     */
-    private static function Log(CommandAction $command,$msg)
-    {
-        $log  = $command->LastUpdated().",";
-        $log .= $command->ID().",";
-        $log .= $command->ExecutionFlag().",";
-        $log .= $command->LocationName().",";
-        $log .= $command->Status().",";
-        $log .= $command->Result().",";
-        $log .= $msg;
-        $log .= "\n";
-
-        file_put_contents(configuration::CommandQueueLog(),$log , FILE_APPEND);
-
-        //echo "$log";
-
-    }
-
-
-    /**
      * Generate script to be QSUB'ed 
      * QSUB can handle simple command line arguments, but too complex and it overruns the line length
      * 
@@ -273,7 +265,16 @@ class CommandProcessor
      */
     private static function scriptIt(CommandAction $cmd)
     {
-        $cmd->QueueID(self::executeScript( self::generateScript($cmd) ) ); // from executeScript
+        
+        $script = self::generateScript($cmd);
+        if ($script instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to create script for command ".print_r($cmd,true), true,$script); 
+        
+        $exe = self::executeScript( $script );
+        if ($exe instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to execute script for command \nscript = [$script]", true,$script); 
+        
+        $cmd->QueueID($exe); // from executeScript
+
+        return $exe;
         
     }
 
@@ -281,7 +282,7 @@ class CommandProcessor
     /**
      * Create TCSH script that will be written to the filesystem to be sent to the GRID
      *
-     * The actaul command be run is "CommandActionExecute.php  <command id>"
+     * The actual command be run is "CommandActionExecute.php  <command id>"
      * 
      * 
      * @param iCommand $cmd
@@ -290,46 +291,24 @@ class CommandProcessor
     {
 
         // qsub shell script
-        $script  = "";
+        $script  = "#!/bin/bash";
         $script .= "# QSUB script from ".configuration::ApplicationName()."\n";
         $script .= "# Written to execute Command Action with id {$cmd->ID()} \n";
-
-
-        // echo "cmd is class ".get_class($cmd)."\n";
-
-        if ($cmd instanceof CommandAction)
-        {
-            // echo "cmd can be  class CommandAction\n";
-
-            $obj = $cmd;
-            $obj instanceof CommandAction;
-            $script .= "#\n";
-            $script .= "# Command Object Values\n";
-            $strs = explode("\n",$obj->__toString());
-
-            foreach ($strs as $str)
-                $script .= "# ".trim($str)."\n";
-
-        }
-
-
-        $script .= "# \n";
         $script .= "# datetime script written:".datetimeutil::NowDateTime()."\n";
-        $script .= "\n";
- 
-        
-        $script .= "php '".configuration::CommandScriptsExecutor()."'  {$cmd->ID()}";
+        $script .= "php '".configuration::CommandScriptsExecutor()."'  {$cmd->ID()}\n";
         $script .= "\n";
 
         $script_filename = configuration::CommandScriptsFolder().
                            configuration::CommandScriptsPrefix().
                            $cmd->ID().
                            configuration::CommandScriptsSuffix();
-
         
-        // $script .= "rm {$script_filename}\n"; // script will remove it self when done
-
-        file_put_contents($script_filename, $script);  // write script to script_filename
+        
+        $fpc = file_put_contents($script_filename, $script);  // write script to script_filename
+        
+        if ($fpc === FALSE) 
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to write script for command script_filename = [{$script_filename}] \nscript = [$script]", true,$script); 
+        
         
         return $script_filename;
 
@@ -345,8 +324,6 @@ class CommandProcessor
     private static function executeScript($scriptFilename)
     {
         $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub '{$scriptFilename}'";
-        
-      //  echo "Should do : $cmd\n";
         
         $qsub_id = exec($cmd);  // will do QSUB exec and then get the return with the QSUB ID
         

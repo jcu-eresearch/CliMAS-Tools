@@ -1,5 +1,12 @@
 // GLOBAL VARIABLES
 
+/*
+
+asa
+
+*/
+
+
 function GetZoom() {
     document.getElementById('ZoomFactor').value = parent.document.getElementById('ZoomFactor').value;
 }
@@ -634,10 +641,7 @@ function postAddSingleProcess(data)
     
     var progressStr = "";
     
-    if (isNull(data.ResultsFullCountString) && isNull(data.ResultsDoneCountString) )
-        progressStr = "Can't read progress";
-    else
-        progressStr = Value(data.ResultsDoneCountString,null)  + " of " +  Value(data.ResultsFullCountString,null);
+    progressStr = Value(data.ProgressPercent,null);
 
     // give the php Object id to the Info button
     $('#info_' + data.elementID)
@@ -648,12 +652,12 @@ function postAddSingleProcess(data)
     $('#info_' + data.elementID).button( "option", "disabled", false );
 
 
-    $('#progress_' + data.elementID).html(progressStr);    
+    $('#progress_' + data.elementID).html(progressStr + "%");    
     $('#status_' + data.elementID).html(Value(data.Status,""));
     
     $.each(data, function(index, value) 
     { 
-        console.log(index + " = " +value);
+        console.log('postAddSingleProcess  ' + index + " = " +value);
 
     });
     
@@ -666,10 +670,51 @@ function UpdateProcess()
     
     console.log("Update Process - get status of all running jobs and report");
 
+    // get all #info_*
+
+    var sData = null;
+
+    var id = null;
+    var action_id = null;
+    $('[id*="info_"]').each( function() {
+    
+        id = this.id.toString();
+    
+        action_id = $('#'+id).data('action_id');
+    
+        console.log("Update Process - with action_id  " + action_id);
+    
+        sData = { 
+              cmdaction: 'SpeciesHotSpots'
+             ,action_id:  action_id
+            ,element_id:  id
+        }
+    
+        $.post("HotSpotsAjaxUpdate.php", sData , function(data) {postUpdateProcess(data);},"json");
+    
+    });
+
+
 }
 
-var dialog = null;
+function postUpdateProcess(data)
+{
+    
+    console.log("POST Update Process - get status of all running jobs and report");
+    
+    $.each(data, function(index, value) 
+    { 
+        console.log('postUpdateProcess ' + index + " = " +value);
 
+    });
+
+    
+    
+}
+
+
+
+var dialog = null;
 
 function infoDialog(src)
 {
@@ -693,9 +738,12 @@ function infoDialog(src)
     
     // send to server command_id and the ID of the element that sent it.
     
+    var 
+    
         jData = { 
-                 cmdID: $('#' + infoButtonID).data('action_id')
-            ,elementID: src.id.toString()
+             cmdaction: 'SpeciesHotSpots',
+                 cmdID: $('#' + infoButtonID).data('action_id'),
+             elementID: src.id.toString()
         }
     
     
@@ -796,8 +844,6 @@ $(document).ready(function(){
         .button()
         .click(function() {setDefaults();})
         ;
-
-
 
 
     $('#InputTypeSpecies').click();

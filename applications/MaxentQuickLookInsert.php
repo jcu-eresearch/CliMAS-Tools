@@ -38,19 +38,14 @@ $file_id = DatabaseMaxent::InsertSingleMaxentProjectedFile(
             ,'Spatial data of projected species suitability:'.basename($ascii_filename)
             );
 
-if (is_null($file_id))
-{    
-    DBO::LogError("MaxentQuickLookInsert.php","Failed to Insert Single Maxent Projected ASCII Grid File {$ascii_filename}  \nspecies_id = $species_id\n");
-    return null;
-}
+if ($file_id instanceof ErrorMessage)  
+    return ErrorMessage::Stacked (__FILE__,__LINE__,"Trying to insert ASCII file [{$ascii_filename}]  species_id = $species_id ", true,$file_id);
 
-
+    
 $qlfn = SpeciesMaxentQuickLook::CreateImage($species_id,$ascii_filename);
-if (is_null($qlfn))
-{    
-    DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Create Quick Look from ASCII Grid File {$ascii_filename}  \nspecies_id = $species_id\n");
-    return null;
-}
+if ($qlfn instanceof ErrorMessage) 
+    return ErrorMessage::Stacked (__FILE__,__LINE__,"Failed to Create Quick Look from ASCII Grid File {$ascii_filename}  \nspecies_id = $species_id\n", true,$qlfn);
+
 
 $file_id = DatabaseMaxent::InsertSingleMaxentProjectedFile(
              $species_id
@@ -60,11 +55,8 @@ $file_id = DatabaseMaxent::InsertSingleMaxentProjectedFile(
             );
 
 
-if (is_null($file_id))
-{    
-    DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Insert Single Maxent Projected Quick Look File {$qlfn}  \nspecies_id = $species_id\n");
-    return null;
-}
+if ($file_id instanceof ErrorMessage)  
+    return ErrorMessage::Stacked (__FILE__,__LINE__,"Failed to Insert Single Maxent Projected Quick Look File {$qlfn}  \nspecies_id = $species_id\n", true,$file_id);
 
 
 //file::Delete($qlfn);

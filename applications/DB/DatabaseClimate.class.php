@@ -9,51 +9,98 @@ class DatabaseClimate {
     
     public static   function getBioclimID($bioclim) 
     {
-        return DBO::GetSingleRowValue("select id from bioclim where dataname = ".util::dbq($bioclim),'id');
+        $result = DBO::GetSingleRowValue("select id from bioclim where dataname = ".util::dbq($bioclim,true),'id');
+        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true,$result);
+        return $result;
     }
     
     
     public static   function getScenarioID($scenario) 
     {
-        return DBO::GetSingleRowValue("select id from scenarios where dataname = ".util::dbq($scenario),'id');
+        $result = DBO::GetSingleRowValue("select id from scenarios where dataname = ".util::dbq($scenario,true),'id');
+        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true,$result);
+        return $result;
     }
 
     public static  function getModelID($model) 
     {
-        return DBO::GetSingleRowValue("select id from models where dataname = ".util::dbq($model),'id');
+        $result = DBO::GetSingleRowValue("select id from models where dataname = ".util::dbq($model,true),'id');
+        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true,$result);
+        return $result;
     }
 
     public static  function getTimeID($time) 
     {
-        return DBO::GetSingleRowValue("select id from times where dataname = ".util::dbq($time),'id');
+        $result = DBO::GetSingleRowValue("select id from times where dataname = ".util::dbq($time,true),'id');
+        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true,$result);
+        return $result;
+    }
+    
+    
+    private static function getDataname($table)
+    {
+        
+        $r = DBO::Unique($table, 'dataname');
+        if ($r instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"can't get dataname for {$table}", true,$r);
+
+        $result = matrix::Column($r,'dataname');
+        if (is_null($result)) return new ErrorMessage(__METHOD__,__LINE__,"Can't get values as a column array");
+        
+        return $result;
     }
     
     public static  function GetBioclims() 
     {
-        $results = matrix::Column(DBO::Unique('bioclim', 'dataname'),'dataname');
-        return $results;
+        return self::getDataname('bioclim');
     }
     
     
     public static  function GetScenarios() 
     {
-        $results = matrix::Column(DBO::Unique('scenarios', 'dataname'),'dataname');
-        return $results;
+        return self::getDataname('scenarios');
     }
 
     public static  function GetModels() 
     {
-        $results= matrix::Column(DBO::Unique('models', 'dataname'),'dataname');
-        return $results;
+        return self::getDataname('models');
     }
 
     public static  function GetTimes() 
     {
-        $results = matrix::Column(DBO::Unique('times', 'dataname'),'dataname');
-        return $results;
-
+        return self::getDataname('times');
     }
 
+    
+    private  static  function getDataNamesNamed($table,$pattern) 
+    {
+        
+        $r = DBO::Unique($table, 'dataname',"dataname like '{$pattern}'");
+        if ($r instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't get Datanamed from {$table} using pattern {$pattern}", true,$r);
+
+        $result = matrix::Column($r,'dataname');
+        if (is_null($result)) return new ErrorMessage(__METHOD__,__LINE__,"Can't get Datanamed from {$table} using pattern {$pattern} as a column array");
+        
+        return $result;        
+    }
+    
+    
+    public static  function GetScenariosNamed($pattern) 
+    {
+        return self::getDataNamesNamed('scenarios',$pattern);
+     
+    }
+
+    public static  function GetModelsNamed($pattern) 
+    {
+        return self::getDataNamesNamed('models',$pattern);
+    }
+
+    public static  function GetTimesNamed($pattern) 
+    {
+        return self::getDataNamesNamed('times',$pattern);
+    }
+    
+    
     public static  function GetBioclimDescriptions() 
     {
         return Descriptions::fromTable("bioclim");
@@ -62,6 +109,7 @@ class DatabaseClimate {
     
     public static  function GetScenarioDescriptions() 
     {
+
         return Descriptions::fromTable("scenarios");
     }
 
@@ -74,6 +122,62 @@ class DatabaseClimate {
     {
         return Descriptions::fromTable("times");
     }
+    
+    
+    public static  function CombinationsSingleLevel($delim="_") 
+    {
+        
+        $result = array();
+    
+        foreach (self::GetScenarios()  as $scenario) 
+        {
+            
+            foreach (self::GetModels() as $model) 
+            {
+                foreach (self::GetTimes() as $time) 
+                {
+                    $combo = $scenario . $delim . $model . $delim . $time;
+                    $result[$combo] = $combo;
+
+                }
+
+
+            }
+            
+        }
+        
+        return $result;
+        
+        
+    }
+    
+    public static  function CombinationsMultiLevel($delim="_") 
+    {
+        
+        $result = array();
+    
+        foreach (self::GetScenarios()  as $scenario) 
+        {
+            $result[$scenario] = array();
+            foreach (self::GetModels() as $model) 
+            {
+                $result[$scenario][$model] = array();
+                foreach (self::GetTimes() as $time) 
+                {
+                    $combo = $scenario . $delim . $model . $delim . $time;
+                    $result[$scenario][$model][$time] = $combo;
+                }
+            }
+        }
+        
+        return $result;
+        
+        
+    }
+    
+    
+    
+    
     
     
 }

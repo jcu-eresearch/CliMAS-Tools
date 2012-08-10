@@ -69,9 +69,17 @@ class Descriptions extends Data {
     
         $q = "select {$DataName},{$Description},{$MoreInformation},{$URI} from {$tablename}";
         
-        $result = DBO::Query($q, $DataName);
-        
-        if (is_null($result)) return null;
+        $result = DBO::Query($q, $DataName);        
+        if ($result instanceof ErrorMessage) 
+            return ErrorMessage::Stacked (__METHOD__,__LINE__
+                                        ,"Failed to get Description from Table 
+                                          tablename = {$tablename}\n
+                                          DataName  = {$DataName}\n
+                                          Description = {$Description}\n
+                                          MoreInformation = {$MoreInformation}\n 
+                                          URI = {$URI}\n"
+                                        ,true
+                                        ,$result);
         
         $D = new Descriptions();
         $D->keyIsDescriptive(false);

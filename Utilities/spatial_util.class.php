@@ -246,5 +246,245 @@ class spatial_util
     public static $SPATIAL_TYPE_RASTER   = "RASTER";
 
 
+    
+    public static function median($asciiGridFilenameArray,$output_filename, $null_value = null)
+    {
+
+        // assume all files are standard and all align
+        // make want to build check for this soon
+        
+        // try to find the null data from the first file
+        if (is_null($null_value))
+        {
+            $null_value = self::asciigrid_nodata_value(util::first_element($asciiGridFilenameArray));
+        }
+        
+        $handles = array();
+
+        $lineCounts = file::lineCounts($asciiGridFilenameArray,true);  // we can use this check if any file is not right
+        
+        
+        
+        $lineCountFirst = util::first_element($lineCounts) ;
+        
+        $result = array();
+        
+        // open all files
+        foreach ($asciiGridFilenameArray as $key => $value)  
+        {
+            if (!file_exists($value))  return new Exception("Could not open for Median {$value}");
+                
+            $handles[$key] = fopen($value, "rb");
+        }
+            
+        
+        // ASCII files have 6 rowsa of "metadata" skip those
+        for ($index = 0; $index < 6; $index++) {
+            foreach ($handles as $key => $handle)  
+                $line = fgets($handle); // read lines from all files 
+        }
+        
+        
+        // we can only read one line at a time from each file 
+        // as we don't have enough memory to to read all files in memory at one time
+        for ($lineNum = 6; $lineNum < $lineCountFirst ; $lineNum++) {
+            
+            $cells = array();
+            foreach ($handles as $key => $handle) 
+                $cells[$key] = explode(" ",fgets($handle));  // load a line from each file - and convert to cells
+
+            // $ cells is now a matrix with rowID is the filename and the "column name" is an index
+            $result[] = implode(" ",matrix::ColumnMedian($cells, $null_value));
+            
+        }
+        
+        foreach ($handles as $key => $handle) fclose($handle);  //close all files
+
+                                      // use the Metadata of the first file as the header for the output
+        $file_result =   implode("\n",file::Head(util::first_element($asciiGridFilenameArray), 6))."\n"   
+                        .implode("\n",$result).
+                        "\n";
+        
+        file_put_contents($output_filename, $file_result);
+
+        if (!file_exists($output_filename)) 
+            return new Exception("Failed to Write file for Median {$output_filename}");
+
+            
+        $outputFileLineCount  = file::lineCount($output_filename);
+
+        // check to see if output file line count = $lineCountFirst
+        if ($lineCountFirst != $outputFileLineCount)
+            return new Exception("Failed to create Median number of input and output lines don't match  $lineCountFirst != $outputFileLineCount ");
+        
+        
+        return $output_filename;
+        
+    }
+
+    
+    public static function asciigrid_nodata_value($asciiGridFilename)
+    {
+        if (!file_exists($asciiGridFilename)) return null;
+        
+        $result = exec("cat '{$asciiGridFilename}' | grep NODATA_value");
+        if (!util::contains($result, 'NODATA_value')) return null;
+        
+        return trim(str_replace('NODATA_value', '', $result));
+        
+    }
+    
+    
+    
+    
+    public static function CreateImage($src_grid_filename,$output_image_filename = null ,$transparency = 255,$background_colour = "0 0 0 255")
+    {
+        
+        if (is_null($output_image_filename)) $output_image_filename = str_replace("asc","png",$src_grid_filename);
+        
+        if (file_exists($output_image_filename)) return $output_image_filename;
+
+        $stats = self::RasterStatisticsBasic($src_grid_filename);
+        
+        $min = $stats[self::$STAT_MINIMUM];
+        $max = $stats[self::$STAT_MAXIMUM];
+        
+        $histogram_buckets = 100;
+        
+        $ramp = RGB::Ramp($min, $max, $histogram_buckets,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())); 
+
+        $colour_txt = file::random_filename().".txt"; // list of colours to use - will bne generated
+        file::Delete($colour_txt);
+
+        $colour_png = file::random_filename().".png"; // colourized ASC file as a png
+        file::Delete($colour_png);
+
+        $colour_zero_txt = file::random_filename().".txt"; // used to create black background
+        file::Delete($colour_zero_txt);
+
+        $colour_background_png = file::random_filename().".png"; // background image
+        file::Delete($colour_background_png);
+
+        $colour_combined_png = file::random_filename().".png"; // background + coloured image 
+        file::Delete($colour_combined_png);
+
+        $colour_legend_png = file::random_filename().".png"; // legend  image together
+        file::Delete($colour_legend_png);
+
+        $header_png = file::random_filename().".png"; // legend  image together
+        file::Delete($header_png);
+        
+        
+        if (is_null($output_image_filename))
+            $output_image_filename = file::random_filename().".png"; // return image filename
+        
+        
+        // create colour "lookup table"    
+
+        $color_table = "nv 0 0 0 0\n";  // no value
+        $pcent = 0;
+        $step = round( 100 / count($ramp),0);
+        foreach ($ramp as $index => $rgb) 
+        {
+            $rgb instanceof RGB;
+            $color_table .= $pcent."% ".$rgb->Red()." ".$rgb->Green()." ".$rgb->Blue()." {$transparency}\n";    
+            
+            $pcent += $step;
+        }
+
+        // save the colour lookup table 
+        file_put_contents($colour_txt, $color_table);
+        
+        $cmd = "gdaldem  color-relief {$src_grid_filename} {$colour_txt} -nearest_color_entry -alpha -of PNG {$colour_png}";
+        exec($cmd);  // generate a coloured image using colour lookup 
+
+        // create backgound to put coloured image on top of
+        file_put_contents($colour_zero_txt, "nv 0 0 0 0\n0% {$background_colour}\n100% {$background_colour}\n"); // default is ALL Values = $background_colour  & No Value  = transparent  
+        $cmd = "gdaldem  color-relief {$src_grid_filename} $colour_zero_txt -nearest_color_entry -alpha -of PNG {$colour_background_png}";
+        exec($cmd);
+
+
+        // order here is important first is lowest
+        $cmd = "convert {$colour_background_png} {$colour_png} -layers flatten {$colour_combined_png}";
+        exec($cmd);
+        
+        
+        list($width, $height, $type, $attr) = getimagesize($colour_png);     
+        
+        // - add parameters  to the image  $scenario, $model, $time
+
+$header = <<<HEADER
+convert \
+-size  {$width}x60 xc:white -font DejaVu-Sans-Book -fill black \
+-draw 'text  10,20 "{$src_grid_filename}"' \
+{$header_png};
+HEADER;
+
+        exec($header);
+
+
+        // create a legend image
+        // # rectangle left,top right,bottom" \
+        $swatch_height = 20;
+        $swatch_width = 20;
+        $swatch_width_padding = 10;
+        $text_align_up = -2;
+
+        
+        $height = count($ramp) * $swatch_height + (2 * $swatch_height);  // heioght of the legend is a cal of the number of legend items + 2 for top and bittom padding
+        $box_top = 10;
+        $box_left = 20;
+        
+        $legend  = "convert -size  {$width}x{$height} xc:white ";
+        $legend .= "-font DejaVu-Sans-Book ";
+
+        foreach (array_reverse($ramp, true) as $index => $rgb) 
+        {
+            $rgb instanceof RGB;
+
+            $box_right = $box_left + $swatch_width;
+            $box_bottom = $box_top + $swatch_height;
+
+            $text_left = $box_left + $swatch_width + $swatch_width_padding;
+            $text_top  = $box_top + $swatch_height + $text_align_up;
+
+            $text = sprintf("%01.2f", $index);
+
+            $legend .= "-fill '#{$rgb->asHex()}' -draw 'rectangle {$box_left},{$box_top} {$box_right},{$box_bottom}' ";
+            $legend .= "-fill black -draw 'text {$text_left},{$text_top} \"{$text}\"' ";
+
+            $box_top += $swatch_height;
+
+        }
+
+        $legend .= " {$colour_legend_png}";
+        
+        exec($legend); // create legend
+
+        $cmd = "convert {$header_png} {$colour_combined_png} {$colour_legend_png} -append {$output_image_filename}";
+        exec($cmd);
+
+        // might be better here to convert to a tmp image
+        // and then copy back to the $output_image_filename
+        
+
+        file::Delete($colour_txt);
+        file::Delete($colour_png);
+        file::Delete($colour_zero_txt);
+        file::Delete($colour_background_png);
+        file::Delete($colour_combined_png);
+        file::Delete($colour_legend_png);
+
+        if (!file_exists($output_image_filename)) return null;
+        
+        return $output_image_filename; // filename of png that can be used - 
+
+    }
+    
+    
+    
+    
+    
+    
 }
 ?>

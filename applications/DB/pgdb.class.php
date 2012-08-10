@@ -9,14 +9,40 @@
 class PGDB extends Object {
 
 
+    private $pghost     = null;
+    private $pgport     = null;
+    private $pgdatabase = null;
+    private $pguser     = null;
+    private $pgpassword = null;
+    
     /*
      * @param $via_commandline  True = Force use of Command Line for Database access
      * 
      */
-    public function __construct() {
+    public function __construct(
+                     $pghost     = null
+                    ,$pgport     = null
+                    ,$pgdatabase = null
+                    ,$pguser     = null
+                    ,$pgpassword = null
+            ) {
         parent::__construct();
         
         $this->QueueID(configuration::CommandQueueID());
+        
+        $this->pghost     = ToolsDataConfiguration::Species_DB_Server();
+        $this->pgport     = ToolsDataConfiguration::Species_DB_Port();
+        $this->pgdatabase = ToolsDataConfiguration::Species_DB_Database();
+        $this->pguser     = ToolsDataConfiguration::Species_DB_Username();
+        $this->pgpassword = ToolsDataConfiguration::Species_DB_Password();
+        
+        
+        if (!is_null($pghost))      $this->pghost     = $pghost;
+        if (!is_null($pgport))      $this->pgport     = $pgport;
+        if (!is_null($pgdatabase))  $this->pgdatabase = $pgdatabase;
+        if (!is_null($pguser))      $this->pguser     = $pguser;
+        if (!is_null($pgpassword))  $this->pgpassword = $pgpassword;
+        
         
     }
 
@@ -30,39 +56,49 @@ class PGDB extends Object {
         return configuration::CommandQueueID();
     }
     
-    public function ExecuteSQL($sql,$output_filename = null,$log_error = true)
+    /**
+     *
+     * @param type $sql
+     * @param type $output_filename
+     * @param type $log_error
+     * @return array\ErrorMessage  
+     */
+    public function ExecuteSQL(
+                     $sql
+                    ,$output_filename = null
+                    ,$log_error = true
+            )
     {
         // we don't have Postgress SQL php addin so  this is the way query works - thru sending to file and readin file.
         
         $fn  = file::random_filename();
         
-        $cmd  = " ";
-        $cmd .= "export PGHOST="    .ToolsDataConfiguration::Species_DB_Server()  ." ; ";
-        $cmd .= "export PGPORT="    .ToolsDataConfiguration::Species_DB_Port()    ." ; ";
-        $cmd .= "export PGDATABASE=".ToolsDataConfiguration::Species_DB_Database()." ; ";
-        $cmd .= "export PGUSER="    .ToolsDataConfiguration::Species_DB_Username()." ; ";
-        $cmd .= "export PGPASSWORD=".ToolsDataConfiguration::Species_DB_Password()." ; ";
-        $cmd .= "psql -L {$fn}  --no-align -c \"$sql\" ";
-
+        $export = "export ";
+        
+        $cmd  = "#!/bin/bash\n";
+        $cmd .= "{$export} PGHOST="    .$this->pghost."\n";
+        $cmd .= "{$export} PGPORT="    .$this->pgport."\n";
+        $cmd .= "{$export} PGDATABASE=".$this->pgdatabase."\n";
+        $cmd .= "{$export} PGUSER="    .$this->pguser."\n";
+        $cmd .= "{$export} PGPASSWORD=".$this->pgpassword."\n";
+        $cmd .= "psql -F'|' -L {$fn}  --no-align -c \"{$sql}\" ";
+        
         if (!is_null($output_filename))
             $cmd .= " --output '{$output_filename}'";
         
-        exec($cmd);
+        $sql_name = file::random_filename();    
+        file_put_contents($sql_name,$cmd);
+        exec("chmod u+x {$sql_name}");
+        exec($sql_name);
+        file::Delete($sql_name);
         
-        if (!file_exists($fn) && $log_error)
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to run SQL CMD = [$cmd] \n");
-            return null;
-        }
+        if (!file_exists($fn))
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to run SQL CMD  OutputFile Does Not exist   = [$cmd]  \n",$log_error);
+            
 
         $file = file($fn);
            
-        if (file::lineCount($fn) <= 1 && $log_error)
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","not enouigh lines in SQL output Log file CMD = [$cmd] \n");
-            return null;
-        }
-        
+        if (file::lineCount($fn) <= 1) return new ErrorMessage(__METHOD__,__LINE__,"not enouigh lines in SQL output Log file CMD = [$cmd] \n",$log_error);
         
         $start_output = "**************************";
         $output = false;
@@ -92,23 +128,11 @@ class PGDB extends Object {
         
         $sql_result = $this->ExecuteSQL($sql,$resultFilename);
         
-        if (is_null($sql_result) && $log_error)
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Run SQL \nkeyColumn = [{$keyColumn}]   \nsql =[{$sql}]\n");
-            return null;
-        }
+        if ($sql_result instanceof ErrorMessage) return $sql_result;
 
-        if (count($sql_result) <= 0  && $log_error)
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Run SQL result count is ZERO \nkeyColumn = [{$keyColumn}]   \nsql =[{$sql}]\n");
-            return null;
-        }
+        if (count($sql_result) <= 0 ) return new ErrorMessage(__METHOD__,__LINE__,"Failed to Run SQL result count is ZERO \nkeyColumn = [{$keyColumn}]   \nsql =[{$sql}]\n",$log_error);
         
-        if (!file_exists($resultFilename)  && $log_error) 
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Run SQL with output file - outputfile does not exists trying to access [{$resultFilename}]  \nkeyColumn = [{$keyColumn}]   \nsql =[{$sql}]\n");
-            return null;
-        }
+        if (!file_exists($resultFilename))  return new ErrorMessage(__METHOD__,__LINE__,"Failed to Run SQL with output file - outputfile does not exists trying to access [{$resultFilename}]  \nkeyColumn = [{$keyColumn}]   \nsql =[{$sql}]\n",$log_error);
         
         $result = array();
 
@@ -116,11 +140,8 @@ class PGDB extends Object {
         
         $handle = fopen($resultFilename, "r");    
         
-        if ($handle === FALSE  && $log_error) 
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Run SQL with output file - could not get read access [{$resultFilename}]  \nkeyColumn = [{$keyColumn}]   \nsql =[{$sql}]\n");
-            return null;
-        }
+        if ($handle === FALSE )  return new ErrorMessage(__METHOD__,__LINE__,"Failed to Run SQL with output file - could not get read access [{$resultFilename}]  \nkeyColumn = [{$keyColumn}]   \nsql =[{$sql}]\n",$log_error);
+        
         
         if ($handle !== FALSE) 
         {
@@ -141,11 +162,8 @@ class PGDB extends Object {
                     $data = str_getcsv($line,"|");
                 } catch (Exception $exc) {
                     
-                    if ($log_error)
-                    {
-                        DBO::LogError(__METHOD__."(".__LINE__.")","Failed to readv output file - $row = [{$row}]  outputfile [{$resultFilename}]  \nkeyColumn = [{$keyColumn}]   \nsql =[{$sql}]\n");
+                        $E = new ErrorMessage(__METHOD__,__LINE__,"Failed to readv output file - $row = [{$row}]  outputfile [{$resultFilename}]  \nkeyColumn = [{$keyColumn}]   \nsql =[{$sql}]\n",$log_error);
                         exit();                        
-                    }
                     
                 }
                 
@@ -178,43 +196,37 @@ class PGDB extends Object {
     }
     
             
-    
-    public function insert($sql,$log_error = true) 
+    /**
+     *
+     * @param string $sql
+     * @param type $log_error
+     * @param type $readLastVal
+     * @return $string\ErrorMessage   Last id inserted into Table
+     */
+    public function insert($sql,$log_error = true,$readLastVal = true) 
     {
         
-        $sql = util::trim_end(trim($sql), ';'). "; select LASTVAL();";
+        if ($readLastVal)
+            $sql = util::trim_end(trim($sql), ';'). "; select LASTVAL();";
         
         $result = $this->ExecuteSQL($sql);
         
-        if (is_null($result) && $log_error) 
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Insert SQL  \nsql =[{$sql}]\n");
-            return null;
-        }
+        if ($result instanceof ErrorMessage)  return new ErrorMessage(__METHOD__,__LINE__,"Failed to Insert SQL  \nsql =[{$sql}]\n",$log_error);
         
         $last_val_line = array_util::FirstElementsThatContain($result, "lastval");        
-        if (is_null($last_val_line) && $log_error) 
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Insert SQL  cant get lastval \nsql =[{$sql}]\n");
-            return null;
-        }
-        
-        
-        $lastId = array_util::Value($result,2);  // get thrid line of result
-        if (is_null($lastId) && $log_error) 
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Insert SQL lastId is NULL \nsql =[{$sql}]\n");
-            return null;
-        }
+        if (is_null($last_val_line)) 
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to Insert SQL last_val_line is NULL \nsql =[{$sql}]\n",$log_error);
+
             
         
+        $lastId = array_util::Value($result,2);  // get thrid line of result
+        if (is_null($lastId))  
+                return new ErrorMessage(__METHOD__,__LINE__,"Failed to Insert SQL lastId is NULL \nsql =[{$sql}]\n",$log_error);            
+
         
         $lastId = trim($lastId);
-        if (!is_numeric($lastId) && $log_error)   
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Insert SQL lastId is NOT Numeric\n  lastId = $lastId \nsql =[{$sql}]\n");
-            return null;
-        }
+        if (!is_numeric($lastId) )   
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to Insert SQL lastId is NOT Numeric\n  lastId = $lastId \nsql =[{$sql}]\n",$log_error);
         
         
         return trim($lastId);
@@ -227,11 +239,9 @@ class PGDB extends Object {
         $result = $this->ExecuteSQL($sql);
         $update_line = array_util::FirstElementsThatContain($result, "UPDATE");
         
-        if ( (is_null($update_line) || count($update_line) <= 0) && $log_error )
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to UPDATE Could not find a line in output with 'UPDATE'  \n ExecuteSQL Result = [".print_r($result,true)."] \n sql =[{$sql}]\n");
-            return null;
-        }
+        
+        if ( (is_null($update_line) || count($update_line) <= 0)  )
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to UPDATE Could not find a line in output with 'UPDATE'  \n ExecuteSQL Result = [".print_r($result,true)."] \n sql =[{$sql}]\n",$log_error);
         
         $ins = array_util::FirstElementsThatContain($result,"UPDATE" );
         
@@ -248,11 +258,8 @@ class PGDB extends Object {
         
         $grant = array_util::FirstElementsThatContain($result,"GRANT" );
         
-        if ((is_null($grant) || count($grant) <= 0) && $log_error )
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to GRANT Could not find a line in output with 'GRANT'  \n ExecuteSQL Result = [".print_r($result,true)."] \n sql =[{$sql}]\n");
-            return null;
-        }
+        if ((is_null($grant) || count($grant) <= 0)  )
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to GRANT Could not find a line in output with 'GRANT'  \n ExecuteSQL Result = [".print_r($result,true)."] \n sql =[{$sql}]\n",$log_error);
         
         return  $result; // 
 
@@ -281,15 +288,15 @@ class PGDB extends Object {
         $q = "delete from $table where $where";
         
         $result = $this->ExecuteSQL($q);
+        if ( $result instanceof ErrorMessage) return $result;
 
+        
         $delete_line = array_util::FirstElementsThatContain($result, "DELETE");
         
-        if ( (is_null($delete_line) || count($delete_line) <= 0) && $log_error )
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to DELETE Could not find a line in output with 'DELETE'  \n ExecuteSQL Result = [".print_r($result,true)."] \ntable = {$table} \n where = {$where} \n");
-            return null;
-        }
+        if ( (is_null($delete_line) || count($delete_line) <= 0))
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to DELETE Could not find a line in output with 'DELETE'  \n ExecuteSQL Result = [".print_r($result,true)."] \ntable = {$table} \n where = {$where} \n",$log_error);
         
+            
         $delete_count = trim(str_replace("DELETE", "", $delete_line)); 
         
         return $delete_count;
@@ -304,14 +311,13 @@ class PGDB extends Object {
         if ($table == "") return null;
 
         $result = $this->ExecuteSQL("delete from $table");
-
+        if ($result instanceof ErrorMessage) return $result;
+        
+        
         $delete_line = array_util::FirstElementsThatContain($result, "DELETE");
         
-        if ((is_null($delete_line) || count($delete_line) <= 0) && $log_error )
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to DELETE Could not find a line in output with 'DELETE'  \n ExecuteSQL Result = [".print_r($result,true)."] \ntable = {$table} \n");
-            return null;
-        }
+        if ((is_null($delete_line) || count($delete_line) <= 0)  )
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to DELETE Could not find a line in output with 'DELETE'  \n ExecuteSQL Result = [".print_r($result,true)."] \ntable = {$table} \n",$log_error);
         
         $delete_count = trim(str_replace("DELETE", "", $delete_line)); 
         
@@ -320,25 +326,11 @@ class PGDB extends Object {
     }
     
 
-    public function last_insert()
-    {
-        $sql = " select LASTVAL();";
-        $lastval_result = $this->query($sql);        
-        $first = util::first_element($lastval_result);
-        $lastid = array_util::Value($first,'lastval',null);
-        return $lastid;   
-    }
-
-
     public function describe_table($table_name,$log_error = true)
     {
-        $result = $this->query("select column_name,data_type from INFORMATION_SCHEMA.COLUMNS where table_name = ".util::dbq($table_name).";","column_name");
+        $result = $this->query("select column_name,data_type from INFORMATION_SCHEMA.COLUMNS where table_name = ".util::dbq($table_name,true).";","column_name");
+        if ($result instanceof ErrorMessage) return $result;        
         
-        if ((is_null($result) || count($result) <= 0) && $log_error )
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to DESCRIBE Could not find a line in output with 'DELETE'  \n ExecuteSQL Result = [".print_r($result,true)."] \ntable = {$table_name} \n");
-            return null;
-        }
         
         return $result;
         
@@ -346,25 +338,28 @@ class PGDB extends Object {
     
     public function has_table($table_name,$log_error = true)
     {
-        return (count($this->describe_table($table_name,$log_error)) > 0);
+        
+        $result = $this->describe_table($table_name,$log_error);
+        if ($result instanceof ErrorMessage) return $result;
+        
+        return (count($result) > 0);
     }
     
     
     public function count($table,$where_src,$log_error = true) 
-    {        
+    {   
+        
         if (is_array($where_src))
             $where = DBO::WhereString($where_src);
         else
             $where = $where_src;
         
+        
         $sql = "select count(*) as row_count from $table where {$where}";
         $count_result = $this->query($sql,null,$log_error);
         
-        if (is_null($count_result) && $log_error)
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to COUNT  \n ExecuteSQL Result = [".print_r($count_result,true)."] \ntable = {$table} \n where_src = {$where_src}  \n ");
-            return null;
-        }
+        if ($count_result instanceof ErrorMessage) return $count_result;
+        
         
         $count = array_util::Value(util::first_element($count_result), 'row_count', -1);
         
@@ -373,19 +368,16 @@ class PGDB extends Object {
     }
 
     
-    public function Unique($table,$field,$where = null,$as_array = false,$log_error = true) 
+    public function Unique($table,$field,$where = null,$as_array = false) 
     {        
         if (!is_null($where)) $where = " where {$where} " ;
         
-        $result = $this->query("select $field from $table $where group by $field order by $field",$field);
+        $sql = "select $field from $table $where group by $field order by $field";
         
-        if (is_null($result) && $log_error)
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Unique  \n ExecuteSQL Result = [".print_r($result,true)."] \n table = [$table] \nfield  = [$field] \n where = [$where] \n as_array = [$as_array] \n");
-            return null;
-        }
+        $result = $this->query($sql,$field);
+        if ($result instanceof ErrorMessage) return $result;
         
-        if (!$as_array)return $result;
+        if (!$as_array) return $result;
         
         
         return matrix::Column($result, $field);
@@ -401,12 +393,7 @@ class PGDB extends Object {
     {
         
         $result = $this->query($sql,$column);
-        
-        if (is_null($result) && $log_error)
-        {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Single Row Value  \n ExecuteSQL Result = [".print_r($result,true)."] \n sql = [$sql] \ncolumn  = [$column] \n");
-            return null;
-        }
+        if ($result instanceof ErrorMessage) return $result;
 
         return array_util::Value(util::first_element($result), $column);
     }

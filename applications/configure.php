@@ -114,9 +114,9 @@ GRANT USAGE, SELECT ON SEQUENCE command_action_id_seq TO ap02;
  * easier to them look up species that have occurences
  * 
  * 
-DROP TABLE IF EXISTS species_occurence;
-create table species_occurence as  select species_id,count(*) from occurrences group by species_id;
-GRANT ALL PRIVILEGES ON species_occurence TO ap02;
+DROP TABLE IF EXISTS species_occur;
+create table species_occur as  select species_id,count(*) from occurrences group by species_id;
+GRANT ALL PRIVILEGES ON species_occur TO ap02;
 
 
 
@@ -138,9 +138,6 @@ delete from files_data where file_unique_id             = '500dfd4576c8e';
 delete from files where file_unique_id                  = '500dfd4576c8e';
 delete from modelled_climates where file_unique_id      = '500dfd4576c8e';
 delete from modelled_species_files where file_unique_id = '500dfd4576c8e';
-
-
-
 
 
  */

@@ -4,6 +4,6 @@
  * or for ALL
  */
 include_once 'includes.php';
-MaxentMainServerBuild::Run(array_util::Value($argv, "1"));
+MaxentMainServerBuild::Run(array_util::Value($argv, "1"),$argv);
 
 ?>

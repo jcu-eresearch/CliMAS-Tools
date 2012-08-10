@@ -4,7 +4,13 @@
  *
  */
 include_once 'includes.php';
-CommandProcessor::ProcessQueue();
+$result = CommandProcessor::ProcessQueue();
+
+if ($result instanceof ErrorMessage) 
+    ErrorMessage::Stacked (__METHOD__, __LINE__, "", true, $result);
+    
+
+
 ?>
 
 

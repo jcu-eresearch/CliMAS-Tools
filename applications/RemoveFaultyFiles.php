@@ -4,13 +4,15 @@
  *  
  */
 include_once 'includes.php';
+echo "Remove Faulty Files\n";
+$result = DatabaseFile::RemoveFaultyFiles();
 
-$id = array_util::Value($argv, 1);
-if (is_null($id)) return;
+if ($result instanceof ErrorMessage)
+{
+    print_r($result);    
+    exit(1);
+}
 
-DBO::Delete('files_data',             'file_unique_id = '.util::dbq($id));
-DBO::Delete('files',                  'file_unique_id = '.util::dbq($id));
-DBO::Delete('modelled_climates',      'file_unique_id = '.util::dbq($id));
-DBO::Delete('modelled_species_files', 'file_unique_id = '.util::dbq($id));
 
+matrix::display($result);
 ?>

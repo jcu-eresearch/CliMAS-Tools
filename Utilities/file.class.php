@@ -602,12 +602,22 @@ class file {
     }
 
 
-    public static function lineCounts($filenames)
+    public static function lineCounts($filenames,$basenameAsKey = false)
     {
 
         $result= array();
         foreach ($filenames as $filename) {
-            $result[$filename] = self::lineCount($filename);
+            
+            if ($basenameAsKey)
+            {
+                $result[basename($filename)] = self::lineCount($filename);
+            }
+            else
+            {
+                $result[$filename] = self::lineCount($filename);    
+            }
+            
+            
         }
         return $result;
     }
@@ -1036,5 +1046,45 @@ class file {
         return $result;
     }
 
+    
+    
+    public static function LS($pattern,$options = "-1",$basenameAsKey = false)
+    {
+        
+        if (is_null($options) ) $options = "-1";
+        
+        $cmd = "ls $options {$pattern}";
+        $result = array();
+        
+        exec($cmd,$result);
+        
+        if (!$basenameAsKey) return $result;
+        
+        $newResult = array();
+        foreach ($result as $key => $value) 
+        {
+            $newResult[basename($value)] = $value;
+        }
+        
+        unset($result);
+        
+        return $newResult;
+        
+        
+    }
+ 
+    public static function Head($filename,$lines)
+    {
+        $cmd = "head -n {$lines} {$filename}";
+        $result = array();
+        
+        exec($cmd,$result);
+        
+        return $result;
+        
+        
+    }
+    
+    
 }
 ?>

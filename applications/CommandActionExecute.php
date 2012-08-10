@@ -3,34 +3,34 @@ set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
 
 include_once dirname(__FILE__).'/includes.php';
 
-$commandActionID = array_util::Value($argv, 1);   // read argv and get ID of command that will be run here.
-if (is_null($commandActionID))
+$ActionClassName = array_util::Value($argv, 1);   // read argv and get ID of command that will be run here.
+if (is_null($ActionClassName))
 {
-    // log this as failed to execute command action
-    //echo "ERROR:: Was not a CommandAction commandActionID is NULL\n";
-    return;
+    $msg = " ActionClassName is NULL";
+    echo "ERROR:: {$msg}\n";
+    return new ErrorMessage(__FILE__, __LINE__, $msg);    
 }
 
-$cmd = DatabaseCommands::CommandActionRead($commandActionID);
-if ( !($cmd instanceof CommandAction))
+$action = FinderFactory::Find($ActionClassName);
+if (is_null($action))
 {
-    // it was a command but it was not a command action
-    //echo "ERROR:: Was not a COmmandAction\n";
-    return;
+    $msg = "ERROR:: Can't find action named '$ActionClassName' ?";
+    echo "ERROR:: {$msg}\n";
+    return new ErrorMessage(__FILE__, __LINE__, $msg);        
 }
 
-if (is_null($cmd))
-{
-    // it was a command but it was not a command action
-    //echo "ERROR:: cmd is NULL ???";
-    return;
-}
 
 //*************************************************************************
 //* here is where we actually execute the action
 //*************************************************************************
+if (!method_exists($action, 'Execute'))
+{
+    $msg = "ERROR:: Can't find Execute method for '$ActionClassName' ?\n".print_r($action,true);
+    echo "ERROR:: {$msg}\n";
+    return new ErrorMessage(__FILE__, __LINE__, $msg);  
+}
 
-$cmd->Execute();
+$action->Execute();
 
 
 ?>

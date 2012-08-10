@@ -12,10 +12,9 @@ $action = array_util::Value($_POST, "cmdaction", null);
 
 $cmd = FinderFactory::Action($action);  
 
-if ($cmd instanceof Exception)
+if ($cmd instanceof ErrorMessage)
 {
-    $cmd instanceof Exception;
-    $result['msg'] = "ERROR:: Action is did not initalised {$action} {$cmd->getMessage()}";
+    $result['msg'] = $cmd;
     echo json_encode($result);
     return;  
 }
@@ -24,7 +23,14 @@ $initResult = $cmd->initialise($_POST);
 
 if ($initResult instanceof Exception)
 {
-    $result['msg'] = "ERROR:: Action is did not initalised {$action}";
+    $result['msg'] = $initResult->getMessage();
+    echo json_encode($result);
+    return;  
+}
+
+if ($initResult instanceof ErrorMessage)
+{
+    $result['msg'] = $initResult;
     echo json_encode($result);
     return;  
 }

@@ -4,20 +4,32 @@
 class MaxentMainServerBuild extends Object {
     
 
-    public static function Run($speciesID)
+    public static function Run($RunStyle,$options)
     {
-        if (is_null($speciesID)) return null;
         
-        if ($speciesID == "ALL")  return self::RunAll();
+        if (is_null($RunStyle)) return null;
+        if ($RunStyle == "/help")  return self::Usage();
         
-        echo "MaxentMainServerBuild for $speciesID\n";
+        if ($RunStyle == "ALL")  return self::RunAll($options);
+
+        if ($RunStyle == "FOLDER")  return self::RunFolder($options);
+
+        if (method_exists('MaxentMainServerBuild', 'run_'.$RunStyle))
+        {
+            $method_name = "run_{$RunStyle}";
+            return self::$method_name($options);
+        }
         
-        $MM = new MaxentMainServerBuild($speciesID);
-        $MM->GenerateOnly(false);
-        return $MM->Execute();
         
     }
 
+    private  static function Usage()
+    {
+        
+        
+        
+    }
+    
     private  static function RunAll()
     {
         
@@ -31,11 +43,92 @@ class MaxentMainServerBuild extends Object {
             
             $MM = new MaxentMainServerBuild($id);
             $MM->GenerateOnly(false);
+            $MM->MaxentOnly(false);
+            $MM->UseQSUB(true);
+            $MM->UpdateDatabase(true);
+            $MM->Execute();
+        }
+        
+    }
+
+    
+    private  static function RunFolder()
+    {
+        
+        Echo "Run for Data already in Folder\n";
+        
+        $folders = file::folder_folders(configuration::Maxent_Species_Data_folder());
+
+        foreach ($folders as $folder) 
+        {   
+            $id = basename($folder);            
+            
+            if ($id == 50) continue;
+            
+            echo "species_id = {$id} \n";
+            $MM = new MaxentMainServerBuild($id);
+            $MM->GenerateOnly(false);
+            $MM->MaxentOnly(false);
+            $MM->UseQSUB(true);
+            $MM->UpdateDatabase(true);
             $MM->Execute();
         }
         
     }
     
+    private  static function run_species($options)
+    {
+        $val = array_util::Value($options, 2);
+
+        $MM = new MaxentMainServerBuild($val);
+        $MM->GenerateOnly(false);
+        $MM->MaxentOnly(false);
+        $MM->UseQSUB(true);
+        $MM->UpdateDatabase(false);
+            
+        $MM->Execute();
+
+    }
+
+    
+    private  static function Run_genus($options)
+    {
+        
+    }
+    
+    private  static function Run_clazz($options)
+    {
+        
+        $val = array_util::Value($options, 2);
+        
+        if (is_null($val)) 
+        {
+            print_r(SpeciesData::Clazz());
+            return null;
+        }
+        
+        echo "Find all species that are inside this clazz (Taxa)  [{$val}]\n";
+        
+        $speciesTaxas = SpeciesData::TaxaForClazzWithOccurances($val);
+        
+        foreach ($speciesTaxas as $row) 
+        {
+            $MM = new MaxentMainServerBuild($row['species_id']);
+            $MM->GenerateOnly(false);
+            $MM->MaxentOnly(false);
+            $MM->UseQSUB(true);
+            $MM->UpdateDatabase(false);
+            
+            $MM->Execute();
+            
+            unset($MM);
+         
+            sleep(5);
+            
+        }
+        
+        
+    }
     
     
     public function __construct($speciesID) {
@@ -47,7 +140,18 @@ class MaxentMainServerBuild extends Object {
     
         $this->GenerateOnly(false);
     
-            
+        $info = SpeciesData::SpeciesInfoByID($this->SpeciesID());
+        if (is_null($info)) 
+        {
+            echo "ERROR:: Species ID Does Not Exists {$this->SpeciesID()}\n";
+            exit();            
+        }
+        
+        $this->SpeciesInfo(implode(", ",$info));
+        
+        echo "Initialise ".  $this->SpeciesInfo()."\n";
+        
+       
         
     }
 
@@ -67,6 +171,15 @@ class MaxentMainServerBuild extends Object {
     public function Execute()
     {
         
+        echo "Execute ".  $this->SpeciesInfo()."\n";
+        
+        echo "GenerateOnly   {$this->GenerateOnly()}\n";
+        echo "MaxentOnly     {$this->MaxentOnly()}\n";
+        echo "UseQSUB        {$this->UseQSUB()}\n";
+        echo "UpdateDatabase {$this->UpdateDatabase()}\n\n";
+        
+        $this->MaxentDone(false);
+        
         file::Delete($this->maxent_single_species_script_filename());
         
         file::mkdir_safe($this->species_scripts_folder());
@@ -75,41 +188,104 @@ class MaxentMainServerBuild extends Object {
         
         $this->QsubCollectionID("tdh_".$this->SpeciesID());
         
+        if ($this->UpdateDatabase())
+        {
+            echo "Numbers from Database\n";
+            $this->DataAlreadyLoadedASCII(SpeciesData::GetAllModelledData($this->SpeciesID(),'ASCII_GRID' ));        
+            $this->DataAlreadyLoadedQL(SpeciesData::GetAllModelledData($this->SpeciesID(),'ASCII_GRID' ));                    
+        }
+        else
+        {
+            // find out how many from counting in filesystem
+            // becasue we not updating database at the moment so read file system for counts
+            echo "Numbers from Filesystem\n";
+            $this->DataAlreadyLoadedASCII(file::LS($this->species_output_folder(). "/*.asc", '-1', true));        
+            $this->DataAlreadyLoadedQL   (file::LS($this->species_output_folder(). "/*.png", '-1', true));        
+        }
+        
+        echo "DataAlreadyLoadedASCII = ".count($this->DataAlreadyLoadedASCII())."\n";
+        echo "DataAlreadyLoadedQL    = ".count($this->DataAlreadyLoadedQL())."\n";
+        
+        
+        $this->ExecutionCompleted(Count($this->DataAlreadyLoadedASCII()));
+        
+        echo "Generating for {$this->SpeciesInfo()} \n";
+        
         if (is_null($this->getOccurances()))  return null;
         
         $combinations = array();
-        foreach (DatabaseClimate::GetScenarios() as $scenarioID)
-            foreach (DatabaseClimate::GetModels()  as $modelID)
-                foreach (DatabaseClimate::GetTimes() as $timeID)
-                {
-                    if (!is_null($scenarioID) && !is_null($modelID) &&  !is_null($timeID) )
-                        $combinations["{$scenarioID}_{$modelID}_{$timeID}"] = null;
-                }
-                    
-                    
-
-        $this->SpeciesCombinations($combinations); // sets up the default empty result set
-
+        if ($this->MaxentOnly())
+        {
+            echo "Maxent Only\n";
+            
+            if ($this->MaxentLogDone())
+            {
+                echo "Maxent Already calculated for {$this->SpeciesID()}\n";
+                echo "Exiting .....\n";
+                
+                exit();
+            }
+            
+            
+        }
+        else
+        {
+            // create futures
+            
+            foreach (DatabaseClimate::GetScenarios() as $scenarioID)
+                foreach (DatabaseClimate::GetModels()  as $modelID)
+                    foreach (DatabaseClimate::GetTimes() as $timeID)
+                    {
+                        if (!is_null($scenarioID) && !is_null($modelID) &&  !is_null($timeID) )
+                            $combinations["{$scenarioID}_{$modelID}_{$timeID}"] = null;
+                    }
+            
+            
+        }
         
+        
+        
+        $this->SpeciesCombinations($combinations); // sets up the default empty result set                    
         
         $scriptname = $this->writeMaxentSingleSpeciesProjectionScriptFile(); // all combinations for a single species
-        if ($scriptname == "") return null;
-        
+        if ($scriptname == "") return null;        
         if (!file_exists($scriptname)) return null;
+        
+        if (!$this->MaxentOnly())
+        {
+            $this->ExecutionTotal($this->ExecutionCount() + $this->ExecutionCompleted());                    
+            
+            echo "Already executed {$this->ExecutionCompleted()}\n";
+            echo "Left  to execute {$this->ExecutionCount()}\n";
+            echo "Total to execute {$this->ExecutionTotal()}\n";
+            
+        }
         
         
         if ($this->GenerateOnly())
         {
-            echo "Create script ready for execution \n$scriptname \n ";
+            $dir = dirname($scriptname);
+            echo "Create script ready for execution \n Scripts Folder= {$dir} \n$scriptname \n ";
+            
         }
         else
         {
             $dir = dirname($scriptname);
             exec("rm {$dir}/tdh_*");
             
-            echo "Executing to QSUB  $scriptname \n ";
-            $qsub_result     = exec("cd {$dir}; qsub -N{$this->QsubCollectionID()} '{$scriptname}'");  /// QSUB JOBS Submitted here
-            echo "QSUB  qsub_result = $qsub_result \n ";
+            if ($this->UseQSUB())
+            {
+                echo "Executing to QSUB  $scriptname \n ";
+                $qsub_result     = exec("cd {$dir}; qsub -N{$this->QsubCollectionID()} '{$scriptname}'");  /// QSUB JOBS Submitted here
+                echo "QSUB  qsub_result = $qsub_result \n ";                
+            }
+            else
+            {
+                echo "Executing here  $scriptname \n ";                
+                exec("chmod u+x '{$scriptname}'; cd {$dir}; '{$scriptname}'");  // execute on this Login node
+                
+            }
+            
             
         }
 
@@ -125,35 +301,39 @@ class MaxentMainServerBuild extends Object {
      */
     private function writeMaxentSingleSpeciesProjectionScriptFile()
     {
+        $script  = "#!/bin/tcsh\n"; 
+        $script .= "module load java\n";
         
-        $script = $this->maxentScript();
+        $script .= $this->maxentScript();
         
-        foreach (array_keys($this->SpeciesCombinations()) as $combination)
-        {
-            
-            $singleFutureScript = $this->singleCombinationScript($combination);   // script that will be used to execute just a single combo
-            
-            if (is_null($singleFutureScript)) continue;
+        
+        if (!$this->MaxentOnly()) // only add future projections if we want them 
+            foreach (array_keys($this->SpeciesCombinations()) as $combination)
+            {
+
+                $singleFutureScript = $this->singleCombinationScript($combination);   // script that will be used to execute just a single combo
+
+                if (is_null($singleFutureScript)) continue;
 
 
-            //
-            // If we are running bigger Future jobs then these may be in paralell 
-            // - here we add either the script itself or a call to execute the script 
-            //
-            if ($this->ParalellFuturePredictions())
-            {
-                echo "Adding as Paralell {$combination} ";
-                
-                $script .= "\nqsub -N{$this->QsubCollectionID()} '{$singleFutureScript}'";              
+                //
+                // If we are running bigger Future jobs then these may be in paralell 
+                // - here we add either the script itself or a call to execute the script 
+                //
+                if ($this->ParalellFuturePredictions())
+                {
+                    echo "Adding as Paralell {$combination} ";
+
+                    $script .= "\nqsub -N{$this->QsubCollectionID()} '{$singleFutureScript}'";              
+                }
+                else
+                {
+                    // echo "Adding as Serial {$combination} ";
+                    $script .= $singleFutureScript;
+                }
+
+
             }
-            else
-            {
-                // echo "Adding as Serial {$combination} ";
-                $script .= $singleFutureScript;
-            }
-            
-            
-        }
         
         $script = trim($script);
         
@@ -218,8 +398,6 @@ class MaxentMainServerBuild extends Object {
         $output_folder  =  $this->species_output_folder(); 
 
         
-        $speciesInfo = SpeciesData::SpeciesQuickInformation($this->SpeciesID());
-        
         
 $maxent_script .= <<<AAA
 #
@@ -227,10 +405,10 @@ $maxent_script .= <<<AAA
 # ==================================================================================
 #
 # speciesID      = {$this->SpeciesID()} 
-# Species Info   = {$speciesInfo}
-# Scenarios      = {$this->EmissionScenarioIDs()}
-# Models         = {$this->ClimateModelIDs()} 
-# Times          = {$this->TimeIDs()}
+# Species Info   = {$this->SpeciesInfo()}
+# Scenarios      = ALL
+# Models         = ALL 
+# Times          = ALL
 #
 # file locations
 # Species Folder = {$species_folder}
@@ -255,11 +433,11 @@ AAA;
 
         $MaxentResultsInsert_php  = configuration::ApplicationFolder()."applications/MaxentResultsInsert.php";
 
-        $maxent_script  .= "\nphp -q '{$MaxentResultsInsert_php}' {$this->SpeciesID()}\n";
+        if ($this->UpdateDatabase())
+            $maxent_script  .= "\nphp -q '{$MaxentResultsInsert_php}' {$this->SpeciesID()}\n";
 
-
+            
             return $maxent_script;
-
 
     }
     
@@ -314,7 +492,7 @@ AAA;
         // don't have to do this as the main script alreayd has the data  if ParalellFuturePredictions  === FALSE
         if ($this->ParalellFuturePredictions())
         {
-            $script .= "#!/bin/tcsh"; 
+            $script .= "#!/bin/tcsh\n"; 
         
             $script .= "# combination              = {$combination}\n";
             $script .= "# speciesID                = {$this->SpeciesID()}\n";
@@ -332,22 +510,33 @@ AAA;
 
         } else {
             
-            $script .= "#!/bin/tcsh"; 
-            $script .= "\nmodule load java\n";
-            $script .= "\n# speciesID .. combination = {$this->SpeciesID()} .. {$combination}\n";
+            if (!file_exists($future_projection_output))
+            {
+                $script .= "# speciesID .. combination = {$this->SpeciesID()} .. {$combination}\n";
+            }
+            
         }
 
-
-                    //java -mx2048m -cp $MAXENT   density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x        
-        $script .= "\njava -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x\n";   
-        $script .= "\nphp -q ".configuration::ApplicationFolder()."applications/MaxentQuickLookInsert.php {$this->SpeciesID()} '$future_projection_output'\n";
+        // if already calc then don't do again
+        if (!file_exists($future_projection_output))
+        {
+                        //java -mx2048m -cp $MAXENT   density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x        
+            $script .= "java -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x\n";   
+            $this->ExecutionCount($this->ExecutionCount() + 1);            
+        }
+       
+        // checks to see if it's already ion the database
+        if (!array_key_exists($combination, $this->DataAlreadyLoadedASCII()))
+        {
+            if ($this->UpdateDatabase())
+                $script .= "php -q ".configuration::ApplicationFolder()."applications/MaxentQuickLookInsert.php {$this->SpeciesID()} '$future_projection_output'\n";            
+            
+        }
         
         if ($this->ParalellFuturePredictions())     
         {
-            $script .= "\nrm $scriptFilename\n";
+            $script .= "rm $scriptFilename\n";
         }
-        
-        $script .= "\n";
             
         
         
@@ -357,12 +546,8 @@ AAA;
         // 
         // for now return the script  and we will add it to the end of the major script 
         
-        
-        
         // NOT running paralell 
         if (!$this->ParalellFuturePredictions()) return $script;   // - return the actual script
-            
-        
         
         
         // --------------------------------------------------------------
@@ -402,7 +587,6 @@ AAA;
         file::mkdir_safe($species_data_folder);
         
         $this->OccurenceFilename($species_data_folder.configuration::Maxent_Species_Data_Occurance_Filename());
-        
         
         echo "OccurenceFilename = {$this->OccurenceFilename()}\n";
         
@@ -444,6 +628,41 @@ AAA;
         return $asc_file_id;
     }
 
+
+    
+    public function ExecutionCount() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+    
+    public function ExecutionCompleted() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    
+    public function DataAlreadyLoadedASCII() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    public function DataAlreadyLoadedQL() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+    
+    public function ExecutionTotal() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
     
     /**
      *
@@ -524,6 +743,13 @@ AAA;
         return $this->setProperty(func_get_arg(0));
     }
     
+
+    public function MaxentDone() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
     
     /**
      * Keep the array of [species][combintations]
@@ -564,6 +790,32 @@ AAA;
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
+
+    
+    public function MaxentOnly() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    public function UseQSUB() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+    public function UpdateDatabase() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    public function SpeciesInfo() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
     
     
     public function AttachedCommand() 
@@ -634,8 +886,14 @@ AAA;
 
         $lastLogLine = exec("tail -n1 '$maxentLog'");
 
-        if (util::contains($lastLogLine, "Ending"))  return true; // Maxent finished OK
-        
+        if (util::contains($lastLogLine, "Ending"))  
+        {
+            $this->MaxentDone(false);
+            return true; // Maxent finished OK
+            
+        }
+                
+        $this->MaxentDone(false);
         return false; // Maxtent did not finish OK
         
     }
