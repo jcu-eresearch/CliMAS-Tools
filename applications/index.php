@@ -49,9 +49,27 @@ $(document).ready(function(){
 <h1 class="pagehead"><a href="index.php"><img src="<?php echo configuration::IconSource()."CIT.png" ?>" border="0" /></a></h1>
 
 <div class="maincontent">
-    <div id="Suitability"><a href="SpeciesSuitability.php"><img src="<?php echo configuration::IconSource()."Suitability.png" ?>" border="0" /></a></div>
-       <div id="Hotspots"><a href="HotSpots.php">          <img src="<?php echo configuration::IconSource()."Hotspots.png" ?>" border="0" /></a></div>
-            <div id="EIS"><a href="EnvironmentalImpact.php"><img src="<?php echo configuration::IconSource()."Impact.png" ?>" border="0" /></a></div>
+    <div id="Suitability"><a href="SpeciesSuitability.php">
+        <img src="<?php echo configuration::IconSource()."Suitability.png" ?>" border="0" /></a>
+    </div>
+    
+    <div id="SpeciesScenarioTimeline">
+        <a href="SpeciesScenarioTimeline.php">
+            <img src="<?php echo configuration::IconSource()."SpeciesScenarioTimeline.png" ?>" border="0" />
+        </a>
+    </div>
+    <div id="Hotspots">
+        <a href="HotSpots.php">
+            <img src="<?php echo configuration::IconSource()."Hotspots.png" ?>" border="0" />
+        </a>
+    </div>
+                    
+    <div id="EIS">
+        <a href="EnvironmentalImpact.php">
+            <img src="<?php echo configuration::IconSource()."Impact.png" ?>" border="0" />
+        </a>
+    </div>
+    
 </div>
 
 <div class="credits">

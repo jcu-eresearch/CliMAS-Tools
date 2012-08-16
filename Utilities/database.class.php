@@ -75,8 +75,6 @@ class database
     }
     
     
-    
-    
     public function connect()
     {
         $this->link = mysql_connect($this->host, $this->userID, $this->pwd,$this->open_new_connection);

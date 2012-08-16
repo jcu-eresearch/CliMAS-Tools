@@ -30,6 +30,7 @@ function usage($prog)
 // --------------------------------------------------------------
 
 
+ErrorMessage::Marker("Load into database $ascii_filename  ");
 
 $file_id = DatabaseMaxent::InsertSingleMaxentProjectedFile(
              $species_id
@@ -40,24 +41,6 @@ $file_id = DatabaseMaxent::InsertSingleMaxentProjectedFile(
 
 if ($file_id instanceof ErrorMessage)  
     return ErrorMessage::Stacked (__FILE__,__LINE__,"Trying to insert ASCII file [{$ascii_filename}]  species_id = $species_id ", true,$file_id);
-
     
-$qlfn = SpeciesMaxentQuickLook::CreateImage($species_id,$ascii_filename);
-if ($qlfn instanceof ErrorMessage) 
-    return ErrorMessage::Stacked (__FILE__,__LINE__,"Failed to Create Quick Look from ASCII Grid File {$ascii_filename}  \nspecies_id = $species_id\n", true,$qlfn);
 
-
-$file_id = DatabaseMaxent::InsertSingleMaxentProjectedFile(
-             $species_id
-            ,$qlfn
-            ,'QUICK_LOOK'
-            ,'Quick look image of projected species suitability:'.basename($qlfn)
-            );
-
-
-if ($file_id instanceof ErrorMessage)  
-    return ErrorMessage::Stacked (__FILE__,__LINE__,"Failed to Insert Single Maxent Projected Quick Look File {$qlfn}  \nspecies_id = $species_id\n", true,$file_id);
-
-
-//file::Delete($qlfn);
 ?>

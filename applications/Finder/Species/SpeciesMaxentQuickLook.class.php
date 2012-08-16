@@ -55,15 +55,6 @@ class SpeciesMaxentQuickLook {
         
         $db = new PGDB();
         
-
-    //    echo "\ncolour_txt = ".$colour_txt ;
-    //    echo "\ncolour_png = ".$colour_png ;
-    //    echo "\ncolour_zero_txt = ".$colour_zero_txt ;
-    //    echo "\ncolour_background_png = ".$colour_background_png ;
-    //    echo "\ncolour_combined_png = ".$colour_combined_png ;
-    //    echo "\ncolour_legend_png = ".$colour_legend_png ;
-
-        
         $indexes = array_keys($ramp);
         if (is_null($low_threshold))   // try to get value from  Maxent Results self::$DisplayThresholdFieldName
         {
@@ -116,12 +107,14 @@ class SpeciesMaxentQuickLook {
         exec($cmd);
 
         
-        $species_info = SpeciesData::SpeciesInfoByID($species_id);
-        if ($species_info instanceof ErrorMessage)
-            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Could not get Species Info for species_id = $species_id\n", true, $species_info);
+        $species_common = str_replace("'","",SpeciesData::SpeciesCommonNameSimple($species_id));
+        if ($species_common  instanceof ErrorMessage)
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Could not get Species Info for species_id = $species_id\n", true, $species_common );
+
+        $species_name = str_replace("'","",SpeciesData::SpeciesName($species_id));
+        if ($species_name instanceof ErrorMessage)
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Could not get Species Info for species_id = $species_id\n", true, $species_name);
         
-        
-        $species_info = array_util::Replace($species_info, "'", "");
         
         
         list($width, $height, $type, $attr) = getimagesize($colour_png);     
@@ -131,8 +124,8 @@ class SpeciesMaxentQuickLook {
 $header = <<<HEADER
 convert \
 -size  {$width}x60 xc:white -font DejaVu-Sans-Book -fill black \
--draw 'text  10,20 "{$species_info['scientific_name']}"' \
--draw 'text  10,40 "{$species_info['common_name']}"' \
+-draw 'text  10,20 "{$species_name}"' \
+-draw 'text  10,40 "{$species_common}"' \
 -draw 'text 200,20 "Scenario: {$scenario}"' \
 -draw 'text 400,20 "Model: {$model}"' \
 -draw 'text 600,20 "Time: {$time}"' \

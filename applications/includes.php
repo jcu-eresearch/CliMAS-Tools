@@ -21,7 +21,7 @@ if (file_exists("{$af}config.tdh2-hpc")) include_once $af.'config.tdh2-hpc';
 
 include_once dirname(__FILE__).'/configuration.class.php';
 
-include_once $af."../Utilities/includes.php";
+include_once configuration::UtilityClasses();
 include_once $af.'Session.class.php';
 include_once $af.'CommandAction/Command.includes.php';
 include_once $af.'Finder/Finder.includes.php';

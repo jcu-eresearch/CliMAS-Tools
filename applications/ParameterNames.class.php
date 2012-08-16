@@ -10,6 +10,7 @@ class Parameter
     public static $APPLICATION_FOLDER_WEB = "APPLICATION_FOLDER_WEB";
     
     public static $UTILITIES_CLASSES    = "UTILITIES_CLASSES";
+    
     public static $DOWNLOAD_FOLDER_WEB  = "DOWNLOAD_FOLDER_WEB";
     public static $DOWNLOAD_FOLDER_REAL = "DOWNLOAD_FOLDER_REAL";
     
@@ -44,8 +45,11 @@ class Parameter
     
     public static $TempFolder = "TempFolder";
 
-    
-    
+    public static $DBFS_DB_HOST     = "DBFS_DB_HOST";
+    public static $DBFS_DB_USER     = "DBFS_DB_USER";
+    public static $DBFS_DB_DATABASE = "DBFS_DB_DATABASE";
+    public static $DBFS_DB_PASSWORD = "DBFS_DB_PASSWORD";
+
     
 }
 

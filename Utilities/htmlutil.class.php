@@ -624,7 +624,7 @@ class htmlutil {
     }
 
 
-    public static function KMLPlacemarker($name,$desc ,$lat, $lon, $alt)
+    public static function KMLPlacemarker($name,$desc ,$lat, $lon, $alt,$url_prefix)
     {
 
 $placeMark = <<<PLACEMARK
@@ -715,7 +715,7 @@ STRING;
 
     }
 
-    public static function KMLPhotoSingle($filename,$lat,$lon, $alt,$href=NULL)
+    public static function KMLPhotoSingle($filename,$lat,$lon, $alt,$href = NULL)
     {
 
         $name = util::rightStr($filename, '/',FALSE);

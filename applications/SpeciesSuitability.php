@@ -156,12 +156,10 @@ $ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())
 <?php 
 echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),'ApplicationFolderWeb');
 echo htmlutil::AsJavaScriptObjectArray(SpeciesData::speciesList(),"full_name","species_id","availableSpecies");    
+
 echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSource');
 
-
 ?>
-
-
 
 
 function GetZoom() {

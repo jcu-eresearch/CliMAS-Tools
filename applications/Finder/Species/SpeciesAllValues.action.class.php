@@ -31,15 +31,19 @@ class SpeciesAllValues extends Action {
         
         foreach ($speciesSearchResult as $index => $row) 
         {
-            $desc = new Description();
-            $desc->DataName(urlencode($row['scientific_name']));
-            $desc->Description($row['common_name']." ({$row['scientific_name']})");
             
-            $desc->MoreInformation($row['common_name']." ({$row['scientific_name']})");
-            $desc->URI(ToolsDataConfiguration::ALAFullTextSearch().urlencode($row['scientific_name']) );
+            $species_id = $row['species_id'];
+            $info = SpeciesData::SpeciesQuickInformation($species_id);
+            if (! ($info instanceof ErrorMessage))
+            {
+                $desc = new Description();
+                $desc->DataName(urlencode($row['scientific_name']));
+                $desc->Description($info);
+                $desc->MoreInformation('');
+                $desc->URI(ToolsDataConfiguration::ALAFullTextSearch().urlencode($row['scientific_name']) );
 
-            $descs->Add($desc);
-            
+                $descs->Add($desc);                
+            }
         }
 
 

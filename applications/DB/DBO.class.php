@@ -280,7 +280,7 @@ class DBO {
             
         $str =  util::dbq(substr(print_r($str,true),0,3000));  
         
-        $sql = "insert into error_log (error_date_time,source_code_from,error_message) values ({$dt},{$from},{$str})";
+        $sql = "insert into error_log (error_date_time,source_code_from,error_message) values ({$dt},{$from},{$str});";
         
         $result = $db->insert($sql,false,false);
         if ($result instanceof ErrorMessage ) throw new Exception($result);

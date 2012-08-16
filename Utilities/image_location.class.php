@@ -2,20 +2,28 @@
 class image_location
 {
 
-    public static function LatLong($imageFilename)
+    public static function LatLong2CSV($pattern)
     {
-        $result = "";
-        if (util::last_char($imageFilename) == "/")
+        
+        $files = file::LS("{$pattern}*", null, true);
+        
+        $header['latitude']  = '';
+        $header['longitude'] = '';
+        $header['altitude']  = '';
+        $header['date']  = '';
+        $header['time']  = '';
+        $header['file_time']  = '';
+        $header['direction']  = '';
+        $header['filename']  = '';
+        $header['pathname']  = '';
+        
+        $result =  join(",",array_keys($header))."\n";
+        
+        foreach ($files as $basename => $filename)
         {
-            $files = file::folder_files($imageFilename);
-            $files = file::arrayFilter($files, ".jpg");
-
-            foreach ($files as $fn)
-                $result .= "".$fn.','.join(',',self::getLatLong($fn))."\n";
-
+            if (file_exists($filename))
+                $result .= join(',',self::getLatLong($filename))."{$basename},{$filename}\n";    
         }
-        else
-            $result = "".$imageFilename.','.join(',',self::getLatLong($imageFilename))."\n";
 
         return $result;
 
@@ -112,7 +120,7 @@ class image_location
         {
             $loc = self::getLatLong($fn);
             $name = util::rightStr($fn, '/',false);
-            $result .= htmlutil::KMLPlacemarker($name, $name, $loc['latitude'], $loc['longitude'], $loc['altitude']);
+            $result .= htmlutil::KMLPlacemarker($name, $name, $loc['latitude'], $loc['longitude'], $loc['altitude'],$url_prefix);
         }
 
         $result .= htmlutil::KMLFooter();

@@ -16,6 +16,7 @@ if (stripos( $hostname, "tdh-tools-2") !== FALSE)
     $conf[Parameter::$APPLICATION_FOLDER_WEB]    = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/tdhtools/";
     
     $conf[Parameter::$UTILITIES_CLASSES]     = "/www/html/eresearch/tdhtools/Utilities/includes.php";
+    
     $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/www/html/eresearch/output/";
     $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/output/";
     $conf[Parameter::$RESOURCES_FOLDER]      = "/www/html/eresearch/tdhtools/Resources/";

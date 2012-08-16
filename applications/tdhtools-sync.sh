@@ -4,3 +4,4 @@ rsync -avztmPi --delete   --rsh="sshpass -p  Volts100. ssh -l jc166922"  /home/j
 rsync -avztmPi --delete   --rsh="sshpass -p  Volts100. ssh -l jc166922"  /home/jc166922/projects/tdhtools/* login.hpc.jcu.edu.au:/scratch/jc166922/tdh1/tdhtools
 rsync -avztmPi --delete   --rsh="sshpass -p  Volts100. ssh -l jc166922"  /home/jc166922/projects/tdhtools/* login.hpc.jcu.edu.au:/scratch/jc166922/tdh2/tdhtools
 
+

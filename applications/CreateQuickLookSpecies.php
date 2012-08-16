@@ -6,6 +6,7 @@ $species_id = array_util::Value($argv, 1);
 $pattern = array_util::Value($argv, 2);
 
 if (is_null($species_id)) usage($prog);
+if (is_null($pattern)) $pattern = "*";
 
 function usage($prog)
 {

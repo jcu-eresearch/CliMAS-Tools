@@ -10,7 +10,7 @@ class TemplateClass extends Object {
     //**put your code here
     
     public function __construct() { 
-        
+        a
         parent::__construct();
     }
     

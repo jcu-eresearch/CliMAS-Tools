@@ -102,15 +102,12 @@ SQL;
 
         echo "$table_sql\n";
 
-
         $table_result = DBO::CreateAndGrant($table_sql);
         if ($table_result instanceof ErrorMessage) 
         {
             echo $table_result."\n";
             exit(1);
         }
-            
-        
         
         return true;
 
@@ -833,6 +830,165 @@ SQL;
     }
 
 
+    public function Stage092($name_only = false)
+    {
+
+        $name = 'Species Taxa Tree populate for Common Name Only  with Occurances';
+
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
+
+        $this->header($name);
+
+        // might not be a good idea to drop table - really need  to copy as we will have update
+        // the models_id in other tables from old to new
+        // get Species ID
+
+        ///   - T remove all data before  new upload DBO::DeleteAll('species_taxa_tree');
+
+        
+        $speciesList = SpeciesData::TaxaWithOccurancesFiltered(1, 'common_name', 'is', 'null');
+        if ($speciesList instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $speciesList);
+
+        
+        $count = 0;
+        foreach ($speciesList as $key => $row)
+        {
+
+            if ($count < 999999)
+            {
+                
+                
+                try {
+                    
+                    echo "ALA common name for {$row['species_taxa_id']}  {$row['species']}  ... ";
+                    
+                    $species_data_url = "http://bie.ala.org.au/ws/species/{$row['species_guid']}.json";
+                    
+                    $data = json_decode(file_get_contents($species_data_url));
+                    
+                    $commonNames = $data->commonNames;
+
+                    $names = array();
+                    foreach ($commonNames as $index => $commonNameRow) 
+                        $names[$commonNameRow->nameString] = $commonNameRow->nameString;
+                    
+                    $nameStr = util::dbq(implode(" / ",$names));
+                    
+                    $sql = "update species_taxa_tree set common_name = {$nameStr} where id = {$row['species_taxa_id']}";
+                    
+                    $result = DBO::Update($sql);
+                    if ($result instanceof ErrorMessage) 
+                    {
+                        echo "\n";
+                        ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);
+                        exit(1);
+                    }
+                    else
+                    {
+                        echo $result."\n";
+                    }
+
+
+                } catch (Exception $exc) {
+                    echo "Can't get data for {$row['species']} using URL {$species_data_url}\n";
+                }
+
+            }
+
+            $count++;
+        }
+
+        //$q = "select kingdom,phylum,clazz,orderz,family,genus,species from species_taxa_tree";
+        //$result = DBO::Query($q);
+        
+        //matrix::display($result, " ", null, 20);
+        
+
+        return true;
+
+    }
+
+    
+    public function Stage093($name_only = false)
+    {
+
+        $name = 'Species Taxa Tree populate for Common Name Only  for all ';
+
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
+
+        $this->header($name);
+
+        // might not be a good idea to drop table - really need  to copy as we will have update
+        // the models_id in other tables from old to new
+        // get Species ID
+
+        ///   - T remove all data before  new upload DBO::DeleteAll('species_taxa_tree');
+
+        
+        $speciesList = SpeciesData::TaxaFiltered('common_name', 'is', 'null');
+        if ($speciesList instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $speciesList);
+
+        
+        $count = 0;
+        foreach ($speciesList as $key => $row)
+        {
+
+            if ($count < 999999)
+            {
+                
+                
+                try {
+                    
+                    echo "ALA common name for {$row['id']}  {$row['species']}  ... ";
+                    
+                    $species_data_url = "http://bie.ala.org.au/ws/species/{$row['species_guid']}.json";
+                    
+                    $data = json_decode(file_get_contents($species_data_url));
+                    
+                    $commonNames = $data->commonNames;
+
+                    $names = array();
+                    foreach ($commonNames as $index => $commonNameRow) 
+                        $names[$commonNameRow->nameString] = $commonNameRow->nameString;
+                    
+                    $nameStr = util::dbq(implode(" / ",$names));
+                    
+                    $sql = "update species_taxa_tree set common_name = {$nameStr} where id = {$row['id']}";
+                    
+                    $result = DBO::Update($sql);
+                    if ($result instanceof ErrorMessage) 
+                    {
+                        echo "\n";
+                        ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);
+                        exit(1);
+                    }
+                    else
+                    {
+                        echo $result."\n";
+                    }
+
+
+                } catch (Exception $exc) {
+                    echo "Can't get data for {$row['species']} using URL {$species_data_url}\n";
+                }
+
+            }
+
+            $count++;
+        }
+
+        //$q = "select kingdom,phylum,clazz,orderz,family,genus,species from species_taxa_tree";
+        //$result = DBO::Query($q);
+        
+        //matrix::display($result, " ", null, 20);
+        
+
+        return true;
+
+    }
+    
+    
+    
 
     private  function header($str = "")
     {

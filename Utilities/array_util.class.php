@@ -697,7 +697,19 @@ class array_util
         {
             // array of arrays and they passed a column name and NO default value
             foreach ($src as $value)
-                $unique[$value[$columnName]] = $unique[$value[$columnName]] + 1;
+            {
+                if (!array_key_exists($value[$columnName], $unique))
+                {
+                    $unique[$value[$columnName]] = 1;
+                }
+                else
+                {
+                    $unique[$value[$columnName]] = $unique[$value[$columnName]] + 1;
+                }
+                
+                
+            }
+                
 
         }
         else

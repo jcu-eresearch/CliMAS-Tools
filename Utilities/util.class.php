@@ -17,6 +17,9 @@ class util {
         
         if (is_numeric($str)) return $str;
         
+        if (strtolower($str) == "null") return $str;
+        
+        
         return "E'".  str_replace("'", "\'", $str)."'";
     }
     
@@ -41,9 +44,52 @@ class util {
     }
     
     
+    public static function boolean2string($src) 
+    {
+        if ($src == true) return "true";
+        return "false";
+        
+    }
+
+    public static function string2boolean($src) 
+    {
+        if (strtolower($src) == "true") return true;
+        return false;
+        
+    }
+    
+    
     public static function Log($from,$str) 
     {
         error_log("APPLICATION ERROR:: ".$from."::".$str);
+    }
+    
+    
+    /**
+     * Extract the value of a commandline option that looks like    --option=value
+     * 
+     * @param type $array
+     * @param type $optionName
+     * @param type $default
+     * @return type 
+     */
+    public static function  CommandScriptsFoldermandLineOptionValue($array,$optionName,$default = null)
+    {
+
+        if (!array_util::Contains($array, $optionName)) return $default;
+
+        $fp = array_util::FirstElementsThatContain($array, $optionName);
+        if (is_null($fp)) return $default;
+
+        $value = str_replace("--{$optionName}=", '', $fp);
+        $value = str_replace("'", '', $value);
+
+        
+        if ($value == "true") return true;
+        if ($value == "false") return false;
+        
+        return $value;
+
     }
     
     
@@ -151,8 +197,8 @@ class util {
         // go thru each cell value for each column if this column does not have the value then add it.,
 
         if (!is_array( util::first_element($src) ))
-        {//
-            echo "##Error util::uniqueColumnNames  src does not look like a matrix\n";
+        {
+            //echo "##Error util::uniqueColumnNames  src does not look like a matrix\n";
             return NULL;
         }
 

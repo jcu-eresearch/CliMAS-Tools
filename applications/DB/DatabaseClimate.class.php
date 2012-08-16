@@ -62,7 +62,9 @@ class DatabaseClimate {
 
     public static  function GetModels() 
     {
-        return self::getDataname('models');
+        $result = self::getDataname('models');
+        unset($result['ALL']);
+        return $result;
     }
 
     public static  function GetTimes() 
@@ -79,6 +81,8 @@ class DatabaseClimate {
 
         $result = matrix::Column($r,'dataname');
         if (is_null($result)) return new ErrorMessage(__METHOD__,__LINE__,"Can't get Datanamed from {$table} using pattern {$pattern} as a column array");
+        
+        unset($result['ALL']);
         
         return $result;        
     }

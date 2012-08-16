@@ -14,7 +14,32 @@ class ErrorMessage extends Object {
     
     public static function Marker($message)
     {
-        return new ErrorMessage("Marker",-1,$message);
+        
+        if (php_sapi_name() == "cli")
+        {
+            
+            if (is_array($message))
+            {
+                $msg =  str_pad(datetimeutil::NowDateTime(), 20, " ")
+                    .print_r($message)."\n"
+                    ;
+                
+            }
+            else
+            {
+                $msg =  str_pad(datetimeutil::NowDateTime(), 20, " ")
+                    .trim($message)."\n"
+                    ;
+                
+            }
+            
+
+            echo $msg;
+            
+        }
+        
+        
+        
     }
 
     
@@ -27,7 +52,7 @@ class ErrorMessage extends Object {
     }
     
     
-    public function __construct($method_name,$line_num,$message,$log_error = true) 
+    public function __construct($method_name = null,$line_num= null,$message= null,$log_error = true) 
     {    
         parent::__construct();
         
@@ -36,24 +61,28 @@ class ErrorMessage extends Object {
         $this->Message($message);
         $this->DateTime(datetimeutil::NowDateTime());
         
-        // only LOg to DB if we want it to - might be a DB error that we can't log to DB
-        if ($log_error)
-        {
-            if (!is_string($message))
-                DBO::LogError($method_name."(".$line_num.")",print_r($message,true));    
-            else
-                DBO::LogError($method_name."(".$line_num.")",$message);
-            
-        }
+//        // only LOg to DB if we want it to - might be a DB error that we can't log to DB
+//        if ($log_error)
+//        {
+//            if (!is_string($message))
+//                DBO::LogError($method_name."(".$line_num.")",print_r($message,true));    
+//            else
+//                DBO::LogError($method_name."(".$line_num.")",$message);
+//            
+//        }
 
         
-        $msg =  str_pad($this->DateTime(), 20, " ")
-               .str_pad($this->SourceMethod(), 20, " ")
-               .str_pad($this->SourceLine(), 20, " ")
-               .substr($this->Message(),0,40)
-               ;
-        
-        //echo $msg;
+        if (php_sapi_name() == "cli")
+        {
+            $msg =  str_pad($this->DateTime(), 20, " ")
+                   .str_pad($this->SourceMethod(), 30, " ")
+                   .str_pad($this->SourceLine(), 20, " ")
+                   ."\n".$this->Message()."\n\n"
+                   ;
+
+            echo $msg;
+            
+        }
         
         
     }

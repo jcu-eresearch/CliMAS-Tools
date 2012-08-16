@@ -124,6 +124,9 @@ class PGDB extends Object {
     
     public function  query($sql,$keyColumn = null,$log_error = true) 
     {
+        
+        $sql = str_replace("\t", " ", $sql);
+        
         $resultFilename = file::random_filename();
         
         $sql_result = $this->ExecuteSQL($sql,$resultFilename);

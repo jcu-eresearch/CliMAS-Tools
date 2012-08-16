@@ -28,6 +28,12 @@ if (!file_exists(configuration::UtilityClasses()))
     exit(1);
 }
 
+if (!file_exists(configuration::DBFSClasses()))
+{
+    echo "DBFSClasses NOT FOUND: ".configuration::DBFSClasses()."\n";
+    exit(1);
+}
+
 
 if (!is_dir(configuration::FilesDownloadFolder()))
 {
@@ -115,7 +121,7 @@ GRANT USAGE, SELECT ON SEQUENCE command_action_id_seq TO ap02;
  * 
  * 
 DROP TABLE IF EXISTS species_occur;
-create table species_occur as  select species_id,count(*) from occurrences group by species_id;
+create table species_occur as  select species_id,count(*) from species_occurrences group by species_id;
 GRANT ALL PRIVILEGES ON species_occur TO ap02;
 
 

@@ -595,7 +595,7 @@ class file {
 
     public static function lineCount($filename)
     {
-        if (!file_exists($filename)) return null;
+        if (!file_exists($filename)) return -1;
         
         $result = trim(util::leftStr(trim(exec("wc '$filename'")), ' ')) ;
         return $result;
@@ -1084,6 +1084,7 @@ class file {
         
         
     }
+    
     
     
 }

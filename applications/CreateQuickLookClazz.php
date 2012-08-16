@@ -39,7 +39,14 @@ if ($species_rows instanceof ErrorMessage)
 $count = 1;
 foreach ($species_rows as $species_id => $row) 
 {
-    echo "{$count} of ".count($species_rows)." Create Quick Look for {$row['species']} {$row['common_name']} using pattern [{$pattern}]  \n";
+    $info = SpeciesData::SpeciesQuickInformation($species_id);
+    if ($info instanceof ErrorMessage)
+    {
+        echo $info;
+        exit(1);
+    }
+    
+    echo "{$count} of ".count($species_rows)." Create Quick Look for {$info} using pattern [{$pattern}]  \n";
     
     $result = SpeciesData::CreateQuickLook($species_id,$pattern,true);    
     

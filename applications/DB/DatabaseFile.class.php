@@ -43,12 +43,9 @@ class DatabaseFile extends Object
     }
     
     
-    
-    
-    
     /**
      *
-     * @param type $srcFilename Path to file to insert ito DB
+     * @param type $theFilename Path to file to insert ito DB
      * @param type $description Some string that can be used to lookup the file later
      * @param type $category    Category of the file e.g. Image, html ...
      * @return string unique_file_id - use this id to get file backl from database;
@@ -60,31 +57,36 @@ class DatabaseFile extends Object
         if (!file_exists($srcFilename)) 
             return new ErrorMessage(__METHOD__,__LINE__,"Failed to Add file to database file does not exist Filename = [{$srcFilename}] description = $description,filetype =  $filetype  \n");
         
+            
+        $theFilename = $srcFilename;
+            
         if ($compressed)
         {
             $tmp = file::random_filename().".zip";
-            $cmd = "zip {$tmp} {$srcFilename}";
+            $cmd = "zip -J {$tmp} {$theFilename}";  // -J removes paths so oly the filename is stored - this is only valid if you want to store one file
 
             exec($cmd);
             if (!file_exists($tmp))  
-                return new ErrorMessage(__METHOD__,__LINE__,"Compression Requested Failed to create zip file for {$srcFilename}");
+                return new ErrorMessage(__METHOD__,__LINE__,"Compression Requested Failed to create zip file for {$theFilename}");
             
-            $srcFilename = $tmp;
+            $theFilename = $tmp;
             
         }
         
         
         $chunck_size = self::$FILE_DB_STORAGE_SIZE;
 
-        $total_filesize = filesize($srcFilename);
+        $total_filesize = filesize($theFilename);
         $totalparts = ceil($total_filesize / $chunck_size);
-        
-        $mimetype = mime_content_type($srcFilename);
+
+        // if the storage is compressed then we want to keep the file type of the original file
+        // so when we pass it back it will have the proper mime type
+        $mimetype = ($compressed) ? mime_content_type($srcFilename) : mime_content_type($theFilename);
         
         $file_unique_id =  uniqid();
         
         $partnum = 0;
-        $handle = fopen($srcFilename, "rb");
+        $handle = fopen($theFilename, "rb");
         
         $total_read = 0;
         while (!feof($handle)) {
@@ -115,19 +117,19 @@ class DatabaseFile extends Object
         {
             // write the description of the file - compressed file
             $sql  = "insert into ".self::FilesTable()." (file_unique_id,mimetype,totalparts,total_filesize,description,filetype,compressed)  values ".
-                    "(".util::dbq($file_unique_id,true).",".util::dbq($mimetype,true).",{$totalparts},{$total_filesize},".util::dbq($description,true).",".util::dbq($filetype,true).",".util::dbq("zip").")";
+                    "(".util::dbq($file_unique_id,true).",".util::dbq($mimetype,true).",{$totalparts},".filesize($srcFilename).",".util::dbq($description,true).",".util::dbq($filetype,true).",".util::dbq("zip").")";
             
         }
         else
         {
             // write the description of the file 
             $sql  = "insert into ".self::FilesTable()." (file_unique_id,mimetype,totalparts,total_filesize,description,filetype)  values ".
-                    "(".util::dbq($file_unique_id,true).",".util::dbq($mimetype,true).",{$totalparts},{$total_filesize},".util::dbq($description,true).",".util::dbq($filetype,true).")";
+                    "(".util::dbq($file_unique_id,true).",".util::dbq($mimetype,true).",{$totalparts},".filesize($srcFilename).",".util::dbq($description,true).",".util::dbq($filetype,true).")";
         }
                 
         $insertResult = DBO::Insert($sql);
         if ($insertResult instanceof ErrorMessage)  
-            return ErrorMessage::Stacked (__METHOD__,__LINE__,"FAILED:: to insert file (fileinfo) in to DB {$srcFilename} with description {$description} at part {$partnum} using a comand line call", true,$insertResult);
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"FAILED:: to insert file (fileinfo) in to DB {$theFilename} with description {$description} at part {$partnum} using a comand line call", true,$insertResult);
                 
         
         return $file_unique_id;
@@ -165,6 +167,8 @@ class DatabaseFile extends Object
      */
     public static   function ReadFile($file_unique_id,$echo_data = false,$collect_data = true) 
     {
+        // need to know if this is compressed ?
+        
         
         $sql = "select data from ".self::FilesDataTable()." where file_unique_id = ".util::dbq($file_unique_id,true)." order by partnum;";
         
@@ -174,18 +178,78 @@ class DatabaseFile extends Object
             return ErrorMessage::Stacked (__METHOD__,__LINE__,"FAILED:: To read a file back from DB {$file_unique_id} with parameters  echo_data = [$echo_data], collect_data = [$collect_data] ", true,$result);
 
         
-        if ($collect_data) $result_file = '';
-        foreach ($result as $row) 
-        {    
-            $datapart =  base64_decode($row['data']);
-            if ($collect_data) $result_file .= $datapart;
-            if ($echo_data) echo $datapart;
+        if (self::isCompressed($file_unique_id) )
+        {
+            // compressed file - have to read out to files system and then hand back
+
+            $result_file = '';
+            foreach ($result as $row) 
+            {    
+                $datapart =  base64_decode($row['data']);
+                $result_file .= $datapart;
+            }
+            
+            // write $result_file  to file system and uncompress
+            
+            $tmp_filename_zip = file::random_filename().".zip";
+            
+            $fw =   file_put_contents($tmp_filename_zip, $result_file);
+            if ($fw === false) 
+                return new ErrorMessage (__METHOD__,__LINE__,"FAILED:: To read a file back compressed file from DB, could not write tmp file [{$tmp_filename_zip}]   {$file_unique_id} with parameters  echo_data = [$echo_data], collect_data = [$collect_data]");
+
+            if (!file_exists($tmp_filename_zip)) 
+                return new ErrorMessage (__METHOD__,__LINE__,"FAILED:: To read a file back compressed file from DB tmp file does not exist {$tmp_filename_zip} ...   {$file_unique_id} with parameters  echo_data = [$echo_data], collect_data = [$collect_data]");
+            
+                
+            $tmp_unzipped_filename = file::random_filename();
+            
+            // unzip $tmp_filename
+            exec("unzip -p '{$tmp_filename_zip}' > $tmp_unzipped_filename");
+            
+            if (!file_exists($tmp_unzipped_filename)) 
+            {
+                file::Delete($tmp_unzipped_filename);
+                return new ErrorMessage (__METHOD__,__LINE__,"FAILED:: To read a file back compressed file from DB could not unzip  {$tmp_filename_zip} ...   {$file_unique_id} with parameters  echo_data = [$echo_data], collect_data = [$collect_data]");
+            }
+            
+            // nice to check size as well ?
+            
+            $real_file_contents = null;
+            if ($echo_data || $collect_data)
+                $real_file_contents = file_get_contents($tmp_unzipped_filename); 
+
+            if (is_null($real_file_contents)) return null;
+            
+            file::Delete($tmp_unzipped_filename);
+            
+            if ($echo_data) echo $real_file_contents;
+
+            unset($row);
+            unset($result);        
+            unset($result_file);
+            
+            if ($collect_data) return $real_file_contents;            
+            
+            
         }
+        else
+        {
+            // can stream file out or collect for later
+            if ($collect_data) $result_file = '';
+            foreach ($result as $row) 
+            {    
+                $datapart =  base64_decode($row['data']);
+                if ($collect_data) $result_file .= $datapart;
+                if ($echo_data) echo $datapart;
+            }
+
+            unset($row);
+            unset($result);        
+
+            if ($collect_data) return $result_file;
+        }
+            
         
-        unset($row);
-        unset($result);        
-        
-        if ($collect_data) return $result_file;
         
         return true;
     }
@@ -260,6 +324,22 @@ class DatabaseFile extends Object
         return $result;
     }
 
+    public static   function isCompressed($file_unique_id) 
+    {        
+        $sql = "select compressed from ".self::FilesTable()." where file_unique_id = ".util::dbq($file_unique_id,true)." limit 1";
+        
+        $result = DBO::QueryFirstValue($sql, 'compressed');
+        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't read mimetype for {$file_unique_id} using sql [{$sql}]", true,$result);
+        
+        $result = trim($result);
+        if ($result == "") return false;
+            
+        return true;
+    }
+    
+    
     
     public static  function ReadFileDescription($file_unique_id) 
     {        
@@ -344,6 +424,34 @@ class DatabaseFile extends Object
         return $file_unique_id;
         
     }
+    
+    
+    /**
+     * List of Running jobs - - species ID's
+     * 
+     * @return type 
+     */
+    public static function RunningJobs($jobPrefix)  
+    {
+        
+        $jobs = array();
+        
+        exec("qstat | grep '{$jobPrefix}'| grep 'R normal' ",$jobs);
+        
+        
+        $result = array();
+        foreach ($jobs as $key => $value) 
+        {
+            $job_id = trim(substr($value,27,13));
+            $result[$job_id] = $value;
+        }    
+
+        return $result;
+        
+        
+    }
+    
+    
     
     
 }

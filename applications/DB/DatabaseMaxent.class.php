@@ -21,35 +21,35 @@ class DatabaseMaxent extends Object
     /**
      *
      * @param type $species_id
-     * @param type $echo
      * @return \ErrorMessage 
      */
-    public static function InsertAllMaxentResults($species_id,$echo = false) 
+    public static function InsertAllMaxentResults($species_id,$file_pattern = "*") 
     {
         
         if (is_null($species_id))  return new ErrorMessage(__METHOD__,__LINE__,"species_id passed as NULL\n");
-        
         
         $species_id = trim($species_id);
         if ($species_id == "")  new ErrorMessage(__METHOD__,__LINE__,"species_id passed as EMPTY STRING\n");
         
         $folder = self::MaxentResultsOutputFolder($species_id);        
         
-        if ($echo) ErrorMessage::Marker("folder = $folder");
+        
         
         if (!is_dir($folder))  
             return new ErrorMessage(__METHOD__,__LINE__,"MaxentResultsOutputFolder [$folder] does not exist  species_id = $species_id\n");
         
         
-        ErrorMessage::Marker("InsertMainMaxentResults [{$species_id}]");
+        ErrorMessage::Marker("folder = $folder");
         
-        
-        $result = self::InsertMainMaxentResults($species_id,$echo);
+        $result = self::InsertMainMaxentResults($species_id);
         if ($result instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Insert Main Maxent Results species_id = $species_id\n", true,$result);
 
         
-        $result = self::InsertAllMaxentResultsForProjectedClimates($species_id);
+        
+        $result = self::InsertAllMaxentResultsForProjectedClimates($species_id,$file_pattern);
         if ($result instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Insert All Maxent Results For Projected Climates  species_id = $species_id\n", true,$result);
+
+        exit();
         
         
         $species_file_ids = self::ModelledSpeciesFiles($species_id);
@@ -99,10 +99,9 @@ class DatabaseMaxent extends Object
     /**
      *
      * @param type $species_id
-     * @param type $echo
      * @return \ErrorMessage|boolean 
      */
-    public static function InsertMainMaxentResults($species_id,$echo = false)
+    public static function InsertMainMaxentResults($species_id)
     {
      
         if (is_null($species_id)) 
@@ -145,7 +144,7 @@ class DatabaseMaxent extends Object
             
             if ( $count == 0)
             {
-                $insert_result = self::InsertSingleMaxentOutput( $species_id,$filename,$filetype,"Maxent output for projected species suitability");
+                $insert_result = self::InsertSingleMaxentOutput( $species_id,$filename,$filetype,"Maxent output for projected species suitability",null,null,null,true);
                 if ($insert_result instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true, $insert_result);                    
             }
                 
@@ -164,6 +163,9 @@ class DatabaseMaxent extends Object
         
         
     }
+
+    
+    
     
     /**
      * this is to store a DB version of the "maxentResults.csv"
@@ -232,40 +234,92 @@ class DatabaseMaxent extends Object
     }
     
     
+    public static  function ListMainMaxentResults($species_id)
+    {
+        
+        $sql = "select * 
+                  from modelled_species_files 
+                 where species_id = {$species_id}
+                   and (   filetype = 'maxent.log' 
+                        or filetype = 'lambdas' 
+                        or filetype = 'omission' 
+                        or filetype = 'sampleAverages' 
+                        or filetype = 'samplePredictions' 
+                        or filetype = 'ZIPPED_HTML' 
+                       )
+                 ";
+
+        
+        $result = DBO::Query($sql, 'filetype');
+        if ($result instanceof ErrorMessage) 
+            return ErrorMessage::Stacked (__METHOD__,__LINE__," Could not get List Main Maxent Results  species_id = $species_id\n", true, $result);
+        
+        
+        return $result;
+        
+    }
+    
+    public static  function CountMainMaxentResults($species_id)
+    {
+     
+        $result = self::ListMainMaxentResults($species_id);
+        if ($result instanceof ErrorMessage)  return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true, $result);
+                
+        return count($result);
+        
+    }
+
+    
     
     /**
      *
      * If we have run processes and we don't have the results from the file system in databaase - so import them 
      *  
      */
-    private static  function InsertAllMaxentResultsForProjectedClimates($species_id)
+    private static  function InsertAllMaxentResultsForProjectedClimates($species_id,$file_pattern)
     {
         
         $species_folder = self::MaxentResultsOutputFolder($species_id);
 
         // get ascii grids  
-        $files = file::folder_with_extension($species_folder, 'asc' ,configuration::osPathDelimiter());
+        // $files = file::folder_with_extension($species_folder, 'asc' ,configuration::osPathDelimiter());
+        
+        $files = file::LS($species_folder.$file_pattern, null, true);
         $files = file::arrayFilterOut($files, "aux");
         $files = file::arrayFilterOut($files, "xml");
+        $files = file::arrayFilter($files,'asc' );
         
+        
+        ErrorMessage::Marker("ProjectedClimates for {$species_id}");
+        
+        $result = array();
         
         // for the "completeness of a model run we are only looking at the ASC grids" - all othert files are auxillary 
-        foreach ($files as $filename) 
+        foreach ($files as $basename => $filename) 
         {
             
-            $file_id = self::InsertSingleMaxentProjectedFile($species_id,$filename,'ASCII_GRID', 'Spatial data of projected species suitability:'.basename($filename));
-            if ($file_id instanceof ErrorMessage) 
-                return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Insert Single Maxent Projected ASCII Grid File {$filename}  \nspecies_id = $species_id\n", true, $file_id);
-            
-                
-            $qlfn = SpeciesMaxentQuickLook::CreateImage($species_id, $filename); // build quick look from asc 
-            if ($qlfn instanceof ErrorMessage) 
-                return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Create Quick Look from ASCII Grid File {$filename}  \nspecies_id = $species_id\n", true, $qlfn);
+            ErrorMessage::Marker("ASCII Grid {$species_id} file .. [{$filename}]");
 
             
-            $quick_look_file_id = self::InsertSingleMaxentProjectedFile($species_id,$qlfn,'QUICK_LOOK', 'Quick look image of projected species suitability:'.basename($filename));            
-            if ($quick_look_file_id instanceof ErrorMessage) 
-                return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Insert Single Maxent Projected Quick Look File {$qlfn}  \nspecies_id = $species_id\n", true, $quick_look_file_id);
+            if (file_exists($filename))
+            {
+                $file_id = self::InsertSingleMaxentProjectedFile($species_id,$filename,'ASCII_GRID', 'Spatial data of projected species suitability:'.basename($filename), true);
+                if ($file_id instanceof ErrorMessage) 
+                    return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Insert Single Maxent Projected ASCII Grid File {$filename}  \nspecies_id = $species_id\n", true, $file_id);
+
+                ErrorMessage::Marker("Create quick look {$species_id} file .. [{$filename}]");
+                $qlfn = SpeciesMaxentQuickLook::CreateImage($species_id, $filename); // build quick look from asc 
+                if ($qlfn instanceof ErrorMessage) 
+                    return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Create Quick Look from ASCII Grid File {$filename}  \nspecies_id = $species_id\n", true, $qlfn);
+
+
+                ErrorMessage::Marker("Load quick look {$species_id} file .. [{$filename}]");
+                $quick_look_file_id = self::InsertSingleMaxentProjectedFile($species_id,$qlfn,'QUICK_LOOK', 'Quick look image of projected species suitability:'.basename($filename),true);
+                if ($quick_look_file_id instanceof ErrorMessage) 
+                    return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Insert Single Maxent Projected Quick Look File {$qlfn}  \nspecies_id = $species_id\n", true, $quick_look_file_id);
+                
+            }
+            
             
             
         }
@@ -361,7 +415,7 @@ class DatabaseMaxent extends Object
      * @param type $desc
      * @return string|\ErrorMessage  unique file id of this file in DB
      */
-    public static  function InsertSingleMaxentProjectedFile($speciesID,$filename,$filetype,$desc) 
+    public static  function InsertSingleMaxentProjectedFile($speciesID,$filename,$filetype,$desc,$compressed = true) 
     {
         
         $basename = util::toLastChar(basename($filename),".");
@@ -370,8 +424,6 @@ class DatabaseMaxent extends Object
         
         $file_results = SpeciesData::GetModelledData($speciesID,$scenario, $model, $time,$filetype, $desc);
         if ($file_results instanceof ErrorMessage)  return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true, $file_results);
-        
-
         
         if (!is_null($file_results))  return $file_results;  // we already have this in DB
         
@@ -383,6 +435,7 @@ class DatabaseMaxent extends Object
                                                     ,$scenario 
                                                     ,$model
                                                     ,$time
+                                                    ,$compressed
                                                     );
         
         if ($file_id instanceof ErrorMessage)  
@@ -437,22 +490,23 @@ class DatabaseMaxent extends Object
      * @return null
      * @throws Exception 
      */
-    public static function InsertSingleMaxentOutput($species_id,$filename,$filetype = null,$desc = null,$scenario = null, $model = null, $time = null) 
+    public static function InsertSingleMaxentOutput($species_id,$filename,$filetype = null,$desc = null,$scenario = null, $model = null, $time = null,$compressed = false) 
     {
      
         if (!file_exists($filename)) 
             return new ErrorMessage(__METHOD__,__LINE__,"Failed to Insert Single Maxent  \n species_id = $species_id \n filename =  $filename \n filetype = $filetype \n desc = $desc \n scenario  = $scenario \n model = $model \n time = $time\n");
         
         
-        $file_unique_id = DatabaseFile::InsertFile($filename, $desc,$filetype);
+        $file_unique_id = DatabaseFile::InsertFile($filename, $desc,$filetype,$compressed);
         if ($file_unique_id instanceof ErrorMessage)  return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true, $file_unique_id);
 
         
+        $commonName = SpeciesData::SpeciesCommonNameSimple($species_id);
+        if ($commonName instanceof ErrorMessage)  return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true, $commonName);
         
-        $info = SpeciesData::SpeciesInfoByID($species_id);
-        if ($info instanceof ErrorMessage)  return ErrorMessage::Stacked (__METHOD__,__LINE__,"Trying to get Species INFO by ID", true, $info);
-
-
+        $speciesName = SpeciesData::SpeciesName($species_id);
+        if ($speciesName instanceof ErrorMessage)  return ErrorMessage::Stacked (__METHOD__,__LINE__,"", true, $speciesName);
+        
         
         $q  = "insert into modelled_species_files 
                 ( species_id
@@ -462,8 +516,8 @@ class DatabaseMaxent extends Object
                  ,file_unique_id
                 ) values (
                   {$species_id}
-                 ,".util::dbq($info['scientific_name'],true)."
-                 ,".util::dbq($info['common_name'],true)."
+                 ,".util::dbq($speciesName,true)."
+                 ,".util::dbq($commonName,true)."
                  ,".util::dbq($filetype,true)."
                  ,".util::dbq($file_unique_id,true)."
                 )";
@@ -500,8 +554,8 @@ class DatabaseMaxent extends Object
                     ,file_unique_id
                   ) values ( 
                     {$species_id}
-                   ,".util::dbq($info['scientific_name'],true)."
-                   ,".util::dbq($info['common_name'],true)."
+                   ,".util::dbq($speciesName,true)."
+                   ,".util::dbq($commonName,true)."
                    ,{$model_id}
                    ,{$scenario_id}
                    ,{$time_id}
@@ -736,8 +790,7 @@ class DatabaseMaxent extends Object
         $species_id = trim($species_id);
         if ($species_id == "") return new Exception("RemoveAllResultsforSpecies species_id is EMPTY STRING \n");
         
-        
-        $result[] = self::RemoveAllMaxentResults($species_id,true);
+        $result = self::RemoveAllMaxentResults($species_id,true);
         
         
         return $result;

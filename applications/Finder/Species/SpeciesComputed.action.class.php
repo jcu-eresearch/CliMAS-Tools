@@ -37,9 +37,7 @@ class SpeciesComputed extends Action implements iAction {
     {
 
         // keyed file-dis of Quick Look images available for this species
-        $data_quick_look = SpeciesData::GetAllModelledData($this->SpeciesID(), 'QUICK_LOOK');
-
-        $data_ascii_grid = SpeciesData::GetAllModelledData($this->SpeciesID(), 'ASCII_GRID');
+        $data_quick_look = SpeciesData::GetAllModelledData($this->SpeciesID(), 'QUICK_LOOK','combination');
         
         $scenarioModels = array();
         
@@ -48,7 +46,7 @@ class SpeciesComputed extends Action implements iAction {
         foreach ($data_quick_look as $combination => $row) 
         {
             //  speciesID_scenario_model_time_QuickLookFileID_AsciiGridFileID
-            $sub_result[$combination] =  $this->SpeciesID()."_".$combination."_".$row['file_unique_id']."_".$data_ascii_grid[$combination]['file_unique_id']."_".$row['full_name'];
+            $sub_result[$combination] =  $this->SpeciesID()."_".$combination."_".$row['file_unique_id']."_".$data_quick_look[$combination]['file_unique_id']."_".$row['full_name'];
             $scenarioModels[$row['scenario_name']."_".$row['model_name']] = "";
         }
 
