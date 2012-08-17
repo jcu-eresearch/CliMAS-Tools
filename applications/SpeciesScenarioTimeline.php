@@ -16,25 +16,19 @@ $species_list = null;
 if (!file_exists($speciesListFilename))
 {
     
-    echo "Save  file<br>";
     $species_list = SpeciesData::ComputedNameList();
     // make it - ie cache on server 
     $file = "name,species_id\n";
     foreach ($species_list as $name => $species_id)  
-    { 
-        
+    {   
         $name = util::CleanStr($name,null,$EXTRA_CHARS,"");        
         $file .= "{$name},{$species_id}\n";
     }
         
     file_put_contents($speciesListFilename,$file);
 }
-else
-{
-    echo "From file<br>";
-    $species_list = matrix::Load($speciesListFilename, ',', 'name');   
-}
 
+$species_list = matrix::Load($speciesListFilename, ',', 'name');   
 
 
 ?>

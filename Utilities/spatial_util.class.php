@@ -246,6 +246,120 @@ class spatial_util
     public static $SPATIAL_TYPE_RASTER   = "RASTER";
 
 
+    public static function subtract($lhs,$rhs,$output_filename = null, $null_value = null,$path_sep = "/",$ext_sep = ".")
+    {   
+        
+        if (!file_exists($lhs)) return new ErrorMessage (__METHOD__, __LINE__, "LHS does not exist", false);
+        if (!file_exists($rhs)) return new ErrorMessage (__METHOD__, __LINE__, "RHS does not exist", false);
+
+        if (is_null($output_filename)) 
+        {
+            
+            $output_filename =  dirname($lhs)
+                               .$path_sep
+                               .util::leftStr(basename($lhs),$ext_sep) 
+                               ."-"
+                               .util::leftStr(basename($rhs),$ext_sep) 
+                               .$ext_sep
+                               .file::getFileExtension($lhs);        
+                               ;
+        }
+            
+        
+        $output_filename = trim($output_filename);
+        if ($output_filename == "") return new ErrorMessage (__METHOD__, __LINE__, "output_filename is empty", false);
+
+        $dir = dirname($output_filename);
+        if (!is_dir($dir)) return new ErrorMessage (__METHOD__, __LINE__, "$dir is not a folder ", false);
+        
+        
+        // try to find the null data from the lhsfile        
+        if (is_null($null_value))
+        {
+            $null_value = self::asciigrid_nodata_value($lhs);
+        }
+
+        $lineCount_lhs = file::lineCount($lhs);  
+        $lineCount_rhs = file::lineCount($rhs);  
+        
+        if ($lineCount_lhs != $lineCount_rhs) 
+            return new ErrorMessage (__METHOD__, __LINE__, "Line counts are different  LHS = $lineCount_lhs RHS = $lineCount_rhs ", false);
+        
+        
+        try {
+            $handle_lhs = fopen($lhs, "rb");    
+        } catch (Exception $exc) {
+            return new ErrorMessage (__METHOD__, __LINE__, "Failed to open [{$lhs}] for reading\n".$exc->getTraceAsString(), false);
+        }
+
+
+        try {
+            $handle_rhs = fopen($rhs, "rb");
+        } catch (Exception $exc) {
+            return new ErrorMessage (__METHOD__, __LINE__, "Failed to open [{$rhs}] for reading\n".$exc->getTraceAsString(), false);
+        }
+        
+        
+        
+        // ASCII files have 6 rowsa of "metadata" skip those
+        for ($index = 0; $index < 6; $index++) {
+                $line = fgets($handle_lhs); // read lines from both files 
+                $line = fgets($handle_rhs); // read lines from both files 
+        }
+
+        
+        $result = array();
+        for ($lineNum = 6; $lineNum < $lineCount_lhs ; $lineNum++) 
+        {
+            
+            $lhs_cells = explode(" ",fgets($handle_lhs));  
+            $rhs_cells = explode(" ",fgets($handle_rhs));  
+            
+            $result_cells = array();
+            
+            foreach (array_keys($lhs_cells) as $xIndex) 
+            {
+                if ($lhs_cells[$xIndex] == $null_value || $rhs_cells[$xIndex] == $null_value)
+                {
+                    $result_cells[$xIndex] = $null_value;   // one of the values i null so result  is null
+                }
+                else
+                {
+                    $result_cells[$xIndex] = $lhs_cells[$xIndex] - $rhs_cells[$xIndex];    
+                }
+                
+                
+            }
+            
+            $result[] = implode(" ",$result_cells);
+            
+            unset($result_cells);
+        }
+        
+        
+        fclose($handle_lhs);  // close files
+        fclose($handle_rhs);  // close files
+        
+        $file_result =   implode("\n",file::Head($lhs, 6))."\n"   
+                        .implode("\n",$result).
+                         "\n";
+
+        
+        
+        $fw = file_put_contents($output_filename, $file_result);
+        if (!$fw)
+            return new ErrorMessage (__METHOD__, __LINE__, "Failed to write result to output file [{$output_filename}]", false);
+
+            
+        if (!file_exists($output_filename))
+            return new ErrorMessage (__METHOD__, __LINE__, "[{$output_filename}] does not exist ", false);
+            
+            
+        return $output_filename;
+        
+    }
+    
+    
     
     public static function median($asciiGridFilenameArray,$output_filename, $null_value = null)
     {

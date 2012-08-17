@@ -35,6 +35,10 @@ class MaxentMainServerBuild extends Object {
 
         echo "other parameters \n";
         echo "\n";
+        echo "\n";
+        echo "       --ProjectFutures=[true|false]  default: true    true = Generate Future projections\n";
+        echo "       --Project1975=[true|false]     default: true    true = Create layers for 1975 condition\n";
+        echo "       --Project1990=[true|false]     default: true    true = Create layers for 1990 condition\n";
         echo "       --JobPrefix=JobName            default: tdh     Used in QSTAT / PBS to identify job in QSTAT";
         echo "\n";
         echo "       --LoadMediansOnly=[true|false] default: true    true = load median data ONLY\n";
@@ -45,14 +49,15 @@ class MaxentMainServerBuild extends Object {
         echo "       --MaxentOnly=[true|false]      default: false   true = run maxent.jar (don't process future climate projections)\n";
         echo "       --UseQSUB=[true|false]         default: true    true = Submit scripts to PBS queue to be executed on GRID\n";
         echo "       --UpdateDatabase=[true|false]  default: true    true = Insert results in to database to reading by other systems\n";
-        echo "       --NoExecute=[true|false]       default: false   true = Only initialise Object and then print_r\n";
         echo "\n";
-        echo "       --scenarios=a,b,c              default: all    scenarios  comma delimited list of scenarios names\n";
-        echo "       --models=a,b,c                 default: all    models     comma delimited list of model     names\n";
-        echo "       --times=yyyy,yyyy,yyyy         default: all    times      comma delimited list of years\n";
-        echo "       --loadScenario=a,b,c           default: all    scenarios  names to load into database\n";
-        echo "       --loadModel=a,b,c              default: all    models     names to load into database MODEL=ALL is special this is median of all Climate Models \n";
-        echo "       --loadTimes=yyyy,yyyy,yyyy     default: all    times      times to load into database\n";
+        echo "       --scenarios=a,b,c              default: all     scenarios  comma delimited list of scenarios names\n";
+        echo "       --models=a,b,c                 default: all     models     comma delimited list of model     names\n";
+        echo "       --times=yyyy,yyyy,yyyy         default: all     times      comma delimited list of years\n";
+        echo "       --loadScenario=a,b,c           default: all     scenarios  names to load into database\n";
+        echo "       --loadModel=a,b,c              default: all     models     names to load into database MODEL=ALL is special this is median of all Climate Models \n";
+        echo "       --loadTimes=yyyy,yyyy,yyyy     default: all     times      times to load into database\n";
+        echo "\n";
+        echo "       --NoExecute=[true|false]       default: false   true = Only initialise Object and then print_r\n";
         echo "\n\n";
         
     }
@@ -209,6 +214,11 @@ class MaxentMainServerBuild extends Object {
         
         $MM->LoadASCII(util::CommandScriptsFoldermandLineOptionValue($array, 'LoadASCII',false));
         $MM->LoadQuickLooks(util::CommandScriptsFoldermandLineOptionValue($array, 'LoadQuickLooks',true));
+
+        $MM->Project1975(util::CommandScriptsFoldermandLineOptionValue($array, 'Project1975',true));
+        $MM->Project1990(util::CommandScriptsFoldermandLineOptionValue($array, 'Project1990',true));
+        $MM->ProjectFutures(util::CommandScriptsFoldermandLineOptionValue($array, 'ProjectFutures',true));
+        
         
         
         $MM->scenarios(util::CommandScriptsFoldermandLineOptionValue($array, 'scenarios',null));
@@ -251,6 +261,10 @@ class MaxentMainServerBuild extends Object {
 
         $this->JobPrefix("tdh_");
         
+        $this->Project1975(true);
+        $this->Project1990(true);
+        $this->ProjectFutures(true);
+        
         
         $this->loadScenarios(null);
         $this->loadModels(null);
@@ -276,17 +290,8 @@ class MaxentMainServerBuild extends Object {
      */
     public function Execute()
     {
-        
-        ErrorMessage::Marker("Execute ".  $this->SpeciesInfo()."\n");
-        
-        ErrorMessage::Marker("GenerateOnly   {$this->GenerateOnly()}\n");
-        ErrorMessage::Marker("MaxentOnly     {$this->MaxentOnly()}\n");
-        ErrorMessage::Marker("UseQSUB        {$this->UseQSUB()}\n");;
-        ErrorMessage::Marker("UpdateDatabase {$this->UpdateDatabase()}\n");
-        ErrorMessage::Marker("Scenarios      {$this->scenarios()}\n");
-        ErrorMessage::Marker("Models         {$this->models()}\n");
-        ErrorMessage::Marker("Times          {$this->times()}\n");
-        
+     
+        print_r($this);
         
         $this->MaxentDone(false);
         
@@ -428,105 +433,124 @@ class MaxentMainServerBuild extends Object {
         $script .= $this->maxentScript();
         
         
+        // only add current  projections if we want them 
+        // todp need to allow these scrpts to runn in paralell as well as some stag - create their own script 
+        if (!$this->MaxentOnly()) 
+        {
+            if ($this->Project1975()) $script .= $this->ScriptProject1975();
+            if ($this->Project1990()) $script .= $this->ScriptProject1990();
+        }
+        
+        
         ErrorMessage::Marker("Controll what order the generation is done, we want to have a all climates for on scenario at least \n");
         ErrorMessage::Marker("Testing validity of Data Files");
         
         
         if (!$this->MaxentOnly()) // only add future projections if we want them 
         {
-        
-            ErrorMessage::Marker("Building Scripts for future projections\n");
+    
             
-            foreach (DatabaseClimate::GetScenarios() as $scenarioID)
+            if ($this->ProjectFutures())
             {
-                if (is_null($scenarioID)) continue;
-                $scenarioID = trim($scenarioID);
-                if ($scenarioID == "") continue;
+            
+                ErrorMessage::Marker("Building Scripts for future projections\n");
 
-                // if we request a scpecifi scenario
-                if (!is_null($this->scenarios()))
-                    if (!util::contains($this->scenarios(), $scenarioID)) continue;    
-                    
-                
-                ErrorMessage::Marker("Building Scripts for scenarioID = $scenarioID\n");
-                    
-                foreach (DatabaseClimate::GetTimes() as $timeID)
+                foreach (DatabaseClimate::GetScenarios() as $scenarioID)
                 {
+                    if (is_null($scenarioID)) continue;
+                    $scenarioID = trim($scenarioID);
+                    if ($scenarioID == "") continue;
 
-                    if (is_null($timeID)) continue;
-                    $timeID = trim($timeID);
-                    if ($timeID == "") continue;
+                    // if we request a scpecifi scenario
+                    if (!is_null($this->scenarios()))
+                        if (!util::contains($this->scenarios(), $scenarioID)) continue;    
 
-                    
-                    // if we request a scpecifi time
-                    if (!is_null($this->times()))
-                        if (!util::contains($this->times(), $timeID)) continue;    
-                    
-                    
-                    ErrorMessage::Marker("Building Scripts for scenarioID = $scenarioID  timeID = $timeID\n");
-                    
-                    foreach (DatabaseClimate::GetModels()  as $modelID)
+
+                    ErrorMessage::Marker("Building Scripts for scenarioID = $scenarioID\n");
+
+                    foreach (DatabaseClimate::GetTimes() as $timeID)
                     {
-                        
-                        
-                        if (is_null($modelID)) continue;
-                        $modelID = trim($modelID);
-                        if ($modelID == "") continue;
-                        
-                        // if we request a scpecifi model
-                        if (!is_null($this->models()))
-                            if (!util::contains($this->models(), $modelID)) continue;    
 
-                        ErrorMessage::Marker("Building Scripts for scenarioID = $scenarioID  timeID = $timeID modelID=[$modelID] \n");
-                        //
+                        if (is_null($timeID)) continue;
+                        $timeID = trim($timeID);
+                        if ($timeID == "") continue;
 
-                        $singleFutureScript = $this->singleCombinationScript("{$scenarioID}_{$modelID}_{$timeID}");   // script that will be used to execute just a single combo
-                        if (is_null($singleFutureScript)) 
+
+                        // if we request a scpecifi time
+                        if (!is_null($this->times()))
+                            if (!util::contains($this->times(), $timeID)) continue;    
+
+
+                        ErrorMessage::Marker("Building Scripts for scenarioID = $scenarioID  timeID = $timeID\n");
+
+                        foreach (DatabaseClimate::GetModels()  as $modelID)
                         {
-                            ErrorMessage::Marker("Seems to be no reason to create script for {$this->SpeciesID()} {$combination} ");
-                            continue;
+
+
+                            if (is_null($modelID)) continue;
+                            $modelID = trim($modelID);
+                            if ($modelID == "") continue;
+
+                            // if we request a scpecifi model
+                            if (!is_null($this->models()))
+                                if (!util::contains($this->models(), $modelID)) continue;    
+
+                            ErrorMessage::Marker("Building Scripts for scenarioID = $scenarioID  timeID = $timeID modelID=[$modelID] \n");
+                            //
+
+                            $singleFutureScript = $this->singleCombinationScript("{$scenarioID}_{$modelID}_{$timeID}");   // script that will be used to execute just a single combo
+                            if (is_null($singleFutureScript)) 
+                            {
+                                ErrorMessage::Marker("Seems to be no reason to create script for {$this->SpeciesID()} {$combination} ");
+                                continue;
+                            }
+
+
+                            // If we are running bigger Future jobs then these may be in paralell  - here we add either the script itself or a call to execute the script 
+                            if ($this->ParalellFuturePredictions())
+                            {
+                                ErrorMessage::Marker("Adding as Paralell {$combination} ");
+                                $script .= "\nqsub -N{$this->QsubCollectionID()} '{$singleFutureScript}'";              
+                            }
+                            else
+                            {
+                                $script .= $singleFutureScript;
+                            }
+
+
+
                         }
 
 
-                        // If we are running bigger Future jobs then these may be in paralell  - here we add either the script itself or a call to execute the script 
-                        if ($this->ParalellFuturePredictions())
+                        // not parallel we know then all data must be created before we make it here
+                        // so we can create median for all data for a single scenario
+                        if (!$this->ParalellFuturePredictions())            
                         {
-                            ErrorMessage::Marker("Adding as Paralell {$combination} ");
-                            $script .= "\nqsub -N{$this->QsubCollectionID()} '{$singleFutureScript}'";              
-                        }
-                        else
-                        {
-                            $script .= $singleFutureScript;
+                            // this is after all Climates models for this scenario and time have been run
+
+                            $loadAscii      =  util::boolean2string($this->LoadASCII());
+                            $loadQuicklooks =  util::boolean2string($this->LoadQuickLooks());
+
+                            $SpeciesMedian_php = configuration::ApplicationFolder()."applications/SpeciesMedian.php";
+                            $script .= "php {$SpeciesMedian_php} {$this->SpeciesID()} --scenario={$scenarioID} --time={$timeID}  --LoadASCII={$loadAscii}  --LoadQuickLooks={$loadQuicklooks}  \n";
+
                         }
 
-                        
+
 
                     }
 
-                       
-                    // not parallel we know then all data must be created before we make it here
-                    // so we can create median for all data for a single scenario
-                    if (!$this->ParalellFuturePredictions())            
-                    {
-                        // this is after all Climates models for this scenario and time have been run
-                        
-                        $loadAscii      =  util::boolean2string($this->LoadASCII());
-                        $loadQuicklooks =  util::boolean2string($this->LoadQuickLooks());
-                        
-                        $SpeciesMedian_php = configuration::ApplicationFolder()."applications/SpeciesMedian.php";
-                        $script .= "php {$SpeciesMedian_php} {$this->SpeciesID()} --scenario={$scenarioID} --time={$timeID}  --LoadASCII={$loadAscii}  --LoadQuickLooks={$loadQuicklooks}  \n";
-        
-                    }
 
-                       
-                       
+
                 }
 
-                
-                
-            }
+            } // if ($this->ProjectFutures)
+
+            
             
         }    
+        
+        
         $script = trim($script);
         
         $maxent_single_species_script_filename = $this->maxent_single_species_script_filename();
@@ -550,6 +574,7 @@ class MaxentMainServerBuild extends Object {
         
     }
 
+    
     
     private function maxent_single_species_script_filename() {
         
@@ -631,6 +656,8 @@ AAA;
         return $maxent_script;
 
     }
+    
+    
     
     
     
@@ -871,7 +898,8 @@ AAA;
 
         if (!file_exists($scriptFilename))
         {
-            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Write Script for Species = {$this->SpeciesID()}  combination = $combination scriptFilename = $scriptFilename \n");
+            ErrorMessage::Marker(__METHOD__."(".__LINE__.")","Failed to Write Script for Species = {$this->SpeciesID()}  combination = $combination scriptFilename = $scriptFilename \n");
+            
             return null;
         }
         
@@ -881,6 +909,275 @@ AAA;
         
     }
         
+    
+    
+    private function ScriptProject1975()
+    {        
+        $proj = configuration::Maxent_Taining_Data_folder();
+        
+        ErrorMessage::Marker("Create Projection for 1975 using {$proj}");
+        
+        return $this->ProjectUsingFolder($proj,1975);
+    }
+    
+    private function ScriptProject1990()
+    {
+        $proj =  configuration::Maxent_Future_Projection_Data_folder().configuration::osPathDelimiter()."1990";
+        
+        ErrorMessage::Marker("Create Projection for 1990 using {$proj}");
+        
+        return $this->ProjectUsingFolder($proj,1990);
+    }
+
+    
+    /**
+     * Create a script to project a certain folder 
+     * 
+     * mainly used to get current conditions 1975 & 1990
+     * 
+     * @return null|string 
+     */
+    private function ProjectUsingFolder($proj,$year)
+    {
+        
+        $combination = "CURRENT_CURRENT_{$year}";
+        
+        $script_folder =  $this->species_scripts_folder();
+        
+        $maxent = configuration::MaxentJar();
+        
+
+        $lambdas =  configuration::Maxent_Species_Data_folder().
+                    $this->SpeciesID().
+                    configuration::osPathDelimiter().
+                    configuration::Maxent_Species_Data_Output_Subfolder().
+                    configuration::osPathDelimiter().
+                    $this->SpeciesID().
+                    ".lambdas";
+        
+
+        $future_projection_output = configuration::Maxent_Species_Data_folder().
+                                    $this->SpeciesID().
+                                    configuration::osPathDelimiter().
+                                    configuration::Maxent_Species_Data_Output_Subfolder().
+                                    configuration::osPathDelimiter().
+                                    $combination.
+                                    ".asc";
+        
+        
+        $script  = ""; 
+        
+        // don't have to do this as the main script already has the data  if ParalellFuturePredictions  === FALSE
+        if ($this->ParalellFuturePredictions())
+        {
+         
+            $scriptFilename =   configuration::CommandScriptsFolder().
+                                $this->SpeciesID().
+                                configuration::osPathDelimiter().
+                                $combination.
+                                configuration::CommandScriptsSuffix();
+
+            file::Delete($scriptFilename); // only delete script file if we are in paralell mode
+            
+            
+            ErrorMessage::Marker("singleCombinationScript for {$this->SpeciesID()} .. {$combination}");
+            ErrorMessage::Marker("script_folder            = $script_folder");
+            ErrorMessage::Marker("maxent                   = $maxent");
+            ErrorMessage::Marker("lambdas                  = $lambdas");
+            ErrorMessage::Marker("proj                     = $proj");
+            ErrorMessage::Marker("future_projection_output = $future_projection_output");
+            
+            
+            $script .= "#!/bin/tcsh\n"; 
+        
+            $script .= "# combination              = {$combination}\n";
+            $script .= "# speciesID                = {$this->SpeciesID()}\n";
+            $script .= "# speciesInfo              = ".SpeciesData::SpeciesQuickInformation($this->SpeciesID())."\n";
+            $script .= "# script_folder            = {$script_folder}\n";
+            $script .= "# maxent                   = {$maxent}\n";
+            $script .= "# lambdas                  = {$lambdas}\n";
+            $script .= "# proj                     = {$proj}\n";
+            $script .= "# future_projection_output = {$future_projection_output}\n";
+            $script .= "# scriptFilename           = {$scriptFilename}\n";
+            $script .= "#\n";
+
+            $script .= "module load java\n";
+            $script .= "cd {$script_folder}\n";
+
+        } else {
+            
+            if (!file_exists($future_projection_output))
+            {
+                $script .= "# speciesID .. {$this->SpeciesID()} combination =  .. {$combination}\n";
+            }
+            
+        }
+        
+        
+        if (file_exists($future_projection_output))
+        {
+            $count = file::lineCount($future_projection_output); // check  line count of $future_projection_output
+            if ($count < 697) 
+            {
+                ErrorMessage::Marker("$future_projection_output is does not have enough lines = $future_projection_output line count = ".$count);
+                file::Delete($future_projection_output);
+            }            
+        }
+            
+        
+        // if already calc then don't do again
+        if (!file_exists($future_projection_output))
+        {
+            
+            
+            ErrorMessage::Marker("$future_projection_output Added for generation");
+            
+                        //java -mx2048m -cp $MAXENT   density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x        
+            $script .= "java -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x\n";   
+            $this->ExecutionCount($this->ExecutionCount() + 1);      
+            
+            // create quicklook
+            $script .= "php -q ".configuration::ApplicationFolder()."applications/CreateQuickLookFromAscii.php {$this->SpeciesID()} {$future_projection_output}\n";
+            
+            $qlfn = str_replace("asc", "png", $future_projection_output);
+            
+            if ($this->UpdateDatabase())
+            {
+                // need to check if this is something that we ware going to load
+                
+                if ($this->shouldLoadData($combination)) 
+                {
+
+                    if ($this->LoadASCII())
+                        $script .= "php -q ".configuration::ApplicationFolder()."applications/MaxentInsertAsciiOnly.php {$this->SpeciesID()} '{$future_projection_output}'\n";  
+                    
+                    if ($this->LoadQuickLooks())    
+                        $script .= "php -q ".configuration::ApplicationFolder()."applications/MaxentInsertQuickLookOnly.php {$this->SpeciesID()} '{$qlfn}'\n";                    
+                    
+                }
+            }
+                
+        }
+        else
+        {
+
+            // ErrorMessage::Marker("$future_projection_output already exists ");
+            
+            
+            if ($this->UpdateDatabase())  
+            {
+                if (!array_key_exists($combination, $this->DataAlreadyLoadedASCII()))    
+                {
+                    
+                    if ($this->shouldLoadData($combination)) 
+                    {
+                        
+                        if ($this->LoadASCII())
+                        {
+                            ErrorMessage::Marker("Added Load into database $future_projection_output  ");
+                            $script .= "php -q ".configuration::ApplicationFolder()."applications/MaxentInsertAsciiOnly.php {$this->SpeciesID()} '{$future_projection_output}' \n";      
+                        }
+                            
+                    }
+                    
+                }                
+                else
+                {
+                    ErrorMessage::Marker("$future_projection_output already in Database");
+                }
+            }
+            
+            
+            
+            $qlfn = str_replace("asc", "png", $future_projection_output);
+            if (!file_exists($qlfn))  // check to see if quick look exists 
+            {
+                
+                ErrorMessage::Marker("Added to create quick look from  $future_projection_output");
+                $script .= "php -q ".configuration::ApplicationFolder()."applications/CreateQuickLookFromAscii.php {$this->SpeciesID()} '{$future_projection_output}'\n";
+                
+                
+                if ($this->UpdateDatabase())  // lets see if we need to update db only
+                {
+                    if ($this->shouldLoadData($combination))
+                    {
+                        if ($this->LoadQuickLooks())    
+                        {
+                            ErrorMessage::Marker("Added to loaded quick look iinto DB from  $qlfn  ");
+                            $script .= "php -q ".configuration::ApplicationFolder()."applications/MaxentInsertQuickLookOnly.php {$this->SpeciesID()} '{$qlfn}'\n";                                                    
+                        }
+
+                    }
+
+                }
+                
+                
+            }
+            else
+            {
+                
+
+                if ($this->UpdateDatabase())  // lets see if we need to update db only
+                {
+                    if (!array_key_exists($combination, $this->DataAlreadyLoadedQL()))    
+                    {
+                        if ($this->shouldLoadData($combination))
+                        {
+                            if ($this->LoadQuickLooks())    
+                            {
+                                ErrorMessage::Marker("Added to loaded quick look iinto DB from  $qlfn  ");
+                                $script .= "php -q ".configuration::ApplicationFolder()."applications/MaxentInsertQuickLookOnly.php {$this->SpeciesID()} '{$qlfn}'\n";                                                        
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        ErrorMessage::Marker("quick look $qlfn  already in DB ");
+                    }
+
+                }
+                
+            }
+        }
+        
+        
+        if ($this->ParalellFuturePredictions())     
+        {
+            $script .= "rm $scriptFilename\n";
+        }
+            
+        
+        // it may be usefull to have different script for each future model 
+        // // as we can run then on hpc as different jobs - this will be useful wehn the resol;ution of the data is higher
+        // 
+        // 
+        // for now return the script  and we will add it to the end of the major script 
+        
+        // NOT running paralell 
+        if (!$this->ParalellFuturePredictions()) return $script;   // - return the actual script
+        
+        
+        // --------------------------------------------------------------
+        // create new script as we are going to run in paralell
+        // --------------------------------------------------------------
+        file_put_contents($scriptFilename, $script);
+
+        if (!file_exists($scriptFilename))
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Write Script for Species = {$this->SpeciesID()}  combination = $combination scriptFilename = $scriptFilename \n");
+            return null;
+        }
+        
+
+        return $scriptFilename;
+        
+        
+    }
+            
+    
+    
+    
     
     /**
      * Check to see if this combination si to be loaded
@@ -1098,8 +1395,26 @@ AAA;
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
+
+    
+    public function ProjectFutures() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
     
     
+    public function Project1990() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    public function Project1975() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
     
     
     

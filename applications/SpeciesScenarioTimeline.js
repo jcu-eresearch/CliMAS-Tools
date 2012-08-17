@@ -11,8 +11,12 @@ function screenSetup()
 
 function selectSpecies(src)
 {
+    
     $('#futures').attr('src',"SpeciesScenarioTimelineFutures.php?id=" + $(src).attr('tag'));
 } 
+
+
+
 
 $(document).ready(function(){
 

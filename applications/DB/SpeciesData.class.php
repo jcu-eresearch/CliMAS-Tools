@@ -319,7 +319,15 @@ class SpeciesData extends Object {
      */
     public static function GetModelledDataForModel($speciesID,$filetype = null,$model = "ALL")
     {
+        if (is_null($speciesID))
+            return new ErrorMessage(__METHOD__, __LINE__, "speciesID passed as null");
+        
+        $speciesID = trim($speciesID);
+        
+        if ($speciesID == "")
+            return new ErrorMessage(__METHOD__, __LINE__, "speciesID passed as EMPTY");
 
+        
         $sql = "select mc.id as id
                       ,mc.species_id
                       ,mc.scientific_name
@@ -362,10 +370,11 @@ class SpeciesData extends Object {
 //        foreach (matrix::ColumnUnique($result, 'scenario_name') as $scenario => $scenario_file_count) 
 //            $scenarios[$scenario] = array();
        
+        $scenarios = array();
         foreach ($result as $file_unique_id => $row) 
         {
             
-            $scenarios[$row['time_name']][$row['scenario_name']] = $file_unique_id;            
+            $scenarios[$row['scenario_name']][$row['time_name']] = $file_unique_id;            
         }
         
         // $scenarios; is now a jagged array of 
@@ -383,6 +392,66 @@ class SpeciesData extends Object {
         return $scenarios;
         
     }
+    
+    public static function GetModelledDataForModelStandardised($speciesID,$filetype = null,$model = "ALL")
+    {
+        
+        if (is_null($speciesID))
+            return new ErrorMessage(__METHOD__, __LINE__, "speciesID passed as null");
+        
+        $speciesID = trim($speciesID);
+        
+        if ($speciesID == "")
+            return new ErrorMessage(__METHOD__, __LINE__, "speciesID passed as EMPTY");
+        
+        
+        $data = self::GetModelledDataForModel($speciesID,$filetype,$model);
+        if ($data instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $data);
+        
+        $result = array();
+        foreach (DatabaseClimate::GetScenarios() as $scenario) 
+        {
+            $result[$scenario] = array();
+            
+            foreach (DatabaseClimate::GetTimes() as $time) 
+            {
+                $result[$scenario][$time]  = null;
+                
+                
+                
+                if (array_key_exists($scenario, $data))
+                    if (array_key_exists($time, $data[$scenario]))
+                        $result[$scenario][$time] = $data[$scenario][$time];
+                
+            }
+                
+        }
+        
+        return $result;
+        
+    }
+    
+    /**
+     * get current suoitabaility for this pecies   - TODO:: this is Dodgy we need to get using Scenario Name = CURRENT
+     * 
+     * @param type $speciesID
+     * @return \ErrorMessage 
+     */
+    public static function SpeciesCurrentQuickLook($speciesID) 
+    {
+        $q = "select file_unique_id from modelled_climates where species_id = {$speciesID} and models_id = 20 and times_id = 10 order by species_id,filetype,scenarios_id,times_id limit 1;";
+        
+        $result = DBO::QueryFirst($q,'file_unique_id');
+        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "Failed to get SpeciesCurrentQuickLook  speciesID = $speciesID  \n", true, $result);
+
+        $file_unique_id = array_util::Value($result,'file_unique_id');
+        
+        return $file_unique_id;
+    }
+    
+    
+    
+ 
     
     
     
