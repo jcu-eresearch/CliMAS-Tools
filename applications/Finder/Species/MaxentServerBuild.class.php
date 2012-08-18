@@ -18,6 +18,10 @@ class MaxentMainServerBuild extends Object {
         $clazz = util::CommandScriptsFoldermandLineOptionValue($array, 'clazz');
         if (!is_null($clazz)) return self::run_clazz($array,$clazz);
 
+        $genus = util::CommandScriptsFoldermandLineOptionValue($array, 'genus');
+        if (!is_null($genus)) return self::run_genus($array,$genus);
+        
+        
         $folder = util::CommandScriptsFoldermandLineOptionValue($array, 'folder');
         if (!is_null($folder)) return self::RunFolder($array,$folder);
         
@@ -29,12 +33,16 @@ class MaxentMainServerBuild extends Object {
     {
         
         echo "php $array[0] --species=n    where n = species id\n";
+        echo "\n";
         echo "php $array[0] --clazz=name   where name is a species clazz (taxa) name\n";
-        echo "php $array[0] --clazz=LIST   display a list of clazz's\n";
+        echo "php $array[0] --clazz=LIST   get list of Clazz (Taxa)\n";
+        echo "\n";
+        echo "php $array[0] --genus=name   where name is a species genus name\n";
+        echo "php $array[0] --genus=LIST   get list of Genus\n";
+        echo "\n";
         echo "php $array[0] --folder=true  process all spcies in current data folder\n";
 
         echo "other parameters \n";
-        echo "\n";
         echo "\n";
         echo "       --ProjectFutures=[true|false]  default: true    true = Generate Future projections\n";
         echo "       --Project1975=[true|false]     default: true    true = Create layers for 1975 condition\n";
@@ -196,6 +204,45 @@ class MaxentMainServerBuild extends Object {
         
         
     }
+
+    private  static function run_genus($array,$genus)
+    {
+                
+        if ($genus == "LIST") 
+        {
+            print_r(SpeciesData::Genus());
+            return null;
+        }
+
+        
+        ErrorMessage::Marker("Find all species that are inside this genus ([{$genus}]\n");
+        
+        $speciesGenus = SpeciesData::TaxaForGenusWithOccurances($genus);
+        
+        
+        foreach ($speciesGenus as $row) 
+        {
+            $species_id = $row['species_id'];
+            
+            if (self::IsJobRunning($array,$species_id)) continue;
+            
+            
+            $MM = new MaxentMainServerBuild($species_id);
+            self::setCommandLineParameters($array, $MM);
+            
+            $NoExecute = util::CommandScriptsFoldermandLineOptionValue($array, 'NoExecute',false);
+            if ($NoExecute == false) 
+                $MM->Execute();
+            else
+                print_r($MM);
+            
+            unset($MM);
+            
+        }
+        
+        
+    }
+    
     
     
     private static function setCommandLineParameters($array, MaxentMainServerBuild $MM)
@@ -461,6 +508,8 @@ class MaxentMainServerBuild extends Object {
                     $scenarioID = trim($scenarioID);
                     if ($scenarioID == "") continue;
 
+                    if ($scenarioID == "CURRENT") continue;
+                    
                     // if we request a scpecifi scenario
                     if (!is_null($this->scenarios()))
                         if (!util::contains($this->scenarios(), $scenarioID)) continue;    
@@ -471,10 +520,13 @@ class MaxentMainServerBuild extends Object {
                     foreach (DatabaseClimate::GetTimes() as $timeID)
                     {
 
+                        
                         if (is_null($timeID)) continue;
                         $timeID = trim($timeID);
                         if ($timeID == "") continue;
 
+                        if ($timeID < 2000) continue;
+                        
 
                         // if we request a scpecifi time
                         if (!is_null($this->times()))
@@ -486,11 +538,14 @@ class MaxentMainServerBuild extends Object {
                         foreach (DatabaseClimate::GetModels()  as $modelID)
                         {
 
+                            
 
                             if (is_null($modelID)) continue;
                             $modelID = trim($modelID);
                             if ($modelID == "") continue;
 
+                            if ($modelID == "CURRENT") continue;
+                            
                             // if we request a scpecifi model
                             if (!is_null($this->models()))
                                 if (!util::contains($this->models(), $modelID)) continue;    
@@ -749,12 +804,17 @@ AAA;
             
         }
         
-        $count = file::lineCount($future_projection_output); // check  line count of $future_projection_output
-        if ($count < 697) 
+        if (file_exists($future_projection_output))
         {
-            ErrorMessage::Marker("$future_projection_output is does not have enough lines = $future_projection_output line count = ".$count);
-            file::Delete($future_projection_output);
+            $count = file::lineCount($future_projection_output); // check  line count of $future_projection_output
+            if ($count < 697) 
+            {
+                ErrorMessage::Marker("$future_projection_output does not have enough lines = $future_projection_output line count = ".$count);
+                file::Delete($future_projection_output);
+            }
+            
         }
+        
             
         
         // if already calc then don't do again

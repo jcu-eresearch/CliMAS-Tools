@@ -192,7 +192,7 @@ class DBO {
         return $result;
     }
     
-    public static function Count($table,$where) 
+    public static function Count($table,$where = null) 
     {        
         $db = new PGDB();
         $result = $db->count($table,$where);

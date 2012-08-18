@@ -133,23 +133,39 @@ class spatial_util
     public static function RasterStatisticsBasic($filename,$band = "1")
     {
 
+        if (util::contains($filename, "shp")) return null;
+
+        if (is_null($filename)) return new Exception("Filename passed as null");
+
+        $filename = trim($filename);
+        if ($filename == "") return new Exception("Filename passed as EMPTY");
+        
+        if (!file_exists($filename)) return new Exception("File not found .. $filename ");
+        
         // try to get a better / higher precision version first
         $precision = self::RasterStatisticsPrecision($filename,$band);
         if (!is_null($precision)) return $precision;
 
-        if (util::contains($filename, "shp")) return null;
         
         $result = array();
         $cmd = "gdalinfo -stats {$filename} | grep 'Band {$band}' -A 3";
         exec($cmd, $result);
 
         if (count($result) == 0 ) return null;
-
+        
+        
         // Minimum=0.000, Maximum=255.000, Mean=65.600, StdDev=99.236
 
         $stats_line_raw = array_util::FirstElementsThatContain($result, "Minimum");
         if (is_null($stats_line_raw)) return null;
 
+        $stats_line_raw = array_util::FirstElementsThatContain($result, "Maximum");
+        if (is_null($stats_line_raw)) return null;
+
+        $stats_line_raw = array_util::FirstElementsThatContain($result, "Mean");
+        if (is_null($stats_line_raw)) return null;
+
+        
         $key_values = array_util::explode(explode(",",$stats_line_raw), "=");
 
         $out = array();  //   just stats
@@ -358,6 +374,8 @@ class spatial_util
         return $output_filename;
         
     }
+    
+
     
     
     

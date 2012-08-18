@@ -63,7 +63,11 @@ class DatabaseClimate {
     public static  function GetModels() 
     {
         $result = self::getDataname('models');
+        if ($result instanceof ErrorMessage) 
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't get Data name from Models", true,$result);
+            
         unset($result['ALL']);
+        
         return $result;
     }
 

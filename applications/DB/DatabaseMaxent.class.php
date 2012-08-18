@@ -17,7 +17,6 @@ class DatabaseMaxent extends Object
     
     public static $DisplayThresholdFieldName = "Equate entropy of thresholded and original distributions logistic threshold";
     
-    
     /**
      *
      * @param type $species_id
@@ -696,6 +695,51 @@ class DatabaseMaxent extends Object
     }
 
     
+    public static  function GetMaxentThreshold($species_id = null)
+    {
+        
+        $MaxentFieldName = self::$DisplayThresholdFieldName;
+    
+        
+        $where = "";
+        if (!is_null($species_id)) 
+            $where = "and species_id = {$species_id}";   
+            
+
+        // threshold for species  
+        $q = "select 
+                v.species_id
+                ,v.maxent_fields_id 
+                ,f.name 
+                ,v.num as threshold
+                from maxent_values v
+                    , maxent_fields f  
+                where v.maxent_fields_id = f.id 
+                and f.name = ".util::dbq($MaxentFieldName,true).
+                "{$where}"
+                ;
+
+        $result = DBO::Query($q, 'species_id' );
+        
+        
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked(__METHOD__,__LINE__,"Failed to get Get Maxent Results CSV Valiue  from using SQL = {$q} \n",true,$result);
+        
+        if (count($result) == 0)  
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to get Get Maxent Results CSV Valiue  from using Row Count = 0  SQL = {$q} \n");
+        
+            
+        if (!is_null($species_id)) 
+            return util::first_element($result);
+            
+        
+        return $result;
+        
+    }
+    
+    
+    
+    
     
     
     
@@ -797,6 +841,8 @@ class DatabaseMaxent extends Object
         
         
     }
+    
+    
     
     
 }

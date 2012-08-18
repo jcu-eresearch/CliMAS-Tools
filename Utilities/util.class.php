@@ -88,6 +88,10 @@ class util {
         if ($value == "true") return true;
         if ($value == "false") return false;
         
+        $value = trim($value);
+        
+        if ($value == "") return $default;
+        
         return $value;
 
     }

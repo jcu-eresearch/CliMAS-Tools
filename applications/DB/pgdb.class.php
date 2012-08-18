@@ -349,16 +349,21 @@ class PGDB extends Object {
     }
     
     
-    public function count($table,$where_src,$log_error = true) 
+    public function count($table,$where_src = null,$log_error = true) 
     {   
         
-        if (is_array($where_src))
-            $where = DBO::WhereString($where_src);
-        else
-            $where = $where_src;
+        $where = "";
+        if (!is_null($where_src))
+        {
+            if (is_array($where_src))
+                $where = " where " . DBO::WhereString($where_src);
+            else
+                $where = " where ".$where_src;
+            
+        }
         
         
-        $sql = "select count(*) as row_count from $table where {$where}";
+        $sql = "select count(*) as row_count from $table {$where}";
         $count_result = $this->query($sql,null,$log_error);
         
         if ($count_result instanceof ErrorMessage) return $count_result;

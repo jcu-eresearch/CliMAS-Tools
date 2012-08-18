@@ -149,23 +149,6 @@ class SpeciesData extends Object {
         return self::SpeciesCommonNames($species_id,0);
     }
     
-//    public static function SpeciesInfoByID($species_id)
-//    {
-//        
-//       $common = self::SpeciesCommonNameSimple($species_id);
-//       if ($common instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $common);
-//        
-//       $name = self::SpeciesName($species_id);
-//       if ($name instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $name); 
-//       
-//       $result = array();
-//       
-//       $result['common_name'] = $common;
-//       $result['scientific_name'] = $name;
-//       
-//       return $result;
-//       
-//    }
     
     
     public static function SpeciesName($species_id) 
@@ -255,6 +238,10 @@ class SpeciesData extends Object {
     public static function GetAllModelledData($speciesID,$filetype = null,$key = 'combination',$extraWhere = null)
     {
         if (is_null($speciesID)) return null;
+        
+        $speciesID = trim($speciesID);
+        if ($speciesID == "") return null;
+        
         
         if (!is_null($extraWhere))
             $extraWhere = "and {$extraWhere} ";
@@ -450,11 +437,6 @@ class SpeciesData extends Object {
     }
     
     
-    
- 
-    
-    
-    
     /**
      * 
      * 
@@ -471,8 +453,6 @@ class SpeciesData extends Object {
         
         return $result;
     }
-    
-    
 
 
     
@@ -599,14 +579,38 @@ class SpeciesData extends Object {
         return $result;
         
     }
+
+    public static function SpeciesIDsForClazz($clazz) 
+    {
+        $result  = DBO::Unique('species_taxa_tree', 'species_id', "clazz = E'{$clazz}'");
+        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);
+        return $result;
+        
+    }
+
+    public static function SpeciesIDsForFamily($family) 
+    {
+        $result  = DBO::Unique('species_taxa_tree', 'species_id', "family = E'{$family}'");
+        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);
+        return $result;
+        
+    }
+    
     
     public static function SpeciesIDsForGenus($genus) 
     {
+        
         $result  = DBO::Unique('species_taxa_tree', 'species_id', "genus = E'{$genus}'");
         if ($result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);
         return $result;
         
     }
+
+    
+    
+    
+    
+    
     
     
     
@@ -659,6 +663,8 @@ class SpeciesData extends Object {
         
     }
     
+    
+    
 
     public static function id4ScientificName($scientificName) 
     {
@@ -707,6 +713,69 @@ class SpeciesData extends Object {
         return $result;
     }
 
+    public static function TaxaForFamilyWithOccurances($family,$count =0) 
+    {
+        
+        $sql = "select 
+                     o.species_id
+                    ,o.count as species_count
+                    ,st.id as species_taxa_id
+                    ,st.kingdom
+                    ,st.phylum
+                    ,st.clazz
+                    ,st.orderz
+                    ,st.family
+                    ,st.genus
+                    ,st.species
+                    ,st.common_name
+                from 
+                     species_occur o
+                    ,species_taxa_tree st 
+                where o.species_id = st.species_id
+                  and o.count >= {$count}
+                  and st.family = E'{$family}' 
+                ";
+        
+        $result = DBO::Query($sql, 'species_id');
+                  
+        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);                  
+        
+        return $result;
+    }
+    
+    
+    
+    public static function TaxaForGenusWithOccurances($genus,$count =0) 
+    {
+        
+        $sql = "select 
+                     o.species_id
+                    ,o.count as species_count
+                    ,st.id as species_taxa_id
+                    ,st.kingdom
+                    ,st.phylum
+                    ,st.clazz
+                    ,st.orderz
+                    ,st.family
+                    ,st.genus
+                    ,st.species
+                    ,st.common_name
+                from 
+                     species_occur o
+                    ,species_taxa_tree st 
+                where o.species_id = st.species_id
+                  and o.count >= {$count}
+                  and st.genus = E'{$genus}' 
+                ";
+        
+        $result = DBO::Query($sql, 'species_id');
+                  
+        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);                  
+        
+        return $result;
+    }
+    
+    
     public static function TaxaWithOccurances($count = 1) 
     {
         
@@ -814,6 +883,128 @@ class SpeciesData extends Object {
     }
     
     
+    public static function TaxaWithOccurancesFilteredFor($clazz = "%",$family = "%", $genus = "%",$minimum_occurance = 10) 
+    {
+        if (is_null($clazz))  $clazz  = "%";
+        if (is_null($family)) $family = "%";
+        if (is_null($genus))  $genus  = "%";
+
+        if (is_null($minimum_occurance))  $minimum_occurance  = 10;
+        if (!is_numeric($minimum_occurance)) $minimum_occurance  = 10;
+        
+        $clazz  = trim($clazz);
+        $family = trim($family);
+        $genus  = trim($genus);
+        
+        if ($clazz  == "") $clazz = "%";
+        if ($family == "") $family = "%";
+        if ($genus  == "") $genus = "%";
+        
+        
+        $sql = "select  
+                     st.clazz
+                    ,st.family
+                    ,st.genus
+                    ,st.species
+                    , o.species_id
+                    , o.count as species_count
+                from 
+                     species_occur o
+                    ,species_taxa_tree st 
+                where o.species_id = st.species_id
+                  and o.count >= {$minimum_occurance}
+                  and st.clazz like '{$clazz}'
+                  and st.family like '{$family}'
+                  and st.genus like '{$genus}'
+                order by
+                     st.clazz
+                    ,st.family
+                    ,st.genus
+                    ,st.species
+                ";
+                  
+        $result = DBO::Query($sql, 'species_id');
+                  
+        
+        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);                  
+        
+        return $result;
+    }
+
+    
+    
+    public static function ModelledTaxaForClazz($clazz = null) 
+    {
+        
+        if (is_null($clazz))  return new ErrorMessage(__METHOD__, __LINE__, "clazz passed as null"); 
+        $clazz = trim($clazz);
+        if ($clazz == "")  return new ErrorMessage(__METHOD__, __LINE__, "clazz passed as empty"); 
+        
+        
+        $species_list = self::SpeciesIDsForClazz($clazz);
+        if ($species_list instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $species_list); 
+        
+        
+        $result = array();
+        foreach ($species_list as $species_id) 
+        {
+            $result[$species_id] = self::GetAllModelledData($species_id);
+        }
+        
+        
+        return $result;
+    }
+    
+    public static function ModelledTaxaForFamily($family = null) 
+    {
+        
+        if (is_null($family))  return new ErrorMessage(__METHOD__, __LINE__, "family passed as null"); 
+        $family = trim($family);
+        if ($family == "")  return new ErrorMessage(__METHOD__, __LINE__, "family passed as empty"); 
+        
+        
+        $species_list = self::SpeciesIDsForFamily($family);
+        if ($species_list instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $species_list); 
+        
+        
+        $result = array();
+        foreach ($species_list as $species_id) 
+        {
+            $result[$species_id] = self::GetAllModelledData($species_id);
+        }
+        
+        
+        return $result;
+    }
+    
+    public static function ModelledTaxaForGenus($genus = null) 
+    {
+        
+        if (is_null($genus))  return new ErrorMessage(__METHOD__, __LINE__, "genus passed as null"); 
+        $genus = trim($genus);
+        if ($genus == "")  return new ErrorMessage(__METHOD__, __LINE__, "genus passed as empty"); 
+        
+        
+        $species_list = self::SpeciesIDsForGenus($genus);
+        if ($species_list instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $species_list); 
+        
+        
+        $result = array();
+        foreach ($species_list as $species_id_row) 
+        {
+            $species_id = util::first_element($species_id_row);
+            
+            $data = self::GetAllModelledData($species_id);
+            
+            if ($data instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $data); 
+
+            if (is_null($data)) continue;
+            
+            $result[$species_id] = $data;
+        }
+        
+        return $result;
+    }
     
     
     public static function GenerateMedianFor($species_id, $user_scenario = "%",$user_model = "%",$user_time = "%",$overwrite_output = false,$output_filename = null)  
@@ -919,6 +1110,25 @@ class SpeciesData extends Object {
         return $folder;
         
     }
+
+    public static function genus_data_folder($genus)
+    {
+        
+        file::mkdir_safe(configuration::Maxent_Species_Data_folder()."genus");
+        
+        $folder =    configuration::Maxent_Species_Data_folder()
+                    ."genus"
+                    .configuration::osPathDelimiter()
+                    .$genus
+                    .configuration::osPathDelimiter()
+                    ;
+        
+        file::mkdir_safe($folder);
+        
+        return $folder;
+        
+    }
+    
     
     
     public static function ScenarioTimeMedian($species_id,$scenario,$time,$overwrite_output = false,$output_filename = null)
@@ -982,7 +1192,6 @@ class SpeciesData extends Object {
                 
                 if ($result instanceof ErrorMessage) 
                     return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);                          
-
                 
                 if (!is_null($result)) 
                 {
@@ -1297,6 +1506,40 @@ class SpeciesData extends Object {
         
     }
     
+
+    public static function ClazzID($find)
+    {
+        return self::get_id_for('clazz',$find);
+    }
+    
+    public static function FamilyID($find)
+    {
+        return self::get_id_for('family',$find);
+    }
+    
+    public static function GenusID($find)
+    {
+        return self::get_id_for('genus',$find);
+    }
+
+    
+    private static function get_id_for($table,$find,$columnName = 'name', $col = 'id')
+    {
+        
+        if (is_null($table))  return new ErrorMessage(__METHOD__, __LINE__, "table passed as null"); 
+        $table = trim($table);
+        if ($table == "")  return new ErrorMessage(__METHOD__, __LINE__, "table passed as empty"); 
+        
+        if (is_null($find))  return new ErrorMessage(__METHOD__, __LINE__, "find passed as null"); 
+        if ($find == "")  return new ErrorMessage(__METHOD__, __LINE__, "find passed as empty"); 
+        
+        $result =  DBO::QueryFirst("select $col from {$table} where {$columnName} = E'{$find}' limit 1",$col);
+        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);                                  
+        
+        $id = array_util::Value($result, $col);
+        
+        return $id;        
+    }
     
     
 }

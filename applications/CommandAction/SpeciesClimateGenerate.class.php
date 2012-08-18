@@ -539,6 +539,307 @@ SQL;
 
     }
 
+    
+        public   function Stage061($name_only = false)
+    {
+
+        $name = 'modelled_climates_genus';
+
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
+
+        $this->header($name);
+
+
+$table_sql = <<<SQL
+
+DROP TABLE IF EXISTS modelled_genus_files;
+CREATE TABLE modelled_genus_files
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,genus_id          integer
+    ,genus_name        varchar(256)   -- Will be Unique
+    ,filetype          varchar(90)
+    ,file_unique_id    varchar(60)
+    ,update_datetime   timestamp without time zone
+);
+GRANT ALL PRIVILEGES ON modelled_genus_files TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE modelled_genus_files_id_seq TO ap02;
+
+
+DROP TABLE IF EXISTS modelled_genus_climates;
+CREATE TABLE modelled_genus_climates
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,genus_id          integer        -- may become out of sync with species (use scientific_name to resync)
+    ,genus_name        varchar(256)   -- Will be Unique
+    ,models_id         integer
+    ,scenarios_id      integer
+    ,times_id          integer
+    ,filetype          varchar(90)
+    ,file_unique_id   varchar(60)
+    ,update_datetime   timestamp without time zone
+);
+GRANT ALL PRIVILEGES ON modelled_genus_climates TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE modelled_genus_climates_id_seq TO ap02;
+
+SQL;
+
+        $table_result = DBO::CreateAndGrant($table_sql);
+
+        if (is_null($table_result)) throw new Exception("FAILED to create table modelled_genus_files & modelled_genus_climates - null result from query ");
+
+        if (!DBO::HasTable('modelled_genus_files')) throw new Exception("FAILED to create table modelled_genus_files - Can't find table with describe ");
+        if (!DBO::HasTable('modelled_genus_climates')) throw new Exception("FAILED to create table modelled_genus_climates - Can't find table with describe ");
+
+        return true;
+
+    }
+
+        public   function Stage0611($name_only = false)
+    {
+
+        $name = 'Genus';
+
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
+
+        $this->header($name);
+
+
+$table_sql = <<<SQL
+
+DROP TABLE IF EXISTS genus;
+CREATE TABLE genus
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,name              varchar(100)
+    ,guid              varchar(100)
+    ,update_datetime   timestamp without time zone
+);
+GRANT ALL PRIVILEGES ON genus TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE genus_id_seq TO ap02;
+
+SQL;
+
+        $table_result = DBO::CreateAndGrant($table_sql);
+
+        if (is_null($table_result)) throw new Exception("FAILED to create table genus");
+
+        if (!DBO::HasTable('genus')) throw new Exception("FAILED to create table genus-  Can't find table with describe ");
+        
+        echo "PRE GENUS INSERT ".DBO::Count("genus")."\n";
+        
+        // populate genus from 
+        DBO::Insert("insert into genus (name,guid) select genus,genus_guid from species_taxa_tree group by genus,genus_guid order by genus;");
+
+        echo "POST GENUS INSERT ".DBO::Count("genus")."\n";
+        
+        return true;
+        
+    }
+
+        public   function Stage062($name_only = false)
+    {
+
+        $name = 'modelled_climates_family';
+
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
+
+        $this->header($name);
+
+
+$table_sql = <<<SQL
+
+DROP TABLE IF EXISTS modelled_family_files;
+CREATE TABLE modelled_family_files
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,family_id         integer
+    ,family_name       varchar(256)   -- Will be Unique
+    ,filetype          varchar(90)
+    ,file_unique_id    varchar(60)
+    ,update_datetime   timestamp without time zone
+);
+GRANT ALL PRIVILEGES ON modelled_family_files TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE modelled_family_files_id_seq TO ap02;
+
+
+DROP TABLE IF EXISTS modelled_family_climates;
+CREATE TABLE modelled_family_climates
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,family_id          integer        -- may become out of sync with species (use scientific_name to resync)
+    ,family_name       varchar(256)   -- Will be Unique
+    ,models_id         integer
+    ,scenarios_id      integer
+    ,times_id          integer
+    ,filetype          varchar(90)
+    ,file_unique_id   varchar(60)
+    ,update_datetime   timestamp without time zone
+);
+GRANT ALL PRIVILEGES ON modelled_family_climates TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE modelled_family_climates_id_seq TO ap02;
+
+SQL;
+
+        $table_result = DBO::CreateAndGrant($table_sql);
+
+        if (is_null($table_result)) throw new Exception("FAILED to create table modelled_family_files & modelled_family_climates - null result from query ");
+
+        if (!DBO::HasTable('modelled_family_files')) throw new Exception("FAILED to create table modelled_family_files - Can't find table with describe ");
+        if (!DBO::HasTable('modelled_family_climates')) throw new Exception("FAILED to create table modelled_family_climates - Can't find table with describe ");
+
+        return true;
+
+    }
+
+    
+        public   function Stage0621($name_only = false)
+    {
+
+        $name = 'Family';
+
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
+
+        $this->header($name);
+
+
+$table_sql = <<<SQL
+
+DROP TABLE IF EXISTS family;
+CREATE TABLE family
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,name              varchar(100)
+    ,guid              varchar(100)
+    ,update_datetime   timestamp without time zone
+);
+GRANT ALL PRIVILEGES ON family TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE family_id_seq TO ap02;
+
+SQL;
+
+        $table_result = DBO::CreateAndGrant($table_sql);
+
+        if (is_null($table_result)) throw new Exception("FAILED to create table family");
+
+        if (!DBO::HasTable('family')) throw new Exception("FAILED to create table family-  Can't find table with describe ");
+        
+        echo "PRE family INSERT ".DBO::Count("family")."\n";
+        
+        // populate family from 
+        DBO::Insert("insert into family (name,guid) select family,family_guid from species_taxa_tree group by family,family_guid order by family;");
+
+        echo "POST family INSERT ".DBO::Count("family")."\n";
+        
+        return true;
+        
+    }
+    
+    
+    
+    
+    
+        public   function Stage063($name_only = false)
+    {
+
+        $name = 'modelled_climates_clazz';
+
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
+
+        $this->header($name);
+
+
+$table_sql = <<<SQL
+
+DROP TABLE IF EXISTS modelled_clazz_files;
+CREATE TABLE modelled_clazz_files
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,clazz_id          integer
+    ,clazz_name        varchar(256)   -- Will be Unique
+    ,filetype          varchar(90)
+    ,file_unique_id    varchar(60)
+    ,update_datetime   timestamp without time zone
+);
+GRANT ALL PRIVILEGES ON modelled_clazz_files TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE modelled_clazz_files_id_seq TO ap02;
+
+
+DROP TABLE IF EXISTS modelled_clazz_climates;
+CREATE TABLE modelled_clazz_climates
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,clazz_id          integer        -- may become out of sync with species (use scientific_name to resync)
+    ,clazz_name        varchar(256)   -- Will be Unique
+    ,models_id         integer
+    ,scenarios_id      integer
+    ,times_id          integer
+    ,filetype          varchar(90)
+    ,file_unique_id   varchar(60)
+    ,update_datetime   timestamp without time zone
+);
+GRANT ALL PRIVILEGES ON modelled_clazz_climates TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE modelled_clazz_climates_id_seq TO ap02;
+
+SQL;
+
+        $table_result = DBO::CreateAndGrant($table_sql);
+
+        if (is_null($table_result)) throw new Exception("FAILED to create table modelled_clazz_files & modelled_clazz_climates - null result from query ");
+
+        if (!DBO::HasTable('modelled_clazz_files')) throw new Exception("FAILED to create table modelled_clazz_files - Can't find table with describe ");
+        if (!DBO::HasTable('modelled_clazz_climates')) throw new Exception("FAILED to create table modelled_clazz_climates - Can't find table with describe ");
+
+        return true;
+
+    }
+    
+        public   function Stage0631($name_only = false)
+    {
+
+        $name = 'Clazz';
+
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
+
+        $this->header($name);
+
+
+$table_sql = <<<SQL
+
+DROP TABLE IF EXISTS clazz;
+CREATE TABLE clazz
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,name              varchar(100)
+    ,guid              varchar(100)
+    ,update_datetime   timestamp without time zone
+);
+GRANT ALL PRIVILEGES ON clazz TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE clazz_id_seq TO ap02;
+
+SQL;
+
+        $table_result = DBO::CreateAndGrant($table_sql);
+
+        if (is_null($table_result)) throw new Exception("FAILED to create table clazz");
+
+        if (!DBO::HasTable('clazz')) throw new Exception("FAILED to create table clazz-  Can't find table with describe ");
+        
+        echo "PRE Clazz INSERT ".DBO::Count("clazz")."\n";
+        
+        // populate clazz from 
+        DBO::Insert("insert into clazz (name,guid) select clazz,clazz_guid from species_taxa_tree group by clazz,clazz_guid order by clazz;");
+
+        echo "POST Clazz INSERT ".DBO::Count("clazz")."\n";
+        
+        return true;
+        
+    }
+    
+    
+    
+    
+    
 
     public   function Stage07($name_only = false)
     {
@@ -723,6 +1024,8 @@ SQL;
 
     }
 
+    
+    
 
     public function Stage091($name_only = false)
     {
@@ -981,6 +1284,76 @@ SQL;
         //$result = DBO::Query($q);
         
         //matrix::display($result, " ", null, 20);
+        
+
+        return true;
+
+    }
+    
+    
+    public function Stage094($name_only = false)
+    {
+
+        $name = 'Species Taxa Tree IDs';
+
+        if ($name_only) return __METHOD__."(".__LINE__.")"."::".$name;
+
+        $this->header($name);
+
+        // might not be a good idea to drop table - really need  to copy as we will have update
+        // the models_id in other tables from old to new
+
+
+$table_sql = <<<SQL
+DROP TABLE IF EXISTS taxa_lookup;
+CREATE TABLE taxa_lookup
+(
+    id SERIAL NOT NULL PRIMARY KEY
+    ,taxa_tree_id     integer
+    ,species_id       integer
+    ,clazz_id         integer
+    ,family_id        integer
+    ,genus_id         integer
+    ,update_datetime   timestamp without time zone
+);
+GRANT ALL PRIVILEGES ON taxa_lookup TO ap02;
+GRANT USAGE, SELECT ON SEQUENCE taxa_lookup_id_seq TO ap02;
+SQL;
+
+        $table_result = DBO::CreateAndGrant($table_sql);
+
+        if (is_null($table_result)) throw new Exception("FAILED to create table taxa_lookup - null result from query ");
+        if (!DBO::HasTable('taxa_lookup')) throw new Exception("FAILED to create table taxa_lookup - Can't find table with describe ");
+        
+        $species_taxa_tree = DBO::Query("select * from species_taxa_tree",'species_id');
+        
+        foreach ($species_taxa_tree as $species_id => $row) 
+        {
+            if (trim($row['clazz']) == "") continue;
+            
+            //echo "Before CLAZZ {$row['clazz']} FAMILY {$row['family']}  GENUS {$row['genus']}  SPECIES {$species_id} \n";
+            
+             $clazz_id = SpeciesData::ClazzID($row['clazz']);
+            $family_id = SpeciesData::FamilyID($row['family']);
+             $genus_id = SpeciesData::GenusID($row['genus']);
+            
+             $taxa_tree_id = $row['id'];
+             
+            echo "CLAZZ: {$row['clazz']} FAMILY:: {$row['family']}  GENUS {$row['genus']}  SPECIES:: {$species_id} \n";
+
+            $insert = DBO::Insert("insert into taxa_lookup 
+                                   (taxa_tree_id, species_id, clazz_id, family_id, genus_id) VALUES 
+                                   (E'{$taxa_tree_id}', E'{$species_id}', E'{$clazz_id}', E'{$family_id}', E'{$genus_id}' )");
+
+            
+                                   
+            
+            echo "insert = {$insert}\n";
+            
+                                   
+            
+        }
+        
         
 
         return true;
