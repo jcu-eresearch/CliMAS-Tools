@@ -537,19 +537,25 @@ class MaxentMainServerBuild extends Object {
 
                         foreach (DatabaseClimate::GetModels()  as $modelID)
                         {
-
                             
-
                             if (is_null($modelID)) continue;
                             $modelID = trim($modelID);
                             if ($modelID == "") continue;
-
+                            
                             if ($modelID == "CURRENT") continue;
+                            
+                            
+                            ErrorMessage::Marker(" models = {$this->models()}");
+                            
+                            
                             
                             // if we request a scpecifi model
                             if (!is_null($this->models()))
                                 if (!util::contains($this->models(), $modelID)) continue;    
 
+                            ErrorMessage::Marker(" modelID = {$modelID}");
+
+                            
                             ErrorMessage::Marker("Building Scripts for scenarioID = $scenarioID  timeID = $timeID modelID=[$modelID] \n");
                             //
 

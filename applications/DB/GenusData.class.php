@@ -7,6 +7,8 @@
 class GenusData extends Object 
 {
 
+    
+    
 
     public static function GetProjectedFiles($genus = null ,$filetype = null ,$scenario = null, $model = null, $time = null) 
     {
@@ -38,7 +40,7 @@ class GenusData extends Object
                 {$time}
                 ";
 
-        //ErrorMessage::Marker("GetProjectedFiles q  = $q");
+        // ErrorMessage::Marker("GetProjectedFiles q  = $q");
                 
         $modelled_genus_climates_result = DBO::Query($q,'file_unique_id');
 
@@ -46,6 +48,7 @@ class GenusData extends Object
             return ErrorMessage::Stacked(__METHOD__,__LINE__,"Failed to read modelled_genus_climates  sql=[{$q}]  \n",true,$modelled_genus_climates_result);
 
 
+        
         return $modelled_genus_climates_result;
         
     }
@@ -64,13 +67,9 @@ class GenusData extends Object
         
         if (count($current_files) > 0)
         {
-            ErrorMessage::Marker("We have files here already ?? what to do ");
-            
-            
-            
-            exit();
-            
-             //self::RemoveProjectedFiles($genus,$filetype,$scenario, $model , $time )    ;
+            ErrorMessage::Marker("Removed files arleady there and added this one {$filename}");
+            self::RemoveProjectedFiles($genus ,$filetype ,$scenario , $model , $time ,true);
+             
         }
         
         $file_unique_id = DatabaseFile::InsertFile($filename, "Future projection of {$genus} Scenario:$scenario Time:$time",$filetype,$compressed);
@@ -146,39 +145,53 @@ class GenusData extends Object
     }
     
     
-    public static function RemoveProjectedFiles($genus = null,$filetype = null ,$scenario = null, $model = null, $time = null) 
+    public static function RemoveProjectedFiles($genus = null,$filetype = null ,$scenario = null, $model = null, $time = null,$mustExist = true) 
     {
         
-        $data = self::GetProjectedFiles($genus,$filetype ,$scenario, $model , $time );
-        if ($data instanceof ErrorMessage)
-            return ErrorMessage::Stacked(__METHOD__,__LINE__,"Failed to remove files \n",true,$data);
-
+        $data = self::GetProjectedFiles($genus,$filetype,$scenario, $model , $time );
+        
+        
+        if ($mustExist)
+            if ($data instanceof ErrorMessage)
+                return ErrorMessage::Stacked(__METHOD__,__LINE__,"Failed to remove files \n",true,$data);
         
         ErrorMessage::Marker("Get List of Climate Files to remove");
-        
-        //print_r($data);
 
         $error = array();
         foreach ($data as $file_unique_id => $row) 
         {
-            ErrorMessage::Marker("Remove Genus Climate file {$file_unique_id}");
+            //ErrorMessage::Marker("Remove Genus Climate Database file file {$file_unique_id}");
             
             $remove_result_file = DatabaseFile::RemoveFile($file_unique_id);
             if ($remove_result_file instanceof ErrorMessage)
             {
                 $error[] = $remove_result_file;
-                ErrorMessage::Marker($remove_result_file);
+                //ErrorMessage::Marker($remove_result_file);
                 
                 continue;
             }
             
             // remove the climate entry for this Genus 
             
-            $remove_result_climate = DBO::Delete("modelled_genus_climates", "file_unique_id=".util::dbq($file_unique_id));
+            //ErrorMessage::Marker("Remove modelled_genus_climates  {$file_unique_id}");
+            
+            $remove_result_climate = DBO::Delete("modelled_genus_climates", "file_unique_id=".util::dbq($file_unique_id,true));
             if ($remove_result_climate instanceof ErrorMessage)  
             {
                 $error[] = $remove_result_climate;
-                ErrorMessage::Marker($remove_result_climate);
+                //ErrorMessage::Marker($remove_result_climate);
+                
+                continue;
+            }
+            
+            //ErrorMessage::Marker("Remove modelled_genus_files  {$file_unique_id}");
+            
+            $remove_result_climate = DBO::Delete("modelled_genus_files", "file_unique_id=".util::dbq($file_unique_id,true));
+            if ($remove_result_climate instanceof ErrorMessage)  
+            {
+                $error[] = $remove_result_climate;
+                //ErrorMessage::Marker($remove_result_climate);
+                
                 continue;
             }
             
@@ -372,6 +385,25 @@ HEADER;
     }    
     
     
+    
+    public static function data_folder($genus)
+        {
+
+            file::mkdir_safe(configuration::Maxent_Species_Data_folder()."genus");
+
+            $folder =    configuration::Maxent_Species_Data_folder()
+                        ."genus"
+                        .configuration::osPathDelimiter()
+                        .$genus
+                        .configuration::osPathDelimiter()
+                        ;
+
+            file::mkdir_safe($folder);
+
+            return $folder;
+
+        }
+
     
     
 }

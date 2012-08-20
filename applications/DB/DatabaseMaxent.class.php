@@ -726,7 +726,7 @@ class DatabaseMaxent extends Object
             return ErrorMessage::Stacked(__METHOD__,__LINE__,"Failed to get Get Maxent Results CSV Valiue  from using SQL = {$q} \n",true,$result);
         
         if (count($result) == 0)  
-            return new ErrorMessage(__METHOD__,__LINE__,"Failed to get Get Maxent Results CSV Valiue  from using Row Count = 0  SQL = {$q} \n");
+            return null;
         
             
         if (!is_null($species_id)) 

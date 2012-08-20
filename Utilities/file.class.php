@@ -289,6 +289,9 @@ class file {
     */
     public static function folder_folders($path, $fs_folder_sep = "/",$basenameAsKey = false)
     {
+        
+        if (is_null($fs_folder_sep)) $fs_folder_sep = "/";
+        
         $path = util::trim_end($path, $fs_folder_sep);
         $path = $path.$fs_folder_sep;
 

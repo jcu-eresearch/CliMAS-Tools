@@ -82,6 +82,20 @@ class spatial_util
     }
 
 
+    public static function ArrayRasterStatistics($filenames,$band = "1",$recalculate = false)
+    {
+        
+        $result = array();
+        foreach ($filenames as $key => $filename) 
+        { 
+            $result[$key] = self::RasterStatisticsBasic($filename,$band = "1",$recalculate);
+        }
+        
+        return $result;
+        
+    }
+    
+    
     public static function RasterStatisticsPrecision($filename,$band = "1")
     {
 
@@ -130,7 +144,7 @@ class spatial_util
     /*
      *
      */
-    public static function RasterStatisticsBasic($filename,$band = "1")
+    public static function RasterStatisticsBasic($filename,$band = "1",$recalculate = false)
     {
 
         if (util::contains($filename, "shp")) return null;
@@ -141,6 +155,12 @@ class spatial_util
         if ($filename == "") return new Exception("Filename passed as EMPTY");
         
         if (!file_exists($filename)) return new Exception("File not found .. $filename ");
+        
+        
+        if ($recalculate)
+            if (file_exists($filename.".aux.xml")) 
+                file::Delete ($filename.".aux.xml");
+        
         
         // try to get a better / higher precision version first
         $precision = self::RasterStatisticsPrecision($filename,$band);
@@ -461,6 +481,8 @@ class spatial_util
         
         $result = exec("cat '{$asciiGridFilename}' | grep NODATA_value");
         if (!util::contains($result, 'NODATA_value')) return null;
+        
+        
         
         return trim(str_replace('NODATA_value', '', $result));
         

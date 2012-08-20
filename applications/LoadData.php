@@ -13,6 +13,7 @@ function usage($prog)
    echo "        load            - load this species data from database  \n";
    echo "        remove          - remove this species data from database\n";
    echo "        check           - list this species data in database  \n";
+
    echo "        --filepattern=  - file pattern to use when loading data ";
    exit(1);
 }

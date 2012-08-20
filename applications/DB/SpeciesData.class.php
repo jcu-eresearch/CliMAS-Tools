@@ -1111,24 +1111,6 @@ class SpeciesData extends Object {
         
     }
 
-    public static function genus_data_folder($genus)
-    {
-        
-        file::mkdir_safe(configuration::Maxent_Species_Data_folder()."genus");
-        
-        $folder =    configuration::Maxent_Species_Data_folder()
-                    ."genus"
-                    .configuration::osPathDelimiter()
-                    .$genus
-                    .configuration::osPathDelimiter()
-                    ;
-        
-        file::mkdir_safe($folder);
-        
-        return $folder;
-        
-    }
-    
     
     
     public static function ScenarioTimeMedian($species_id,$scenario,$time,$overwrite_output = false,$output_filename = null)
@@ -1540,6 +1522,36 @@ class SpeciesData extends Object {
         
         return $id;        
     }
+    
+    
+    
+    public static function CalculateAsciigridStatictis($species_id)
+    {
+        $folder = self::species_data_folder($species_id);
+
+        $files  = file::folder_asc($folder, configuration::osPathDelimiter(), true);
+
+        $files = file::arrayFilterOut($files, "aux");
+        $files = file::arrayFilterOut($files, "xml");
+
+        // .aux.xml
+
+        foreach ($files  as $basename => $filename) 
+        {
+            ErrorMessage::Marker("Statsistics for {$species_id} {$basename}");
+
+            $aux = $filename.".aux.xml";
+            if (file_exists($aux)) continue;
+
+            $stats = spatial_util::RasterStatisticsPrecision($filename);
+            ErrorMessage::Marker("{$species_id} {$basename} {$stats[spatial_util::$STAT_MINIMUM]}  {$stats[spatial_util::$STAT_MEAN]}  {$stats[spatial_util::$STAT_MAXIMUM]}");
+
+        }
+
+    }
+
+    
+    
     
     
 }
