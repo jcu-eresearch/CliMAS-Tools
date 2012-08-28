@@ -17,12 +17,12 @@ FinderFactory::Find($cmdaction);
 
 
 $commandID = array_util::Value($_POST, "cmdID",     null);
-$elementID = array_util::Value($_POST, "elementID", null);
+$ui_element_id = array_util::Value($_POST, "ui_element_id", null);
 
 $result['msg'] = print_r($_POST,true);
     
 $result['commandID'] = $commandID;
-$result['elementID'] = $elementID;
+$result['ui_element_id'] = $ui_element_id;
 
 
 

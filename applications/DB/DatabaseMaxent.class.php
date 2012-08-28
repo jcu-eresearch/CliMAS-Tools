@@ -695,17 +695,61 @@ class DatabaseMaxent extends Object
     }
 
     
-    public static  function GetMaxentThreshold($species_id = null)
+    
+    public static function GetMaxentThresholdForSpeciesFromFile($species_id) 
     {
         
-        $MaxentFieldName = self::$DisplayThresholdFieldName;
+        $maxentResultsFilename = SpeciesData::species_data_folder($species_id)."maxentResults.csv";
+        if (!file_exists($maxentResultsFilename))
+            return new ErrorMessage(__METHOD__,__LINE__,"Tried to Maxent Threshold from file but copuld not find it {$maxentResultsFilename}",true);
+        
+        
+            
+        $maxentResult = matrix::Load($maxentResultsFilename);
+
+        
+        $first = util::first_element($maxentResult);
+
+        $name = "Equate entropy of thresholded and original distributions logistic threshold";
+        
+        $threshold_from_file = array_util::Value($first, $name);
+        
+        return $threshold_from_file;
+        
+    }
     
+    
+    public static  function GetMaxentThresholdForSpecies($species_id)
+    {
+        
+        $result = self::GetMaxentThreshold($species_id);
+        if ($result instanceof ErrorMessage)  
+            return ErrorMessage::Stacked(__METHOD__,__LINE__,'',true,$result);
+        
+        
+        if (!is_null($result)) 
+            return $result;
+        
+        $result = self::GetMaxentThresholdForSpeciesFromFile($species_id);
+        if (!is_null($result)) return $result;
+        
+        
+        return new ErrorMessage(__METHOD__,__LINE__,"Failed to get Maxent Threshold ",true);
+    }
+    
+    
+    public static function GetMaxentThreshold($species_id = null)
+    {
+    
+        $MaxentFieldName = util::dbq(self::$DisplayThresholdFieldName,true);
         
         $where = "";
         if (!is_null($species_id)) 
             $where = "and species_id = {$species_id}";   
             
 
+            
+            
         // threshold for species  
         $q = "select 
                 v.species_id
@@ -715,9 +759,9 @@ class DatabaseMaxent extends Object
                 from maxent_values v
                     , maxent_fields f  
                 where v.maxent_fields_id = f.id 
-                and f.name = ".util::dbq($MaxentFieldName,true).
-                "{$where}"
-                ;
+                and f.name = {$MaxentFieldName}
+                {$where}
+                ";
 
         $result = DBO::Query($q, 'species_id' );
         
@@ -730,7 +774,12 @@ class DatabaseMaxent extends Object
         
             
         if (!is_null($species_id)) 
-            return util::first_element($result);
+        {
+            
+            $first = util::first_element($result);
+            
+            return array_util::Value($first, 'threshold');
+        }
             
         
         return $result;

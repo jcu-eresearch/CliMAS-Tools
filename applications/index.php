@@ -8,8 +8,26 @@ include_once dirname(__FILE__).'/includes.php';
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Tropical Data Hub Tools</title>
 <link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
-<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
+ <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+ <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
+ <script type="text/javascript" src="js/jquery.pulse.min.js"></script>
+ <script type="text/javascript" src="js/Utilities.js"></script>
+
 <link href="styles.css" rel="stylesheet" type="text/css">
+
+    
+
+    
+    <script type="text/javascript" >
+    <?php     
+     ?>
+         
+
+    </script>
+    
+    <script type="text/javascript" src="SpeciesScenarioTimeline.js"></script>
+
+
 
 <style>
 

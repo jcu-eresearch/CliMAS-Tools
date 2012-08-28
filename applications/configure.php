@@ -28,12 +28,6 @@ if (!file_exists(configuration::UtilityClasses()))
     exit(1);
 }
 
-if (!file_exists(configuration::DBFSClasses()))
-{
-    echo "DBFSClasses NOT FOUND: ".configuration::DBFSClasses()."\n";
-    exit(1);
-}
-
 
 if (!is_dir(configuration::FilesDownloadFolder()))
 {
@@ -153,7 +147,7 @@ echo "\n";
 echo "Create CRON script {$incoming_sh} \n";
 echo "\n";
 
-file_put_contents($incoming_sh, "#!/bin/tcsh\n cd ".configuration::ApplicationFolder()."\n php -q ".configuration::ApplicationFolder()."applications/Incoming.php\n");
+file_put_contents($incoming_sh, "#!/bin/tcsh\n cd ".configuration::ApplicationFolder()."\n php -q ".configuration::ApplicationFolder()."applications/Incoming.php\n\n");
 
 if (!file_exists($incoming_sh))
 {

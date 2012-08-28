@@ -82,13 +82,26 @@ class spatial_util
     }
 
 
-    public static function ArrayRasterStatistics($filenames,$band = "1",$recalculate = false)
+    public static function ArrayRasterStatistics($filenames,$band = "1",$recalculate = false,$leave_out_invalid_files = false)
     {
         
         $result = array();
         foreach ($filenames as $key => $filename) 
         { 
-            $result[$key] = self::RasterStatisticsBasic($filename,$band = "1",$recalculate);
+            $stats = self::RasterStatisticsBasic($filename,$band = "1",$recalculate);
+            
+            if (!$leave_out_invalid_files)
+            {
+                $result[$key] = $stats;     
+                continue;
+            }
+            else
+            {
+                if (!is_null($stats))
+                    $result[$key] = $stats; 
+            }
+            
+            
         }
         
         return $result;
@@ -135,7 +148,9 @@ class spatial_util
         $out[self::$STAT_MAXIMUM] = $max;
         $out[self::$STAT_MEAN]    = $mean;
         $out[self::$STAT_STDDEV]  = $sd;
-
+        $out[self::$STAT_RANGE]   = $max - $min;
+        
+        
         return $out;
 
     }
@@ -202,6 +217,7 @@ class spatial_util
     public static $STAT_MAXIMUM = "Maximum";
     public static $STAT_MEAN    = "Mean";
     public static $STAT_STDDEV  = "StdDev";
+    public static $STAT_RANGE   = "Range";
 
 
 

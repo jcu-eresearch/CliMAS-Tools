@@ -59,6 +59,15 @@ class util {
     }
     
     
+    public static function isPublicMethod($obj,$methodName)
+    {
+        $rm = new ReflectionMethod($obj, $methodName);
+
+        return array_util::Contains(Reflection::getModifierNames($rm->getModifiers()), 'public');
+
+    }
+    
+    
     public static function Log($from,$str) 
     {
         error_log("APPLICATION ERROR:: ".$from."::".$str);

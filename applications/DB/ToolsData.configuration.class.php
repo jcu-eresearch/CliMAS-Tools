@@ -2,7 +2,7 @@
 /**
  * datbasae  configuration and default values
  *
- * TODO:: Needs to com from Config file that is specific to HOstname
+ * TODO:: Needs to come from Config file that is specific to HOstname
  *
  */
 class ToolsDataConfiguration {
@@ -12,7 +12,7 @@ class ToolsDataConfiguration {
     public static function Species_DB_Username() { return "ap02"; }
     public static function Species_DB_Password() { return "71a6e5db6b9cfda9f0af062254b5bfbe"; }
     public static function Species_DB_Database() { return "ap02_new";}
-
+    
 }
 
 ?>

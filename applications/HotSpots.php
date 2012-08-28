@@ -2,6 +2,8 @@
 session_start();
 include_once dirname(__FILE__).'/includes.php';
 
+$cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url then they have returned.
+
 
 ?>
 <!DOCTYPE html>
@@ -28,11 +30,15 @@ include_once dirname(__FILE__).'/includes.php';
 
         echo htmlutil::AsJavaScriptArray(SpeciesData::Family(),'availableFamily');
 
-        echo htmlutil::AsJavaScriptArray(SpeciesData::Genus(),'availableGenus');
+        echo htmlutil::AsJavaScriptArray(GenusData::ModelledForAllGenusNamesOnly() ,'availableGenus');
         
         echo htmlutil::AsJavaScriptObjectArray(SpeciesData::speciesList(),"full_name","species_id","availableSpecies");    
         
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSource');
+        
+        echo htmlutil::AsJavaScriptSimpleVariable($cmd,'cmd');
+        
+        
      ?>
          
 
@@ -56,12 +62,12 @@ include_once dirname(__FILE__).'/includes.php';
     
     <div id="tabs">
         <ul>
-            <li><a href="#tabs-1">Inputs</a></li>
-            <li><a href="#tabs-2">Climate Models</a></li>
-            <li><a href="#tabs-3">Emission Scenarios</a></li>
-            <li><a href="#tabs-4">Years</a></li>
-            <li><a href="#tabs-5">Bioclimatic Layers</a></li>
-            <li><a href="#tabs-6">Data Calculation</a></li>
+            <li id="tab_label_1"><a href="#tabs-1">Inputs</a></li>
+            <li id="tab_label_2"><a href="#tabs-2">Climate Models</a></li>
+            <li id="tab_label_3"><a href="#tabs-3">Emission Scenarios</a></li>
+            <li id="tab_label_4"><a href="#tabs-4">Years</a></li>
+            <li id="tab_label_5"><a href="#tabs-5">Bioclimatic Layers</a></li>
+            <li id="tab_label_6"><a href="#tabs-6">Data Calculation</a></li>
         </ul>
         <div id="tabs-1">
             
@@ -72,7 +78,7 @@ include_once dirname(__FILE__).'/includes.php';
                         <input type="radio" id="InputTypeTaxa"     name="InputTypes" /><label for="InputTypeTaxa">Taxa</label>
                         <input type="radio" id="InputTypeFamily"   name="InputTypes" /><label for="InputTypeFamily">Family</label>
                         <input type="radio" id="InputTypeGenus"    name="InputTypes" /><label for="InputTypeGenus">Genus</label>
-                        <input type="radio" id="InputTypeSpecies"  name="InputTypes" /><label for="InputTypeSpecies">Species</label>
+                        <!--  <input type="radio" id="InputTypeSpecies"  name="InputTypes" /><label for="InputTypeSpecies">Species</label> -->
                         <!--  <input type="radio" id="InputTypeLocation" name="InputTypes" /><label for="InputTypeLocation">Location</label> -->
                         <input type="input" id="InputText"         name="InputText" class="ui-corner-all">
                     </div>
@@ -159,7 +165,7 @@ include_once dirname(__FILE__).'/includes.php';
             <ul id="TimesSelection" class="selectable" >
             <?php 
                 $liFormat = '<li id="Times_{DataName}" class="ui-widget-content ui-corner-all " ><h4>{DataName}</h4><p>{Description}</p> </li>'; 
-                echo DatabaseClimate::GetTimesDescriptions()->asFormattedString($liFormat); 
+                echo DatabaseClimate::GetFutureTimesDescriptions()->asFormattedString($liFormat); 
             ?>                
             </ul>    
             
@@ -201,10 +207,11 @@ include_once dirname(__FILE__).'/includes.php';
                     <div class="Value ui-widget-content ui-corner-all">
                         <h3 id="CountGenus" class="Count">0</h3><h4>Genus</h4>    
                     </div>
+                    <!--
                     <div class="Value ui-widget-content ui-corner-all">
                         <h3 id="CountSpecies" class="Count" >0</h3><h4>Species</h4>                    
                     </div>
-
+                    -->
                 </div>       
 
                 <div id="CountPanel2" class="CountPanel ui-widget-content ui-corner-all">
@@ -213,16 +220,16 @@ include_once dirname(__FILE__).'/includes.php';
                     </div>
 
                     <div class="Value ui-widget-content ui-corner-all">
-                        <h3 id="CountModels" >0</h3><h4>Climate Models</h4>    
-                    </div>
-                    <div class="Value ui-widget-content ui-corner-all">
-                        <h3 id="CountScenarios" >0</h3><h4>Scenarios</h4>    
-                    </div>
-                    <div class="Value ui-widget-content ui-corner-all">
                         <h3 id="CountTimes" >0</h3><h4>Times</h4>    
                     </div>
                     <div class="Value ui-widget-content ui-corner-all" style="margin-top: 40px;">
                         <h3 id="CountBioclims" >0</h3><h4>Bioclim Layers</h4>    
+                    </div>
+                    <div class="Value ui-widget-content ui-corner-all">
+                        <h3 id="CountModels" >0</h3><h4>Climate Models</h4>    
+                    </div>
+                    <div class="Value ui-widget-content ui-corner-all">
+                        <h3 id="CountScenarios" >0</h3><h4>Scenarios</h4>    
                     </div>
 
                 </div>       
@@ -241,7 +248,6 @@ include_once dirname(__FILE__).'/includes.php';
             <br style="clear: both; float: none;">
             <div id="RunningProcessesToolBar" class="ui-widget-header ui-corner-all">
                 <button id="UpdateProcess">Update Status</button>
-                <button id="Defaults">Set Defaults</button>
             </div>
             <ul id="RunningProcessesTable" class="ui-widget-content ui-corner-all">
                 
@@ -254,12 +260,11 @@ include_once dirname(__FILE__).'/includes.php';
 
 
 </div>
+<div id="working" style="display:none;"></div>
 
+    
     
 <?php    include_once 'ToolsFooter.php'; ?>    
-
-
-    
     
 
 </body>

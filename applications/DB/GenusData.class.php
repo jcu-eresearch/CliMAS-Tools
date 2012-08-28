@@ -55,7 +55,7 @@ class GenusData extends Object
     
     
     
-    public static function InsertProjectedFile($genus,$filename,$filetype,$scenario, $model, $time,$compressed = false) 
+    public static function InsertProjectedFile($genus,$filename,$filetype,$scenario, $model, $time,$compressed = false,$remove_first = false) 
     {
      
         if (!file_exists($filename)) 
@@ -67,9 +67,12 @@ class GenusData extends Object
         
         if (count($current_files) > 0)
         {
-            ErrorMessage::Marker("Removed files arleady there and added this one {$filename}");
-            self::RemoveProjectedFiles($genus ,$filetype ,$scenario , $model , $time ,true);
-             
+            if ($remove_first)
+            {
+                ErrorMessage::Marker("Removed files arleady there and added this one {$filename}");
+                self::RemoveProjectedFiles($genus ,$filetype ,$scenario , $model , $time ,true);
+                
+            }             
         }
         
         $file_unique_id = DatabaseFile::InsertFile($filename, "Future projection of {$genus} Scenario:$scenario Time:$time",$filetype,$compressed);
@@ -151,11 +154,10 @@ class GenusData extends Object
         $data = self::GetProjectedFiles($genus,$filetype,$scenario, $model , $time );
         
         
-        if ($mustExist)
+        if ($mustExist  && count($data) == 0)
             if ($data instanceof ErrorMessage)
                 return ErrorMessage::Stacked(__METHOD__,__LINE__,"Failed to remove files \n",true,$data);
         
-        ErrorMessage::Marker("Get List of Climate Files to remove");
 
         $error = array();
         foreach ($data as $file_unique_id => $row) 
@@ -197,12 +199,13 @@ class GenusData extends Object
             
         }
         
-        if (count($error) > 0 ) return new ErrorMessage (__METHOD__,__LINE__, $error);
+        if (count($error) > 0 ) return $error;
 
-        ErrorMessage::Marker("Remove Completed");
+        if (count($data) > 0 )
+            ErrorMessage::Marker("Remove Completed");
         
 
-        return true;
+        return count($data);
         
     }
     
@@ -219,6 +222,7 @@ class GenusData extends Object
     */
     public static function CreateImage($genus,$src_grid_filename,$min = null,$max = null,$output_image_filename = null ,$transparency = 255,$background_colour = "0 0 0 255")
     {
+    
         
         if (!file_exists($src_grid_filename)) 
             new ErrorMessage(__METHOD__, __LINE__, "$src_grid_filename File Does not exist \n");
@@ -228,20 +232,53 @@ class GenusData extends Object
         
         if (file_exists($output_image_filename)) return $output_image_filename;
         
+        
         if (is_null($min) || is_null($max))
         {
             $stats = spatial_util::RasterStatisticsBasic($src_grid_filename);
-            if (is_null($min)) $min = $stats[spatial_util::$STAT_MINIMUM];
-            if (is_null($max)) $max = $stats[spatial_util::$STAT_MAXIMUM];
+            
+            if (is_null($stats) || $stats instanceof ErrorMessage)
+            {
+                $min = null;
+                $max = null;
+            }
+            else
+            {
+                if (is_null($min)) $min = $stats[spatial_util::$STAT_MINIMUM];
+                if (is_null($max)) $max = $stats[spatial_util::$STAT_MAXIMUM];
+            }
+            
         }
+        
+        if (is_null($min) ||  is_null($max) )
+        {            
+            $min = null;
+            $max = null;
+        }
+
         
         list($scenario, $model, $time) =  explode("_",str_replace('.asc','',basename($src_grid_filename)));    
         
         $histogram_buckets = $max + 1;
         if ($histogram_buckets > 100) $histogram_buckets = 100;
         
+        $gradient = RGB::ReverseGradient(RGB::GradientYellowOrangeRed());
         
-        $ramp = RGB::Ramp($min, $max, $histogram_buckets,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())); 
+        $ramp = null;
+        if (!is_null($min) &&  !is_null($max) )
+        {
+            if ($max - $min > 0)
+                // only create ramp if we have a valid min and max.
+                $ramp = RGB::Ramp($min, $max, $histogram_buckets,$gradient);     
+            else
+            {
+                $ramp = array();
+                $ramp[$min] = util::first_element($gradient);
+                $ramp[$max] = util::last_element($gradient);
+            }
+                
+        }
+        
 
         $colour_txt = file::random_filename().".txt"; // list of colours to use - will bne generated
         file::Delete($colour_txt);
@@ -268,18 +305,24 @@ class GenusData extends Object
         if (is_null($output_image_filename))
             $output_image_filename = file::random_filename().".png"; // return image filename
         
-        
-        
+
+                
         // create colour "lookup table"    
 
         $color_table = "nv 0 0 0 0\n";  // no value
-        $pcent = 0;
-        $step = round( 100 / count($ramp),0);
-        foreach ($ramp as $index => $rgb) 
+        
+        if (!is_null($ramp))
         {
-            $rgb instanceof RGB;
-            $color_table .= $pcent."% ".$rgb->Red()." ".$rgb->Green()." ".$rgb->Blue()." {$transparency}\n";        
-            $pcent += $step;
+            // we have a ramp so create percentage colour gradient.
+            $pcent = 0;
+            $step = round( 100 / count($ramp),0);
+            foreach ($ramp as $index => $rgb) 
+            {
+                $rgb instanceof RGB;
+                $color_table .= $pcent."% ".$rgb->Red()." ".$rgb->Green()." ".$rgb->Blue()." {$transparency}\n";        
+                $pcent += $step;
+            }
+            
         }
 
         // save the colour lookup table 
@@ -324,45 +367,56 @@ HEADER;
         exec($header);
 
 
-        // create a legend image
-        // # rectangle left,top right,bottom" \
-        $swatch_height = 20;
-        $swatch_width = 20;
-        $swatch_width_padding = 10;
-        $text_align_up = -2;
-
-        
-        $height = count($ramp) * $swatch_height + (2 * $swatch_height);  // heioght of the legend is a cal of the number of legend items + 2 for top and bittom padding
-        $box_top = 10;
-        $box_left = 20;
-        
-        $legend  = "convert -size  {$width}x{$height} xc:white ";
-        $legend .= "-font DejaVu-Sans-Book ";
-
-        foreach (array_reverse($ramp, true) as $index => $rgb) 
+        if (!is_null($ramp))
         {
-            $rgb instanceof RGB;
+            // create a legend image
+            // # rectangle left,top right,bottom" \
+            $swatch_height = 20;
+            $swatch_width = 20;
+            $swatch_width_padding = 10;
+            $text_align_up = -2;
 
-            $box_right = $box_left + $swatch_width;
-            $box_bottom = $box_top + $swatch_height;
 
-            $text_left = $box_left + $swatch_width + $swatch_width_padding;
-            $text_top  = $box_top + $swatch_height + $text_align_up;
+            $height = count($ramp) * $swatch_height + (2 * $swatch_height);  // heioght of the legend is a cal of the number of legend items + 2 for top and bittom padding
+            $box_top = 10;
+            $box_left = 20;
 
-            $text = sprintf("%01.2f", $index);
+            $legend  = "convert -size  {$width}x{$height} xc:white ";
+            $legend .= "-font DejaVu-Sans-Book ";
 
-            $legend .= "-fill '#{$rgb->asHex()}' -draw 'rectangle {$box_left},{$box_top} {$box_right},{$box_bottom}' ";
-            $legend .= "-fill black -draw 'text {$text_left},{$text_top} \"{$text}\"' ";
+            foreach (array_reverse($ramp, true) as $index => $rgb) 
+            {
+                $rgb instanceof RGB;
 
-            $box_top += $swatch_height;
+                $box_right = $box_left + $swatch_width;
+                $box_bottom = $box_top + $swatch_height;
 
+                $text_left = $box_left + $swatch_width + $swatch_width_padding;
+                $text_top  = $box_top + $swatch_height + $text_align_up;
+
+                $text = sprintf("%01.2f", $index);
+
+                $legend .= "-fill '#{$rgb->asHex()}' -draw 'rectangle {$box_left},{$box_top} {$box_right},{$box_bottom}' ";
+                $legend .= "-fill black -draw 'text {$text_left},{$text_top} \"{$text}\"' ";
+
+                $box_top += $swatch_height;
+
+            }
+
+            $legend .= " {$colour_legend_png}";
+
+            exec($legend); // create legend
+
+            
         }
-
-        $legend .= " {$colour_legend_png}";
         
-        exec($legend); // create legend
 
-        $cmd = "convert {$header_png} {$colour_combined_png} {$colour_legend_png} -append {$output_image_filename}";
+        if (file_exists($colour_legend_png))
+            $cmd = "convert {$header_png} {$colour_combined_png} {$colour_legend_png} -append {$output_image_filename}";    
+        else 
+            $cmd = "convert {$header_png} {$colour_combined_png} -append {$output_image_filename}";    
+        
+        
         exec($cmd);
 
         // might be better here to convert to a tmp image
@@ -405,6 +459,31 @@ HEADER;
         }
 
     
+    public static function ModelledForAllGenusNamesOnly($minimum_modelled_count = 1) 
+    {
+        
+        $sql = " select 
+                    g.name as genus
+                 from modelled_climates mc  
+                 left join taxa_lookup tl on (mc.species_id = tl.species_id ) 
+                 left join genus g on (tl.genus_id = g.id)  
+                 group by 
+                    g.name  
+                 having count(*) >= {$minimum_modelled_count}
+                 order by 
+                     g.name
+               ";
+        
+        $result = DBO::Query($sql, 'species_id');
+        if ($result instanceof ErrorMessage) 
+            return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);
+        
+        return matrix::Column($result, 'genus');
+        
+        
+    }    
+        
+        
     
 }
 

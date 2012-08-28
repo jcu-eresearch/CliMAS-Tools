@@ -459,3 +459,157 @@
     color: black;
     
 }
+
+.richnessScenario
+{
+    display: block;
+    font-size: 13pt;
+    font-style: italic;
+    font-weight: bold;
+    color: black;
+    width: 210px;;
+    height: 260px;
+    float:left;
+    margin: 6px; 
+    padding: 0px;
+    
+}
+
+.richnessScenario h1
+{
+    font-size: 13pt;
+    font-style: normal;
+    font-weight: bold;
+    display: block;
+    margin: 0px; 
+    padding: 0px;
+    float:none;
+    clear: both;
+    overflow: hidden;
+    width: 99%;
+    height: 30px;
+    text-align: center;
+}
+
+.richnessScenario ul
+{
+    display: block;
+    margin: 0em; 
+    padding: 0px;     
+    float:left;
+    overflow: hidden;
+    float:none;
+    clear: both;
+    height: 220px;
+    width: 99%;
+    
+}
+
+.richnessScenario ul li
+{
+    display: block;
+    margin: 0em; 
+    padding: 0px;     
+    float:left;
+    overflow: hidden;
+    height: 220px;
+    width: 200px;
+
+}
+
+.richnessScenario ul li img
+{
+    margin: 0em; 
+    padding: 0px;     
+    
+    width: 200px;
+    height:260px;
+    
+}
+
+.richnessScenario ul li a
+{
+    margin: 0em; 
+    padding: 0px;     
+
+    
+    
+}
+
+.time_buttons
+{
+    
+}
+
+.time_buttons li
+{
+    
+    width: 30%;
+    height:40px;
+    float: left;
+    
+}
+
+
+
+
+.richnessScenario_timeselector
+{
+    display: block;
+    font-size: 13pt;
+    font-style: italic;
+    font-weight: bold;
+    color: black;
+    width: 210px;;
+    height: 260px;
+    float:left;
+    margin: 6px; 
+    padding: 0px;
+    
+}
+
+.richnessScenario_timeselector h1
+{
+    font-size: 13pt;
+    font-style: normal;
+    font-weight: bold;
+    display: block;
+    margin: 0px; 
+    padding: 0px;
+    float:none;
+    clear: both;
+    overflow: hidden;
+    width: 99%;
+    height: 30px;
+    text-align: center;
+}
+
+.richnessScenario_timeselector ul
+{
+    display: block;
+    margin: 0em; 
+    padding: 0px;     
+    float:left;
+    overflow: hidden;
+    float:none;
+    clear: both;
+    height: 220px;
+    width: 99%;
+    
+}
+
+.richnessScenario_timeselector ul li
+{
+    display: block;
+    margin: 0em; 
+    padding: 0px;     
+    float:left;
+    overflow: hidden;
+    height: 40px;
+    width: 49%;
+    font-size: 13pt;
+    font-style: normal;
+    font-weight: bold;
+
+}
+

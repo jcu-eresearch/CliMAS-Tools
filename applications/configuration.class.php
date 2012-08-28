@@ -7,7 +7,7 @@ class configuration {
     
     public static function MapableBackgroundLayers() { return "ContextLayerMapableBackgroundLayers"; }
     
-    
+    public static function hpc_phpexecute()  { return "sshpass -p 'Volts100.' ssh jc166922@login.hpc.jcu.edu.au php -q "; }
     
     public static function ApplicationName() 
     { 

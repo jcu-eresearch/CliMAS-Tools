@@ -62,6 +62,16 @@ class htmlutil {
     
     
     
+    public static function ValueFromGet($key , $default = null) 
+    {
+        return array_util::Value($_GET, $key, $default);        
+    }
+    
+    public static function ValueFromPost($key , $default = null) 
+    {
+        return array_util::Value($_POST, $key, $default);        
+    }
+    
     
     /*
     * @method table

@@ -130,6 +130,27 @@ class DatabaseClimate {
     {
         return Descriptions::fromTable("times");
     }
+
+    
+    public static  function GetFutureTimesDescriptions() 
+    {
+        $descs = self::GetTimesDescriptions() ;
+        
+        $result = new Descriptions();
+        
+        foreach ($descs->Descriptions() as $desc) 
+        {
+            if ($desc->DataName() == "1990") continue;
+            if ($desc->DataName() == "1975") continue;
+            
+            if ($desc->DataName() > 2000)
+                $result->Add($desc);
+        }
+        
+        
+        return $result;
+    }
+    
     
     
     public static  function CombinationsSingleLevel($delim="_") 

@@ -3,6 +3,27 @@
  * and open the template in the editor.
  */
 
+function contains(src,find)
+{
+    if (src.indexOf(find) == -1 ) return false;
+    return  true;
+}
+
+
+function array_contains(src_array,find_str)
+{
+    
+    var result = false
+    $.each(src_array, function(index, value)
+    {
+        if (contains(value,find_str)) result = true;     
+    });
+    
+    return result;
+    
+}
+
+
 function string2Array(str,delim)
 {
     var result = null;
@@ -160,6 +181,8 @@ function datetime_now()
 
 function Value(obj, propertyName, null_value)
 {
+    
+    if (typeof null_value == "undefined") null_value = null;
     
     if (typeof obj == "undefined") return null_value;    
     

@@ -4,29 +4,11 @@ include_once dirname(__FILE__).'/includes.php';
 
 $result = array();
 
-$cmdaction = array_util::Value($_POST, "cmdaction", null);
-if (is_null($cmdaction))
-{
-    $result['error'] = "cmdaction passed as NULL";
-    echo json_encode($result);
-    return;  
-}
+FinderFactory::Find("SpeciesHotSpots");
 
+$action_id = array_util::Value($_POST, "action_id",     null);
 
-FinderFactory::Find($cmdaction);
-
-
-$commandID = array_util::Value($_POST, "cmdID",     null);
-$elementID = array_util::Value($_POST, "elementID", null);
-
-$result['msg'] = print_r($_POST,true);
-    
-$result['commandID'] = $commandID;
-$result['elementID'] = $elementID;
-
-
-
-$cmd = DatabaseCommands::CommandActionRead($commandID);
+$cmd = DatabaseCommands::CommandActionRead($action_id);
 if ($cmd instanceof Exception)
 {
     $cmd instanceof Exception;
@@ -37,10 +19,8 @@ if ($cmd instanceof Exception)
 
 $cmd instanceof CommandAction;
 
-$result['msg'] = print_r($cmd,true);
 
-
-echo json_encode($result);
+echo json_encode($cmd->PropertyValues());
 return;   // will stop here and return if we have all results requested.
 
 ?>

@@ -21,6 +21,7 @@ class CommandAction extends Object implements Serializable
 
         $this->LastQueueResult(null);
         
+        
     }
 
 
@@ -115,7 +116,8 @@ class CommandAction extends Object implements Serializable
 
         foreach ($this->PropertyNames() as $name)
         {
-            $result[$name] = $this->getPropertyByName($name); // todo will not work so well if the value of a propetry is an object
+            if (util::isPublicMethod($this, $name))
+                $result[$name] = $this->getPropertyByName($name); // todo will not work so well if the value of a propetry is an object
         }
 
         return serialize($result);
@@ -236,6 +238,13 @@ class CommandAction extends Object implements Serializable
         return $this->setProperty(func_get_arg(0));
     }
 
+
+    public function ui_element_id()
+    {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
     
 
      /**
@@ -283,10 +292,12 @@ class CommandAction extends Object implements Serializable
     {
         
         $result = DatabaseCommands::CommandActionQueue($obj);
+        
         if ($result instanceof ErrorMessage) 
             return  ErrorMessage::Stacked (__METHOD__, __LINE__, "Trying to queue Command action", true, $result);
         
-        $obj->LastQueueResult();
+        $obj->LastQueueResult($result);
+        
     }
     
      

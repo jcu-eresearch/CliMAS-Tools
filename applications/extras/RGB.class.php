@@ -236,7 +236,7 @@ class RGB extends Object {
     {
         $rgb = self::HSV_TO_RGB($H, $S, $V);
 
-        print_r($rgb);
+        // sprint_r($rgb);
 
         return new RGB($rgb['R'], $rgb['G'], $rgb['B']);
 

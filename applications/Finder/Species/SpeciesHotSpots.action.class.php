@@ -8,14 +8,16 @@
  * 
  * 
  */
-class SpeciesHotSpots extends CommandAction {
-    
+include_once 'SpeciesRichness.action.class.php';
+
+class SpeciesHotSpots extends SpeciesRichness {
     
     
     public function __construct() {
         parent::__construct();
-        $this->CommandName(__CLASS__);
-        $this->FinderName("SpeciesFinder");
+
+        $this->NiceID(str_replace(".", "_", $this->ID()));
+        
         
     }
 
@@ -51,14 +53,38 @@ class SpeciesHotSpots extends CommandAction {
             
         }
         
-        $this->Status('Hotspot Calculation initialised');
-        $this->ProgressPercent(1);
+        // clean up parameters
+        $this->cleanParameters();
+        $this->clazz($this->taxa()); // the UI send Taxa we need to pass the Riuchness as Clazz
+        
         $this->initialised(true);
+        $this->UpdateStatus('Hotspot Calculation initialised');
+        
+        
+        
         
         return true;
+        
     }
     
     
+    private function cleanParameters() 
+    {
+        
+        if (!is_null($this->models()   )) $this->models   (array_util::Replace($this->models(),    "Models_",    ""));
+        if (!is_null($this->scenarios())) $this->scenarios(array_util::Replace($this->scenarios(), "Scenarios_", ""));
+        if (!is_null($this->times()    )) $this->times    (array_util::Replace($this->times(),     "Times_",     ""));
+        if (!is_null($this->bioclims() )) $this->bioclims (array_util::Replace($this->bioclims(),  "Bioclims_",  ""));
+
+        if (!is_null($this->taxa()))    $this->taxa(     array_util::Replace($this->taxa(),      "Taxa_",      ""));
+        if (!is_null($this->family()))  $this->family(   array_util::Replace($this->family(),    "Family_",    ""));
+        if (!is_null($this->genus()))   $this->genus(    array_util::Replace($this->genus(),     "Genus_",     ""));
+        //if (!is_null($this->species())) $this->species(  array_util::Replace($this->species(),   "Species_",   ""));
+        
+        
+    }
+
+
     
     /**
      * Runnning on GRID 
@@ -72,92 +98,77 @@ class SpeciesHotSpots extends CommandAction {
     public function Execute()
     {
         
-        $this->QsubCollectionID(substr(uniqid(),0,10));
         
-        //
-        // We have to call the grid because at least one output is missing
-        //
-        
-        $this->Status("Retreiving Data to build hotspot" );
-        self::Queue($this);
-
-        $this->calculateMedian();
-        
-        
-        $this->Status("Hotspot Compution Completed");
         $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);        
-        self::Queue($this);
+        $this->UpdateStatus("Hotspot Computation Ready");
+
+        
+        if (is_array($this->genus()))
+        {
+            $g = array();
+            array_util::CopyTo($this->genus(), $g);
+
+            foreach ($g as $genus) 
+            {
+                $this->genus($genus);
+                parent::Execute();    
+                
+                
+                
+            }
+            
+        }
+        else
+        {
+            parent::Execute();
+        }
+        
+        
+        $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
+        $this->UpdateStatus("Hotspot Computation Completed");
 
     }
     
-    private function calculateMedian()
+    
+    /**
+     * Override Update status so if the Species Richness status is updated it comes through here
+     * - which wiull then up date the status on the database
+     * @param type $msg 
+     */
+    protected function UpdateStatus($msg)
     {
-
-        // collect list of filenames that will be used
         
-        // group filenames into   Scenario_Time =>  Climate Model 1, Climate Model 2 ....
+        $this->Status($msg);
+        
+        if (php_sapi_name() == "cli")
+        {
+            ErrorMessage::Marker($msg);
+            self::Queue($this);    
+        }
+        else 
+        {
+            self::Queue($this);    
+        }
         
         
     }
+
     
     
-    public function Result() {
+    public function NiceID() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));        
+    }
+
+    
+    
+    public function taxa() {
         if (func_num_args() == 0)
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
 
-    
-    public function cmdaction() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-    
-    public function inputType() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    public function inputID() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    public function inputName() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-    
-    public function models() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-    
-    public function scenarios() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-    
-    
-    public function times() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-    
-    
-    public function bioclims() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-    
 
     public function FinderName() {
         if (func_num_args() == 0)
@@ -171,11 +182,6 @@ class SpeciesHotSpots extends CommandAction {
         return $this->setProperty(func_get_arg(0));
     }
 
-    public function ProgressPercent() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
     
     
     public function AttachedCommand() 
@@ -184,47 +190,13 @@ class SpeciesHotSpots extends CommandAction {
     }
     
     
-    /**
-     * Make sure all outputs for a model run exist
-     * 
-     * @param type $species
-     * @param type $scenario
-     * @param type $model
-     * @param type $time
-     * @return null 
-     */
-    public function GetModelledData($combination)
+    public function ui_element_id()
     {
-
-        list($scenario, $model, $time) = explode("_",$combination);            
-        
-        $asc_file_id        = null;
-        $quickLook_file_id  = null;
-        
-        switch (strtolower($this->inputType())) {
-            case "taxa":
-                break;
-
-            case "family":
-                break;
-            
-            case "genus":
-                break;
-            
-            case "species":
-                $asc_file_id        = SpeciesData::GetModelledData($this->inputID(), $scenario, $model, $time,'ASCII_GRID');
-                $quickLook_file_id  = SpeciesData::GetModelledData($this->inputID(), $scenario, $model, $time,'QUICK_LOOK');
-                break;
-
-            default:
-                break;
-        }
-        
-        if (is_null($asc_file_id) || is_null($quickLook_file_id) ) return null;
-        
-        return $asc_file_id;
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
     }
-
+    
+    
     
 }
 

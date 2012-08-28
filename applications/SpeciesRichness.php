@@ -19,17 +19,19 @@ if (is_null($genus) &&
     echo "usage {$argv[0]} --genus=name\n";
     echo "usage {$argv[0]} --genus=LIST    Get list of Genus and Exit\n";
     echo "\n";
-    echo "      --model=a,b,c                default: ALL    Limit model lookup to this model (ALL = median)\n";
-    echo "      --scenario=a,b,c             default: ALL    all scenarios will be processed\n";
-    echo "      --time=yyyy,yyyy,yyyy        default: ALL    all times will be processed\n";
-    echo "      --minimum_occurance=nnn      default: 10     Minimum number of occurences\n";
+    echo "      --model=a,b,c                  default: ALL    Limit model lookup to this model (ALL = median)\n";
+    echo "      --scenario=a,b,c               default: ALL    all scenarios will be processed\n";
+    echo "      --time=yyyy,yyyy,yyyy          default: ALL    all times will be processed\n";
+    echo "      --minimum_occurance=nnn        default: 10     Minimum number of occurences\n";
     echo "\n";
-    echo "      --LoadAscii=[true|false]     default: false  Load ASCII grid into database\n";
-    echo "      --LoadQuickLook=[true|false] default: true   Load QuickLook data into database\n";
-    echo "      --Recalculate=[true|false]   default: false  Remove current files and recalculate Species Richness\n";
-    echo "                                                   (this may be usefull when more species have been added and moddelled)\n";
+    echo "      --LoadAscii=[true|false]       default: false  Load ASCII grid into database\n";
+    echo "      --LoadQuickLook=[true|false]   default: true   Load QuickLook data into database\n";
+    echo "      --Recalculate=[true|false]     default: false  Remove current files and recalculate Species Richness\n";
+    echo "                                                     (this may be usefull when more species have been added and moddelled)\n";
+    echo "      --DisplaySummary=[true|false]  default: true    Display summary of Missing / Invalid and Completed files \n";
+    echo "\n";
     echo "      --ValidateExistenceOnly=[true|false]\n ";
-    echo "                                   default: false  When validating file only check for existsence \n";
+    echo "                                     default: false  When validating file only check for existsence \n";
     echo "                                            true   otherwise check statistics asw ell\n";
     echo "\n";
     exit(1);
@@ -89,8 +91,7 @@ $LoadAscii     = util::CommandScriptsFoldermandLineOptionValue($argv, 'LoadAscii
 $LoadQuickLook = util::CommandScriptsFoldermandLineOptionValue($argv, 'LoadQuickLook', null);
 $Recalculate   = util::CommandScriptsFoldermandLineOptionValue($argv, 'Recalculate', null);
 $ValidateExistenceOnly = util::CommandScriptsFoldermandLineOptionValue($argv, 'ValidateExistenceOnly', false);
-
-
+$DisplaySummary = util::CommandScriptsFoldermandLineOptionValue($argv, 'DisplaySummary', true);
 
 
 if (!is_null($clazz)) 
@@ -116,7 +117,7 @@ if (!is_null($clazz))
     $SR->Recalculate($Recalculate);
     $SR->MinimumOccurance($minimum_occurance);
     $SR->ValidateExistenceOnly($ValidateExistenceOnly);
-    
+    $SR->DisplaySummary($DisplaySummary);
     $result = $SR->Execute();
     
     if ($result instanceof ErrorMessage)
@@ -154,7 +155,7 @@ if (!is_null($family))
     $SR->Recalculate($Recalculate);
     $SR->MinimumOccurance($minimum_occurance);
     $SR->ValidateExistenceOnly($ValidateExistenceOnly);
-
+    $SR->DisplaySummary($DisplaySummary);
     $result = $SR->Execute();
     
     if ($result instanceof ErrorMessage)
@@ -193,6 +194,7 @@ if (!is_null($genus))
     $SR->Recalculate($Recalculate);
     $SR->MinimumOccurance($minimum_occurance);
     $SR->ValidateExistenceOnly($ValidateExistenceOnly);
+    $SR->DisplaySummary($DisplaySummary);
     $result = $SR->Execute();
     
     if ($result instanceof ErrorMessage)

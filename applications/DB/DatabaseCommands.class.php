@@ -39,6 +39,7 @@ class DatabaseCommands extends Object
     public static function CommandActionQueue(CommandAction $cmd) 
     {
         
+        
         $data = base64_encode(serialize($cmd));
         
         // check to see if we already have it.
@@ -87,7 +88,7 @@ class DatabaseCommands extends Object
             return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Insert Command insert_result is not numeric \n insert_result = ".print_r($insert_result,true), true,$insert_result);
         
         
-        return $insert_result;
+        return $cmd->ID();
         
     }
 
@@ -124,26 +125,55 @@ class DatabaseCommands extends Object
     public static function CommandActionRead($commandID) 
     {
         
-        if (is_null($commandID) ) return new ErrorMessage(__METHOD__,__LINE__,"commandID passed as NULL");
 
         
+        if (is_null($commandID) ) 
+            return new ErrorMessage(__METHOD__,__LINE__,"commandID passed as NULL");
+        
+        $commandID = str_replace("_", ".", $commandID);
+        
+        
         try {
-            
+        
             $data = self::CommandActionValue($commandID,'data');
-            
+        
             if ($data instanceof ErrorMessage) 
                 return new ErrorMessage(__METHOD__,__LINE__,"Failed to read data for command ID {$commandID}");
+        
+        $object = @unserialize(base64_decode($data));
 
-
-            $object = unserialize(base64_decode($data));
-            $object instanceof CommandAction;
             
+            if (!$object ||  $object instanceof __PHP_Incomplete_Class)
+            {
+                
+                $print_r_str = print_r($object,true);
+                $split = explode("\n",$print_r_str);
+                if (count($split) < 3) return new ErrorMessage(__METHOD__,__LINE__,"Failed to read data for command ID {$commandID} - even via __PHP_Incomplete_Class 1");
+                
+                $bits = explode("=>",$split[2]);
+                if (count($split) < 2) return new ErrorMessage(__METHOD__,__LINE__,"Failed to read data for command ID {$commandID} - even via __PHP_Incomplete_Class 2");
+                
+                $className = trim($bits[1]);
+                
+                $class = FinderFactory::Find($className);
+                
+                if ($class instanceof ErrorMessage) return $class;
+
+                // the Class should be loaded and available
+                $object = @unserialize(base64_decode($data)); // try to unserialize again
+                
+            }
+            
+            
+            $object instanceof CommandAction;
+
             
         } catch (Exception $exc) {
             return new ErrorMessage(__METHOD__,__LINE__,"Failed to read data for command ID {$commandID} execption = ".$exc->getMessage());
         }
-        
-        return  $object;        
+
+                
+        return  $object;
         
     }
     

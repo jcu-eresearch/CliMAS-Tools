@@ -8,17 +8,20 @@ $result = array();
 foreach ($_POST as $key => $value) 
     Session::add($key, $value);
     
-    
-$action = array_util::Value($_POST, "cmdaction", null);
+FinderFactory::Find("SpeciesRichness");  
+FinderFactory::Find("SpeciesHotSpots");  
 
-$cmd = FinderFactory::Action($action);  
+
+$cmd = FinderFactory::Find("SpeciesHotSpots");  
 if ($cmd instanceof Exception)
 {
     $cmd instanceof Exception;
-    $result['error'] = "ERROR:: Action is did not initalised {$action} {$cmd->getMessage()}";
+    $result['error'] = "ERROR::  SpeciesHotSpots could not be found {$cmd->getMessage()}";
     echo json_encode($result);
     return;  
 }
+
+
 
 $initResult = $cmd->initialise($_POST);
 if (!$initResult )
@@ -38,6 +41,7 @@ if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE)
 
 // we want to now send this job to the HPC to run
 $queueStored = DatabaseCommands::CommandActionQueue($cmd);
+
 
 echo json_encode($cmd->PropertyValues());
 return;  

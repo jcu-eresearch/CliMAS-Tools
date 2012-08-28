@@ -112,15 +112,18 @@ function addInput(dataType,dataID,dataName)
         };
 
         $('#' + addID).pulse(properties, {pulses : 2});        
-        return ;
+        return null;
     }
 
     
     var removeID = 'remove_'+addID;
     $('#'+dataType+'Selection').append('<li id="'+addID+'" class="ui-widget-content ui-corner-all " ><button id="'+removeID+'" class="RemoveInput">remove</button><p>'+dataName+'</p> </li>');
     
+    
+    
     addSelectedTo('#' + addID);
     updateCurrentPackage();
+    
     
     
     $( '#'+ removeID)
@@ -137,6 +140,8 @@ function addInput(dataType,dataID,dataName)
      );
     
     
+    
+   return addID;
     
 }
 
@@ -223,7 +228,9 @@ function ChangeInputToGenus()
                         source: availableGenus,
                         select: function(event, ui) 
                         {
-                            addInput('Genus',ui.item.value,ui.item.label);
+                            var addid = addInput('Genus',ui.item.value,ui.item.label);
+                            if (addid != null)  checkForPrecomputedGenus(addid,ui.item.label);
+                            
                             $(this).val(blurMessage);
                             return false;
                         }
@@ -232,6 +239,35 @@ function ChangeInputToGenus()
     $( "#InputText" ).unbind('blur').blur(function() {$( "#InputText" ).val(blurMessage);})
     
 }
+
+
+function checkForPrecomputedGenus(addid,genus)
+{
+
+    var jData = { 
+                   genus: genus
+                  ,addid: addid
+                }
+   
+    $.post("HotSpotsAjaxGetGenusData.php", jData , function(data) {postCheckForPrecomputedGenus(data);},"json");
+
+}
+
+function postCheckForPrecomputedGenus(data)
+{
+    
+    var addid = Value(data.addid);
+
+    var genus = Value(data.genus);
+
+    var modelled = Value(data.modelled);
+
+    if (modelled == '') return;
+
+    buildGenusTab(genus,modelled);
+    
+}
+
 
 
 
@@ -324,6 +360,44 @@ function hoverSelectElementsOut(src)
     $('#' + id).find('p').removeClass(state) ; 
  
 }
+
+
+
+function selectAllModels()
+{
+    
+    ofWhat = "Models";    
+    $('#' + ofWhat + "Selection").find('li').addClass('ui-selected') ;
+    $('#' + ofWhat + "Selection").find('h4').addClass('ui-selected') ;
+    $('#' + ofWhat + "Selection").find('p').addClass('ui-selected') ;
+    updateCurrentPackage();    
+    
+}
+
+
+function selectAllScenarios()
+{
+    
+    ofWhat = "Scenarios";    
+    $('#' + ofWhat + "Selection").find('li').addClass('ui-selected') ;
+    $('#' + ofWhat + "Selection").find('h4').addClass('ui-selected') ;
+    $('#' + ofWhat + "Selection").find('p').addClass('ui-selected') ;
+    updateCurrentPackage();    
+    
+}
+
+
+function selectAllBioclims()
+{
+    
+    ofWhat = "Bioclims";    
+    $('#' + ofWhat + "Selection").find('li').addClass('ui-selected') ;
+    $('#' + ofWhat + "Selection").find('h4').addClass('ui-selected') ;
+    $('#' + ofWhat + "Selection").find('p').addClass('ui-selected') ;
+    updateCurrentPackage();    
+    
+}
+
 
 
 function selectElements(src)
@@ -480,8 +554,7 @@ function selectElementsSome(selectFor,selectSomeFilterString)
 function currentData()
 {
     var jData = { 
-         cmdaction:'SpeciesMaxent'
-             ,taxa: selected('#TaxaSelection'     ,"li", null," ",'Taxa_'     ,null)
+              taxa: selected('#TaxaSelection'     ,"li", null," ",'Taxa_'     ,null)
            ,family: selected('#FamilySelection'   ,"li", null," ",'Family_'   ,null)
             ,genus: selected('#GenusSelection'    ,"li", null," ",'Genus_'    ,null)
           ,species: selected('#SpeciesSelection'  ,"li", null," ",'Species_'  ,null)
@@ -490,9 +563,10 @@ function currentData()
         ,scenarios: selected('#ScenariosSelection',"li", "ui-selected"," ",'Scenarios_',null)
             ,times: selected('#TimesSelection'    ,"li", "ui-selected"," ",'Times_'    ,null)
          ,bioclims: selected('#BioclimsSelection' ,"li", "ui-selected"," ",'Bioclims_' ,null)
+    ,ui_element_id: ''
     }
     
-    console.log(jData);
+    //console.log(jData);
     
     return jData;
     
@@ -507,15 +581,13 @@ function currentData()
  */
 function updateCurrentPackage()
 {
-    console.log("Update updateCurrentPackage");
-    
     
     var jData = currentData();
     
          $('#CountTaxa').html(jData.taxa.length);
        $('#CountFamily').html(jData.family.length);
         $('#CountGenus').html(jData.genus.length);
-      $('#CountSpecies').html(jData.species.length);
+      //$('#CountSpecies').html(jData.species.length);
      
      
        $('#CountModels').html(jData.models.length);
@@ -524,8 +596,10 @@ function updateCurrentPackage()
      $('#CountBioclims').html(jData.bioclims.length);
 
 
-     var inputsCount = jData.taxa.length +  jData.family.length + jData.genus.length + jData.species.length;
-     var futureCount = jData.models.length * jData.scenarios.length * jData.times.length;
+     var inputsCount = jData.taxa.length +  jData.family.length + jData.genus.length; //+ jData.species.length;
+     
+     // var futureCount = jData.models.length * jData.scenarios.length * jData.times.length;
+     var futureCount = jData.times.length; // at the moment we are including all scenarios (all models are mdeians of all cliemnt models)
      
 
     $('#CountInputTotals').html(inputsCount);
@@ -536,43 +610,21 @@ function updateCurrentPackage()
 
 
 
+var statusUpdateTimer = null;
+
 function CreateProcess()
 {
     // check currentDataPackage() to mak sure we have al;l the data we need to running
-    var jData = currentData();
+    var sData = currentData();
+
+    addSingleProcess(sData);
 
 
-    var sData = null;
-
-    // loop over each of the values of taxa, family, genus, and species
-    // species first
-    
-    var inputType   = 'species';
-    var inputPrefix = 'Species_';
-    var cmdaction   = 'SpeciesHotSpots';
-    var inputID = null
-    $.each(jData[inputType], function(index, value) 
-    { 
-        
-         inputID = value.replace(inputPrefix,"");
-        
-         sData = { 
-                 cmdaction: cmdaction
-                ,inputType: inputType
-                  ,inputID: inputID
-                ,inputName: $('#' + value).find('p').html()
-                   ,models: array_replace(jData.models,    "Models_","")  
-                ,scenarios: array_replace(jData.scenarios, "Scenarios_","")  
-                    ,times: array_replace(jData.times,     "Times_","")  
-                 ,bioclims: array_replace(jData.bioclims,  "Bioclims_BIO","")  
-                ,elementID: inputType + "_" + inputID
-         }
-        
-        
-        addSingleProcess(sData);
-    });
+    // if we have added one procvess thn setup a timer to up date display everyh so many seconds
+    statusUpdateTimer = self.setInterval(function(){UpdateProcess()},5*1000);  // 5 seconds
 
 }
+
 
 function addSingleProcess(sData)
 {
@@ -580,22 +632,40 @@ function addSingleProcess(sData)
     console.log("Create for  " );
     console.log(sData);
 
+    var rowElementID = $('#RunningProcessesTable li').children().length;
 
-    var cancelButton = '<button id="cancel_'+ sData.elementID +'">CANCEL</button>';
+    sData.ui_element_id = rowElementID;
 
-    var calcCount   = '<h1 class="ui-widget-content ui-corner-all">' + (sData.models.length * sData.scenarios.length * sData.times.length) +'<p>datasets</p> </h1>';
+    //alert("rowElementID = " + rowElementID  + "\n" + sData.toString());
+
+    var displayNameStr = "";
+
+    displayNameStr +=                     "Taxa: "    + sData.taxa.length;
+    displayNameStr += "&nbsp&nbsp&nbsp" + "Family: "  + sData.family.length
+    displayNameStr += "<br>"            + "Genus: "   + sData.genus.length
+    //displayNameStr += "&nbsp&nbsp&nbsp" + "Species: " + sData.species.length
+
+
+    var cancelButton = '<button id="cancel_'+ rowElementID +'">CANCEL</button>';
+
+
     
-    var displayName = '<h2>' + sData.inputName + '</h2>';
+    //var calcCount   = '<h1 class="ui-widget-content ui-corner-all">' + (sData.models.length * sData.scenarios.length * sData.times.length) +'<p>datasets</p> </h1>';
+
+    // atre only want to calc the nimber inputs * the number of Times
+    var calcCount   = '<h1 class="ui-widget-content ui-corner-all">' + (sData.times.length) +'<p>datasets</p> </h1>';
     
-    var button = '<button id="info_'+ sData.elementID +'">'+datetime_now()+'</button>';
+    var displayName = '<h2>' + displayNameStr + '</h2>';
     
-    var progress = '<div id="progress_'+ sData.elementID +'"><img style="width: 100%; height: 100%" src="'+IconSource+'Loading.gif"></div>';
+    var button = '<button id="info_'+ rowElementID +'">'+datetime_now()+'</button>';
     
-    var html = '<li class="ui-widget-content">' + cancelButton + button + calcCount + displayName +  progress + '<p id="status_'+sData.elementID+'">........</p></li>'+"\n";
+    var progress = '<div id="progress_'+ rowElementID +'"><img style="width: 100%; height: 100%" src="'+IconSource+'Loading.gif"></div>';
+    
+    var html = '<li class="ui-widget-content">' + cancelButton + button + calcCount + displayName +  progress + '<p id="status_'+rowElementID+'">........</p></li>'+"\n";
 
     $('#RunningProcessesTable').append(html);
 
-    $('#info_' + sData.elementID)
+    $('#info_' + rowElementID)
         .button()
         .css('float','left')
         .css('width','200px')
@@ -606,7 +676,7 @@ function addSingleProcess(sData)
         .button( "option", "disabled", true );
         ;
 
-    $('#cancel_' + sData.elementID)
+    $('#cancel_' + rowElementID)
         .button()
         .button({text: false, icons: {primary: "ui-icon-closethick"}})
         .css('float','left')
@@ -617,7 +687,7 @@ function addSingleProcess(sData)
         ;
 
 
-    $('#progress_' + sData.elementID)
+    $('#progress_' + rowElementID)
         .css('float','left')
         .css('width','100px')
         .css('height','40%')
@@ -641,19 +711,19 @@ function postAddSingleProcess(data)
     
     var progressStr = "";
     
-    progressStr = Value(data.ProgressPercent,null);
+    progressStr = Value(data.ProgressPercent,0);
 
     // give the php Object id to the Info button
-    $('#info_' + data.elementID)
-        .data('action_id',Value(data.ID))
-        .data('inputName',Value(data.inputName))
+    $('#info_' + data.ui_element_id)
+        .data('action_id',Value(data.NiceID))
         ;  
 
-    $('#info_' + data.elementID).button( "option", "disabled", false );
 
+    $('#info_' + data.ui_element_id).button( "option", "disabled", false );
 
-    $('#progress_' + data.elementID).html(progressStr + "%");    
-    $('#status_' + data.elementID).html(Value(data.Status,""));
+    $('#progress_' + data.ui_element_id).html(progressStr + "%");    
+    $('#status_' + data.ui_element_id).html(Value(data.Status,""));
+    
     
     $.each(data, function(index, value) 
     { 
@@ -664,11 +734,13 @@ function postAddSingleProcess(data)
 }
 
 
+
+
 function UpdateProcess()
 {
     // get selected 
     
-    console.log("Update Process - get status of all running jobs and report");
+    //console.log("Update Process - get status of all running jobs and report");
 
     // get all #info_*
 
@@ -676,18 +748,27 @@ function UpdateProcess()
 
     var id = null;
     var action_id = null;
+    var ui_element_id = null;
+    
     $('[id*="info_"]').each( function() {
     
         id = this.id.toString();
     
         action_id = $('#'+id).data('action_id');
     
-        console.log("Update Process - with action_id  " + action_id);
+        ui_element_id = id.replace('info_','');
+    
+
+        // when we scan for updates  - check the progress percent 
+        // should only log jobs for update where   progress percent <  100   $('#info_' + data.ui_element_id).data('ProgressPercent',Value(data.ProgressPercent));  
+    
+    
+        //console.log("Update Process - with action_id  " + action_id);
     
         sData = { 
-              cmdaction: 'SpeciesHotSpots'
-             ,action_id:  action_id
-            ,element_id:  id
+              action_id:  action_id,
+          ui_element_id:  ui_element_id
+              
         }
     
         $.post("HotSpotsAjaxUpdate.php", sData , function(data) {postUpdateProcess(data);},"json");
@@ -695,19 +776,294 @@ function UpdateProcess()
     });
 
 
+     /// Clear Timer Interval here really
+     // scan thru all the jobs and make sure all are complete
+
+
 }
 
+/**
+ *  Update screen for one job (row)
+ *  
+ */
 function postUpdateProcess(data)
 {
     
-    console.log("POST Update Process - get status of all running jobs and report");
+    //console.log("POST Update Process - get status of all running jobs and report");
     
-    $.each(data, function(index, value) 
+    
+    var ui_element_id = Value(data.ui_element_id);
+    
+    $('#status_' + ui_element_id).html(Value(data.Status,""));
+    
+    $('#info_' + data.ui_element_id).data('result',Value(data.Result));  
+    $('#info_' + data.ui_element_id).data('genus',Value(data.genus));  
+
+    $('#info_' + data.ui_element_id).data('ProgressPercent',Value(data.ProgressPercent));  
+
+    $('#progress_' + ui_element_id).html(Value(data.ProgressPercent) + "%");
+    
+    
+//    $.each(data, function(index, value) 
+//    { 
+//        console.log('postUpdateProcess ' + index + " = " +value);
+//
+//    });
+
+
+    if (data.ProgressPercent == 100)
+    {
+        clearInterval(statusUpdateTimer);  // this needs to happen when all have been complete    
+        
+        // setup button to allow user to show results for this job.
+        buildGenusTab(Value(data.genus), Value(data.Result))
+        
+        s$('#tabs').tabs('select', $('#tabs').tabs('length') -1 ); // once complete and tab is there chnage to it
+        
+    }
+    
+    
+    
+}
+
+
+/**
+ * Create new table for this job
+ */
+function buildGenusTab(genus,result)
+{
+    
+    var parameters = modelledParametersFromGenusResult(result);
+
+    var newTabContentId = 'completed_'+genus;
+
+    if (exists('#' + newTabContentId)) return;
+    
+    $('working').append('<div id="'+newTabContentId+'"></div>');
+
+    $('#tabs').tabs("add",'#' + newTabContentId,"Richness::" + genus);
+    
+    $("#" + newTabContentId).css("display","block");
+
+    //var combinations = result.split("~");
+
+    var combination = null;
+
+    var pair = null;
+
+        
+    var scenario_id = null
+    var scenario_time_id = null
+    
+    var comboStart = null;
+    var comboEnd = null;
+    var comboLength = null;
+    var comboStr = "";
+    var comboFileID = "";
+    
+    var firstTime = '';
+    
+    var msg  = ""; 
+    
+    
+    
+    $.each(parameters.scenarios, function(index, scenario) 
+    {
+        
+        scenario_id = 'row_'+genus+'_'+scenario;
+        
+        //console.log('scenario_id = ' + scenario_id + "\n");
+
+        msg += '<div class="richnessScenario ui-widget-content ui-corner-all" id="'+scenario_id+'">';
+        msg += '<h1 class="ui-widget-header ui-corner-all" >' + scenario + '</h1>';
+        msg += '<ul class=" ui-widget-content ui-corner-all"  >'; 
+        $.each(parameters.times, function(index, time) 
+        {
+            
+            time = $.trim(time);
+            if (time == '') return;
+            
+            //console.log('time = ' + time + "\n");
+            
+            if (firstTime == '') firstTime = time;
+            
+            scenario_time_id = 'cell_'+genus+'_'+scenario + "_" + time;
+            
+            //console.log('scenario_time_id = ' + scenario_time_id + "\n");
+            
+            combination = scenario + "_ALL_" + time;
+            
+            comboStart = result.indexOf(combination);
+            
+            comboEnd = result.indexOf('~',comboStart);
+            
+            comboLength = comboEnd - comboStart;
+                        
+            comboStr = result.substr(comboStart,comboLength);
+            
+            comboFileID = $.trim(comboStr.replace(combination + "=",""));
+
+            
+            if (comboFileID == '') return;
+            //console.log('comboFileID = ' + comboFileID + "\n");
+            
+            msg += '<li class="time_cell time_'+time+'" id="'+genus +  '_' + combination+'">';
+            msg += '<img src="file.php?id=' + comboFileID + '" />' + '';
+            msg += '</li>';
+
+        });
+        msg += "</ul>"; 
+        msg += "</div>"; 
+        
+    });
+
+
+
+    var time_menu = ''
+
+        time_menu += '<div class="richnessScenario_timeselector ui-widget-content ui-corner-all" id="'+scenario_id+'">';
+        time_menu += '<h1 class="ui-widget-header ui-corner-all" >TIME</h1>';
+        time_menu += '<ul class="ui-widget-content ui-corner-all"  >'; 
+        
+        $.each(parameters.times, function(index, time) 
+        {
+            
+            time_menu += '<li >';
+            time_menu += '<button class="genus_time_select" id="timeSelect_' + genus + '_' + time + '">' + time + '</button>';
+            time_menu += '</li>';
+        });
+        
+        time_menu += "</ul>"; 
+        time_menu += "</div>"; 
+
+    $("#" + newTabContentId).html(time_menu + msg);
+
+    $('.genus_time_select')
+        .button()
+        .css('float','left')
+        .css('width','100%')
+        .click(function() {genus_time_select(this)})
+        ;
+    
+
+    $('.time_cell').hide();
+    
+    $('.time_' + firstTime).show();
+
+
+
+}
+
+function genus_time_select(src)
+{
+ 
+   var id = src.id.toString();
+ 
+   $('.genus_time_select').removeClass('ui-state-active');
+   $('#'+id).addClass('ui-state-active');
+ 
+   var bits = id.split('_');
+ 
+   var time = bits[2];
+ 
+    $('.time_cell').hide();
+    
+    $('.time_' + time).show();
+ 
+}
+
+function modelledParametersFromGenusResult(result)
+{
+    
+    var combinations = result.split("~");
+
+    var pair = null;
+    var combination = null;
+    
+    var scenario = null;
+    var model    = null;
+    var time     = null;
+
+    var scenario_str  = '';
+    var model_str    = '';
+    var time_str     = '';
+
+    $.each(combinations, function(index, combination_quicklook) 
     { 
-        console.log('postUpdateProcess ' + index + " = " +value);
+        pair = combination_quicklook.split('=');
+        combination = pair[0].split('_');
+        
+        scenario = combination[0];
+        model    = combination[1];
+        time     = combination[2];
+
+        if (!contains(scenario_str,scenario))
+        {
+            if (scenario_str == "") 
+                scenario_str  = scenario
+            else
+                scenario_str += ","+ scenario
+        }
+
+        if (!contains(model_str,model))
+        {
+            if (model_str == "") 
+                model_str  = model
+            else
+                model_str += ","+ model
+        }
+
+
+        if (!contains(time_str,time))
+        {
+            if (time_str == "") 
+                time_str  = time
+            else
+                time_str += ","+ time
+        }
+
 
     });
 
+
+        result = {scenarios: scenario_str.split(",")
+                   ,   models: model_str.split(",")
+                   ,    times: time_str.split(",")
+                 }
+
+
+    return result;
+
+}
+
+
+
+/**
+ * Happens if they passed in cmd=12345.122345 on url 
+ */
+function previousCommand(cmd)
+{
+    
+        if (cmd == '') return;
+    
+        sData = { 
+              action_id:cmd
+        }
+    
+    
+    
+        $.post("HotSpotsAjaxGetCommandValues.php", sData , function(data) {postPreviousCommand(data);},"json");
+    
+}
+
+
+function postPreviousCommand(data)
+{
+    
+    
+    buildGenusTab(Value(data.genus), Value(data.Result))
+    
+    $('#tabs').tabs('select', $('#tabs').tabs('length') -1 );
     
     
 }
@@ -723,13 +1079,22 @@ function infoDialog(src)
                         '<img src="'+IconSource+'wait.gif">';
     
     var infoButtonID = src.id.toString();
+
+    var result = $('#' + infoButtonID).data('result');  
+
+
+    var action_id = $('#' + infoButtonID).data('action_id');
+
+    console.log("from info button result =    " + result);
+
+    console.log("get info for  " + action_id);
     
 
     dialog = $('<div></div>')
             .html(dialogContent)
             .dialog({
                     autoOpen: false,
-                    title: $('#' + infoButtonID).data('inputName'),
+                    title: "Info",
                     modal: true
             });
 
@@ -739,11 +1104,8 @@ function infoDialog(src)
     // send to server command_id and the ID of the element that sent it.
     
     var 
-    
         jData = { 
-             cmdaction: 'SpeciesHotSpots',
-                 cmdID: $('#' + infoButtonID).data('action_id'),
-             elementID: src.id.toString()
+             action_id: action_id
         }
     
     
@@ -758,19 +1120,54 @@ function infoDialog(src)
 
 function postInfoDialog(data)
 {
-    
-    var msg = '';
-    
-    console.log('postInfoDialog ');
-    
+
+
+    // for debug
     $.each(data, function(index, value) 
     { 
         console.log('postInfoDialog .. ' + index + " = " +value);
-
     });    
+
+    var msg = '';
+
+    var genus = Value(data.genus);
     
-    $(dialog).html('' + Value(data.msg.toString().replace('\n','<br>\n')));
+    var status = Value(data.Status);
+
+    var result = Value(data.Result);
     
+
+
+    if (result == "")
+    {
+        msg = "<h1>" + genus + "</h1><br><i>" + status + "</i>";
+    }
+    else
+    {
+        // process result  delimied string as RCP3PD_ALL_2015=50347b963d3a0~RCP3PD_ALL_2025=50347b96a0b70~
+        // combination=quicklook_id~combination=quicklook_id~combination=quicklook_id~
+        
+        msg = "<h1>Richness Results for " + genus + "</h1>"; 
+        
+        
+        var combinations = result.split("~");
+        
+        var pair = null;
+        
+        $.each(combinations, function(index, combination_quicklook) 
+        { 
+           pair = combination_quicklook.split('=');
+           msg += pair[0] + '<br>' + '<img src="file.php?id=' + pair[1] + '" />' + 'br';
+        });
+        
+        
+    }
+    
+
+    $(dialog).html(msg);
+
+
+
     dialog = null;
     
 }
@@ -779,14 +1176,15 @@ function postInfoDialog(data)
 
 function setDefaults()
 {
-    selectElementsDefault('Models');
-    selectElementsDefault('Scenarios');
+    //selectElementsDefault('Models');
+    //selectElementsDefault('Scenarios');
     selectElementsDefault('Times'  );
-    selectElementsDefault('Bioclims');
+    //selectElementsDefault('Bioclims');
     
     
     addInput('Species',50,"Pacific Black Duck (Anas (Anas) superciliosa)");
     addInput('Species',1999,"Red Wattlebird (Anthochaera (Anthochaera) carunculata)");
+    addInput('Genus','Rattus',"Rattus");
     
     updateCurrentPackage();
 }
@@ -840,16 +1238,27 @@ $(document).ready(function(){
         .click(function() {UpdateProcess();})
         ;
 
-    $('#Defaults')
-        .button()
-        .click(function() {setDefaults();})
-        ;
 
 
-    $('#InputTypeSpecies').click();
+    $('#InputTypeGenus').click();
 
 
+    selectAllModels();
+    selectAllScenarios();
+    selectAllBioclims();
 
+    $('#tabs-2').hide();
+    $('#tabs-3').hide();
+    $('#tabs-5').hide();
 
+    $('#tab_label_2').hide();
+    $('#tab_label_3').hide();
+    $('#tab_label_5').hide();
+   
+    if (cmd != '') previousCommand(cmd);
+   
+   
+   
+   
 
 });
