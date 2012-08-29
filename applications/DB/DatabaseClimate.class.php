@@ -42,9 +42,11 @@ class DatabaseClimate {
         
         $r = DBO::Unique($table, 'dataname');
         if ($r instanceof ErrorMessage) return ErrorMessage::Stacked (__METHOD__,__LINE__,"can't get dataname for {$table}", true,$r);
-
+        
         $result = matrix::Column($r,'dataname');
         if (is_null($result)) return new ErrorMessage(__METHOD__,__LINE__,"Can't get values as a column array");
+        
+        sort($result);
         
         return $result;
     }

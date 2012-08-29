@@ -43,13 +43,10 @@ $conf[Parameter::$MaxentJar ] = "/app/maxent.jar";
 $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975/";
 $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe/";
 $conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/ctbccr/TDH/";
+$conf[Parameter::$Maxent_Species_Data_folder_web ]        = "/home/ctbccr/TDH/";
 $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output/";
 $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
 
-$conf[Parameter::$DBFS_DB_HOST]     = "adamfakes.com";
-$conf[Parameter::$DBFS_DB_USER]     = "adamfakes_ap02";
-$conf[Parameter::$DBFS_DB_PASSWORD] = "ap02ap02";
-$conf[Parameter::$DBFS_DB_DATABASE] = "adamfakes_ap02";
 
 
 ?>

@@ -362,21 +362,10 @@ class MaxentMainServerBuild extends Object {
         
         $this->QsubCollectionID($this->JobPrefix().$this->SpeciesID());
         
-        if ($this->UpdateDatabase())
-        {
-            ErrorMessage::Marker("Numbers from Database\n");
-            $this->DataAlreadyLoadedASCII(SpeciesData::GetAllModelledData($this->SpeciesID(),'ASCII_GRID' ));        
-            $this->DataAlreadyLoadedQL(SpeciesData::GetAllModelledData($this->SpeciesID(),'ASCII_GRID' ));                    
-        }
-        else
-        {
-            // find out how many from counting in filesystem
-            // becasue we not updating database at the moment so read file system for counts
-            ErrorMessage::Marker("Numbers from Filesystem\n");
-            
-            $this->DataAlreadyLoadedASCII(file::LS($this->species_output_folder(). "/*.asc", '-1', true));        
-            $this->DataAlreadyLoadedQL   (file::LS($this->species_output_folder(). "/*.png", '-1', true));        
-        }
+
+        $this->DataAlreadyLoadedASCII(SpeciesFiles::GetAllModelledData($this->SpeciesID(),'ASCII_GRID' ));        
+        $this->DataAlreadyLoadedQL(SpeciesFiles::GetAllModelledData($this->SpeciesID(),'QUICK_LOOK' ));                    
+        
         
         
         ErrorMessage::Marker("DataAlreadyLoadedASCII = ".count($this->DataAlreadyLoadedASCII()));

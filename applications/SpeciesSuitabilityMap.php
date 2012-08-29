@@ -6,7 +6,7 @@ $GUI = null;
 
 $SpeciesID = array_util::Value($_POST, "SpeciesID","");
 
-$UserLayer = array_util::Value($_POST, "UserLayer","");
+$UserLayer = array_util::Value($_POST, "UserLayer","");  // is a combination of Scenario_model_time we need the ascii grid version
 
 $map_path = array_util::Value($_SESSION,'map_path');
 
@@ -46,29 +46,22 @@ if (!is_null($map_path) && $UserLayer == "")
 if ($UserLayer != "")
 {
 
-    $mimeType = DatabaseFile::ReadFileMimeType($UserLayer);
-    if (util::contains(strtolower($mimeType), 'png'))
-    {
-        $body_background = "
-            body 
-            {
-                background-image:url('file.php?id={$UserLayer}');
-            }
-            ";
+    // get the ascvi grid filename
+    
+    $ascii_grid_filename = SpeciesFiles::species_data_folder($SpeciesID)."{$UserLayer}.asc";
+    
         
-    }
-    else
-    {
-        
-        $M = new MapServerWrapper();
+    $M = new MapServerWrapper();
 
-        // add background layers
-        foreach (Session::MapableResults() as $MapableResult)
-            $M->Layers()->AddLayer($MapableResult);
+    // add background layers
+    foreach (Session::MapableResults() as $MapableResult)
+        $M->Layers()->AddLayer($MapableResult);
 
-        // add user layer
-        
-        $layer = $M->Layers()->AddLayer(DatabaseFile::ReadFile2Filesystem($UserLayer,configuration::TempFolder().$UserLayer.".asc",false,true) );
+    // add user layer
+
+    if (file_exists($ascii_grid_filename))
+    {
+        $layer = $M->Layers()->AddLayer($ascii_grid_filename);
         $layer instanceof MapServerLayerRaster;
         $layer->HistogramBuckets(100);
 
@@ -82,17 +75,19 @@ if ($UserLayer != "")
 
         $layer->ColorTable($ramp);             
         
-        
-        $MF = Mapfile::create($M);
-        $_SESSION['map_path'] = $MF->save($M);
-
-        $GUI = MapserverGUI::create($_SESSION['map_path']);
-        if (is_null($GUI)) die ("Map Server GUI failed");
-
-        if ($GUI->hasInteractive()) $GUI->ZoomAndPan();                
-        
     }
     
+
+
+    $MF = Mapfile::create($M);
+    $_SESSION['map_path'] = $MF->save($M);
+
+    $GUI = MapserverGUI::create($_SESSION['map_path']);
+    if (is_null($GUI)) die ("Map Server GUI failed");
+
+    if ($GUI->hasInteractive()) $GUI->ZoomAndPan();                
+
+
 }
 
 

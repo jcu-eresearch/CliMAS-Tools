@@ -8,4 +8,5 @@ include_once 'DatabaseCommands.class.php';
 include_once 'DatabaseMaxent.class.php';
 include_once 'DatabaseClimate.class.php';
 include_once 'GenusData.class.php';
+include_once 'SpeciesFiles.class.php';
 ?>

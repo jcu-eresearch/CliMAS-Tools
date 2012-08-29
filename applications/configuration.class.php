@@ -149,6 +149,12 @@ class configuration {
         global $conf;
         return $conf[Parameter::$Maxent_Species_Data_folder]; 
     }
+
+    public static function Maxent_Species_Data_folder_web() { 
+        global $conf;
+        return $conf[Parameter::$Maxent_Species_Data_folder_web]; 
+    }
+
     
     public static function Maxent_Species_Data_Output_Subfolder() { 
         global $conf;
@@ -164,29 +170,6 @@ class configuration {
         global $conf;
         return $conf[Parameter::$TempFolder]; 
     }
-    
-    
-    public static function DBFS_DB_HOST() { 
-        global $DBFS_conf;
-        return $DBFS_conf[Parameter::$DBFS_DB_HOST]; 
-    }
-    
-    public static function DBFS_DB_USER() { 
-        global $DBFS_conf;
-        return $DBFS_conf[Parameter::$DBFS_DB_USER]; 
-    }
-    
-    public static function DBFS_DB_PASSWORD() { 
-        global $DBFS_conf;
-        return $DBFS_conf[Parameter::$DBFS_DB_PASSWORD]; 
-    }
-    
-    public static function DBFS_DB_DATABASE() { 
-        global $DBFS_conf;
-        return $DBFS_conf[Parameter::$DBFS_DB_PASSWORD]; 
-    }
-
-    
     
     
 }

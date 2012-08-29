@@ -464,7 +464,22 @@ class array_util
         return $result;
     }
 
+    public static function ReplaceInKey($src,$search, $replace)
+    {
+        $result = array();
+        foreach ($src as $key => $value)
+        {
+            $key = str_replace($search, $replace, $key);
+            $result[$key] = $value;
+        }
+            
 
+
+        return $result;
+    }
+
+    
+    
 
     /*
     * @method arrayElements

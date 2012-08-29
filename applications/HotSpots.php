@@ -32,7 +32,7 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
 
         echo htmlutil::AsJavaScriptArray(GenusData::ModelledForAllGenusNamesOnly() ,'availableGenus');
         
-        echo htmlutil::AsJavaScriptObjectArray(SpeciesData::speciesList(),"full_name","species_id","availableSpecies");    
+        echo htmlutil::AsJavaScriptObjectArray(SpeciesFiles::speciesList(),"full_name","species_id","availableSpecies");    
         
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSource');
         

@@ -34,7 +34,8 @@ if (stripos( $hostname, "tdh-tools-1") !== FALSE)
 
     $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
     $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
-    $conf[Parameter::$Maxent_Species_Data_folder ]            = "/scratch/jc166922/tdh2/source/species/";
+    $conf[Parameter::$Maxent_Species_Data_folder ]            = "/www/html/eresearch/source/species/";
+    $conf[Parameter::$Maxent_Species_Data_folder_web ]        = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/source/species/";
     $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
     $conf[Parameter::$Maxent_Species_Data_Occurance_Filename] = "occur.csv";
    

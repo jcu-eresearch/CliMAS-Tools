@@ -1072,10 +1072,37 @@ class file {
         unset($result);
         
         return $newResult;
-        
-        
     }
- 
+
+    public static function LSfolders($pattern = "*",$options = "-1d",$basenameAsKey = true)
+    {
+        
+        if (is_null($options) ) $options = "-1";
+        
+        $pattern .= '/';
+        
+        $cmd = "ls $options {$pattern}";
+        $result = array();
+        
+        exec($cmd,$result);
+        
+        if (!$basenameAsKey) return $result;
+        
+        $newResult = array();
+        foreach ($result as $key => $value) 
+        {
+            $newResult[basename($value)] = $value;
+        }
+        
+        unset($result);
+        
+        return $newResult;
+    }
+    
+    
+    
+    
+    
     public static function Head($filename,$lines)
     {
         $cmd = "head -n {$lines} {$filename}";

@@ -39,16 +39,13 @@ class Parameter
     public static $Maxent_Taining_Data_folder = "Maxent_Taining_Data_folder";
     public static $Maxent_Future_Projection_Data_folder = "Maxent_Future_Porojection_Data_folder";
     public static $Maxent_Species_Data_folder = "Maxent_Species_Data_folder";
+    public static $Maxent_Species_Data_folder_web = "Maxent_Species_Data_folder_web";
     public static $Maxent_Species_Data_Output_Subfolder = "Maxent_Species_Data_Output_Subfolder";
     public static $Maxent_Species_Data_Occurance_Filename = "Maxent_Species_Data_Occurance_Filename";
 
     
     public static $TempFolder = "TempFolder";
 
-    public static $DBFS_DB_HOST     = "DBFS_DB_HOST";
-    public static $DBFS_DB_USER     = "DBFS_DB_USER";
-    public static $DBFS_DB_DATABASE = "DBFS_DB_DATABASE";
-    public static $DBFS_DB_PASSWORD = "DBFS_DB_PASSWORD";
 
     
 }

@@ -235,16 +235,14 @@ class SpeciesData extends Object {
      * @param type $filetype Limit to this filetype only
      * @return type 
      */
-    public static function GetAllModelledData($speciesID,$filetype = null,$key = 'combination',$extraWhere = null)
+    public static function GetAllModelledData($speciesID,$filetype = "QUICK_LOOK")
     {
+        $key = 'combination';
+        
         if (is_null($speciesID)) return null;
         
         $speciesID = trim($speciesID);
         if ($speciesID == "") return null;
-        
-        
-        if (!is_null($extraWhere))
-            $extraWhere = "and {$extraWhere} ";
         
         
         $filetypeAnd = (is_null($filetype)) ? "" : "and mc.filetype   = ".util::dbq($filetype,true);
@@ -1181,15 +1179,7 @@ class SpeciesData extends Object {
 
     public static function species_data_folder($species_id)
     {
-        $folder = configuration::Maxent_Species_Data_folder()
-                    .$species_id
-                    .configuration::osPathDelimiter()
-                    .configuration::Maxent_Species_Data_Output_Subfolder()
-                    .configuration::osPathDelimiter()
-                    ;
-        
-        return $folder;
-        
+        return SpeciesFiles::species_data_folder($species_id);
     }
 
     
@@ -1521,7 +1511,7 @@ class SpeciesData extends Object {
      * List key = Common Name or Species Name and value = Species id
      * @param type $pattern 
      */
-    public static function ComputedNameList($pattern = "") 
+    public static function ComputedNameList($pattern = "",$indented_common_name = true) 
     {
         
         $pattern = util::CleanString($pattern);
@@ -1556,7 +1546,11 @@ class SpeciesData extends Object {
                 $common_name = trim($common_name);
                 if ($common_name == "") continue;
                 
-                $result_list["..".$common_name] = $species_id;  // scientfific name
+                
+                if ($indented_common_name)
+                    $result_list["..".$common_name] = $species_id;  // scientfific name
+                else
+                    $result_list[$common_name] = $species_id;  // scientfific name
             }
             
             
@@ -1568,6 +1562,9 @@ class SpeciesData extends Object {
         
         
     }
+    
+    
+    
     
 
     public static function ClazzID($find)

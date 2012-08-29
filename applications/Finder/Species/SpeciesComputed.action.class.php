@@ -36,29 +36,67 @@ class SpeciesComputed extends Action implements iAction {
     public function Execute()
     {
 
-        // keyed file-dis of Quick Look images available for this species
-        $data_quick_look = SpeciesData::GetAllModelledData($this->SpeciesID(), 'QUICK_LOOK','combination');
+        $species_id = $this->SpeciesID();
         
-        $scenarioModels = array();
         
-        $sub_result = array();
+        $folder = SpeciesFiles::species_data_folder($species_id);
         
-        foreach ($data_quick_look as $combination => $row) 
+        
+        $scenarios = array();
+        $models = array();
+        $times = array();
+        
+        $table = array();
+        
+        foreach (DatabaseClimate::GetScenarios() as $scenario) 
         {
-            //  speciesID_scenario_model_time_QuickLookFileID_AsciiGridFileID
-            $sub_result[$combination] =  $this->SpeciesID()."_".$combination."_".$row['file_unique_id']."_".$data_quick_look[$combination]['file_unique_id']."_".$row['full_name'];
-            $scenarioModels[$row['scenario_name']."_".$row['model_name']] = "";
-        }
+            if ($scenario == "CURRENT") continue;
+            
+            $scenarios[$scenario] = '';
+            
+            foreach (DatabaseClimate::GetModels() as $model) 
+            {
+                
+                if ($model == "CURRENT") continue;
+                
+                $models[$model] = '';
+                
+                foreach (DatabaseClimate::GetTimes() as $time) 
+                {
+                    if ($time < 2000) continue;
 
+                    $times[$time] = '';
+                    
+                    $combination  = "{$scenario}_{$model}_{$time}";
+                    $asc_filename = $folder."{$combination}.asc";
+                    $png_filename = $folder."{$combination}.png";
+                    
+                    
+                    if (file_exists($png_filename) && file_exists($asc_filename))
+                        $table[] = $combination;
+                    else
+                        $table[] = "null"; // we don't have files for this time point
+                    
+                    
+                }
+                
+            }
+            
+        }
         
-        $sub_result['scenarioModels'] = implode("~", array_keys($scenarioModels));
         
-        $sub_result['full_name'] = SpeciesData::SpeciesQuickInformation($this->SpeciesID());
-        $sub_result['species_id'] = $this->SpeciesID();
+        $result = array();
         
+        $result['scenarios'] = implode("~",array_keys($scenarios));
+        $result['models']    = implode("~",array_keys($models));
+        $result['times']     = implode("~",array_keys($times));
+        $result['table']     = implode("~",$table);
         
-        $this->Result($sub_result);
-        return $sub_result;
+        $result['species_id'] = $this->SpeciesID();
+        
+        $this->Result($result);
+        
+        return $result;
     }
 
     
