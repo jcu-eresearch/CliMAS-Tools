@@ -59,7 +59,15 @@ class DatabaseClimate {
     
     public static  function GetScenarios() 
     {
-        return self::getDataname('scenarios');
+        $result = self::getDataname('scenarios');
+        if ($result instanceof ErrorMessage) 
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't get Data name from Scenarios", true,$result);
+
+        unset($result['ALL']);
+        unset($result['CURRENT']);
+        
+        
+        return $result;
     }
 
     public static  function GetModels() 
@@ -69,12 +77,24 @@ class DatabaseClimate {
             return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't get Data name from Models", true,$result);
             
         unset($result['ALL']);
+        unset($result['CURRENT']);
         
         return $result;
     }
 
     public static  function GetTimes() 
     {
+        $result = self::getDataname('times');
+        if ($result instanceof ErrorMessage) 
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't get Data name from times", true,$result);
+            
+        unset($result['1990']);
+        unset($result['1975']);
+        
+        return $result;
+        
+        
+        
         return self::getDataname('times');
     }
 
@@ -133,6 +153,29 @@ class DatabaseClimate {
         return Descriptions::fromTable("times");
     }
 
+    
+    public static  function GetScenarioDescription($named) 
+    {
+        $desc = Description::fromTable("scenarios","dataname", "description", "moreinfo", "uri", $named);
+        $desc instanceof Description;
+        return $desc;
+    }
+
+    public static  function GetModelDescription($named) 
+    {
+        $desc = Description::fromTable("models","dataname", "description", "moreinfo", "uri", $named);
+        $desc instanceof Description;
+        return $desc;
+    }
+
+    public static  function GetTimeDescription($named) 
+    {
+        $desc = Description::fromTable("times","dataname", "description", "moreinfo", "uri", $named);
+        $desc instanceof Description;
+        return $desc;
+    }
+    
+    
     
     public static  function GetFutureTimesDescriptions() 
     {

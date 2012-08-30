@@ -534,7 +534,7 @@ class MaxentMainServerBuild extends Object {
                             if ($modelID == "CURRENT") continue;
                             
                             
-                            ErrorMessage::Marker(" models = {$this->models()}");
+                            //ErrorMessage::Marker(" models = {$this->models()}");
                             
                             
                             
@@ -542,7 +542,7 @@ class MaxentMainServerBuild extends Object {
                             if (!is_null($this->models()))
                                 if (!util::contains($this->models(), $modelID)) continue;    
 
-                            ErrorMessage::Marker(" modelID = {$modelID}");
+                            //ErrorMessage::Marker(" modelID = {$modelID}");
 
                             
                             ErrorMessage::Marker("Building Scripts for scenarioID = $scenarioID  timeID = $timeID modelID=[$modelID] \n");

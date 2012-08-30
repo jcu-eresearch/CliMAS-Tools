@@ -64,10 +64,16 @@ class Descriptions extends Data {
      * @param type $URI              field name to become URI
      * @return \Descriptions 
      */
-    public static function fromTable($tablename, $DataName = "dataname", $Description = "description", $MoreInformation = "moreinfo", $URI = "uri")
+    public static function fromTable($tablename, $DataName = "dataname", $Description = "description", $MoreInformation = "moreinfo", $URI = "uri",$dataname_is = null)
     {
-    
-        $q = "select {$DataName},{$Description},{$MoreInformation},{$URI} from {$tablename}";
+
+        $where = "";
+        if (!is_null($dataname_is))
+        {
+            $where = " where {$DataName} = E'{$dataname_is}'";
+        }
+        
+        $q = "select {$DataName},{$Description},{$MoreInformation},{$URI} from {$tablename} {$where} ";
         
         $result = DBO::Query($q, $DataName);        
         if ($result instanceof ErrorMessage) 

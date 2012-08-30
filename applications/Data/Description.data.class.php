@@ -8,6 +8,44 @@
 class Description extends Data {
     
     
+    public static function fromTable($tablename, $DataName = "dataname", $Description = "description", $MoreInformation = "moreinfo", $URI = "uri",$dataname_is = null)
+    {
+
+        $where = "";
+        if (!is_null($dataname_is))
+        {
+            $where = " where {$DataName} = E'{$dataname_is}'";
+        }
+        
+        $q = "select {$DataName},{$Description},{$MoreInformation},{$URI} from {$tablename} {$where} ";
+        
+        $result = DBO::Query($q, $DataName);        
+        if ($result instanceof ErrorMessage) 
+            return ErrorMessage::Stacked (__METHOD__,__LINE__
+                                        ,"Failed to get Description from Table 
+                                          tablename = {$tablename}\n
+                                          DataName  = {$DataName}\n
+                                          Description = {$Description}\n
+                                          MoreInformation = {$MoreInformation}\n 
+                                          URI = {$URI}\n"
+                                        ,true
+                                        ,$result);
+
+        $row = util::first_element($result);
+                                          
+        $desc = new Description();
+        $desc->DataName        (array_util::Value($row, $DataName));
+        $desc->Description     (array_util::Value($row, $Description));
+        $desc->MoreInformation (array_util::Value($row, $MoreInformation));
+        $desc->URI             (array_util::Value($row, $URI));
+                                          
+        
+        return $desc;
+    
+    }
+    
+    
+    
     public function __construct() {
         parent::__construct();
         $this->DataName(__CLASS__);

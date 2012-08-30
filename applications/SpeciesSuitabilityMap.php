@@ -48,7 +48,6 @@ if ($UserLayer != "")
 
     // get the ascvi grid filename
     
-    $ascii_grid_filename = SpeciesFiles::species_data_folder($SpeciesID)."{$UserLayer}.asc";
     
         
     $M = new MapServerWrapper();
@@ -59,6 +58,9 @@ if ($UserLayer != "")
 
     // add user layer
 
+    $ascii_grid_filename = SpeciesFiles::species_data_folder($SpeciesID)."{$UserLayer}.asc";
+    
+    
     if (file_exists($ascii_grid_filename))
     {
         $layer = $M->Layers()->AddLayer($ascii_grid_filename);
@@ -87,6 +89,11 @@ if ($UserLayer != "")
 
     if ($GUI->hasInteractive()) $GUI->ZoomAndPan();                
 
+    
+    if (!is_null($GUI)) 
+    {
+        
+    }
 
 }
 
@@ -95,13 +102,27 @@ if ($UserLayer != "")
 <HTML>
 <HEAD>
     <TITLE></TITLE>
+    <link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
+    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
+    <script type="text/javascript" src="js/selectMenu.js"></script>
+    <script type="text/javascript" src="js/Utilities.js"></script>
+    
+    
     <script type="text/javascript">
     function GetZoom() {
         document.getElementById('ZoomFactor').value = parent.document.getElementById('ZoomFactor').value;
         document.getElementById('UserLayer').value  = parent.document.getElementById('UserLayer').value;        
         document.getElementById('SpeciesID').value  = parent.document.getElementById('SpeciesID').value;        
     }
+
+    $(document).ready(function(){
+
+            parent.setMapOverview();
+
+    });
     </script>
+    
     <style>
         <?php echo $body_background; ?>
         
@@ -109,17 +130,19 @@ if ($UserLayer != "")
     
 </HEAD>
 <BODY>
-    
-    <FORM id="MAP_FORM"  onsubmit="GetZoom()" METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
+    <FORM style="margin: 0px; padding: 0px;"  id="MAP_FORM"  onsubmit="GetZoom()" METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
         <INPUT id="mapa" TYPE=IMAGE NAME="mapa" SRC="<?php if (!is_null($GUI)) echo $GUI->MapImageLocation();?>" style="clear:both; ">
         <INPUT TYPE=HIDDEN ID="ZoomFactor" NAME="ZoomFactor" VALUE="">
         <INPUT TYPE=HIDDEN ID="UserLayer"  NAME="UserLayer"   VALUE="" >        
         <INPUT TYPE=HIDDEN ID="SpeciesID"  NAME="SpeciesID"   VALUE="<?php echo $SpeciesID; ?>" >
         <INPUT TYPE=HIDDEN ID="extent"     NAME="extent"  VALUE="<?php if (!is_null($GUI)) echo $GUI->ExtentString(); ?>">
     </FORM>
-    
-    <?php // echo str_replace("\n", "<br>\n", $MF->Text());?>
-    
-    
+    <table style="margin: 0px; padding: 0px;" width="100%" border="0" cellspacing="0">
+        <tr>
+            <td width="50%" style="text-align:left; "><?php if (!is_null($GUI)) echo round($GUI->Extent()->West(),3); ?>&deg;</td>
+            <td width="50%" style="text-align:right;"><?php if (!is_null($GUI)) echo round($GUI->Extent()->East(),3); ?>&deg;</td>
+        </tr>
+    </table>
+    <?php if (!is_null($GUI)) echo $GUI->ExtentString(); ?>
 </body>
 </html>

@@ -780,8 +780,19 @@ TEXT;
 
     
     
-    public static function RampDisplay($ramp,$class = "ColorKey",$id = "ColorKey")
+    /**
+     *
+     * @param type $ramp
+     * @param type $class
+     * @param type $id
+     * @param type $unique_values  - array of value to colour unique values to be prefixed before scale
+     * @return string 
+     */
+    public static function RampDisplay($ramp,$class = "ColorKey",$id = "ColorKey",$unique_values = null)
     {
+        if (is_null($class)) $class = $class = "ColorKey";
+        if (is_null($id)) $id = $id = "ColorKey";
+
         
         $keys = array_keys($ramp);
         
@@ -790,8 +801,19 @@ TEXT;
         $first_rgb = $ramp[$first];  $last_rgb = $ramp[$last]; 
         
         $result  = '<div  id="'.$id.'" class="'.$class.'">';
+
+        if (!is_null($unique_values) && is_array($unique_values))
+        {
+            foreach ($unique_values as $value => $colour) 
+            {
+                $result .= '<div class="'.$class.'_unique_value" id="'.$id.'_'.$value.'"  style="padding-left:3px; float: left; height: 100%; background-color: '.$colour.' ; color: white;"> '.$value.' '."</div>";
+            }
+            
+        }
         
-        $result .= '<div class="'.$class.'_first_value" id="'.$id.'_fist_value"  style="padding-left:3px; float: left; height: 100%; background-color: #' . $first_rgb->asHex() . ';">'. number_format($first, 3)."</div>";
+        
+        
+        $result .= '<div class="'.$class.'_first_value" id="'.$id.'_first_value"  style="width: 65px; padding-left:5px; padding-right:5px; float: left; height: 100%; background-color: #' . $first_rgb->asHex() . ';">'. number_format($first, 3)."</div>";
         
         foreach ($ramp as $value => $rgb) 
         {    

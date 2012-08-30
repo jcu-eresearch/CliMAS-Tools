@@ -9,7 +9,7 @@ if (is_null($species_id)) usage($prog);
 
 function usage($prog)
 {
-   echo "usage: {$prog} species_id [--time=yyyy] [--scenario=name]\n" ;
+   echo "usage: {$prog} species_id [--time=yyyy] [--scenario=name] [--LoadASCII=true]  [LoadQuickLooks=true] \n" ;
    exit(1);
 }
 

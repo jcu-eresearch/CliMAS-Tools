@@ -256,6 +256,8 @@ class Object  {
             $result = $format;
             foreach ($this->property as $key => $value)
             {
+                if (util::contains($value, "http//")) $value = str_replace ('http//', 'http://', $value);
+                
                 if (is_bool($value)) $value = ($value) ? self::$TRUE : self::$FALSE;
                 
                 if (is_array($value))  
