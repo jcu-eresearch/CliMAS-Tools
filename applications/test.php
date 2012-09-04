@@ -2,22 +2,80 @@
 include_once dirname(__FILE__).'/includes.php';
 
 
-//$t = SpeciesFiles::speciesList();
-//print_r($t);
+echo "Test to see if we can write a COmmand Action obect to postgress database.\n";
 
 
-//$t = SpeciesFiles::GetAllModelledData(50);
-//print_r($t);
+echo "Table count = ".DatabaseCommands::CommandActionCount()."\n";
 
 
-$S = FinderFactory::Find("SpeciesComputed");
-$S instanceof SpeciesComputed;
+DatabaseCommands::CommandActionRemoveAll(true);
 
-$S->SpeciesID(50);
-$R = $S->Execute();
 
-print_r($R );
+echo "After remove all Table count = ".DatabaseCommands::CommandActionCount()."\n";
 
+exit();
+
+
+echo "Add one Object to Database = \n";
+
+$me = new SpeciesMaxent();
+
+print_r($me);
+
+$me->Result(str_repeat("Hello World ", 5000));
+
+$write = DatabaseCommands::CommandActionQueue($me);
+
+
+
+$read = DatabaseCommands::CommandActionRead($me->ID());
+
+echo "This object should look the same as the one above \n";
+print_r($read);
+
+
+
+echo "add test Objects with different ID's";
+
+echo "CReate 100\n";
+
+echo "Count before create 10 before  = ".DatabaseCommands::CommandActionCount()."\n";
+
+for ($index = 0; $index < 10; $index++) {
+    $me = new SpeciesMaxent();
+    $me->Result(str_repeat("Hello World ", 5000));
+    $write = DatabaseCommands::CommandActionQueue($me);    
+}
+
+
+echo "Count after Create 10 = ".DatabaseCommands::CommandActionCount()."\n";
+
+echo "List all ID's\n";
+print_r( DatabaseCommands::CommandActionListIDs());
+echo "\n";
+
+
+
+echo "List all ID's with Execution Flag\n";
+print_r(DatabaseCommands::CommandActionExecutionFlag());
+echo "\n";
+
+echo "List ExecutionFlag  for {$me->ID()} \n";
+print_r(DatabaseCommands::CommandActionExecutionFlag($me->ID()));
+echo "\n";
+
+echo "Get status of {$me->ID()}  \n";
+print_r(DatabaseCommands::CommandActionStatus($me->ID()));
+echo "\n";
+
+echo "Update status of {$me->ID()} to 'I was here'  \n";
+$me->Status('I was here');
+DatabaseCommands::CommandActionQueue($me);
+echo "\n";
+
+echo "Get status of {$me->ID()}   - after update \n";
+print_r(DatabaseCommands::CommandActionStatus($me->ID()));
+echo "\n";
 
 ?>
 

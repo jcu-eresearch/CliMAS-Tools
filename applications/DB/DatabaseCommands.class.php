@@ -29,18 +29,9 @@ class DatabaseCommands extends Object
 
     }
      
-
-    /**
-     * Add new Action to queue or update the current action
-     * 
-     * @param CommandAction $cmd
-     * @return null 
-     */
     public static function CommandActionQueue(CommandAction $cmd) 
     {
         
-        
-        $data = base64_encode(serialize($cmd));
         
         // check to see if we already have it.
         $w = array();
@@ -51,19 +42,34 @@ class DatabaseCommands extends Object
         if ($count instanceof ErrorMessage)  
             return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to count Command Actions \n w = ".print_r($w,true), true,$count);
         
+
+        // the serialize data can become large so we are going to save it a s a file and then the size won't matter
+        // use the  $cmd->ID() as the id / description
+        
         
         if ($count > 0)
         {
             
+            ErrorMessage::Marker("Updated the Command Action ");
+            
             $uv = array();
-            $uv['data']           = $data;
+            
+            //$uv['data']           = $data;   //we were storing the data in the database now stor it on the filesystem 
             $uv['status']         = $cmd->Status();
             $uv['execution_flag'] = $cmd->ExecutionFlag();
             
-            $updateCount = DBO::SetArray( self::ActionsTableName(),$uv, "objectid  = ".util::dbq($cmd->ID()) );
+            $updateCount = DBO::SetArray( self::ActionsTableName(),$uv, "objectid  = ".util::dbq($cmd->ID(),true) );
             
             if ($updateCount instanceof ErrorMessage)  
                 return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Update Command \n $uv = ".print_r($uv,true)."\n updateCount = ".print_r($updateCount,true), true,$updateCount);
+            
+            
+            DatabaseFile::RemoveFile($cmd->ID()); // remove this file from DB as we are going to update it
+            
+            $insertObject = DatabaseFile::InsertObject($cmd, $cmd->ID());
+            if ($insertObject instanceof ErrorMessage)  
+                return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to insert Command Object ", true,$updateCount);
+            
             
             
             return  $cmd->ID(); // will hold the row id of the object that was just updated.
@@ -71,12 +77,13 @@ class DatabaseCommands extends Object
         }
         
         
+        ErrorMessage::Marker("CReated  the Command Action ");
+        
         // Queueed Action Does not exists so Insert it
         
         $ins = array();
         $ins['queueid']        = self::QueueID();
         $ins['objectid']       = $cmd->ID();
-        $ins['data']           = $data;
         $ins['status']         = $cmd->Status();
         $ins['execution_flag'] = $cmd->ExecutionFlag();
 
@@ -87,18 +94,23 @@ class DatabaseCommands extends Object
         if (!is_numeric($insert_result))  
             return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Insert Command insert_result is not numeric \n insert_result = ".print_r($insert_result,true), true,$insert_result);
         
+        $insertObject = DatabaseFile::InsertObject($cmd, $cmd->ID());
+            if ($insertObject instanceof ErrorMessage)  
+                return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to insert Command Object ", true,$updateCount);
+
+        
         
         return $cmd->ID();
         
+        
     }
-
+        
     
     public static function CommandActionValue($src,$valueName) 
     {
         
         if (is_null($src) || is_null($valueName))
             return new ErrorMessage(__METHOD__,__LINE__,"src or value passed as null  src = [{$src}]  valueName = [{$valueName}]  \n");
-
             
         $qn = array();
         $qn['objectid'] = ($src instanceof CommandAction) ? $src->ID() : $src;
@@ -125,45 +137,16 @@ class DatabaseCommands extends Object
     public static function CommandActionRead($commandID) 
     {
         
-
-        
         if (is_null($commandID) ) 
             return new ErrorMessage(__METHOD__,__LINE__,"commandID passed as NULL");
         
         $commandID = str_replace("_", ".", $commandID);
         
-        
         try {
-        
-            $data = self::CommandActionValue($commandID,'data');
-        
-            if ($data instanceof ErrorMessage) 
-                return new ErrorMessage(__METHOD__,__LINE__,"Failed to read data for command ID {$commandID}");
-        
-        $object = @unserialize(base64_decode($data));
-
             
-            if (!$object ||  $object instanceof __PHP_Incomplete_Class)
-            {
-                
-                $print_r_str = print_r($object,true);
-                $split = explode("\n",$print_r_str);
-                if (count($split) < 3) return new ErrorMessage(__METHOD__,__LINE__,"Failed to read data for command ID {$commandID} - even via __PHP_Incomplete_Class 1");
-                
-                $bits = explode("=>",$split[2]);
-                if (count($split) < 2) return new ErrorMessage(__METHOD__,__LINE__,"Failed to read data for command ID {$commandID} - even via __PHP_Incomplete_Class 2");
-                
-                $className = trim($bits[1]);
-                
-                $class = FinderFactory::Find($className);
-                
-                if ($class instanceof ErrorMessage) return $class;
-
-                // the Class should be loaded and available
-                $object = @unserialize(base64_decode($data)); // try to unserialize again
-                
-            }
-            
+            $object = DatabaseFile::ReadObject($commandID);
+            if ($object instanceof ErrorMessage) 
+                return new ErrorMessage(__METHOD__,__LINE__,"Failed to read data for command ID {$commandID}".print_r($object,true));
             
             $object instanceof CommandAction;
 
@@ -189,6 +172,12 @@ class DatabaseCommands extends Object
     {
         if (!$really) return;
         
+        
+        foreach (self::CommandActionListIDs() as $object_id)  
+            DatabaseFile::RemoveFile($object_id);            // remove all files associated with Command Actions
+
+        
+        // remove the command actions 
         $delete = DBO::Delete(self::ActionsTableName(), "queueid = ".util::dbq(self::QueueID()) );
         if ($delete instanceof ErrorMessage)  
             return ErrorMessage::Stacked (__METHOD__,__LINE__,"Failed to Remove All Commands \n queueid = ".util::dbq(self::QueueID()), true,$delete);

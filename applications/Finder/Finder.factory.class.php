@@ -272,7 +272,54 @@ class FinderFactory {
 
     }
 
+    /**
+     * Possible that this class may not be loaded so make sure it is before decoding
+     * 
+     * @param type $data  to be decoded
+     * @param type $decode_using_base64
+     * @return \ErrorMessage 
+     */
+    public static function UnserialiseAndLoadUndefinedClass($data,$decode_using_base64 = true)
+    {
 
+        if ($decode_using_base64)
+            $object = @unserialize(base64_decode($data));    
+        else
+            $object = @unserialize($data);
+        
+        
+        
+        if (!$object ||  $object instanceof __PHP_Incomplete_Class)
+        {
+
+            $print_r_str = print_r($object,true);
+            $split = explode("\n",$print_r_str);
+            if (count($split) < 3) return new ErrorMessage(__METHOD__,__LINE__,"Failed to load appropriate class for object ".print_r($object,true));
+
+            $bits = explode("=>",$split[2]);
+            if (count($split) < 2) return new ErrorMessage(__METHOD__,__LINE__,"Failed to load appropriate class for object ".print_r($object,true));
+
+            $className = trim($bits[1]);
+
+            $class = self::Find($className);
+
+            if ($class instanceof ErrorMessage) return $class;
+
+            // the Class should be loaded and available
+
+            if($decode_using_base64)
+                $object = @unserialize(base64_decode($data)); // try to unserialize again
+            else
+                $object = @unserialize($data); // try to unserialize again
+            
+        }
+
+        
+        return $object;
+        
+    }
+    
+    
 
 }
 

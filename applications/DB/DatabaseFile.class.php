@@ -44,6 +44,139 @@ class DatabaseFile extends Object
     
     
     /**
+     * Save a Object to a file - so serialize the object base64 encode and then save to a file
+     * - the base64 encode will just help to prevent corruption of data object
+     * @param Object $src 
+     */
+    public static function Object2File(Object $src,$filename = null) 
+    {
+        if (is_null($filename)) $filename = file::random_filename(); // file in tmp folder 
+        
+        $data = base64_encode(serialize($src));
+
+        $fw = file_put_contents($filename, $data);
+        if (!$fw)
+            return new ErrorMessage(__METHOD__, __LINE__, "Failed to write object of class ".  get_class($src). " to  {$filename}");
+            
+        if (!file_exists($filename))
+            return new ErrorMessage(__METHOD__, __LINE__, "wrote object to {$filename} but now file does not exist");
+        
+
+        return $filename;
+        
+    }
+
+    public static function File2Object($filename) 
+    {
+        
+        if (!file_exists($filename)) return new ErrorMessage(__METHOD__, __LINE__, "File does not exist {$filename}");
+        
+        $src = file_get_contents($filename);
+        
+        $obj = null;
+        try {
+            $obj = unserialize(base64_decode($src));            
+        } catch (Exception $exc) {
+            
+            return new ErrorMessage(__METHOD__, __LINE__, "Tried to get object from {$filename} ".$exc->getTraceAsString());
+        }
+
+        return $obj;
+        
+    }
+    
+    
+    public static function ReadObject($object_id) 
+    {
+        
+        $object_data = self::ReadFile($object_id,false,true); // read "file" data from database
+        if ($object_data instanceof ErrorMessage) 
+            return ErrorMessage::Stacked(__METHOD__,__LINE__,"",true,$object_data);
+
+        
+        try {
+            $object = FinderFactory::UnserialiseAndLoadUndefinedClass($object_data);
+            if ($object instanceof ErrorMessage)
+                return new ErrorMessage(__METHOD__,__LINE__,"Failed to get object from database NO EXCEPTION");
+            
+        } catch (Exception $exc) {
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to get object from database EXCEPTION".$exc->getTraceAsString());
+        }
+
+        
+        return $object;
+        
+    }
+    
+    
+    public static function InsertObject(Object $src,$description = null) 
+    {
+        
+        if (is_null($src)) 
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to Add object to database file object is NULL description = $description  \n");
+
+        $object_data = base64_encode(serialize($src));
+        
+        ErrorMessage::Marker("Inserting Object");
+        
+        $chunck_size = self::$FILE_DB_STORAGE_SIZE;
+
+        $total_size = strlen($object_data);
+        $totalparts = ceil($total_size / $chunck_size);
+
+        // if the storage is compressed then we want to keep the file type of the original file
+        // so when we pass it back it will have the proper mime type
+        $mimetype = 'OBJECT';
+        
+        $file_unique_id =  $src->ID();
+        
+        $partnum = 0;
+        
+        $total_read = 0;
+        $current_pt = 0;
+        while ($current_pt <= $total_size) {
+            
+            $contents = substr($object_data,$current_pt,$chunck_size);
+            
+            $total_read += strlen($contents);
+            
+            ErrorMessage::Marker("chunck_size = $chunck_size  ... total_read = $total_read   .... current_pt = $current_pt");
+            
+            
+            $data = util::dbq(base64_encode($contents),true);
+
+            $sql  = "insert into ".self::FilesDataTable()."  (file_unique_id,partnum,totalparts,data) values (".util::dbq($file_unique_id,true).",{$partnum},{$totalparts},{$data})";
+            
+            $insertResult = DBO::Insert($sql);
+            if ($insertResult instanceof ErrorMessage) 
+            {    
+                self::RemoveFile($file_unique_id); // remove bits of file that where inserted 
+                return ErrorMessage::Stacked (__METHOD__,__LINE__,$qe, true,$insertResult);
+            }
+            
+            $partnum++;
+            
+            $current_pt += $chunck_size;
+        }        
+
+        // write the description of the file 
+        $sql  = "insert into ".self::FilesTable()." (file_unique_id,mimetype,totalparts,total_filesize,description)  values ".
+                "(".util::dbq($file_unique_id,true).",".util::dbq($mimetype,true).",{$totalparts},".$total_size.",".util::dbq($description,true).")";
+
+                
+        $insertResult = DBO::Insert($sql);
+        if ($insertResult instanceof ErrorMessage)  
+            return ErrorMessage::Stacked (__METHOD__,__LINE__,"FAILED:: to insert object  in to DB {$src->ID()} with description {$description} at part {$partnum} using a comand line call", true,$insertResult);
+                
+        
+        return $file_unique_id;
+
+    }
+    
+    
+    
+    
+    /**
      *
      * @param type $theFilename Path to file to insert ito DB
      * @param type $description Some string that can be used to lookup the file later
@@ -113,6 +246,8 @@ class DatabaseFile extends Object
         if ($compressed) file::Delete($tmp); // remove compressed file
         
 
+        fclose($handle);
+        
         if ($compressed)
         {
             // write the description of the file - compressed file
@@ -132,6 +267,7 @@ class DatabaseFile extends Object
             return ErrorMessage::Stacked (__METHOD__,__LINE__,"FAILED:: to insert file (fileinfo) in to DB {$theFilename} with description {$description} at part {$partnum} using a comand line call", true,$insertResult);
                 
         
+            
         return $file_unique_id;
 
     }
