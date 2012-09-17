@@ -459,7 +459,13 @@ HEADER;
         }
 
     
-    public static function ModelledForAllGenusNamesOnly($minimum_modelled_count = 1) 
+    /**
+s     * Get list of Genus names where each species has the appropriate number of occurence records
+     * 
+     * @param type $minimum_modelled_count
+     * @return type 
+     */
+    public static function ModelledForAllGenusNamesOnly($minimum_modelled_count = 10) 
     {
         
         $sql = " select 

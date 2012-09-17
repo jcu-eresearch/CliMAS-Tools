@@ -681,7 +681,7 @@ class SpeciesData extends Object {
         return $result;
     }
     
-    public static function TaxaForClazzWithOccurances($clazz,$count = 0) 
+    public static function TaxaForClazzWithOccurances($clazz,$count = 10) 
     {
         
         $sql = "select 
@@ -711,7 +711,7 @@ class SpeciesData extends Object {
         return $result;
     }
 
-    public static function TaxaForFamilyWithOccurances($family,$count =0) 
+    public static function TaxaForFamilyWithOccurances($family,$count =10) 
     {
         
         $sql = "select 
@@ -743,7 +743,7 @@ class SpeciesData extends Object {
     
     
     
-    public static function TaxaForGenusWithOccurances($genus,$count =0) 
+    public static function TaxaForGenusWithOccurances($genus,$count =10) 
     {
         
         $sql = "select 
@@ -774,7 +774,7 @@ class SpeciesData extends Object {
     }
     
     
-    public static function TaxaWithOccurances($count = 1) 
+    public static function TaxaWithOccurances($count = 10) 
     {
         
         $sql = "select 
@@ -812,7 +812,7 @@ class SpeciesData extends Object {
         return $result;
     }
     
-    public static function TaxaWithOccurancesFiltered($count = 1,$fieldname = null,$fieldOperator = null,$fieldValue = null) 
+    public static function TaxaWithOccurancesFiltered($count = 10,$fieldname = null,$fieldOperator = null,$fieldValue = null) 
     {
         
         $extraWhere = "";
@@ -1092,6 +1092,8 @@ class SpeciesData extends Object {
 
         $folder = self::species_data_folder($species_id);        
         
+        if (is_null($user_model)) $user_model = '%';
+        
         
         if (is_null($output_filename)) 
         {
@@ -1120,7 +1122,14 @@ class SpeciesData extends Object {
         $times     = DatabaseClimate::GetTimesNamed($user_time);
         
 
-        // make this simpe combnation
+        unset($models['CURRENT']);
+        unset($models['ALL']);
+        
+        unset($scenarios['CURRENT']);
+        unset($scenarios['ALL']);
+        
+        
+        // make this combnation
         
         $files = array();
         foreach ($scenarios as $scenario) 
@@ -1129,24 +1138,35 @@ class SpeciesData extends Object {
                     $files["{$scenario}_{$model}_{$time}"] = "{$folder}{$scenario}_{$model}_{$time}.asc";
 
                     
+        ErrorMessage::Marker("Looking to Create Median from \n".print_r($files,true));
+                    
         $canCreateMedian = true;
                     
         // check files exist
-        foreach ($files as $combo => $filename) 
-            if (!file_exists($filename)) $canCreateMedian = false;
+        foreach ($files as $filename) 
+        {
+            
+            if (!file_exists($filename)) 
+            {
+                $canCreateMedian = false;
+                ErrorMessage::Marker("Looking to Create Median from can't find file {$filename}");
+            }
+        }
+            
                 
             
         if (!$canCreateMedian) return null; // not error just can't do it now
-            
-        if ($canCreateMedian)
-        {
-            $median_result = spatial_util::median($files,$output_filename);
-            if ($median_result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $median_result);
-            
-            if (!file_exists($output_filename))
-                return new ErrorMessage(__METHOD__, __LINE__, "After Median Output file does not exist [{$output_filename}]");
-            
-        }
+
+        
+        $median_result = spatial_util::median($files,$output_filename);
+        
+        if ($median_result instanceof ErrorMessage) 
+            return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $median_result);
+
+        
+        if (!file_exists($output_filename))
+            return new ErrorMessage(__METHOD__, __LINE__, "After Median Output file does not exist [{$output_filename}]");
+        
             
         return $output_filename;
         
@@ -1190,7 +1210,7 @@ class SpeciesData extends Object {
         $result = self::GenerateMedianFor(
                      $species_id
                     ,$scenario
-                    ,"%"
+                    ,null
                     ,$time
                     ,$overwrite_output
                     ,$output_filename
@@ -1205,8 +1225,7 @@ class SpeciesData extends Object {
     
 
     
-    public static function ScenarioTimeMediansForSpecies($species_id,$scenario = null,$time = null,$LoadASCII = true,$LoadQuickLooks = true)
-    {
+    public static function ScenarioTimeMediansForSpecies($species_id,$scenario = null,$time = null,$LoadASCII = true,$LoadQuickLooks = true)    {
         
         if (is_null($LoadASCII)) $LoadASCII = true;
         if (is_null($LoadQuickLooks)) $LoadQuickLooks = true;
@@ -1241,10 +1260,12 @@ class SpeciesData extends Object {
             {
                 ErrorMessage::Marker("Create Median for $scenario / $time  ");
                 
+                
                 $result = self::ScenarioTimeMedian($species_id,$scenario,$time,false);
                 
                 if ($result instanceof ErrorMessage) 
                     return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);                          
+                
                 
                 if (!is_null($result)) 
                 {

@@ -61,8 +61,6 @@ class SpeciesHotSpots extends SpeciesRichness {
         $this->UpdateStatus('Hotspot Calculation initialised');
         
         
-        
-        
         return true;
         
     }
@@ -71,19 +69,15 @@ class SpeciesHotSpots extends SpeciesRichness {
     private function cleanParameters() 
     {
         
-        if (!is_null($this->models()   )) $this->models   (array_util::Replace($this->models(),    "Models_",    ""));
         if (!is_null($this->scenarios())) $this->scenarios(array_util::Replace($this->scenarios(), "Scenarios_", ""));
         if (!is_null($this->times()    )) $this->times    (array_util::Replace($this->times(),     "Times_",     ""));
-        if (!is_null($this->bioclims() )) $this->bioclims (array_util::Replace($this->bioclims(),  "Bioclims_",  ""));
 
         if (!is_null($this->taxa()))    $this->taxa(     array_util::Replace($this->taxa(),      "Taxa_",      ""));
         if (!is_null($this->family()))  $this->family(   array_util::Replace($this->family(),    "Family_",    ""));
         if (!is_null($this->genus()))   $this->genus(    array_util::Replace($this->genus(),     "Genus_",     ""));
-        //if (!is_null($this->species())) $this->species(  array_util::Replace($this->species(),   "Species_",   ""));
-        
+        if (!is_null($this->species())) $this->species(  array_util::Replace($this->species(),   "Species_",   ""));
         
     }
-
 
     
     /**
@@ -98,35 +92,65 @@ class SpeciesHotSpots extends SpeciesRichness {
     public function Execute()
     {
         
+        $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_RUNNING);
+        $this->UpdateStatus("Richness Computation Ready");
         
-        $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);        
-        $this->UpdateStatus("Hotspot Computation Ready");
+        ErrorMessage::Marker("After Richness Computation Ready " .print_r($this->times(),true));
+        
+        parent::Execute();
+        
+        
+        // create metadata text for this process / job
+        
+        $this->createMetadata();
+        $this->packageData();
+        
+        
+        $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
+        $this->UpdateStatus("Richness Computation Completed");
 
+    }
+    
+    
+    /**
+     *Create metadata for this jhob and write toi a file that will be package later
+     *  
+     */
+    private function createMetadata()
+    {
         
-        if (is_array($this->genus()))
-        {
-            $g = array();
-            array_util::CopyTo($this->genus(), $g);
+        $file_template =
+                configuration::ResourcesFolder().'metadata/RichnessHeader.txt'.
+                configuration::ResourcesFolder().'metadata/RichnessBody.txt'.
+                configuration::ResourcesFolder().'metadata/RichnessFooter.txt'
+                ;
+        
+        //{DateTime}
+        //{UserTaxaList}
+        //{UserFamilyList}
+        //{UserGenusList}
+        //{UserSpeciesList}
+        //{ComputedSpeciesList}
+        
+        
+        
+        
+        // string replacement of {VariableName} strings from src array
+        
+        
+    }
+    
 
-            foreach ($g as $genus) 
-            {
-                $this->genus($genus);
-                parent::Execute();    
-                
-                
-                
-            }
-            
-        }
-        else
-        {
-            parent::Execute();
-        }
+    /**
+     * Package data into zip file for download
+     *  
+     */
+    private function packageData()
+    {
+     
         
         
-        $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
-        $this->UpdateStatus("Hotspot Computation Completed");
-
+        
     }
     
     
@@ -176,18 +200,6 @@ class SpeciesHotSpots extends SpeciesRichness {
         return $this->setProperty(func_get_arg(0));
     }
 
-    public function QsubCollectionID() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    
-    
-    public function AttachedCommand() 
-    {
-        return $this;
-    }
     
     
     public function ui_element_id()

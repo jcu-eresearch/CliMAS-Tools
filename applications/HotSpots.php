@@ -10,7 +10,7 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Hotspots</title>
+    <title>Richness</title>
     <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery.pulse.min.js"></script>
@@ -37,6 +37,8 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSource');
         
         echo htmlutil::AsJavaScriptSimpleVariable($cmd,'cmd');
+        
+        echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web(),'Maxent_Species_Data_folder_web');
         
         
      ?>
@@ -66,7 +68,6 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
             <li id="tab_label_2"><a href="#tabs-2">Climate Models</a></li>
             <li id="tab_label_3"><a href="#tabs-3">Emission Scenarios</a></li>
             <li id="tab_label_4"><a href="#tabs-4">Years</a></li>
-            <li id="tab_label_5"><a href="#tabs-5">Bioclimatic Layers</a></li>
             <li id="tab_label_6"><a href="#tabs-6">Data Calculation</a></li>
         </ul>
         <div id="tabs-1">
@@ -78,7 +79,7 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
                         <input type="radio" id="InputTypeTaxa"     name="InputTypes" /><label for="InputTypeTaxa">Taxa</label>
                         <input type="radio" id="InputTypeFamily"   name="InputTypes" /><label for="InputTypeFamily">Family</label>
                         <input type="radio" id="InputTypeGenus"    name="InputTypes" /><label for="InputTypeGenus">Genus</label>
-                        <!--  <input type="radio" id="InputTypeSpecies"  name="InputTypes" /><label for="InputTypeSpecies">Species</label> -->
+                        <input type="radio" id="InputTypeSpecies"  name="InputTypes" /><label for="InputTypeSpecies">Species</label>
                         <!--  <input type="radio" id="InputTypeLocation" name="InputTypes" /><label for="InputTypeLocation">Location</label> -->
                         <input type="input" id="InputText"         name="InputText" class="ui-corner-all">
                     </div>
@@ -171,24 +172,6 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
             
         </div>
 
-        <div id="tabs-5">
-            <div class="SelectionToolBar ui-widget-header ui-corner-all">
-                <button id="SelectAllBioclims"  >select all</button>
-                <button id="SelectNoneBioclims" >deselect all</button>
-                <button id="SelectDefaultBioclims" >Defaults</button>
-            </div>       
-            <ul id="BioclimsSelection" class="selectable" >
-            <?php 
-                $liFormat = '<li id="Bioclims_{DataName}" class="ui-widget-content ui-corner-all " ><h4>{DataName}</h4><p>{Description}</p> </li>'; 
-                echo DatabaseClimate::GetBioclimDescriptions()->asFormattedString($liFormat); 
-            ?>
-            </ul>
-            <ul class="references">
-                <li>references:</li>
-                <?php echo DatabaseClimate::GetBioclimDescriptions()->asFormattedString('<li><a targte="_ref" href="{URI}">{DataName}</a></li>'); ?>
-            </ul>
-            
-        </div>
 
         <div id="tabs-6">
             
@@ -207,11 +190,10 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
                     <div class="Value ui-widget-content ui-corner-all">
                         <h3 id="CountGenus" class="Count">0</h3><h4>Genus</h4>    
                     </div>
-                    <!--
                     <div class="Value ui-widget-content ui-corner-all">
                         <h3 id="CountSpecies" class="Count" >0</h3><h4>Species</h4>                    
                     </div>
-                    -->
+                    
                 </div>       
 
                 <div id="CountPanel2" class="CountPanel ui-widget-content ui-corner-all">
@@ -222,15 +204,6 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
                     <div class="Value ui-widget-content ui-corner-all">
                         <h3 id="CountTimes" >0</h3><h4>Times</h4>    
                     </div>
-                    <div class="Value ui-widget-content ui-corner-all" style="margin-top: 40px;">
-                        <h3 id="CountBioclims" >0</h3><h4>Bioclim Layers</h4>    
-                    </div>
-                    <div class="Value ui-widget-content ui-corner-all">
-                        <h3 id="CountModels" >0</h3><h4>Climate Models</h4>    
-                    </div>
-                    <div class="Value ui-widget-content ui-corner-all">
-                        <h3 id="CountScenarios" >0</h3><h4>Scenarios</h4>    
-                    </div>
 
                 </div>       
 
@@ -239,8 +212,14 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
                     <div class="GrandTotal ui-widget-header ui-corner-all">
                         <h1 id="CountGrandTotal" >0</h1><h2 >Datasets to<br>Examine</h2>    
                     </div>
-
+                    
+                    <br>
+                    <i>enter a name for your job here</i>
+                    <input class="ui-widget-content ui-corner-all" name="job_description" id="job_description" size="20" value="job description" style="width: 100%;">
+                    <br>
+                    
                     <button id="CreateProcess">Submit for Calculation</button>
+                    <div> </div>
                 </div>    
                 
             </div>

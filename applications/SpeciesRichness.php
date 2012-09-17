@@ -24,32 +24,16 @@ if (is_null($genus) &&
     echo "      --time=yyyy,yyyy,yyyy          default: ALL    all times will be processed\n";
     echo "      --minimum_occurance=nnn        default: 10     Minimum number of occurences\n";
     echo "\n";
-    echo "      --LoadAscii=[true|false]       default: false  Load ASCII grid into database\n";
-    echo "      --LoadQuickLook=[true|false]   default: true   Load QuickLook data into database\n";
-    echo "      --Recalculate=[true|false]     default: false  Remove current files and recalculate Species Richness\n";
-    echo "                                                     (this may be usefull when more species have been added and moddelled)\n";
-    echo "      --DisplaySummary=[true|false]  default: true    Display summary of Missing / Invalid and Completed files \n";
-    echo "\n";
     echo "      --ValidateExistenceOnly=[true|false]\n ";
     echo "                                     default: false  When validating file only check for existsence \n";
-    echo "                                            true   otherwise check statistics asw ell\n";
+    echo "                                              true   otherwise check statistics asw ell\n";
     echo "\n";
-    exit(1);
+    exit(0);
 }
 
 $minimum_occurance  = util::CommandScriptsFoldermandLineOptionValue($argv, 'minimum_occurance', 10);
 
 
-
-$SR = FinderFactory::Find("SpeciesRichness");
-if ($SR instanceof ErrorMessage)
-{
-    echo $SR;
-    exit(1);
-    
-}
-
-$SR instanceof SpeciesRichness;
 
 if (!is_null($clazz) && $clazz == "LIST")  
 {
@@ -82,17 +66,6 @@ if (!is_null($genus)  && $genus  == "LIST")
 }
 
 
-$model    = util::CommandScriptsFoldermandLineOptionValue($argv, 'model', null);
-$scenario = util::CommandScriptsFoldermandLineOptionValue($argv, 'scenario', null);
-$time     = util::CommandScriptsFoldermandLineOptionValue($argv, 'time', null);
-
-
-$LoadAscii     = util::CommandScriptsFoldermandLineOptionValue($argv, 'LoadAscii', null);
-$LoadQuickLook = util::CommandScriptsFoldermandLineOptionValue($argv, 'LoadQuickLook', null);
-$Recalculate   = util::CommandScriptsFoldermandLineOptionValue($argv, 'Recalculate', null);
-$ValidateExistenceOnly = util::CommandScriptsFoldermandLineOptionValue($argv, 'ValidateExistenceOnly', false);
-$DisplaySummary = util::CommandScriptsFoldermandLineOptionValue($argv, 'DisplaySummary', true);
-
 
 if (!is_null($clazz)) 
 {
@@ -103,35 +76,10 @@ if (!is_null($clazz))
         ErrorMessage::Marker("Valid Clazz");
         print_r($list);
         echo "\n";
-        exit(1);
+        exit(0);
     }
     
-    
-    $SR->initialise();
-    $SR->clazz($clazz);
-    $SR->scenario($scenario);
-    $SR->model($model);
-    $SR->time($time);
-    $SR->LoadAscii($LoadAscii);
-    $SR->LoadQuickLook($LoadQuickLook);
-    $SR->Recalculate($Recalculate);
-    $SR->MinimumOccurance($minimum_occurance);
-    $SR->ValidateExistenceOnly($ValidateExistenceOnly);
-    $SR->DisplaySummary($DisplaySummary);
-    $result = $SR->Execute();
-    
-    if ($result instanceof ErrorMessage)
-    {
-        ErrorMessage::Marker("{$clazz} Incomplete and cannot be processed at this time \n".$result);
-        
-        print_r($SR->CombinationsMissing());
-
-        exit(1);
-    }
-    
-    
-    exit(0);
-}
+}    
 
 if (!is_null($family)) 
 {
@@ -142,35 +90,11 @@ if (!is_null($family))
         ErrorMessage::Marker("Valid families");
         print_r($list);
         echo "\n";
-        exit(1);
+        exit(0);
     }
-    
-    $SR->initialise();
-    $SR->family($family);
-    $SR->scenario($scenario);
-    $SR->model($model);
-    $SR->time($time);
-    $SR->LoadAscii($LoadAscii);
-    $SR->LoadQuickLook($LoadQuickLook);
-    $SR->Recalculate($Recalculate);
-    $SR->MinimumOccurance($minimum_occurance);
-    $SR->ValidateExistenceOnly($ValidateExistenceOnly);
-    $SR->DisplaySummary($DisplaySummary);
-    $result = $SR->Execute();
-    
-    if ($result instanceof ErrorMessage)
-    {
-        ErrorMessage::Marker("{$family} Incomplete and cannot be processed at this time \n".$result);
-                
-        print_r($SR->CombinationsMissing());
-
-        exit(1);
-    }
-
-    
-    exit(0);
     
 }
+
 
 if (!is_null($genus)) 
 {
@@ -181,91 +105,48 @@ if (!is_null($genus))
         ErrorMessage::Marker("Valid genus");
         print_r($list);
         echo "\n";
-        exit(1);
+        exit(0);
     }
-    
-    $SR->initialise();
-    $SR->genus($genus);
-    $SR->scenario($scenario);
-    $SR->model($model);
-    $SR->time($time);    
-    $SR->LoadAscii($LoadAscii);
-    $SR->LoadQuickLook($LoadQuickLook);
-    $SR->Recalculate($Recalculate);
-    $SR->MinimumOccurance($minimum_occurance);
-    $SR->ValidateExistenceOnly($ValidateExistenceOnly);
-    $SR->DisplaySummary($DisplaySummary);
-    $result = $SR->Execute();
-    
-    if ($result instanceof ErrorMessage)
-    {
-        ErrorMessage::Marker("{$genus} Incomplete and cannot be processed at this time \n".$result);
-        
-        // this holds MaxentServerBuld parametesr to restore /build missing files 
-                
-        if ($SR->SpeciesMissingCount() > 0 );
-        
-        queueToCreate($SR->CombinationsMissing());
-        
-        print_r($SR->CombinationsMissing());
+}
 
-        
-        exit(1);
-    }
 
+$model    = util::CommandScriptsFoldermandLineOptionValue($argv, 'model', null);
+$scenario = util::CommandScriptsFoldermandLineOptionValue($argv, 'scenario', null);
+$time     = util::CommandScriptsFoldermandLineOptionValue($argv, 'time', null);
+
+
+$ValidateExistenceOnly = util::CommandScriptsFoldermandLineOptionValue($argv, 'ValidateExistenceOnly', false);
+
+$SR = FinderFactory::Find("SpeciesRichness");
+if ($SR instanceof ErrorMessage)
+{
+    echo $SR;
+    exit(0);
     
+}
+
+$SR instanceof SpeciesRichness;
+
+
+$SR->initialise();
+$SR->clazz($clazz);
+$SR->family($family);
+$SR->genus($genus);
+$SR->scenario($scenario);
+$SR->model($model);
+$SR->time($time);
+$SR->MinimumOccurance($minimum_occurance);
+$SR->ValidateExistenceOnly($ValidateExistenceOnly);
+$result = $SR->Execute();
+
+if ($result instanceof ErrorMessage)
+{
+    ErrorMessage::Marker("{$clazz} Incomplete and cannot be processed at this time \n".$result);
+
+    print_r($SR->CombinationsMissing());
+
     exit(0);
 }
-
-
-function queueToCreate($src)
-{
-    
-    $cmd  = array();
-    
-    $cmd[] = "cd ".configuration::CommandScriptsFolder();
-
-    foreach ($src as $parameters) 
-    {
-        
-        $uniq = uniqid();
-        
-        $app = configuration::ApplicationFolder()."applications/MaxentServerBuild.php";
-        
-        $cmd[] = "php {$app} {$parameters} --Project1975=false --Project1990=false --JobPrefix={$uniq}_";
-    }
-    
-
-    $script_name = file::random_filename(configuration::CommandScriptsFolder()).".sh";    
-    $script_name = str_replace("//", "/", $script_name);
-    
-    ErrorMessage::Marker("Build missing using {$script_name}");
-
-    
-    $script  = "#!/bin/tcsh\n";
-    $script .= implode("\n", $cmd);
-    $script .= "\n";
-
-    file_put_contents($script_name,$script);
-    
-    if (!file_exists($script_name))
-    {
-        ErrorMessage::Marker("Failed to write to rebuild script {$script_name}");
-        return;
-    }
-
-    exec('chmod u+x '.$script_name);
-    
-    
-    ErrorMessage::Marker("Executed  {$script_name} on GRID ");
-    exec("qsub '$script_name'");
-    
-    // ErrorMessage::Marker($script);
-    
-    
-}
-
-
 
 
 ?>

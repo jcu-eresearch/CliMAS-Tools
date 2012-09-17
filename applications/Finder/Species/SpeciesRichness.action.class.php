@@ -10,16 +10,12 @@ class SpeciesRichness extends CommandAction {
     public function __construct() {
         parent::__construct();
         
-        $this->scenario(null);
-        $this->model('ALL');
-        $this->time(null);
+        $this->Error(array());
+        $this->AsciiGrids(array());
      
-        $this->LoadAscii(false);
-        $this->LoadQuickLook(true);
-        $this->Recalculate(false);
         $this->ValidateExistenceOnly(false);
-        
         $this->MinimumOccurance(10);
+        $this->Result('');
         
     }
 
@@ -44,39 +40,24 @@ class SpeciesRichness extends CommandAction {
      */
     public function Execute()
     {
-        
-        $this->Error(array());
-        $this->Missing(array());
-        
-        $this->AsciiGrids(array());
-        $this->QuickLooks(array());
-        
-        $this->ASCIIGRID_FileUniqueIDs(array());
-        $this->QuickLook_FileUniqueIDs(array());
 
-        $this->Result("");
+        $this->UpdateStatus("Started richness calculations");
         
-        $this->ProgressPercent(1);
+        $this->ProgressPercent(0);
+        
         
         $this->getParameters();
         
-        $this->UpdateStatus("Parameters set");
+        $this->getSpeciesList();
         
-        $this->SpeciesList($this->getSpeciesList());
+        $this->getThresholds();
         
-        $this->ProgressPercent(5);
         
-        $this->UpdateStatus("Species Count: " + count($this->SpeciesList()));
+        $this->calculateRichness();  
+
         
-        $this->getThresholds(array_keys($this->SpeciesList()));
+        $this->getResults();
         
-        $toProcess = $this->getValidMedians();
-        
-        $this->deleteForRecalculate($toProcess); // delete richness entries and files - only if requested
-        
-        $this->calculateRichness($toProcess);  //updates    $this->Missing();  $this->Invalid();  $this->Error();
-        
-        $this->returnResults();
         $this->ProgressPercent(100);
         
         $this->UpdateStatus("Richness Calculations complete");
@@ -84,29 +65,30 @@ class SpeciesRichness extends CommandAction {
         
     }
 
-    private function returnResults()
+    private function outputFolder()
     {
         
-        $lines = array();
-        foreach ($this->QuickLook_FileUniqueIDs() as $key => $value) 
-        {
-            $lines[] = "{$key}={$value}";
-        }
+        $result = configuration::Maxent_Species_Data_folder().
+                  'richness'.
+                  configuration::osPathDelimiter().
+                  $this->ID().
+                  configuration::osPathDelimiter()
+                  ;
+     
+        file::mkdir_safe($result);
         
-        $str = implode("~", $lines);
-        
-        $this->Result($str);
-        
+        return $result;
         
     }
     
     
-    private function getThresholds($species_ids)
+    
+    private function getThresholds()
     {
         
         $result = array();
                          
-        foreach ($species_ids as $species_id) 
+        foreach ($this->SpeciesList() as $species_id) 
         {
             
             $threshold_result = DatabaseMaxent::GetMaxentThresholdForSpecies($species_id);
@@ -115,9 +97,9 @@ class SpeciesRichness extends CommandAction {
                 $this->addError($threshold_result);
                 continue;
             }
-                
-            if (!is_null($threshold_result))
-                $result[$species_id] = $threshold_result;
+            
+            // record threshold for the species_id
+            if (!is_null($threshold_result) && is_numeric($threshold_result)) $result[$species_id] = $threshold_result;
             
         }
     
@@ -130,128 +112,49 @@ class SpeciesRichness extends CommandAction {
 
     
     
-    private function calculateRichness($toProcess)
+    private function calculateRichness()
     {
         
-        $model = "ALL";
+        $toProcess = $this->getValidMedians();        
     
-        foreach ($toProcess as $scenario => $times) 
+        foreach ($this->scenarios() as $scenario) 
         {
             
-            foreach ($times as $time => $species_files) 
+            foreach ($this->times() as $time ) 
             {
                 
-                if (is_null($species_files))
+                $combination = "{$scenario}_{$time}";
+                
+                $species_files = $toProcess[$combination];
+                
+                ErrorMessage::Marker("combination = {$combination}  species_files = ".count($species_files)." \n".print_r($species_files,true));
+                
+                if (is_null($species_files) || count($species_files) == 0)
                 {
-                    $this->addAsciiGridCombination($scenario,$model,$time,null);  // add empty combination
-                }
-                else
-                {
-                    
-                    $single_richness_filename = $this->process_richness_for_set_of_species_median_files
-                                (
-                                    $scenario, 
-                                    $model, 
-                                    $time, 
-                                    $species_files
-                                );
-
-
-                    $this->addAsciiGridResult($single_richness_filename,$scenario,$model,$time);
-                    
+                    $this->addAsciiGridResult($combination);  // add empty combination
+                    continue;
                 }
 
+                // process files into a mrichness
+                $this->process_richness_for_set_of_species_median_files($combination,$species_files);
+                    
+                $this->ProgressPercentIncrement();
                 
             }
             
-            $this->ProgressPercentIncrement();
-            $this->processRichnessQuicklooks($scenario); // updates  $this->Error();
-            $this->ProgressPercentIncrement();
-            
             
         }
+
+        
+        //  $toProcess[scenario][time] => array( Species medians) 
+        
+        $this->processRichnessQuicklooks(); //  create quick looks for all files for this richness calc.
+        
+        $this->ProgressPercentIncrement();
         
         
     }
     
-    
-    /**
-     * Added the acsi grid that was create into a memory array
-     * 
-     * @param ErrorMessage $gridFilename
-     * @param type $scenario
-     * @param type $model
-     * @param type $time
-     * @return null 
-     */
-    private function addAsciiGridResult($gridFilename,$scenario,$model,$time)
-    {
-
-        if ($gridFilename instanceof ErrorMessage)
-        {
-            $this->UpdateStatus("FAILED to create richness for {$this->genus()} {$scenario} {$model} {$time}");
-            $this->addError($gridFilename);
-            return null;
-        }
-        
-        // we could not create richness
-        if (is_null($gridFilename) || !file_exists($gridFilename)) 
-        {
-            $this->UpdateStatus("Error creating richness for {$this->genus()} {$scenario} {$model} {$time}");
-            $err = $this->AsciiError();
-            $err["{$scenario}_{$model}_{$time}"] = new ErrorMessage(__METHOD__, __LINE__,"Error creating richness for {$this->genus()} {$scenario} {$model} {$time}", true) ;
-            $this->AsciiError($err);
-            return null;
-        }
-        
-        $this->UpdateStatus("Created richness for {$this->genus()} {$scenario} {$model} {$time}");
-        
-        $this->addAsciiGridCombination($scenario,$model,$time,$gridFilename);
-        
-        
-    }
-
-    private function addAsciiGridCombination($scenario,$model,$time,$gridFilename)
-    {
-        $ag = $this->AsciiGrids();
-        $ag["{$scenario}_{$model}_{$time}"] = $gridFilename;
-        $this->AsciiGrids($ag);
-        
-    }
-
-
-    private function addASCIIGRID_FileUniqueID($scenario,$model,$time,$file_unique_id)
-    {
-        $ag = $this->ASCIIGRID_FileUniqueIDs();
-        $ag["{$scenario}_{$model}_{$time}"] = $file_unique_id;
-        $this->ASCIIGRID_FileUniqueIDs($ag);
-    }
-
-    private function addQuickLook_FileUniqueID($scenario,$model,$time,$file_unique_id)
-    {
-        $ag = $this->QuickLook_FileUniqueIDs();
-        $ag["{$scenario}_{$model}_{$time}"] = $file_unique_id;
-        $this->QuickLook_FileUniqueIDs($ag);
-    }
-    
-
-    
-
-    private function addError($src)
-    {
-        
-        $err = $this->Error();
-        
-        if (is_array($src))
-            foreach ($src as $value) 
-                $err[] = $value;    
-        else
-            $err[] = $src;    
-        
-        
-        $this->Error($err);
-        
-    }
     
 
     
@@ -260,435 +163,236 @@ class SpeciesRichness extends CommandAction {
      * All quicklooks for a single scenario  have to have the same number of Species in the min max range
      * ie all the times slices 
      * @param type $scenario
-     * @param type $model
      * @param type $time
      * @param type $scenario_time_richness_filename 
      */
-    private function processRichnessQuicklooks($scenario_requested)
+    private function processRichnessQuicklooks()
     {
         
-        $this->UpdateStatus("Create QuickLooks for {$scenario_requested} ");
+        $this->UpdateStatus("Create QuickLooks");
         
-        $model  = "ALL";
+        $richness_min = null;
+        $richness_max = null;
         
-        $scenario_files = $this->getScenarioRichnessFilenames($scenario_requested);
+        $this->getStatisticsForAllRichnessFiles(&$richness_min,&$richness_max);
         
-        
-        $scenario_min = null;
-        $scenario_max = null;
-        $this->getStatisticsForScenario($scenario_requested,&$scenario_min,&$scenario_max);
-        if (is_null($scenario_min) || is_null($scenario_max))
+        if (is_null($richness_min) || is_null($richness_max))
         {
-            $scenario_min = null;
-            $scenario_max = null;
-            $this->addError(new ErrorMessage(__METHOD__, __LINE__, "Unable to get valid min and max to create quick look"));            
-        }
-
-        
-        
-        foreach ($scenario_files as $combination => $richness_asciigrid_filename)
-        {
+            ErrorMessage::Marker("Unable to get valid min and max to create quick looks richness_min = $richness_min   richness_max = $richness_max");
             
-            list($scenario,$model,$time) = explode("_",$combination);
-            
-            $this->createQuicklookForAscii($richness_asciigrid_filename,$scenario, $model, $time,$scenario_min,$scenario_max,true);
-            
-
-        }
-
-        
-    }
-    
-    private function createQuicklookForAscii($richness_asciigrid_filename,$scenario, $model, $time,$scenario_min,$scenario_max,$reuse = false) 
-    {
-        
-        if (!file_exists($richness_asciigrid_filename)) 
-        {
-            $this->addQuickError(new ErrorMessage(__METHOD__, __LINE__, "Can't find richness_asciigrid_filename {$richness_asciigrid_filename}"));
+            $this->addError(new ErrorMessage(__METHOD__, __LINE__, "Unable to get valid min and max to create quick looks richness_min = $richness_min   richness_max = $richness_max"));
+            $richness_min = null;
+            $richness_max = null;
             return null;
         }
 
-
-        $richness_quicklook_filename = str_replace(".asc", ".png", $richness_asciigrid_filename);
         
-        if (!file_exists($richness_quicklook_filename))
+        foreach ($this->AsciiGrids() as $combination => $richness_asciigrid_filename)
         {
-            $this->UpdateStatus("Create QuickLook Image for ".basename($richness_asciigrid_filename));    
+            ErrorMessage::Marker("processRichnessQuicklooks combination = $combination   richness_asciigrid_filename = $richness_asciigrid_filename");
             
-            $richness_quicklook_filename = GenusData::CreateImage($this->genus(), $richness_asciigrid_filename,$scenario_min,$scenario_max,$richness_quicklook_filename); // create quickLook from ascii
-            if ($richness_quicklook_filename instanceof ErrorMessage)
+            $this->createQuicklookForAscii($richness_asciigrid_filename,$combination,$richness_min,$richness_max,true);
+        }
+
+        
+    }
+    
+    private function createQuicklookForAscii($richness_asciigrid_filename,$combination,$richness_min,$richness_max,$reuse = false) 
+    {
+        
+        $richness_asciigrid_pathname = $this->outputFolder().basename($richness_asciigrid_filename);
+
+        ErrorMessage::Marker("createQuicklookForAscii combination = $combination   richness_asciigrid_pathname = $richness_asciigrid_pathname");
+        
+        
+        if (!file_exists($richness_asciigrid_pathname)) 
+        {
+            $this->addError(new ErrorMessage(__METHOD__, __LINE__, "Can't find richness_asciigrid_filename {$richness_asciigrid_pathname}"));
+            return null;
+        }
+        
+
+        $richness_quicklook_pathname = str_replace(".asc", ".png", $richness_asciigrid_pathname);
+        
+        // remove old version of file.
+        if (file_exists($richness_quicklook_pathname) && $reuse == false) file::Delete($richness_quicklook_pathname);
+        
+        
+        if (!file_exists($richness_quicklook_pathname))
+        {
+            $this->UpdateStatus("Create QuickLook Image for {$combination}");    
+            
+            
+            // #### HERE WE NEED TO CREATE A CROSS SPECIES / GENUS / FAMILY / TAX RICHNESS
+            
+            $richness_quicklook_pathname = $this->CreateQuickLookImage(
+                                     $this->job_description()
+                                    ,$richness_asciigrid_pathname
+                                    ,$richness_min
+                                    ,$richness_max
+                                    ,$richness_quicklook_pathname
+                                    ); // create quickLook from ascii
+            
+            
+            
+            if ($richness_quicklook_pathname instanceof ErrorMessage)
             {
-                $this->addQuickError($richness_quicklook_filename);
+                $this->addError($richness_quicklook_pathname);
                 return null;
             }
             
-            
-            $this->UpdateStatus("Created richness QuickLook for {$this->genus()} {$scenario} {$model} {$time}");
+            $this->UpdateStatus("Created richness QuickLook for {$this->job_description()} {$combination}");
         }        
-        else
+
+        
+        $this->addQuickLook($combination,$richness_quicklook_pathname); // keep track of file that was created
+
+        
+        
+    }
+    
+    
+    /**
+     * get the min and max across an array of ascii grids
+     * 
+     * @param type $richness_min
+     * @param type $richness_max
+     * @return type 
+     */
+    private function getStatisticsForAllRichnessFiles(&$richness_min,&$richness_max)
+    {
+        
+        ErrorMessage::Marker("getStatisticsForAllRichnessFiles AsciiGrids()");
+        
+        print_r($this->AsciiGrids());
+        
+        $full_paths = array();
+        foreach ($this->AsciiGrids() as $combination => $filename) 
         {
-            $this->UpdateStatus("Richness QuickLook for ALREADY EXISTS for {$this->genus()} {$scenario} {$model} {$time}");
+            $full_paths[$combination] = $this->outputFolder().basename($filename);
         }
         
-        $this->addQuickLook("{$scenario}_{$model}_{$time}",$richness_quicklook_filename); // keep track of file that was created
+        ErrorMessage::Marker("getStatisticsForAllRichnessFiles Full Paths");
+        
+        print_r($full_paths);
         
         
-        if ($this->LoadQuickLook())  // if we want to load data to database then 
+        $richness_stats = spatial_util::ArrayRasterStatistics($full_paths);
+
+        
+        ErrorMessage::Marker("getStatisticsForAllRichnessFiles richness_stats");
+        print_r($richness_stats);
+        
+        
+        if (is_null($richness_stats) || $richness_stats instanceof ErrorException || count($richness_stats) == 0)
         {
-         
-            $quick_look_file_id = null;
-            
-            if ($reuse)
-            {
-
-                $data = GenusData::GetProjectedFiles($this->genus(), 'QUICK_LOOK', $scenario, $model, $time);
-                if ($data instanceof ErrorMessage) 
-                {
-                    $this->addError($data);
-                }
-                else
-                {
-                    if (count($data) > 0 )
-                    {
-                        $quick_look_file_id = util::first_key($data);
-                        $this->UpdateStatus("QuickLook read from DB  for $scenario, $model, $time   {$quick_look_file_id}");
-                    }
-                }
-                
-                
-            }
-
-            
-            
-            if (is_null($quick_look_file_id))
-            {
-                
-                $dbresult = GenusData::InsertProjectedFile($this->genus(),$richness_quicklook_filename,'QUICK_LOOK',$scenario, $model, $time,true);
-                if ($dbresult instanceof ErrorMessage)
-                {
-                    $this->addQuickError($dbresult);
-                    return null;
-                }
-
-                $quick_look_file_id = $dbresult;
-                
-            }
-
-            
-            if (!is_null($quick_look_file_id))
-                $this->addQuickLook_FileUniqueID($scenario, $model, $time, $quick_look_file_id);
-            
-            
-        }
-        
-        
-        
-        
-    }
-    
-    private function addQuickLook($combination, $src)
-    {
-        $ql = $this->QuickLooks();
-        $ql[$combination] = $src;
-        $this->QuickLooks($ql);
-        
-    }
-    
-    
-    
-    private function addQuickError($src)
-    {
-        $err = $this->QuickError();
-        $err[] = $src;
-        $this->QuickError($err);
-        
-    }
-    
-    
-    private function getScenarioRichnessFilenames($scenario_requested)
-    {
-        
-        
-        $ag = $this->AsciiGrids();   // key =>   "{$scenario}_{$model}_{$time}"  value => acsigid filename
-        
-        $scenario_files = array();
-        foreach ($ag as $combination => $richness_filename) 
-        {
-            
-            list($scenario,$model,$time) = explode("_",$combination);
-            
-            if ($scenario == $scenario_requested)
-                if (!is_null($richness_filename))
-                    $scenario_files[$combination] = $richness_filename;
-                
-        }
-        
-        return $scenario_files;
-
-        
-    }
-    
-    
-    private function getStatisticsForScenario($scenario_requested,&$scenario_min,&$scenario_max)
-    {
-        
-        $scenario_files = $this->getScenarioRichnessFilenames($scenario_requested);
-        
-        $scenario_stats = spatial_util::ArrayRasterStatistics($scenario_files);
-
-        if (is_null($scenario_stats))
-        {
-            $scenario_min = null;
-            $scenario_max = null;
+            $richness_min = null;
+            $richness_max = null;
+            ErrorMessage::Marker("getStatisticsForAllRichnessFiles richness_stats error \n".print_r($richness_stats,true));
             return;
         }            
         
         
-        $mins = matrix::Column($scenario_stats, spatial_util::$STAT_MINIMUM);
-        $maxs = matrix::Column($scenario_stats, spatial_util::$STAT_MAXIMUM);
+        
+        $mins = matrix::Column($richness_stats, spatial_util::$STAT_MINIMUM);
+        $maxs = matrix::Column($richness_stats, spatial_util::$STAT_MAXIMUM);
         
         
         if (is_null($mins) || is_null($maxs) )
         {
-            $scenario_min = null;
-            $scenario_max = null;
+            $richness_min = null;
+            $richness_max = null;
+            ErrorMessage::Marker("getStatisticsForAllRichnessFiles richness_stats error BOTH min and max are null ");
             return;
         }
         
         if (count($mins) == 0 || count($maxs) == 0)
         {
-            $scenario_min = null;
-            $scenario_max = null;
+            $richness_min = null;
+            $richness_max = null;
+            ErrorMessage::Marker("getStatisticsForAllRichnessFiles richness_stats error BOTH min and max count 0");
             return;
         }
 
         
         if (count($mins) == 1 )
-        {
-            $scenario_min = util::first_element($mins);
-        }
+            $richness_min = util::first_element($mins);
         else
-        {
-            $scenario_min = min( $mins);
-        }
+            $richness_min = min( $mins);
+        
+        
         
         if (count($maxs) == 1 )
-        {
-            $scenario_max = util::first_element($maxs);
-        }
+            $richness_max = util::first_element($maxs);
         else
-        {
-            $scenario_max = max( $maxs);
-        }
+            $richness_max = max( $maxs);
         
         
-        $this->UpdateStatus("scenario_min = $scenario_min");
-        $this->UpdateStatus("scenario_max = $scenario_max");
+        
+        $this->UpdateStatus("richness minimum = $richness_min  maximum = $richness_max");
+        
+        
+        ErrorMessage::Marker("getStatisticsForAllRichnessFiles richness_stats richness minimum = $richness_min  maximum = $richness_max");
         
         
     }
-    
 
     
     /**
+     * Create Species Richness for a Scenario / Time 
      * 
-     *  Create Species Richness for a Scenario / Time 
-     * 
-     * @param type $scenario
-     * @param type $model
-     * @param type $time
+     * @param type $combination
      * @param type $species_files
-     * @param type $error
-     * @param type $missing_files
-     * @param type $invalid_files
-     * @return null 
+     * @return string|null|\ErrorMessage 
      */
-    private function process_richness_for_set_of_species_median_files(
-                            $scenario, 
-                            $model, 
-                            $time, 
-                            $species_files
-                      )
+    private function process_richness_for_set_of_species_median_files($combination,$species_files)
     {
-    
+        
+        $this->UpdateStatus("start richness calculations {$combination}");
+        
+        $richness_filename = $this->outputFolder()."{$combination}.asc";  // here we need the full filename so we kknow where to put it
         
         
-        $this->UpdateStatus("start richness calculations {$scenario} {$model} {$time}");
-
-        $combination = "{$scenario}_{$model}_{$time}";
-        
-        
-        $scenario_time_richness_filename = GenusData::data_folder($this->genus())."{$combination}.asc";
-        
+        ErrorMessage::Marker("process_richness_for_set_of_species_median_files ... richness_filename = {$richness_filename}");
         
         // check to see if we already have the Richness file 
-        if (file_exists($scenario_time_richness_filename))
-        {
-            
-            $dbResult = $this->loadAsciiGrid($scenario, $model, $time,$scenario_time_richness_filename);                    
-            if ($dbResult instanceof ErrorMessage)
-            {
-                $this->AsciiError($dbResult);
-                return null;
-            }
-            
-            // no error so return filename that has be generated beofre
-            return $scenario_time_richness_filename;
-            
-        }
+        if (file_exists($richness_filename)) return $richness_filename; // doubtfull as this is per user 
         
 
+        $this->UpdateStatus("{$combination} Species Count = ".count($species_files));
 
-        $scenario_time_species_files = $species_files;
         
-
-        $this->UpdateStatus("{$combination} Species Count = ".count($scenario_time_species_files));
-
-
+        // ##################################################
         // ### HERE is where we do the RICHNESS CALC
-        $scenario_time_richness_filename = $this->CalculateSpeciesRichness($scenario_time_species_files,$scenario_time_richness_filename,null,&$error);         
-        if ($scenario_time_richness_filename instanceof ErrorMessage)
+        // ##################################################
+        
+        $richness_filename = $this->CalculateSpeciesRichness($species_files,$richness_filename,null);
+        
+        
+        if ($richness_filename instanceof ErrorMessage)
         {
-            $this->addError($scenario_time_richness_filename);
-            return null;
+            $this->addError($richness_filename);
+            $richness_filename = null;
         }
         
         
-        if (!file_exists($scenario_time_richness_filename))
+        if (!file_exists($richness_filename))
         {
-            $this->addError("After process richness file not found {$scenario_time_richness_filename}");
-            return null;
-        }
-        
-        
-        $loadResult = $this->loadAsciiGrid($scenario, $model, $time,$scenario_time_richness_filename,true);                    
-        if ($loadResult instanceof ErrorMessage)
-        {
-            $this->addError($loadResult);
-            return null;
+            $this->addError("After process richness file not found {$richness_filename}");
+            $richness_filename = null;
         }
 
-
-        return $scenario_time_richness_filename;
+        
+        $this->addAsciiGridResult($combination,$richness_filename);   // we can't return complete file name just the basename
+                                                                      // as we will be reading this froma  different system
 
 
     }
-    
-    
-    /**
-     * LOad the ascii grid create ino the Database
-     * 
-     * @param type $scenario
-     * @param type $model
-     * @param type $time
-     * @param type $scenario_time_richness_filename
-     * @return null|\ErrorMessage 
-     */
-    private function loadAsciiGrid($scenario, $model, $time,$scenario_time_richness_filename,$reuse = true)
-    {
-        
-        if (!$this->LoadAscii()) return;
-        
-        //$combination = "{$scenario}_{$model}_{$time}";
-        
-        $this->UpdateStatus("Load ASCII Grid ".basename($scenario_time_richness_filename));
-
-        
-        if ($reuse)
-        {
-            
-            $data = GenusData::GetProjectedFiles($this->genus(), 'ASCII_GRID', $scenario, $model, $time);
-            if ($data instanceof ErrorMessage) 
-            {
-                $this->addError($data);
-                return null;            
-            }
-            
-            if (count($data) > 0 )
-            {
-                $first = util::first_key($data);
-                return $first;
-            }
-                
-        }
-            
-        
-        $dbresult = GenusData::InsertProjectedFile($this->genus(),$scenario_time_richness_filename,'ASCII_GRID',$scenario, $model, $time,true);
-        if ($dbresult instanceof ErrorMessage) 
-        {
-            $this->addError($dbresult);
-            return null;            
-        }
-        
-        $this->addASCIIGRID_FileUniqueID($scenario, $model, $time, $dbresult);
-        
-        return $dbresult;
-        
-    }
-
-    
-    
-    private function deleteForRecalculate($toProcess)
-    {
-
-        if (!$this->Recalculate()) return;
-        
-        $model = "ALL";
-        
-        $this->ProgressPercentIncrement();
-        
-        foreach ($toProcess as $scenario => $times) 
-        {
-            
-            foreach ($times as $time => $species_files) 
-            {
-             
-                $combination = "{$scenario}_{$model}_{$time}";
-
-                $output_filename = GenusData::data_folder($this->genus())."{$combination}.asc";
-
-                $remove_result = GenusData::RemoveProjectedFiles($this->genus(), null, $scenario, $model, $time);
-                if (is_array($remove_result) ||  $remove_result instanceof ErrorMessage )
-                {
-                    $this->addError($remove_result);
-                    continue;
-                }
-
-                $asc = $output_filename;
-                $png = str_replace("asc", "png", $output_filename);
-                
-                if ($remove_result > 0 || file_exists($asc) || file_exists($png))
-                {
-                    file::Delete($asc);
-                    file::Delete($png);
-                    $this->UpdateStatus("remove for recalculate for {$combination}");    
-                }
-                
-            }
-            
-        }
-        
-        
-        $this->ProgressPercentIncrement();
-        
-    }
-    
     
 
 
     /**
      *
-     * $result structure 
-     * 
-     * [scenario1]
-     *         [time1]
-     *         [time2]
-     * 
-     * [scenario2]
-     *         [time1]
-     *         [time2]
-     * 
-     * 
      * @return type 
      */
     private function getValidMedians()
@@ -698,12 +402,14 @@ class SpeciesRichness extends CommandAction {
         
         foreach ($this->scenarios() as $scenario) 
         {
-            $this->ProgressPercentIncrement();
             
             foreach ($this->times() as $time)     
             {
                 $this->ProgressPercentIncrement();
-                $result[$scenario][$time] =  $this->validateMediansFor($scenario,$time);   // could be null                 
+                
+                ErrorMessage::Marker("Validate Medians for {$scenario}_{$time}");
+                
+                $result["{$scenario}_{$time}"] =  $this->validateMediansFor($scenario,$time);   // could be null                 
             }
             
         }
@@ -722,27 +428,53 @@ class SpeciesRichness extends CommandAction {
     private function validateMediansFor($scenario,$time)
     {
         
-        // we have to have a m,edian file for all species in this genus for this $scenario $time
+        // we have to have a median file for all species in this selection for this $scenario $time
      
         $ok = true;
         
         $result = array();
         
-        // find all the files for this species List for a single  - $scenario,$time
+        // find all the files for this species List for a single  - $scenario $time
         
-        $pattern = "{$scenario}_ALL_{$time}_median.asc";
+        $pattern = "{$scenario}_ALL_{$time}_median.asc"; // filename to be found as this is create from ScenarioTimeMediansForSpecies
         
-        foreach ($this->SpeciesList() as $species_id => $row ) 
+        
+        foreach ($this->SpeciesList() as $species_id ) 
         {
             
             $filename = SpeciesData::species_data_folder($species_id).$pattern;
+
+            ErrorMessage::Marker("Validate Medians filename = {$filename}");
             
+            // look for the median file for this species 
             if (!file_exists($filename))
             {
-                $this->addError(new ErrorMessage(__METHOD__, __LINE__, "Inputfile to creatr richness for  $scenario $time  does not exist  {$filename} ", true));
-                $ok = false;
-                continue;
+                
+                ErrorMessage::Marker("Validate Medians creating median files for species {$species_id}");
+                
+                // if we can't find the median of all climate models for this species then try create it.
+                $this->UpdateStatus("creating median files for species species_id = {$species_id}");
+                
+                $result = SpeciesData::ScenarioTimeMediansForSpecies($species_id,$scenario,$time,false,false);
+                
+                if ($result instanceof ErrorMessage)
+                {
+                    $this->addError(new ErrorMessage(__METHOD__, __LINE__, "FAILED to create Median file for species_id = $species_id ".print_r($result,true)));
+                    $ok = false;
+                    continue;
+                }
+                
+                // check for median file again
+                if (!file_exists($filename))
+                {
+                    $ok = false;
+                    continue;
+                }
+                
+                
             }
+
+            
             
 
             if (!$this->ValidateExistenceOnly())
@@ -770,7 +502,7 @@ class SpeciesRichness extends CommandAction {
         }
 
         // but if any files were not valid then return null; as this whole scenario time is invalid
-        if (!$ok) return  null;
+        if ($ok == false) return  null;
         
         
         return $result;
@@ -783,53 +515,64 @@ class SpeciesRichness extends CommandAction {
 
 
     /**
-     * For OIne Scenario for One Time point for all species in Genus
-     * 
+     * for one Scenario / One Time point for all species in the selection 
+     * calculate the richness
      * 
      * @param type $species_files
      * @param type $output_filename
      * @param type $null_value
      * @return \Exception 
      */
-    private function CalculateSpeciesRichness($scenario_time_species_files,$output_filename, $null_value = null)
+    private function CalculateSpeciesRichness($species_files,$output_filename, $null_value = null)
     {
         
+        ErrorMessage::Marker(__METHOD__);
         
          // $species_files  species id to filename 
         
-        $species_ids = array_keys($scenario_time_species_files);
+        $species_ids = array_keys($species_files);
         
         $thresholds = $this->MaxentThresholds();
         
         
-        // assume all files are standard and all align
-        // make want to build check for this soon
+        ErrorMessage::Marker("thresholds");
+        ErrorMessage::Marker($thresholds);
+        // assume all files are standard and all align want to build check for this soon
         
         // try to find the null data from the first file
-        if (is_null($null_value))
-            $null_value = spatial_util::asciigrid_nodata_value(util::first_element($scenario_time_species_files));
+        if (is_null($null_value)) $null_value = spatial_util::asciigrid_nodata_value(util::first_element($species_files));
 
         
+        $first_species_id = util::first_element($species_ids); // use this a controller for the other files
         
-        $first_species_id = util::first_element($species_ids); // use this a controller for th other files
-
         
+        $CountValues = array();
+        $CountTotal = array();
         
         $handles = array();
 
-        $lineCounts = file::lineCounts($scenario_time_species_files,true);  // we can use this check if any file is not right
+        $lineCounts = file::lineCounts($species_files,true);  // we can use this check if any file is not right
         $lineCountFirst = util::first_element($lineCounts) ;
         
         
         // open all files
-        foreach ($scenario_time_species_files as  $species_id => $filename)  
+        foreach ($species_files as  $species_id => $filename)  
         {
             if (!file_exists($filename))  
                 return new ErrorMessage(__METHOD__,__LINE__,"Could not open for ".__METHOD__." {$filename}");
                 
             $handles[$species_id] = fopen($filename, "rb");
+            
+            $CountValues[$species_id] = 0;
+            $CountTotal[$species_id] = 0;
+            
+            
         }
             
+        
+        ErrorMessage::Marker("handles count = ".count($handles));
+        ErrorMessage::Marker($handles);
+        
         
         
         // ASCII files have 6 rowsa of "metadata" skip those
@@ -845,6 +588,8 @@ class SpeciesRichness extends CommandAction {
         // as we don't have enough memory to to read all files in memory at one time
         for ($lineNum = 6; $lineNum < $lineCountFirst ; $lineNum++) {
         
+            
+            // ErrorMessage::Marker("lineNum = $lineNum");
             
             // create row (of cells) for each file open
             $cells = array();
@@ -868,11 +613,16 @@ class SpeciesRichness extends CommandAction {
                 
                 foreach ($species_ids as $species_id) 
                 {
+                    
+                    $CountTotal[$species_id]++;
+                    
                     $species_cell_value = $cells[$species_id][$xIndex];
                     
                     if ($species_cell_value == $null_value) continue;
                     if ($species_cell_value < $thresholds[$species_id]) continue;
                     
+                    
+                    $CountValues[$species_id]++;
                     
                     $result_row[$xIndex]++; // result here is a species count for this gird cell
                     
@@ -890,8 +640,16 @@ class SpeciesRichness extends CommandAction {
         
         foreach ($handles as $handle) fclose($handle);  //close all files
 
+
+        ErrorMessage::Marker("CountTotal count = ".count($CountTotal));
+        ErrorMessage::Marker($CountTotal);
+            
+            
+        ErrorMessage::Marker("CountValues count = ".count($CountValues));
+        ErrorMessage::Marker($CountValues);
+        
                                       // use the Metadata of the first file as the header for the output
-        $file_result =   implode("\n",file::Head(util::first_element($scenario_time_species_files), 6))."\n"   
+        $file_result =   implode("\n",file::Head(util::first_element($species_files), 6))."\n"   
                         .implode("\n",$result).
                         "\n";
         
@@ -920,44 +678,36 @@ class SpeciesRichness extends CommandAction {
     
     private function getParameters()
     {
-        if (is_null($this->LoadAscii()))     $this->LoadAscii(false);
-        if (is_null($this->LoadQuickLook())) $this->LoadQuickLook(true);
-        if (is_null($this->Recalculate()))   $this->Recalculate(false);
-
         
-        if (is_null($this->scenario())) 
+        if (is_null($this->scenarios())) 
             $this->scenarios(DatabaseClimate::GetScenarios());
         else
-            $this->scenarios(explode(",",$this->scenario()));
-        
-//        if (is_null($this->model())) 
-//            $this->models(DatabaseClimate::GetModels());
-//        else
-
-        
-        // Hstsots onlky works with medians at the moment
-        $this->models(explode(",",'ALL'));  // default to the ALL model
-        
-        
-        if (is_null($this->time())) 
-            $this->times(DatabaseClimate::GetTimes());
-        else
-            $this->times(explode(",",$this->time()));
-        
+        {
+            if (!is_array($this->scenarios()))
+                $this->scenarios(explode(",",$this->scenarios()));
+        }
         
         
         $scenarios = array();
         foreach ($this->scenarios() as $scenario) 
             if ($scenario != "CURRENT") $scenarios[$scenario] = $scenario;
-        
+            
         $this->scenarios($scenarios);
         
+        ErrorMessage::Marker("Scenarios " .print_r($this->scenarios(),true));
+       
         
-        $models = array();
-        foreach ($this->models() as $model) 
-            if ($model != "CURRENT") $models[$model] = $model;
+        ErrorMessage::Marker("Before Times " .print_r($this->times(),true));
         
-        $this->models($models);
+        
+        if (is_null($this->times())) 
+            $this->times(DatabaseClimate::GetTimes());
+        else
+        {
+            if (!is_array($this->times()))
+                $this->times(explode(",",$this->times()));
+        }
+        
         
         
         $times = array();
@@ -966,98 +716,103 @@ class SpeciesRichness extends CommandAction {
         
         $this->times($times);
         
-        
+        ErrorMessage::Marker("After Times " .print_r($this->times(),true));
 
+        $this->UpdateStatus("Parameters set");
         
         
     }
     
     private function getSpeciesList()
     {
-        $species_list_query_result = null;
+     
+        // for each Clazz, Family, Genus and Species get the Species ID and Name
+        // and add to the list
         
+        $species_ids = array();
+        $this->ProgressPercentIncrement();        
         if (!is_null($this->clazz() ) )
         {
-            $species_list_query_result =  
-                SpeciesData::TaxaForGenusWithOccurances($this->clazz(), $this->MinimumOccurance());
+            if (is_array($this->clazz()))
+                foreach ($this->clazz() as $clazz_name) 
+                    foreach (SpeciesData::TaxaForClazzWithOccurances($clazz_name) as $species_id => $row) 
+                        $species_ids[$species_id] = $species_id;
+            else
+                foreach (SpeciesData::TaxaForClazzWithOccurances($this->clazz()) as $species_id => $row) 
+                    $species_ids[$species_id] = $species_id;
             
         }
-            
-        
-        if (!is_null($this->family()) ) 
-        {
-            $species_list_query_result =  
-                SpeciesData::TaxaForGenusWithOccurances($this->family(),$this->MinimumOccurance());
-            
-        }            
-        
-        
-        if (!is_null($this->genus() ) ) 
-        {
-            $species_list_query_result =  
-                SpeciesData::TaxaForGenusWithOccurances($this->genus(), $this->MinimumOccurance());             
-            
-        }
-        
-        $this->ProgressPercentIncrement();
-        
-        // convert query to species ID / species name list
-        $species_list = array();
-        foreach ($species_list_query_result as $row) 
-            $species_list[$row['species_id']] = $row['species'];
-        
-        $this->ProgressPercentIncrement();
-        
-        
-        return $species_list;
-        
-    }
-        
-    
-    
-    
-    
-    public function model() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-    
-    public function scenario() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-    
-    public function time() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
 
-    protected function models() {
+        $this->ProgressPercentIncrement();        
+        if (!is_null($this->family() ) )
+        {
+            if (is_array($this->family()))
+                foreach ($this->family() as $family_name) 
+                    foreach (SpeciesData::TaxaForfamilyWithOccurances($family_name) as $species_id => $row) 
+                        $species_ids[$species_id] = $species_id;
+            else
+                foreach (SpeciesData::TaxaForfamilyWithOccurances($this->family()) as $species_id => $row) 
+                    $species_ids[$species_id] = $species_id;
+            
+        }
+        
+        
+        $this->ProgressPercentIncrement();
+        if (!is_null($this->genus() ) )
+        {
+            if (is_array($this->genus()))
+                foreach ($this->genus() as $genus_name) 
+                    foreach (SpeciesData::TaxaForgenusWithOccurances($genus_name) as $species_id => $row) 
+                        $species_ids[$species_id] = $species_id;
+            else
+                foreach (SpeciesData::TaxaForgenusWithOccurances($this->genus()) as $species_id => $row) 
+                    $species_ids[$species_id] = $species_id;
+            
+        }
+
+        
+        $this->ProgressPercentIncrement();
+        if (!is_null($this->species() ) )
+        {
+            
+            if (is_array($this->species()))
+                foreach ($this->species() as $species_id) 
+                    $species_ids[$species_id] = $species_id;
+            else
+                $species_ids[$this->species()] = $this->species();
+            
+            
+        }
+        
+        
+        
+        
+        // get species name for $species_ids
+        $this->ProgressPercentIncrement();
+        
+        
+        $this->SpeciesList($species_ids);
+        
+        $this->UpdateStatus("Species Count: " . count($this->SpeciesList()));
+        
+        print_r($species_ids);
+        
+        
+        
+    }
+    
+    public function scenarios() {
         if (func_num_args() == 0)
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
     
-    protected function scenarios() {
+    public function times() {
         if (func_num_args() == 0)
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
     
-    protected function times() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-    
-    protected function bioclims() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
     
     
     public function clazz() {
@@ -1080,6 +835,11 @@ class SpeciesRichness extends CommandAction {
         return $this->setProperty(func_get_arg(0));
     }
     
+    public function species() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
 
     
     
@@ -1096,26 +856,6 @@ class SpeciesRichness extends CommandAction {
     }
     
 
-    
-    public function LoadAscii() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    public function LoadQuickLook() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-    
-
-    public function Recalculate() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
     public function MinimumOccurance() {
         if (func_num_args() == 0)
         return $this->getProperty();
@@ -1128,11 +868,7 @@ class SpeciesRichness extends CommandAction {
         return $this->setProperty(func_get_arg(0));
     }
 
-    public function DisplaySummary() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
+
     
     
     private function QuickLooks() {
@@ -1140,13 +876,6 @@ class SpeciesRichness extends CommandAction {
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
-
-    private function QuickError() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-    
     
     private function AsciiGrids() {
         if (func_num_args() == 0)
@@ -1154,33 +883,7 @@ class SpeciesRichness extends CommandAction {
         return $this->setProperty(func_get_arg(0));
     }
     
-    private function AsciiError() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
 
-    
-    /**
-     * OUTPUT
-     * @return type 
-     */
-    public function Invalid() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
-
-    
-    /**
-     * OUTPUT
-     * @return type 
-     */
-    public function Missing() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
 
     /**
      * OUTPUT
@@ -1193,24 +896,21 @@ class SpeciesRichness extends CommandAction {
     }
 
 
-    public function QuickLook_FileUniqueIDs() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
     
     
-    public function ASCIIGRID_FileUniqueIDs() {
-        if (func_num_args() == 0)
-        return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
-    }
     
     public function ProgressPercent() {
         if (func_num_args() == 0)
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
+
+    public function job_description() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
     
     
     private function ProgressPercentIncrement( $size = 1) 
@@ -1224,12 +924,10 @@ class SpeciesRichness extends CommandAction {
     }
     
     
-
-    
-    
-    
-    protected function UpdateStatus($msg)
+    protected function UpdateStatus($msg,$execution_flag = null)
     {
+        
+        if (!is_null($execution_flag))  $this->ExecutionFlag($execution_flag);
         
         $this->Status($msg);
         
@@ -1243,11 +941,340 @@ class SpeciesRichness extends CommandAction {
             self::Queue($this);    
         }
         
+    }
+    
+    protected function UpdateExecutionFlag($execution_flag)
+    {
+        
+        $this->ExecutionFlag($execution_flag);
+        
+        if (php_sapi_name() == "cli")
+        {
+            ErrorMessage::Marker("Execution Flag changed to: {$execution_flag}");
+            self::Queue($this);    
+        }
+        else 
+        {
+            self::Queue($this);    
+        }
+        
         
         
     }
     
     
+    
+    /**
+     * Added the ascii grid that was create into a memory array
+     * 
+     * @param ErrorMessage $gridFilename
+     * @return null 
+     */
+    private function addAsciiGridResult($combination,$single_richness_filename = null)
+    {
+        
+        ErrorMessage::Marker("addAsciiGridResult ... single_richness_filename = $single_richness_filename");
+        
+        
+        if ($single_richness_filename instanceof ErrorMessage)
+        {
+            $this->UpdateStatus("FAILED to create richness for {$combination}");
+            $this->addError($single_richness_filename);
+        }
+        
+        // we could not create richness
+        if (is_null($single_richness_filename) || !file_exists($single_richness_filename)) 
+        {
+            $this->UpdateStatus("Error creating richness for {$combination}");
+            $this->addError(new ErrorMessage(__METHOD__, __LINE__,"Error creating richness for {$this->job_description()} {$combination}", true) );            
+        }
+        
+        if (!is_null($single_richness_filename))
+            $this->UpdateStatus("Created richness for {$combination}");
+        
+        
+        $this->addAsciiGridCombination($combination,$single_richness_filename);
+        
+        
+    }
+
+    private function addAsciiGridCombination($combination,$single_richness_filename = null)
+    {
+        $ag = $this->AsciiGrids();
+        $ag[$combination] = $this->ID().configuration::osPathDelimiter().basename($single_richness_filename);
+        $this->AsciiGrids($ag);
+        
+    }
+
+    
+    private function addQuickLook($combination, $src)
+    {
+        $ql = $this->QuickLooks();
+        $ql[$combination] = $this->ID().configuration::osPathDelimiter().basename($src);
+        $this->QuickLooks($ql);
+        
+    }
+
+    
+
+    private function addError($src)
+    {
+        
+        $err = $this->Error();
+        
+        if (is_array($src))
+            foreach ($src as $value)  
+                $err[] = $value;
+        else
+            $err[] = $src;    
+        
+        ErrorMessage::Marker($err);
+        
+        $this->Error($err);
+        
+    }
+    
+    
+    private function getResults()
+    {
+        
+        $lines = array();
+        foreach ($this->AsciiGrids() as $combination => $filename) 
+            $lines[] = "{$combination}={$filename}";
+
+            
+        $str = implode("~", $lines);
+        
+        $this->Result($str);
+        
+        
+    }
+    
+ 
+    /**
+    *
+    * @param type $src_grid_filename      - Maxent ASC Grid with filename in format of      (Scenario)_(time).asc
+    * @param type $output_image_filename  - Where you want to output mage to end up 
+    * @param type $transparency           - transparency of all colors 
+    * @param type $background_colour      - background colour   use 0 0 0 255 = Full balck   0 0 0 0 = Full Transparent
+    * @return null|String                 - Output filename 
+    */
+    public function CreateQuickLookImage($name,$src_grid_filename,$min = null,$max = null,$output_image_filename = null ,$transparency = 255,$background_colour = "0 0 0 255")
+    {
+    
+        
+        if (!file_exists($src_grid_filename)) 
+            new ErrorMessage(__METHOD__, __LINE__, "$src_grid_filename File Does not exist \n");
+        
+        
+        if (is_null($output_image_filename)) $output_image_filename = str_replace("asc","png",$src_grid_filename);
+        
+        if (file_exists($output_image_filename)) return $output_image_filename;
+        
+        
+        if (is_null($min) || is_null($max))
+        {
+            $stats = spatial_util::RasterStatisticsBasic($src_grid_filename);
+            
+            if (is_null($stats) || $stats instanceof ErrorMessage)
+            {
+                $min = null;
+                $max = null;
+            }
+            else
+            {
+                if (is_null($min)) $min = $stats[spatial_util::$STAT_MINIMUM];
+                if (is_null($max)) $max = $stats[spatial_util::$STAT_MAXIMUM];
+            }
+            
+        }
+        
+        if (is_null($min) ||  is_null($max) )
+        {            
+            $min = null;
+            $max = null;
+        }
+
+        
+        list($scenario, $time) =  explode("_",str_replace('.asc','',basename($src_grid_filename)));    
+        
+        $histogram_buckets = $max + 1;
+        if ($histogram_buckets > 100) $histogram_buckets = 100;
+        
+        $gradient = RGB::ReverseGradient(RGB::GradientYellowOrangeRed());
+        
+        $ramp = null;
+        if (!is_null($min) &&  !is_null($max) )
+        {
+            if ($max - $min > 0)
+                // only create ramp if we have a valid min and max.
+                $ramp = RGB::Ramp($min, $max, $histogram_buckets,$gradient);     
+            else
+            {
+                $ramp = array();
+                $ramp[$min] = util::first_element($gradient);
+                $ramp[$max] = util::last_element($gradient);
+            }
+                
+        }
+        
+
+        $colour_txt = file::random_filename().".txt"; // list of colours to use - will bne generated
+        file::Delete($colour_txt);
+
+        $colour_png = file::random_filename().".png"; // colourized ASC file as a png
+        file::Delete($colour_png);
+
+        $colour_zero_txt = file::random_filename().".txt"; // used to create black background
+        file::Delete($colour_zero_txt);
+
+        $colour_background_png = file::random_filename().".png"; // background image
+        file::Delete($colour_background_png);
+
+        $colour_combined_png = file::random_filename().".png"; // background + coloured image 
+        file::Delete($colour_combined_png);
+
+        $colour_legend_png = file::random_filename().".png"; // legend  image together
+        file::Delete($colour_legend_png);
+
+        $header_png = file::random_filename().".png"; // legend  image together
+        file::Delete($header_png);
+        
+        
+        if (is_null($output_image_filename))
+            $output_image_filename = file::random_filename().".png"; // return image filename
+        
+
+                
+        // create colour "lookup table"    
+
+        $color_table = "nv 0 0 0 0\n";  // no value
+        
+        if (!is_null($ramp))
+        {
+            // we have a ramp so create percentage colour gradient.
+            $pcent = 0;
+            $step = round( 100 / count($ramp),0);
+            foreach ($ramp as $index => $rgb) 
+            {
+                $rgb instanceof RGB;
+                $color_table .= $pcent."% ".$rgb->Red()." ".$rgb->Green()." ".$rgb->Blue()." {$transparency}\n";        
+                $pcent += $step;
+            }
+            
+        }
+
+        // save the colour lookup table 
+        $fpc = file_put_contents($colour_txt, $color_table);
+        if ($fpc === false) return new ErrorMessage(__METHOD__,__LINE__,"Failed to write to colour_txt {$colour_txt}");
+            
+        
+        $cmd = "gdaldem  color-relief {$src_grid_filename} {$colour_txt} -nearest_color_entry -alpha -of PNG {$colour_png}";
+        exec($cmd);  // generate a coloured image using colour lookup 
+
+        
+        
+        // create backgound to put coloured image on top of
+        $fpc = file_put_contents($colour_zero_txt, "nv 0 0 0 0\n0% {$background_colour}\n100% {$background_colour}\n"); // default is ALL Values = $background_colour  & No Value  = transparent  
+        if ($fpc === false) return new ErrorMessage(__METHOD__,__LINE__,"Failed to create backgound to put coloured image on {$colour_zero_txt}");
+        
+        
+        $cmd = "gdaldem  color-relief {$src_grid_filename} $colour_zero_txt -nearest_color_entry -alpha -of PNG {$colour_background_png}";
+        exec($cmd);
+
+
+        // order here is important first is lowest
+        $cmd = "convert {$colour_background_png} {$colour_png} -layers flatten {$colour_combined_png}";
+        exec($cmd);
+        
+        
+        list($width, $height, $type, $attr) = getimagesize($colour_png);     
+        
+        // - add parameters  to the image  $scenario, $time
+
+$header = <<<HEADER
+convert \
+-size  {$width}x60 xc:white -font DejaVu-Sans-Book -fill black \
+-draw 'text  10,20 "{$name}"' \
+-draw 'text  10,40 "Species Richness"' \
+-draw 'text 200,20 "Scenario: {$scenario}"' \
+-draw 'text 400,20 "Time: {$time}"' \
+{$header_png};
+HEADER;
+
+        exec($header);
+
+
+        if (!is_null($ramp))
+        {
+            // create a legend image
+            // # rectangle left,top right,bottom" \
+            $swatch_height = 20;
+            $swatch_width = 20;
+            $swatch_width_padding = 10;
+            $text_align_up = -2;
+
+
+            $height = count($ramp) * $swatch_height + (2 * $swatch_height);  // heioght of the legend is a cal of the number of legend items + 2 for top and bittom padding
+            $box_top = 10;
+            $box_left = 20;
+
+            $legend  = "convert -size  {$width}x{$height} xc:white ";
+            $legend .= "-font DejaVu-Sans-Book ";
+
+            foreach (array_reverse($ramp, true) as $index => $rgb) 
+            {
+                $rgb instanceof RGB;
+
+                $box_right = $box_left + $swatch_width;
+                $box_bottom = $box_top + $swatch_height;
+
+                $text_left = $box_left + $swatch_width + $swatch_width_padding;
+                $text_top  = $box_top + $swatch_height + $text_align_up;
+
+                $text = sprintf("%01.2f", $index);
+
+                $legend .= "-fill '#{$rgb->asHex()}' -draw 'rectangle {$box_left},{$box_top} {$box_right},{$box_bottom}' ";
+                $legend .= "-fill black -draw 'text {$text_left},{$text_top} \"{$text}\"' ";
+
+                $box_top += $swatch_height;
+
+            }
+
+            $legend .= " {$colour_legend_png}";
+
+            exec($legend); // create legend
+
+            
+        }
+        
+
+        if (file_exists($colour_legend_png))
+            $cmd = "convert {$header_png} {$colour_combined_png} {$colour_legend_png} -append {$output_image_filename}";    
+        else 
+            $cmd = "convert {$header_png} {$colour_combined_png} -append {$output_image_filename}";    
+        
+        
+        exec($cmd);
+
+        // might be better here to convert to a tmp image
+        // and then copy back to the $output_image_filename
+        
+
+        file::Delete($colour_txt);
+        file::Delete($colour_png);
+        file::Delete($colour_zero_txt);
+        file::Delete($colour_background_png);
+        file::Delete($colour_combined_png);
+        file::Delete($colour_legend_png);
+
+        if (!file_exists($output_image_filename))
+            return new ErrorMessage(__METHOD__,__LINE__,"Failed to write/ create  outputfile as {$output_image_filename}"); 
+            
+        
+        return $output_image_filename; // filename of png that can be used - 
+
+    }    
     
     
     

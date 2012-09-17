@@ -85,20 +85,41 @@ class spatial_util
     public static function ArrayRasterStatistics($filenames,$band = "1",$recalculate = false,$leave_out_invalid_files = false)
     {
         
+        ErrorMessage::Marker(__METHOD__);
+        
         $result = array();
         foreach ($filenames as $key => $filename) 
         { 
+            if (!file_exists($filename)) continue;
+        
+            ErrorMessage::Marker(__METHOD__." filename = $filename ");
+            
             $stats = self::RasterStatisticsBasic($filename,$band = "1",$recalculate);
             
-            if (!$leave_out_invalid_files)
+            ErrorMessage::Marker(__METHOD__." STATS ");
+            ErrorMessage::Marker($stats);
+            
+            if (is_null($stats))
             {
-                $result[$key] = $stats;     
-                continue;
+                ErrorMessage::Marker(__METHOD__." stats is NULL");
+            }
+            
+            
+            if ($leave_out_invalid_files)
+            {
+                ErrorMessage::Marker(__METHOD__." leave_out_invalid_files");
+                
+                if (!is_null($stats))
+                {
+                    ErrorMessage::Marker(__METHOD__." added $key");
+                    $result[$key] = $stats; 
+                }
+                    
             }
             else
             {
-                if (!is_null($stats))
-                    $result[$key] = $stats; 
+                ErrorMessage::Marker(__METHOD__." DON'T  leave_out_invalid_files");
+                $result[$key] = $stats;     
             }
             
             
@@ -162,8 +183,11 @@ class spatial_util
     public static function RasterStatisticsBasic($filename,$band = "1",$recalculate = false)
     {
 
-        if (util::contains($filename, "shp")) return null;
+        if (util::contains(strtolower($filename), "shp")) return null;
 
+        ErrorMessage::Marker(__METHOD__." filename = $filename ");
+        
+        
         if (is_null($filename)) return new Exception("Filename passed as null");
 
         $filename = trim($filename);
@@ -177,8 +201,15 @@ class spatial_util
                 file::Delete ($filename.".aux.xml");
         
         
+            
+            
         // try to get a better / higher precision version first
         $precision = self::RasterStatisticsPrecision($filename,$band);
+        
+        
+        ErrorMessage::Marker(__METHOD__." from precision ");
+        ErrorMessage::Marker($precision);
+        
         if (!is_null($precision)) return $precision;
 
         
@@ -187,6 +218,10 @@ class spatial_util
         exec($cmd, $result);
 
         if (count($result) == 0 ) return null;
+
+        
+        ErrorMessage::Marker(__METHOD__." from basic ");
+        ErrorMessage::Marker($precision);
         
         
         // Minimum=0.000, Maximum=255.000, Mean=65.600, StdDev=99.236

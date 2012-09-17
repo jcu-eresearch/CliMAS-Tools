@@ -7,7 +7,34 @@ class configuration {
     
     public static function MapableBackgroundLayers() { return "ContextLayerMapableBackgroundLayers"; }
     
-    public static function hpc_phpexecute()  { return "sshpass -p 'Volts100.' ssh jc166922@login.hpc.jcu.edu.au php -q "; }
+    // TDDO: REads password from file on web server /var/www/.ssh/1234567890
+    // this use SSH keys stored in /var/www/.ssh   - connected with this useid: jc166922@login.hpc.jcu.edu.au
+    public static function hpc_phpexecute($script,$parameters = "")  
+    { 
+        
+        // this folder must match the tdh1-hpc configuration.
+        $script = "/scratch/jc166922/tdh1/tdhtools/applications/".$script.'.php';
+        
+        $cmd = "sshpass -f/var/www/.ssh/1234567890 ssh jc166922@login.hpc.jcu.edu.au php -q {$script} {$parameters}";
+        $result = array();
+        exec($cmd,$result);
+        return $result; 
+    }
+    
+
+    public static function hpc_execute_command($command_id)  
+    {
+        $result = self::hpc_phpexecute('CommandActionExecute',"--command_id={$command_id}");   
+        return $result;
+    }
+
+    public static function hpc_execute_command_qsub($command_id)  
+    {
+        $result = self::hpc_phpexecute('CommandActionExecute',"--command_id={$command_id} --qsub=true");   
+        return $result;
+    }
+
+    
     
     public static function ApplicationName() 
     { 

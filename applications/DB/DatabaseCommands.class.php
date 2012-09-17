@@ -50,7 +50,7 @@ class DatabaseCommands extends Object
         if ($count > 0)
         {
             
-            ErrorMessage::Marker("Updated the Command Action ");
+            //ErrorMessage::Marker("Updated the Command Action ");
             
             $uv = array();
             
@@ -77,7 +77,7 @@ class DatabaseCommands extends Object
         }
         
         
-        ErrorMessage::Marker("CReated  the Command Action ");
+        // ErrorMessage::Marker("CReated  the Command Action ");
         
         // Queueed Action Does not exists so Insert it
         

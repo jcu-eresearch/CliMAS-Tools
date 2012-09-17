@@ -47,16 +47,16 @@ class MaxentMainServerBuild extends Object {
         echo "       --ProjectFutures=[true|false]  default: true    true = Generate Future projections\n";
         echo "       --Project1975=[true|false]     default: true    true = Create layers for 1975 condition\n";
         echo "       --Project1990=[true|false]     default: true    true = Create layers for 1990 condition\n";
-        echo "       --JobPrefix=JobName            default: tdh     Used in QSTAT / PBS to identify job in QSTAT";
         echo "\n";
         echo "       --LoadMediansOnly=[true|false] default: true    true = load median data ONLY\n";
         echo "       --LoadQuickLooks=[true|false]  default: true    true = load QuickLook image into database\n";
         echo "       --LoadASCII=[true|false]       default: false   true = load ASCII grid data into database (VERY SLOW & LARGE)n";
+        echo "       --UpdateDatabase=[true|false]  default: true    true = Insert results in to database for reading by other systems\n";
         echo "\n";
         echo "       --GenerateOnly=[true|false]    default: false   true = generate scripts but don't execute them\n";
         echo "       --MaxentOnly=[true|false]      default: false   true = run maxent.jar (don't process future climate projections)\n";
+        echo "       --JobPrefix=JobName            default: tdh     Used in QSTAT / PBS to identify job in QSTAT";
         echo "       --UseQSUB=[true|false]         default: true    true = Submit scripts to PBS queue to be executed on GRID\n";
-        echo "       --UpdateDatabase=[true|false]  default: true    true = Insert results in to database to reading by other systems\n";
         echo "\n";
         echo "       --scenarios=a,b,c              default: all     scenarios  comma delimited list of scenarios names\n";
         echo "       --models=a,b,c                 default: all     models     comma delimited list of model     names\n";
@@ -130,17 +130,19 @@ class MaxentMainServerBuild extends Object {
         
     }
     
-    private  static function check_species($array,$species_id)
+    private  static function check_species($species_id,$echo_result = true)
     {
         
         $result = SpeciesData::CurrentInfo2File($species_id);
         if ($result instanceof ErrorMessage) 
         {
-            echo $result;
-            exit(1);
+            if ($echo_result) echo $result;
+            exit(0);
         }
 
-        echo "file created:: [{$result}]\n";
+        if ($echo_result)  echo "file created:: [{$result}]\n";
+        
+        return $result;
 
     }
     

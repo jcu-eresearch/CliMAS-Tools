@@ -23,6 +23,8 @@ if ($cmd instanceof Exception)
 
 
 
+
+
 $initResult = $cmd->initialise($_POST);
 if (!$initResult )
 {
@@ -40,7 +42,15 @@ if ($cmd->ExecutionFlag() == CommandAction::$EXECUTION_FLAG_COMPLETE)
 }
 
 // we want to now send this job to the HPC to run
-$queueStored = DatabaseCommands::CommandActionQueue($cmd);
+$command_id = DatabaseCommands::CommandActionQueue($cmd);
+if ($command_id instanceof ErrorMessage)
+{
+    echo json_encode($command_id);
+    return;  
+}
+
+
+$result = configuration::hpc_execute_command_qsub($command_id);
 
 
 echo json_encode($cmd->PropertyValues());

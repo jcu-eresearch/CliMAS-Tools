@@ -117,7 +117,7 @@ class DatabaseFile extends Object
 
         $object_data = base64_encode(serialize($src));
         
-        ErrorMessage::Marker("Inserting Object");
+        // ErrorMessage::Marker("Inserting Object");
         
         $chunck_size = self::$FILE_DB_STORAGE_SIZE;
 
@@ -140,7 +140,7 @@ class DatabaseFile extends Object
             
             $total_read += strlen($contents);
             
-            ErrorMessage::Marker("chunck_size = $chunck_size  ... total_read = $total_read   .... current_pt = $current_pt");
+            // ErrorMessage::Marker("chunck_size = $chunck_size  ... total_read = $total_read   .... current_pt = $current_pt");
             
             
             $data = util::dbq(base64_encode($contents),true);
