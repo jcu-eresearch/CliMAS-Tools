@@ -1,5 +1,10 @@
 <?php
 include_once dirname(__FILE__).'/includes.php';
+/**
+ * Create Median Layer for a Single Scenario and and Single Time
+ * - Median of all Scenarios'
+ *  
+ */
 
 $prog = array_util::Value( $argv, 0);
 $species_id = array_util::Value($argv, 1);

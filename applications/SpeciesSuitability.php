@@ -1,9 +1,14 @@
 <?php
+/**
+ * Main page for Species Suitability tool
+ * 
+ * 
+ *  
+ */
 session_start();
 include_once dirname(__FILE__).'/includes.php';
 
 $ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
-
 
 
 $scenarios = DatabaseClimate::GetScenarios();

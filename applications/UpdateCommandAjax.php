@@ -1,4 +1,9 @@
 <?php
+/**
+ * Used via Web page to retrive status of Command  via an AJAX call
+ * 
+ *  
+ */
 session_start();
 include_once 'includes.php';
 
@@ -39,7 +44,6 @@ else
 }
 
 $result['ExecutionFlag'] = $cmd->ExecutionFlag();    
-
 
 echo json_encode($result);
 return;   // will stop here and return if we have all results requested.

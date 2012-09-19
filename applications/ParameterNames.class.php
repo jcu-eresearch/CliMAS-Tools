@@ -1,4 +1,7 @@
 <?php
+/**
+ *  Names of stadnard Configuration Parameters across the Application
+ */
 class Parameter 
 {
 

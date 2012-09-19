@@ -1,4 +1,10 @@
 <?php
+/**
+ * Give an action name Find Action, instatciate, pass post variables into object to initialise, execute and return status
+ * 
+ * Usually called via HTML / PHP page Ajax call
+ * 
+ */
 session_start();
 include_once dirname(__FILE__).'/includes.php';
 

@@ -1,5 +1,9 @@
 <?php
 include_once 'includes.php';
+/**
+ * Create a ASCII grid that is the result of one ASCII GRID being subtracted  from another
+ * 
+ */
 
 $lhs    = util::CommandScriptsFoldermandLineOptionValue($argv, 'lhs', null);
 $rhs    = util::CommandScriptsFoldermandLineOptionValue($argv, 'rhs', null);

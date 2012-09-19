@@ -1,4 +1,12 @@
 <?php
+/**
+ * Process to run on HPC to pre-generate species suitability using climate chnage scenarios and climate models
+ * 
+ * 
+ * 
+ *  
+ */
+
 class MaxentMainServerBuild extends Object {
     
 

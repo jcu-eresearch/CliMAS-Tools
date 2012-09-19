@@ -1,5 +1,11 @@
 <?php
 include_once dirname(__FILE__).'/includes.php';
+/**
+ *
+ * Run at the command line to remove Compressed file from DB
+ *  
+ */
+
 
 echo "Remove Compressed File\n";
 

@@ -1,11 +1,13 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+include_once 'includes.php';
+/**
+ * Using: GDAL
+ * 
+ * Render an ASCII GRID as a PNG (for simple viewing) 
+ * useful to make quick snapshot of ASCII  GRID (for thumbnails etc.)
+ *  
  */
 
-include_once 'includes.php';
 
 $prog = array_util::Value( $argv, 0);
 $ascii_filename = array_util::Value($argv, 1);

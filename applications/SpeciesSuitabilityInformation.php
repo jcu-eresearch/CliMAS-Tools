@@ -1,4 +1,10 @@
 <?php
+/**
+ * Read Query String variable "combination" and find Scenario and Model Descriptions
+ *  
+ * combination must be in the form   SCENARIO_MODEL_TIME
+ * 
+ */
 session_start();
 include_once 'includes.php';
 

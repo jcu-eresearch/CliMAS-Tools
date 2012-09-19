@@ -1,3 +1,4 @@
+<!--  Standard footer for all Tools Web Pages. -->
 <div class="credits">
     <a href="http://www.jcu.edu.au/ctbcc/">
         <img src="../images/ctbcc_sm.png" alt="Centre for Tropical Biodiversity and Climate Change">

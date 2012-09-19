@@ -1,9 +1,13 @@
 <?php
+/**
+ * Hotspots / Species Richness Tool
+ * 
+ *  
+ */
 session_start();
 include_once dirname(__FILE__).'/includes.php';
 
 $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url then they have returned.
-
 
 ?>
 <!DOCTYPE html>
@@ -50,7 +54,9 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
 
 </head>
 <body>
-<?php include_once 'ToolsHeader.php';  ?>
+<h1 class="pagehead">
+    <a href="index.php"><img src="<?php echo configuration::IconSource()."Hotspots.png" ?>" border="0" /></a>
+</h1>
     
 <?php 
     $liFormat = '<li class="ui-widget-content ui-corner-all " ><h4>{DataName}</h4><p>{Description}</p> </li>'; 

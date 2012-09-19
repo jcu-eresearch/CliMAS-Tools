@@ -1,4 +1,7 @@
 <?php
+/**
+ *STUB page for Invironmental Impact Tool page 
+ */
 include_once dirname(__FILE__).'/includes.php';
 
 ?>

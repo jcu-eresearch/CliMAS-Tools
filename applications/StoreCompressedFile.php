@@ -1,5 +1,10 @@
 <?php
 include_once dirname(__FILE__).'/includes.php';
+/**
+ * Store a file in the database - compressed using ZIP
+ * 
+ *  
+ */
 
 echo "Store Compressed File\n";
 
@@ -12,7 +17,7 @@ if (is_null($filename)) usage($prog);
 
 function usage($prog)
 {
-   echo "usage: {$prog} filename \n" ;
+   echo "usage: {$prog} filename [description] [filetype]\n" ;
    exit(1);
 }
 

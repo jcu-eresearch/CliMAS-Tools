@@ -1,5 +1,12 @@
 <?php
 include_once 'includes.php';
+/**
+ * Use to test configuration 
+ * - Make sure folders exists.
+ * 
+ *  
+ */
+
 
 echo "\n=====================================================================================\n";
 echo "==== current configuration settings for this host {$hostname}\n";
@@ -92,88 +99,49 @@ $incoming_sh = configuration::ApplicationFolder()."applications/Incoming.sh";
 echo "=====================================================================================\n";  
 echo "Check on database access here\n";
 
-/*
-
-DROP TABLE IF EXISTS command_action;
-CREATE TABLE command_action 
-(
-    id SERIAL NOT NULL PRIMARY KEY,
-    objectID VARCHAR(50) NOT NULL,  -- objectID 
-    data text,                      -- php serialised object
-    execution_flag varchar(50),     -- execution state
-    status varchar(200),            -- current status
-    queueid varchar(50),            -- to identify where this job cam from, allows multiple environments to use same queue
-    update_datetime TIMESTAMP NULL  -- the last time data was updated
-);
-
-GRANT ALL PRIVILEGES ON command_action TO ap02;
-GRANT USAGE, SELECT ON SEQUENCE command_action_id_seq TO ap02;
 
 
-// SPECIES OCCURENCE COUNT - will need to be rebuilt on occuence updates
- * easier to them look up species that have occurences
- * 
- * 
-DROP TABLE IF EXISTS species_occur;
-create table species_occur as  select species_id,count(*) from species_occurrences group by species_id;
-GRANT ALL PRIVILEGES ON species_occur TO ap02;
+$CRON_REQUIRED = false;
 
-
-
-// get species name for a spoecies that has occurances
-select s.id as species_id ,s.scientific_name,s.common_name,sp.count as occurance_count from species s, species_occurence sp  where s.id=sp.species_id and sp.count > 0 and scientific_name like '%Lethrinus lentjan%'
-
-
-- Query for get Spewcies list where they have Occurances
-select s.id as species_id ,s.scientific_name,s.common_name,sp.count as occurance_count from species s, species_occurence sp  where s.id=sp.species_id and sp.count > 0
-
-
-
-FIND FAULTY FILES - files that donot have the correct number of parts
-select f.file_unique_id,f.filetype,f.totalparts,count(*) as parts_count from files f, files_data fd  where f.file_unique_id = fd.file_unique_id group by f.file_unique_id,f.filetype,f.totalparts having count(*) != f.totalparts;
-
-
-REMOVE FILES_DATA
-delete from files_data where file_unique_id             = '500dfd4576c8e';
-delete from files where file_unique_id                  = '500dfd4576c8e';
-delete from modelled_climates where file_unique_id      = '500dfd4576c8e';
-delete from modelled_species_files where file_unique_id = '500dfd4576c8e';
-
-
- */
-
-
-echo "\n";
-echo "Create CRON script {$incoming_sh} \n";
-echo "\n";
-
-file_put_contents($incoming_sh, "#!/bin/tcsh\n cd ".configuration::ApplicationFolder()."\n php -q ".configuration::ApplicationFolder()."applications/Incoming.php\n\n");
-
-if (!file_exists($incoming_sh))
+if ($CRON_REQUIRED)
 {
-    echo "FAILED: to create CRON script {$incoming_sh} \n";
-    exit(1);
+    
+    // If required the receciveing server will wait for incoming cxommands 
+    // CRON job will read queue and execute any commands with  EXECUTION FLAG =  READY 
+    
+    echo "\n";
+    echo "Create CRON script {$incoming_sh} \n";
+    echo "\n";
+
+    file_put_contents($incoming_sh, "#!/bin/tcsh\n cd ".configuration::ApplicationFolder()."\n php -q ".configuration::ApplicationFolder()."applications/Incoming.php\n\n");
+
+    if (!file_exists($incoming_sh))
+    {
+        echo "FAILED: to create CRON script {$incoming_sh} \n";
+        exit(1);
+    }
+
+    echo "\n make executable  chmod u+x {$incoming_sh}";
+    exec("chmod u+x {$incoming_sh}");
+
+    echo "\n";
+
+    echo "\nCRON (on host that will be processing the queue)";
+    echo "\n";
+    echo "\n  copy |* * * * * {$incoming_sh}|";
+    echo "\n  crontab -e\n";
+    echo "\n  i = insert\n";
+    echo "\n  paste";
+    echo "\n  ESC";
+    echo "\n  :w<enter>";
+    echo "\n  ESC";
+    echo "\n  :q<enter>";
+    echo "\n";
+    echo "=====================================================================================\n";
+    echo "Seems to be OK, check warnings if any\n";
+    echo "\n";
+
 }
-
-echo "\n make executable  chmod u+x {$incoming_sh}";
-exec("chmod u+x {$incoming_sh}");
-
-echo "\n";
-
-echo "\nCRON (on host that will be processing the queue)";
-echo "\n";
-echo "\n  copy |* * * * * {$incoming_sh}|";
-echo "\n  crontab -e\n";
-echo "\n  i = insert\n";
-echo "\n  paste";
-echo "\n  ESC";
-echo "\n  :w<enter>";
-echo "\n  ESC";
-echo "\n  :q<enter>";
-echo "\n";
-echo "=====================================================================================\n";
-echo "Seems to be OK, check warnings if any\n";
-echo "\n";
 
 
 ?>

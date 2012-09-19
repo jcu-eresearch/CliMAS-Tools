@@ -1,4 +1,9 @@
 <?php
+/**
+ * Implementation of MAPSERVER mapping interface ffor use with Suitability Tool
+ * 
+ *  
+ */
 session_start();
 include_once 'includes.php';
 

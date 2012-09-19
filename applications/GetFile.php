@@ -1,4 +1,9 @@
 <?php
+/**
+ * Command line tool for read a file stored in the database back to a filesystem file.
+ *  
+ */
+
 include_once 'includes.php';
 $id = array_util::Value($argv, 1);
 $fn = array_util::Value($argv, 2);

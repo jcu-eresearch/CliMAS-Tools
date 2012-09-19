@@ -1,5 +1,13 @@
 <?php
-// 
+/**
+ * Configuration Variables / Values shared across applicartion
+ * - Location of Folders
+ * - execution commands to run processes on another server
+ * - Location of Utilitiy and other includes
+ * 
+ */
+
+
 class configuration {
 
     

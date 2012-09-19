@@ -1,4 +1,13 @@
 <?php
+/**
+ * COmmand Line - Generate Richness based on the species list
+ * 
+ * - Species List is built from Species ID's, Genus, Family, Clazz (Taxa)
+ * 
+ * From command line - with No parameters displayes usage.
+ * 
+ *  
+ */
 include_once 'includes.php';
 
 $genus  = util::CommandScriptsFoldermandLineOptionValue($argv, 'genus', null);

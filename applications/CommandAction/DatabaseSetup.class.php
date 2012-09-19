@@ -3,8 +3,10 @@
  *
  * RUn as HPC server job to pregenerate species climate predictions as a mass batch job
  *
+ * 
+ * 
  */
-class SpeciesClimateGenerate {
+class DatabaseSetup {
 
 
     private $cmdline = null;

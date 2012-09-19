@@ -1,4 +1,11 @@
 <?php
+/**
+ * Manage access to Session so Application does not overwrite other session values
+ * 
+ *  
+ */
+
+
 class Session {
     
     private static $ActionsToBeMapped = "ActionsToBeMapped";
@@ -6,6 +13,11 @@ class Session {
     /**
      * @param
      * @return type
+     */
+    /**
+     * Data can that can be mapped - standard layers that should be mapped
+     * 
+     * @return type 
      */
     public static function MapableResults()
     {
@@ -50,8 +62,8 @@ class Session {
 
 
     /**
-     * @param
-     * @return type
+     * Clear Layers Variable 
+     *  
      */
     public static function ClearLayers()
     {

@@ -1,4 +1,8 @@
 <?php
+/**
+ * For a single species create the QUickLook images (pngs) for Sutiability
+ *  
+ */
 include_once dirname(__FILE__).'/includes.php';
 
 $prog = array_util::Value( $argv, 0);

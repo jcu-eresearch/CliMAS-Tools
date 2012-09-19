@@ -1,12 +1,26 @@
 <?php
 ini_set('memory_limit','8096M');
 include_once dirname(__FILE__).'/ParameterNames.class.php';
+/**
+ * Main Include for all configuration information and Classes
+ *  
+ * Use this file to support inclusion of classess, when application is installed in differewnt folders
+ * 
+ * Each configuration file should define what defines it.
+ * - usually the start of the fille will test some part of the  Fully Qualified Host Name --  $hostname
+ * 
+ */
+
 
 $af = dirname(__FILE__).'/';
 
 $conf = array();
 
 $hostname = trim(exec("hostname --fqdn"));
+
+
+// Host (and other criteria) based configuration files
+
 
 if (file_exists("{$af}config.default"))  include_once $af.'config.default';
 
