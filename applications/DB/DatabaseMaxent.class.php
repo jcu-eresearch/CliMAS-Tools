@@ -740,13 +740,13 @@ class DatabaseMaxent extends Object
     
     public static function GetMaxentThreshold($species_id = null)
     {
+        if (is_null($species_id)) return null;
     
         $MaxentFieldName = util::dbq(self::$DisplayThresholdFieldName,true);
         
         $where = "";
         if (!is_null($species_id)) 
             $where = "and species_id = {$species_id}";   
-            
 
             
             

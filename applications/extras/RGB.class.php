@@ -213,19 +213,24 @@ class RGB extends Object {
     {
 
         if (is_null($indexed_color_gradient)) $indexed_color_gradient = SELF::GradientBlueGreenRed();
-
+        
 
         $imin = min($min , $max);  // make sure min and max are right way round
         $imax = max($min , $max);
         $istep = ($imax - $imin) / $buckets;
 
+        
         $result = array();
-        for ($index = $imin; $index <= $imax; $index += $istep)
+        for ($index = $imin; $index < $imax; $index += $istep)
         {
-            $color_index = ($index / $imax) * 255;  // convert $index to a percent of 255
+            $color_index = round(($index / $imax) * ( count($indexed_color_gradient) -1 ),0);  // convert $index to a percent of 255
+
+            // quotes required around KEY
             $result["$index"] =  $indexed_color_gradient[$color_index];
         }
-
+        
+        $result["$imax"] =  $indexed_color_gradient[count($indexed_color_gradient) -1];
+        
         return $result;
 
     }
@@ -411,7 +416,7 @@ TEXT;
             $col[] = substr($line,38,16);
             $col[] = substr($line,57,16);
 
-            foreach ($col as $key => $rgb_raw)
+            foreach ($col as $rgb_raw)
             {
                 $index = trim(substr($rgb_raw,1,3));
                 $r = trim(substr($rgb_raw,5,3));
@@ -788,7 +793,7 @@ TEXT;
      * @param type $unique_values  - array of value to colour unique values to be prefixed before scale
      * @return string 
      */
-    public static function RampDisplay($ramp,$class = "ColorKey",$id = "ColorKey",$unique_values = null)
+    public static function RampDisplay($ramp,$swatch_width = 2,$class = "ColorKey",$id = "ColorKey",$unique_values = null,$value_locations = 'INSIDE')
     {
         if (is_null($class)) $class = $class = "ColorKey";
         if (is_null($id)) $id = $id = "ColorKey";
@@ -813,14 +818,32 @@ TEXT;
         
         
         
-        $result .= '<div class="'.$class.'_first_value" id="'.$id.'_first_value"  style="width: 65px; padding-left:5px; padding-right:5px; float: left; height: 100%; background-color: #' . $first_rgb->asHex() . ';">'. number_format($first, 3)."</div>";
+        // if locartion insiude then set back ground of values to the start and end colors
+        if ($value_locations == 'INSIDE')
+        {
+            $result .= '<div class="'.$class.'_first_value" id="'.$id.'_first_value"  style="text-align: right; width: 65px; padding-left:5px; padding-right:5px; float: left; height: 100%; background-color: #' . $first_rgb->asHex() . ';">'. number_format($first, 3)."</div>";
+        }
+        else
+        {
+            // OUTSIDE - so no background colour
+            $result .= '<div class="'.$class.'_first_value" id="'.$id.'_first_value"  style="text-align: right; width: 65px; padding-left:5px; padding-right:5px; float: left; height: 100%;">'. number_format($first, 3)."</div>";
+        }
+            
+
         
         foreach ($ramp as $value => $rgb) 
         {    
+            $clean_value = str_replace(".", "", $value);
+            
             $rgb instanceof RGB;
-            $result .= '<div class="'.$class.'_swatch" id="'.$id.'_'.$value.'"  style="float: left; width: 2px; height: 100%; background-color: #' . $rgb->asHex() . ';">&nbsp;</div>';
+            $result .= '<div class="'.$class.'_swatch" id="'.$id.'_'.$clean_value.'"  style="float: left; width: '.$swatch_width.'px; height: 100%; background-color: #' . $rgb->asHex() . ';">&nbsp;</div>';
         }
-        $result .= '<div class="'.$class.'_last_value" id="'.$id.'_last_value" style="padding-right:3px; float: left; height: 100%; background-color: #' . $last_rgb->asHex() . ';">'. number_format($last, 3)."</div>";
+        
+        
+        if ($value_locations == 'INSIDE')
+            $result .= '<div class="'.$class.'_last_value" id="'.$id.'_last_value" style="padding-right:3px; float: left; height: 100%; background-color: #' . $last_rgb->asHex() . ';">'. number_format($last, 3)."</div>";
+        else
+            $result .= '<div class="'.$class.'_last_value" id="'.$id.'_last_value" style="padding-right:3px; float: left; height: 100%;">'. number_format($last, 3)."</div>";
         
         $result .= "</div>";
         

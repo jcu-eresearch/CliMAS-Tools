@@ -1,0 +1,154 @@
+/* 
+    Document   : SpeciesSuitability
+    Created on : 19/09/2012, 2:11:35 PM
+    Author     : jc166922
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+
+#selectable_layers .ui-selecting { background: #FECA40; }
+#selectable_layers .ui-selected { background: #F39814; color: white; }
+#selectable_layers { list-style-type: none; margin: 0; padding: 0; width: 90%; }
+#selectable_layers li { margin: 3px; padding: 0.4em; font-size: 0.8em; height: 90px; }
+
+.ui-autocomplete {
+		max-height: 150px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		padding-right: 20px;
+	}
+
+
+.maincontent
+{
+    height: 1000px;
+    overflow: hidden;
+}
+
+
+#ToolBar
+{
+    padding-top: 4px;
+    padding-left: 4px;
+    height: 44px;
+    width: 970px;
+    float: none;
+    clear: both;
+}
+
+#MapTools
+{
+    float:left;
+    height: 650px;
+    width: 40px;
+    clear:right;
+    padding: 10px;
+}
+
+#CurrentSpecies
+{
+    float: left;
+    width: 200px;
+    height: 40px;
+}
+
+
+
+#UserSelectionBar
+{
+    float: left;
+    height: 670px;
+    width: 200px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+
+#MapContainer
+{
+    float: left;
+    height: 670px;
+    width: 710px;
+    overflow: hidden;
+
+}
+
+#ColorKeyContainer
+{
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    height: 24px;
+    overflow:hidden;
+    clear:both;
+
+}
+
+#ColorKey
+{
+    float: left;
+}
+
+#map_overview
+{
+    width:  200px;
+    height: 160px;
+    overflow: hidden;
+}
+
+#download
+{
+    width:  200px;
+    height: 30px;
+    overflow: hidden;
+}
+
+
+#information
+{
+    width:  970px;
+    height: 600px;
+    overflow: hidden;
+    
+}
+
+#information_content
+{
+    margin: 0px; 
+    overflow:hidden; 
+    float:none; 
+    clear:both;  
+    margin-left: 200px;
+    
+}
+
+
+
+
+#UserSelectionBar h2
+{
+    margin: 0px;
+    padding: 0px;
+    text-transform: lowercase;
+    font-weight: bold;
+    
+    margin-top: 40px;
+    margin-left: 5px;
+    letter-spacing: 0.4em;
+    
+        
+}
+
+#UserSelectionBar select
+{
+    margin: 0px;
+    padding: 0px;
+    font-weight: bold;
+    margin-left: 5px;
+    
+    
+}

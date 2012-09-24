@@ -436,7 +436,7 @@ class SpeciesRichness extends CommandAction {
         
         // find all the files for this species List for a single  - $scenario $time
         
-        $pattern = "{$scenario}_ALL_{$time}_median.asc"; // filename to be found as this is create from ScenarioTimeMediansForSpecies
+        $pattern = "{$scenario}_ALL_{$time}.asc"; // filename to be found as this is create from ScenarioTimeMediansForSpecies
         
         
         foreach ($this->SpeciesList() as $species_id ) 

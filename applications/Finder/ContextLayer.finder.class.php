@@ -11,7 +11,7 @@ class ContextLayerFinder extends Finder  {
     public function __construct() { 
         parent::__construct($this);
         $this->Name("ContextLayer");
-        $this->DefaultAction("AustralianStates");
+        $this->DefaultAction("AustralianVegetation");
     }
     
     public function __destruct() {

@@ -15,7 +15,9 @@ $combination = array_util::Value($_GET, "combination",null);
 $scenario_info = "";
 $model_info = "";
 
-if (!is_null($combination))
+
+
+if (!is_null($combination) && util::contains($combination, '_'))
 {
     list($scenario,$model,$time) = explode("_",$combination);
 

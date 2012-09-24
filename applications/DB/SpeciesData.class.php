@@ -1107,7 +1107,7 @@ class SpeciesData extends Object {
             
             if (util::contains($time_bit, "%")) $time_bit = ($time_bit == "%") ? "ALL" : "MULTIPLE";
             
-            $output_filename =  "{$folder}{$scenario_bit}_{$model_bit}_{$time_bit}_median.asc";
+            $output_filename =  "{$folder}{$scenario_bit}_{$model_bit}_{$time_bit}.asc";
             
         }
         
@@ -1292,7 +1292,7 @@ class SpeciesData extends Object {
 
         
         $pathname =  SpeciesData::species_data_folder($species_id)
-                    ."{$scenario}_ALL_{$time}_median.asc"
+                    ."{$scenario}_ALL_{$time}.asc"
                     ;
         
         

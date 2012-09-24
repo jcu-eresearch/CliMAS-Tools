@@ -1,11 +1,5 @@
 // GLOBAL VARIABLES
 
-/*
-
-asa
-
-*/
-
 
 function GetZoom() {
     document.getElementById('ZoomFactor').value = parent.document.getElementById('ZoomFactor').value;

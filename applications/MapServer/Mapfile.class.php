@@ -421,7 +421,7 @@ MAP
         IMAGEPATH "{$this->imagePath()}"
         IMAGEURL  "{$this->imageURL()}"
     END
-
+        
     {$this->layers()}
     {$this->caption()}
         
