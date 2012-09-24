@@ -26,9 +26,9 @@ class ContextLayerMapableBackgroundLayers extends Action implements iAction {
 
         $d = new Descriptions();
 
-        $d->Add( FinderFactory::Result("ContextLayerAustralianVegetation"));
         $d->Add( FinderFactory::Result("ContextLayerAustralianRiverBasins"));
         $d->Add( FinderFactory::Result("ContextLayerAustralianStates"));
+        $d->Add( FinderFactory::Result("ContextLayerAustralianVegetation"));
         
         $this->Result($d);
 

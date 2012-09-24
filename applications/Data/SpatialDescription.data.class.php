@@ -13,6 +13,7 @@ class SpatialDescription extends Description {
 
         $this->SpatialDatatype();
         $this->Attribute();
+        $this->ColourRamp();
 
     }
     
@@ -40,6 +41,18 @@ class SpatialDescription extends Description {
         return $this->setProperty(func_get_arg(0));
     }
     
+
+    public function ColourRamp() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    public function HistogramBuckets() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
     
 }
 ?>

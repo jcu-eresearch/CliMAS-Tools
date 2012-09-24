@@ -24,15 +24,13 @@ if (!is_null($combination) && util::contains($combination, '_'))
     $scenario_desc = DatabaseClimate::GetScenarioDescription($scenario);
     $model_desc    = DatabaseClimate::GetModelDescription($model);
     
-    $format = '<a target="scenario" href="{URI}"><b>{DataName}</b></a><i>{Description}</i>{MoreInformation}';
+    $format = '<a target="scenario" href="{URI}"><b>{DataName}</b></a>&nbsp;&nbsp;&nbsp;<i>{Description}</i><br>{MoreInformation}';
     $scenario_info = $scenario_desc->asFormattedString($format);
     
-    $format = '<a target="model" href="{URI}"><b>{DataName}</b></a><i>{Description}</i>{MoreInformation}';
+    $format = '<a target="model" href="{URI}"><b>{DataName}</b></a>&nbsp;&nbsp;&nbsp;<i>{Description}</i><br>{MoreInformation}';
     $model_info = $model_desc->asFormattedString($format);
     
 }
-
-
 
 
 ?>
@@ -63,7 +61,7 @@ if (!is_null($combination) && util::contains($combination, '_'))
    
 </HEAD>
     <BODY>        
-        <div id="ScenarioInformation"><?php echo $scenario_info; ?></div>
+        <div id="ScenarioInformation"><?php echo $scenario_info; ?></div><br>
         <div id="ModelInformation"><?php echo $model_info; ?></div>
         
     </body>

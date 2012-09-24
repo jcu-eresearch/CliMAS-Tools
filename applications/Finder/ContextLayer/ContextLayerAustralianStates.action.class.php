@@ -22,7 +22,7 @@ class  ContextLayerAustralianStates extends Action implements iAction {
 
     /**
      * 
-     *  @return SpatialDescription [Political boundaries for Australia]
+     *  @return SpatialDescription [Vegeation for Australia]
      */
     public function Execute()
     {
@@ -32,7 +32,7 @@ class  ContextLayerAustralianStates extends Action implements iAction {
                                                                 //Australia/States/AustralianStates.shp
         $d->Filename(configuration::ContextSpatialLayersFolder()."Australia/States/AustralianStates.shp");
         $d->SpatialDatatype(spatial_util::$SPATIAL_TYPE_LINE);
-        $d->Attribute('ISLAND_NAM');
+        $d->Attribute('');
         $d->Description("Australian state boundaries");
 
         $this->Result($d);

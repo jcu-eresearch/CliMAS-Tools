@@ -39,7 +39,6 @@ class MapServerLayerRaster extends MapServerLayer {
     private function getStatistics()
     {
         $basic = spatial_util::RasterStatisticsBasic($this->Filename(), $this->Band());
-        
         $this->setPropertyByName("Minimum", $basic[spatial_util::$STAT_MINIMUM]);
         $this->setPropertyByName("Maximum", $basic[spatial_util::$STAT_MAXIMUM]);
         $this->setPropertyByName("Mean",    $basic[spatial_util::$STAT_MEAN]);

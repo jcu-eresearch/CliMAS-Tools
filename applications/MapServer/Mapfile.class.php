@@ -136,7 +136,7 @@ class Mapfile extends Object{
         $rgbs = array_values($layer->ColorTable());
         $values = array_keys($layer->ColorTable());
         
-        // need to be abale to calulate the "Value" tyranslattion to the colour indexs
+        // need to be able to calculate the "Value" translation to the colour indexs
         
         $min = $layer->Minimum();
         $max = $layer->Maximum();
@@ -144,8 +144,6 @@ class Mapfile extends Object{
         $range = $max - $min;
         
         $step = $range / $layer->HistogramBuckets();
-        
-        
         
         for ($index = 1; $index < count($values); $index++) 
         {
@@ -158,7 +156,8 @@ class Mapfile extends Object{
             $value2 = number_format( $proper_value2, 5, '.', '' );
             
             $rgb = $rgbs[$index - 1]; 
-
+            if (is_null($rgb)) $rgb = "-1 -1 -1"; // make null transparent
+            
             $expression_name = "";
             if ($layer->ColorUniqueValues())
             {

@@ -21,14 +21,16 @@ class Session {
      */
     public static function MapableResults()
     {
-
+        
         $actionsToMap = self::get(self::$ActionsToBeMapped);
         if (count($actionsToMap) == 0)
         {
             self::AddMapableAction(configuration::DefaultMapableActionClassname());
+            
             $actionsToMap = self::get(self::$ActionsToBeMapped);
         }
-
+        
+        
         $result = array();
         foreach ($actionsToMap as $actionToMap)
         {
@@ -99,6 +101,7 @@ class Session {
      */
     public static function AddMapableAction($actionClassname)
     {
+        
         $actionClassname = trim($actionClassname);
         if ($actionClassname == "") return;
 

@@ -257,6 +257,11 @@ $(document).ready(function(){
                         }
                      });
 
+    
+
+    // Type in the species of interest
+
+
 
     $( "#ToolFullExtent")
         .button({ text: false, icons: { primary: "ui-icon-image"  } })

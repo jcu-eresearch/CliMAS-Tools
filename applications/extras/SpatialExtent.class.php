@@ -109,7 +109,7 @@ class SpatialExtent extends Object {
     
     private function initByFilename($filename)
     {
-        if (!file_exists($filename)) throw new Exception(); //**TODO:  Proper Execption - Filename doesn n ott exist
+        if (!file_exists($filename)) throw new Exception("Can't find Filenamed {$filename}"); //**TODO:  Proper Execption - Filename doesn n ott exist
 
         $this->Filename($filename);
         
@@ -140,8 +140,10 @@ class SpatialExtent extends Object {
 
         //** Lower Left 
         $ll_raw = $result[2];
-        $ll_raw = str_replace("Lower Left  (", "", $ll_raw);
-        $ll_raw = str_replace("}", "", $ll_raw);
+        $ll_raw = str_replace("Lower Left", "", $ll_raw);
+        $ll_raw = str_replace("(", "", $ll_raw);
+        $ll_raw = util::leftStr($ll_raw, ')',false);
+        
         $ll_split= explode(",", trim($ll_raw));
 
         if (count($ll_split) != 2) throw new Exception(); //**TODO:: Proper Exception - Can't get Lower Left
@@ -151,8 +153,9 @@ class SpatialExtent extends Object {
 
         //** upper right
         $ur_raw = $result[3];
-        $ur_raw = str_replace("Upper Right (", "", $ur_raw);
-        $ur_raw = str_replace(")", "", $ur_raw);
+        $ur_raw = str_replace("Upper Right", "", $ur_raw);
+        $ur_raw = str_replace("(", "", $ur_raw);
+        $ur_raw = util::leftStr($ur_raw, ')',false);
                 
         $ur_split = explode(",", trim($ur_raw));
         if (count($ur_split) != 2) throw new Exception(); //**TODO:: Proper Exception - Can't get Upper Right

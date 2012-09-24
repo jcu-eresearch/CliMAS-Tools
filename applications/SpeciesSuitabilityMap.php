@@ -34,7 +34,10 @@ if (is_null($map_path) && $UserLayer == "")
 
     // add background layers
     foreach (Session::MapableResults() as $MapableResult)
+    {
         $M->Layers()->AddLayer($MapableResult);
+    }
+        
     
     $MF = Mapfile::create($M);
     $_SESSION['map_path'] = $MF->save($M);
@@ -95,13 +98,19 @@ if ($UserLayer != "")
         $layer instanceof MapServerLayerRaster;
         $layer->HistogramBuckets($bucket_count);
 
-        // this bit here needs to be moved - and only called if we want maxent 
-        $ramp = RGB::Ramp($MaxentThreshold, 1, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
+        // start ramp at Zero - 
+        $ramp = RGB::Ramp(0, 1, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
 
+        
+        
         $display_threshold = DatabaseMaxent::GetMaxentResult($species_id, DatabaseMaxent::$DisplayThresholdFieldName);
         if ( !($display_threshold instanceof ErrorMessage))
+        {
+            // chnage all values below thrteshgold to trasparent
             foreach ($ramp as $key => $rgb)  
-                if ($key < $display_threshold) $ramp[$key] = RGB::ColorWhite(); // set colour to black for below threshold
+                if ($key < $display_threshold) $ramp[$key] = null; // set colour to black for below threshold
+            
+        }
 
 
         $layer->ColorTable($ramp);             
@@ -162,7 +171,6 @@ if ($UserLayer != "")
     
 </HEAD>
 <BODY>
-    <?php // echo "map_path =  {$map_path}"; ?>
     <FORM style="margin: 0px; padding: 0px;"  id="MAP_FORM"  onsubmit="GetZoom()" METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
         <INPUT id="mapa" TYPE=IMAGE NAME="mapa" SRC="<?php if (!is_null($GUI)) echo $GUI->MapImageLocation();?>" style="clear:both; ">
         <INPUT TYPE=HIDDEN ID="ZoomFactor" NAME="ZoomFactor" VALUE="">
@@ -178,7 +186,7 @@ if ($UserLayer != "")
                     <div id="ColorKeyContainer" >
                     <?php
                         $ramp = RGB::Ramp($MaxentThreshold, 1, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
-                        echo RGB::RampDisplay($ramp,10,null,null,null,'OUTSIDE'); 
+                        echo RGB::RampDisplay($ramp,7,null,null,null,null,"Least Suitable","Most Suitable"); 
                     ?>
                     </div>
             
@@ -187,7 +195,7 @@ if ($UserLayer != "")
             <td width="20%" style="text-align:right;"><?php if (!is_null($GUI)) echo round($GUI->Extent()->East(),3); ?>&deg;</td>
         </tr>
         <tr>
-            <td colspan="3"><?php  if ($ascii_grid_webname != '') echo '<a target="_data_download"  href="'.$ascii_grid_webname.'">download ascii grid</a>'; ?></td>
+            <td colspan="3"><?php  if ($ascii_grid_webname != '') echo '<a target="_data_download"  href="'.$ascii_grid_webname.'">download ascii grid</a>'; ?> &nbsp;&nbsp; <i>(or right click 'save as')</i></td>
         </tr>
     </table>
     

@@ -8,8 +8,8 @@
 session_start();
 include_once dirname(__FILE__).'/includes.php';
 
-
 unset($_SESSION['map_path']);
+Session::ClearLayers();
 
 
 $scenarios = DatabaseClimate::GetScenarios();
@@ -79,21 +79,21 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 
 
     <div id="ToolBar" class="ui-widget-header ui-corner-all" >
-            <input id="species" value="Species">
+            <input id="species" value="Type in the species of interest">
     </div>
 
 
     <div id="UserSelectionBar" class="ui-widget-content ui-corner-all" >
         
         <h2 style="">DATA</h2>
-        <select id="datastyle_selection" onclick="selectDataStyle(this)">
+        <select id="datastyle_selection" onchange="selectDataStyle(this)">
             <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_current" value="CURRENT" checked/>CURRENT</option>
             <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_future"  value="FUTURE" />FUTURE</option>
         </select>
         
         
         <h2 style="">SCENARIO</h2>
-        <select id="scenario_selection" onclick="selectScenario(this)">
+        <select id="scenario_selection" onchange="selectScenario(this)">
         <?php
             foreach ($scenarios as $scenario)
             echo '<option  class="select_scenario_input" name="ScenarioTools" id="select_scenario_'.$scenario.'" value="'.$scenario.'" />'.$scenario.'</option>';
@@ -101,15 +101,21 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
         </select>
 
         <h2 style="">MODEL</h2>
-        <select id="model_selection" onclick="selectModel(this)">
+        <select id="model_selection" onchange="selectModel(this)">
         <?php
             foreach ($models as $model)
-                echo '<option  class="select_model_input" name="ModelTools" id="select_model_'.$model.'" value="'.$model.'" />'.$model.'</option>';
+            {
+                $modelname = $model;
+                if ($model == "ALL") $modelname  = "Median";
+                
+                echo '<option  class="select_model_input" name="ModelTools" id="select_model_'.$model.'" value="'.$model.'" />'.$modelname.'</option>';
+            }
+                
         ?>            
         </select>
         
         <h2 style="">TIME</h2>
-        <select id="time_selection" onclick="selectTime(this)">
+        <select id="time_selection" onchange="selectTime(this)">
         <?php
             foreach ($times as $time)
                 echo '<option  class="select_time_input" name="TimeTools" id="select_time_'.$time.'" value="'.$time.'" />'.$time.'</option>';

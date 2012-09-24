@@ -17,7 +17,7 @@ class MapServerLayers extends Object {
         parent::__construct();
         
         $this->parent = $parent;    
-        $this->layers = array(); //** array of MapServerLayer
+        $this->layers = array(); // array of MapServerLayer
         
     }
     
@@ -45,7 +45,7 @@ class MapServerLayers extends Object {
         $extent_matrix = array();
         foreach ($this->layers as $layer_name => $layer) 
         {
-            $layer instanceof MapServerLayer;  //** type hint
+            $layer instanceof MapServerLayer;  
             $extent_matrix[MapServerConfiguration::NORTH()][$layer_name] = $layer->North();
             $extent_matrix[MapServerConfiguration::SOUTH()][$layer_name] = $layer->South();
             $extent_matrix[MapServerConfiguration::EAST() ][$layer_name] = $layer->East();
@@ -68,7 +68,7 @@ class MapServerLayers extends Object {
 
         if (is_null($src)) return null;
 
-        //** load mulitple objects
+        // load mulitple objects
         if (is_array($src))
         {
             $result = array();
@@ -80,7 +80,10 @@ class MapServerLayers extends Object {
 
 
         if (Object::isObject($src))
+        {
             $this->AddLayerFromObject($src);
+        }
+            
 
         //** It's a string so most likely a Filename
         if (is_string($src))
@@ -93,7 +96,6 @@ class MapServerLayers extends Object {
 
                 if (is_null($L))
                 {
-                  //  echo "<br>Failed to load layer filename [{$src}]";
                     return null;
                 }
 
@@ -114,24 +116,34 @@ class MapServerLayers extends Object {
     private function AddLayerFromObject($src)
     {
         $src instanceof Object;
-
+        
+        
         $filename = $src->getPropertyByName("Filename", null);
         $attribute = $src->getPropertyByName("Attribute", null);
         $SpatialDatatype = $src->getPropertyByName("SpatialDatatype", null);
-
+        
+        
+        
         if (!file_exists($filename))
         {
-           // echo "<br>File does not exist Failed to load layer filename [{$filename}] "; //**TODO:: logg
             return null;
         }
 
+        
         $L = MapServerLayer::create($this, $filename,$attribute,$SpatialDatatype);
-        if (is_null($L))
+        if (is_null($L)) return null;
+        
+        $L instanceof MapServerLayer;
+        
+        if ($SpatialDatatype == spatial_util::$SPATIAL_TYPE_RASTER)
         {
-            //echo "<br>Failed to load layer from Object " .$src;
-            return null;
+            $L instanceof MapServerLayerRaster;
+            
+            $L->ColorTable($src->getPropertyByName("ColourRamp", null));
+            $L->HistogramBuckets($src->getPropertyByName("HistogramBuckets", 2));
+            
         }
-
+        
 
         $this->layers[$L->LayerName()] = $L;
 

@@ -793,7 +793,7 @@ TEXT;
      * @param type $unique_values  - array of value to colour unique values to be prefixed before scale
      * @return string 
      */
-    public static function RampDisplay($ramp,$swatch_width = 2,$class = "ColorKey",$id = "ColorKey",$unique_values = null,$value_locations = 'INSIDE')
+    public static function RampDisplay($ramp,$swatch_width = 2,$class = "ColorKey",$id = "ColorKey",$unique_values = null,$value_locations = 'INSIDE',$pre_label = "",$post_label = "")
     {
         if (is_null($class)) $class = $class = "ColorKey";
         if (is_null($id)) $id = $id = "ColorKey";
@@ -805,7 +805,7 @@ TEXT;
         
         $first_rgb = $ramp[$first];  $last_rgb = $ramp[$last]; 
         
-        $result  = '<div  id="'.$id.'" class="'.$class.'">';
+        $result  = '<div   id="'.$id.'" class="'.$class.'">';
 
         if (!is_null($unique_values) && is_array($unique_values))
         {
@@ -817,17 +817,20 @@ TEXT;
         }
         
         
+        $result .= '<div style="text-align: right; float: left;">'.$pre_label.'&nbsp;&nbsp;</div>';
         
-        // if locartion insiude then set back ground of values to the start and end colors
-        if ($value_locations == 'INSIDE')
-        {
-            $result .= '<div class="'.$class.'_first_value" id="'.$id.'_first_value"  style="text-align: right; width: 65px; padding-left:5px; padding-right:5px; float: left; height: 100%; background-color: #' . $first_rgb->asHex() . ';">'. number_format($first, 3)."</div>";
-        }
-        else
-        {
-            // OUTSIDE - so no background colour
-            $result .= '<div class="'.$class.'_first_value" id="'.$id.'_first_value"  style="text-align: right; width: 65px; padding-left:5px; padding-right:5px; float: left; height: 100%;">'. number_format($first, 3)."</div>";
-        }
+        
+        // if location insiude then set back ground of values to the start and end colors
+        if (!is_null($value_locations))
+            if ($value_locations == 'INSIDE')
+            {
+                $result .= '<div class="'.$class.'_first_value" id="'.$id.'_first_value"  style="text-align: right; width: 65px; padding-left:5px; padding-right:5px; float: left; height: 100%; background-color: #' . $first_rgb->asHex() . ';">'. number_format($first, 3)."</div>";
+            }
+            else
+            {
+                // OUTSIDE - so no background colour
+                $result .= '<div class="'.$class.'_first_value" id="'.$id.'_first_value"  style="text-align: right; width: 65px; padding-left:5px; padding-right:5px; float: left; height: 100%;">'. number_format($first, 3)."</div>";
+            }
             
 
         
@@ -839,11 +842,13 @@ TEXT;
             $result .= '<div class="'.$class.'_swatch" id="'.$id.'_'.$clean_value.'"  style="float: left; width: '.$swatch_width.'px; height: 100%; background-color: #' . $rgb->asHex() . ';">&nbsp;</div>';
         }
         
+        $result .= '<div style="text-align: right; float: left;">&nbsp;&nbsp;'.$post_label.'</div>';
         
-        if ($value_locations == 'INSIDE')
-            $result .= '<div class="'.$class.'_last_value" id="'.$id.'_last_value" style="padding-right:3px; float: left; height: 100%; background-color: #' . $last_rgb->asHex() . ';">'. number_format($last, 3)."</div>";
-        else
-            $result .= '<div class="'.$class.'_last_value" id="'.$id.'_last_value" style="padding-right:3px; float: left; height: 100%;">'. number_format($last, 3)."</div>";
+        if (!is_null($value_locations))
+            if ($value_locations == 'INSIDE')
+                $result .= '<div class="'.$class.'_last_value" id="'.$id.'_last_value" style="padding-right:3px; float: left; height: 100%; background-color: #' . $last_rgb->asHex() . ';">'. number_format($last, 3)."</div>";
+            else
+                $result .= '<div class="'.$class.'_last_value" id="'.$id.'_last_value" style="padding-right:3px; float: left; height: 100%;">'. number_format($last, 3)."</div>";
         
         $result .= "</div>";
         

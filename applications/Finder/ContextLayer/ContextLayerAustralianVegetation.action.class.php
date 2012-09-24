@@ -22,16 +22,27 @@ class ContextLayerAustralianVegetation extends Action implements iAction {
      *  @return SpatialDescription [Political boundaries for Australia]
      */
     public function Execute()
-    {
-        
+    {   
         $d = new SpatialDescription();
 
         $d->DataName("ContextLayerAustralianVegetation");
-                                                                
-        $d->Filename(configuration::ResourcesFolder()."Rasters/vegetation.tif");
+
+        $d->Filename(configuration::ResourcesFolder()."rasters/fred.asc");
+        
+        if (!file_exists($d->Filename())) return null;
+        
         $d->SpatialDatatype(spatial_util::$SPATIAL_TYPE_RASTER);
+        $d->Attribute('');
         $d->Description("Australian Vegetation");
 
+        $ramp = RGB::GradientGreenBeige();
+        
+        $ramp[0] = null;
+        
+        $d->ColourRamp($ramp);
+        
+        $d->HistogramBuckets(250);
+        
         $this->Result($d);
 
         return $d;

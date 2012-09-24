@@ -255,9 +255,6 @@ class spatial_util
     public static $STAT_RANGE   = "Range";
 
 
-
-    // ogrinfo -so Australia_states.shp | grep ":" | grep -v "INFO"
-
     public static function VectorLayers($filename)
     {
 

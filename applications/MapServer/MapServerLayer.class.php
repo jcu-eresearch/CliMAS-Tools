@@ -31,7 +31,9 @@ class MapServerLayer extends Object {
         
         $L = null;
         
-        switch (strtoupper($LayerType)) {
+        switch (strtoupper($LayerType)) 
+        {
+            
             case MapServerConfiguration::$SPATIAL_TYPE_RASTER:
                 $L = new MapServerLayerRaster($parent,$filename);
                 break;

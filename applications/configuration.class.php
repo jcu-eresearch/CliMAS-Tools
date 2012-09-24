@@ -9,9 +9,11 @@
 
 
 class configuration {
-
+    
+    
     
     public static function DefaultMapableActionClassname() { return "ContextLayerAustralianVegetation"; }
+    //public static function DefaultMapableActionClassname() { return "ContextLayerAustralianStates"; }
     
     public static function MapableBackgroundLayers() { return "ContextLayerMapableBackgroundLayers"; }
     
