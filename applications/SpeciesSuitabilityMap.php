@@ -195,7 +195,7 @@ if ($UserLayer != "")
             <td width="20%" style="text-align:right;"><?php if (!is_null($GUI)) echo round($GUI->Extent()->East(),3); ?>&deg;</td>
         </tr>
         <tr>
-            <td colspan="3"><?php  if ($ascii_grid_webname != '') echo '<a target="_data_download"  href="'.$ascii_grid_webname.'">download ascii grid</a>'; ?> &nbsp;&nbsp; <i>(or right click 'save as')</i></td>
+            <td colspan="3"><?php  if ($ascii_grid_webname != '') echo '<a target="_data_download"  href="'.$ascii_grid_webname.'">download ascii grid</a>&nbsp;&nbsp; <i>(or right click `save as`)</i>'; ?> </td>
         </tr>
     </table>
     

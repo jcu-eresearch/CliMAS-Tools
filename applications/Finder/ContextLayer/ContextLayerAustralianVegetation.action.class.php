@@ -35,7 +35,8 @@ class ContextLayerAustralianVegetation extends Action implements iAction {
         $d->Attribute('');
         $d->Description("Australian Vegetation");
 
-        $ramp = RGB::GradientGreenBeige();
+        
+        $ramp = RGB::ReverseGradient(RGB::GradientGreenBeige()) ;
         
         $ramp[0] = null;
         

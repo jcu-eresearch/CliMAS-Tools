@@ -122,6 +122,8 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
         ?>            
         </select>
         
+        <div id="download_all">
+        </div>
         
     </div>
 

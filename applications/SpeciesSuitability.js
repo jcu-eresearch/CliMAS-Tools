@@ -30,6 +30,18 @@ function addSpecies(species_id,speciesName)
     userSelectedLayer();
 
 
+    $('#download_all')
+        .html('<a target="_download_data" href="SpeciesSuitabilityDownload.php?species_id='+species_id+'">download data</a>')
+        ;
+
+    $('#download_all')
+        .button()
+        .css('width','90%')
+        .css('height','30px')
+        .css('margin-left','6px')
+        .css('margin-top','50px')
+        ;
+
 }
 
 
