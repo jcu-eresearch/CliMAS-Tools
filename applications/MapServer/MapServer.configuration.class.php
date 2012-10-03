@@ -25,9 +25,6 @@ class MapServerConfiguration {
 
     public static function pathToMapSymbols()  { return configuration::ResourcesFolder()."symbols/symbols35.sym";}
     public static function pathToMapFonts()    { return configuration::ResourcesFolder()."fonts/fonts.list";}
-
-    
-    
     
 
     public static function mapfileExtension()  { return "map"; }
