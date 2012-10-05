@@ -207,6 +207,11 @@ class configuration {
         global $conf;
         return $conf[Parameter::$TempFolder]; 
     }
+
+    public static function TempFolderWeb() { 
+        global $conf;
+        return $conf[Parameter::$TempFolderWeb]; 
+    }
     
     
 }

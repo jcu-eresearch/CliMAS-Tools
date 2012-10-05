@@ -1134,11 +1134,9 @@ SQL;
         {
             $str = str_replace($delim ,'',$str);
         }
-            
 
         $str = str_replace(chr(10),'',$str);
         $str = str_replace(chr(13),'',$str);
-
         
         if (!is_null($otherChars) )
         {

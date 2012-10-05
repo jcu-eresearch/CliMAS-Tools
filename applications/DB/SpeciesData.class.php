@@ -1672,60 +1672,11 @@ class SpeciesData extends Object {
    }
     
     
-    
-    
-    
-    public static function FetchFromALA($species_name,$with_insert = true)
-    {
-
-
-        // check to see if we already have this one
-
-        $taxa_data_count = DBO::Count('species_taxa_tree', "species = E'{$species_name}'");
-        if ($taxa_data_count instanceof ErrorMessage)
-        {
-            return ErrorMessage::Stacked(__METHOD__, __LINE__, '', true, $taxa_data_count);
-        }
-        
-        
-        if ($taxa_data_count > 0 )
-        {
-            
-            ErrorMessage::Marker("ALA data for{$species_name} ALREADY DOWNLOAED taxa_data_count = {$taxa_data_count}");
-            
-            $id4name = self::id4ScientificName($species_name);
-                
-            if (count($id4name) == 1)
-            {
-                $first = util::first_element($id4name);
-                return $first['species_id'];
-                
-            }
-            
-        }
-
-        $url =  'http://bie.ala.org.au/ws/search.json?q='.urlencode($species_name);
-
-        try {
-
-            $data = json_decode(file_get_contents($url));
-
-            $guid = $data->searchResults->results[0]->guid;
-
-
-            echo "Get ALA data for {$species_name}\n";
-            $result0 = get_object_vars($data->searchResults->results[0]);
-
-            $parent_guid  = $result0['parentGuid'];
-
-            $species_data_url = "http://bie.ala.org.au/ws/species/{$guid}.json";
-
-            $species_data = json_decode(file_get_contents($species_data_url));
-
-            $f = $species_data->classification;
-            
-            $d = array();
-            
+    /**
+     * @param type $species_name - potental species name  (scientific name)
+     *
+     * @return Array 
+     * 
             $d['species_id'] = self::NextSpeciesID();
             $d['parent_guid'] = $parent_guid;
             $d['guid'] = $f->guid;
@@ -1743,43 +1694,79 @@ class SpeciesData extends Object {
             $d['genus_guid'] = $f->genusGuid;
             $d['species'] = $f->species;
             $d['species_guid'] = $f->speciesGuid;
+* 
+     */
+    public static function ALASpeciesTaxa($species_name)
+    {
+
+        $url =  'http://bie.ala.org.au/ws/search.json?q='.urlencode($species_name);
+
+        try {
+
+            $data = json_decode(file_get_contents($url));
+
+            $guid = $data->searchResults->results[0]->guid;
+
+            $result0 = get_object_vars($data->searchResults->results[0]);
 
             
+            if (!array_key_exists('parentGuid', $result0)) return null;
             
-            if ($with_insert)
+            
+            $parent_guid  = $result0['parentGuid'];
+
+            $species_data_url = "http://bie.ala.org.au/ws/species/{$guid}.json";
+
+            $species_data = json_decode(file_get_contents($species_data_url));
+
+            $f = $species_data->classification;
+            
+            $d = array();
+            
+            $d['parent_guid'] = $parent_guid;
+            $d['guid'] = $f->guid;
+            $d['kingdom'] = $f->kingdom;
+            $d['kingdom_guid'] = $f->kingdomGuid;
+            $d['phylum'] = $f->phylum;
+            $d['phylum_guid'] = $f->phylumGuid;
+            $d['clazz'] = $f->clazz;
+            $d['clazz_guid'] = $f->clazzGuid;
+            $d['orderz'] = $f->order;
+            $d['orderz_guid'] = $f->orderGuid;
+            $d['family'] = $f->family;
+            $d['family_guid'] = $f->familyGuid;
+            $d['genus'] = $f->genus;
+            $d['genus_guid'] = $f->genusGuid;
+            $d['species'] = $f->species;
+            $d['species_guid'] = $f->speciesGuid;
+
+            $species_data_url = "http://bie.ala.org.au/ws/species/{$d['species_guid']}.json";
+
+            $data = json_decode(file_get_contents($species_data_url));
+
+            $commonNames = $data->commonNames;
+
+            $names = array();
+            foreach ($commonNames as $index => $commonNameRow) 
             {
-                
-                ErrorMessage::Marker("Inserting from ALA for {$species_name} ");
-                
-                $insert_result = DBO::InsertArray('species_taxa_tree',$d,true);
-                
-                if ($insert_result instanceof ErrorMessage)
-                {
-                    return ErrorMessage::Stacked(__METHOD__, __LINE__, '', true, $insert_result);
-                }
-            
-                ErrorMessage::Marker("Insert for {$d['species_id']} {$species_name} insert_result = {$insert_result}");
-            
-            
-                return $d['species_id'];
-                
+                $single_common_name = trim($commonNameRow->nameString);
+                $names[$single_common_name] = $single_common_name;
             }
-            else
-            {
-                ErrorMessage::Marker("No Insert - below is contents of d");
-                ErrorMessage::Marker($d);
                 
-            }
+        
             
+            $d['common_names'] = $names;
+            
+            return $d;
 
         } catch (Exception $exc) {
             ErrorMessage::Marker("Can't get data for {$species_name} " .$exc->getMessage());
         }
-
         
         return null;
         
     }
+    
     
 }
 

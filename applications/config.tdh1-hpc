@@ -15,7 +15,9 @@ if (stripos( $hostname, ".default.domain") !== FALSE)
     $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." tdh1/tdhtools  default.domain";        
         
     $conf[Parameter::$TempFolder]    = "/scratch/jc166922/tdh1/tmp/";
-        
+    $conf[Parameter::$TempFolderWeb]  = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/tdhtools/tmp/";            
+    
+    
     $conf[Parameter::$APPLICATION_FOLDER]        = "/scratch/jc166922/tdh1/tdhtools/";
     $conf[Parameter::$APPLICATION_FOLDER_WEB]    = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/tdhtools/";    
     

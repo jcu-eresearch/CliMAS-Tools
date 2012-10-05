@@ -9,7 +9,8 @@ if (stripos( $hostname, "tdh-tools-2") !== FALSE)
     
     $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." tdh-tools-2";
     
-    $conf[Parameter::$TempFolder ] = "/www/html/eresearch/tmp/";
+    $conf[Parameter::$TempFolder ]    = "/www/html/eresearch/tmp/";
+    $conf[Parameter::$TempFolderWeb]  = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/tdhtools/tmp/";    
     
     $conf[Parameter::$APPLICATION_FOLDER]    = "/www/html/eresearch/tdhtools/";
     
@@ -20,7 +21,7 @@ if (stripos( $hostname, "tdh-tools-2") !== FALSE)
     $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/www/html/eresearch/output/";
     $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/output/";
     $conf[Parameter::$RESOURCES_FOLDER]      = "/www/html/eresearch/tdhtools/Resources/";
-    $conf[Parameter::$SOURCE_DATA_FOLDER]    = "/scratch/jc166922/tdh2/source/";
+    $conf[Parameter::$SOURCE_DATA_FOLDER]    = "/scratch/jc166922/tdh1/source/";
     
     $conf[Parameter::$ICONS_FOLDER]          = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/tdhtools/Resources/icons/";
     

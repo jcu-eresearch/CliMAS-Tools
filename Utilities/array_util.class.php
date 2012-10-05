@@ -2,6 +2,84 @@
 class array_util
 {
 
+    public static function CleanStrings($src,$translation_array = null,$replace_non_printable = true,$default_char = "")
+    {
+        if (is_null($translation_array))
+        {
+            $translation_array = array();
+            
+            foreach (explode("",util::$EXTRA_CHARS) as $char) 
+                $translation_array[$char] = $default_char;
+            
+        }
+        else
+        {
+            if (is_string($translation_array))
+            {
+                $chars = $translation_array;
+                
+                $translation_array = array();
+                foreach (str_split($chars) as $char) 
+                {
+                    $translation_array[$char] = $default_char;
+                }
+                    
+                
+            }
+            
+            
+        }
+        
+        
+        $result = array();
+        
+        // loop thru each src element
+        foreach ($src as $key => $src_str) 
+        {
+        
+            $result_str = $src_str;
+            
+            //ErrorMessage::Marker("STARTED:   $result_str");
+            
+            // for each source element do char translation
+            foreach ($translation_array as $trans_key => $trans_value) 
+            {
+                //ErrorMessage::Marker("Cleaning: [{$trans_key}] to  [{$trans_value}]  $result_str");
+                $result_str = str_replace($trans_key, $trans_value, $result_str);
+            }
+                
+            //ErrorMessage::Marker("Cleaned chars:   $result_str");
+            
+            if ($replace_non_printable)
+            {
+                for ($asc_num = 0; $asc_num < 32; $asc_num++) 
+                {
+                    //ErrorMessage::Marker("Cleaning:  [".chr($asc_num)."] to  [{$default_char}]  $result_str");
+                    $result_str = str_replace(chr($asc_num), $default_char, $result_str);
+                }
+                    
+                
+                for ($asc_num = 128; $asc_num <= 255; $asc_num++) 
+                {
+                   // ErrorMessage::Marker("Cleaning:  [".chr($asc_num)."] to  [{$default_char}]  $result_str");
+                    $result_str = str_replace(chr($asc_num), $default_char, $result_str);
+                }
+                    
+            }
+            
+            $result[$key] = $result_str;
+            
+            
+        }
+        
+        
+        return $result;
+        
+        
+    }
+    
+    
+    
     /*
     * @method arrayAverage
     * @param $src

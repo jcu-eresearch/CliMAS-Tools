@@ -9,8 +9,8 @@ include_once 'includes.php';
 
 $bucket_count = 20;
 
-$ascii_grid_filename = '';
-$ascii_grid_webname = '';
+$grid_filename_asc = '';
+$grid_filename_web = '';
 
 $GUI = null; 
 
@@ -68,8 +68,6 @@ if ($UserLayer != "")
 {
 
     // get the ascvi grid filename
-    
-    
         
     $M = new MapServerWrapper();
 
@@ -78,29 +76,38 @@ if ($UserLayer != "")
         $M->Layers()->AddLayer($MapableResult);
 
     // add user layer
-
-    $ascii_grid_filename = SpeciesFiles::species_data_folder($species_id)."{$UserLayer}.asc";
-    if (file_exists($ascii_grid_filename))
+    // name replaces to match new data sources
+    if ($UserLayer == "CURRENT_CURRENT_1990") $UserLayer = "1990";
+    $UserLayer = str_replace("_ALL_", "_all_", $UserLayer);
+    
+    $grid_filename_asc = SpeciesFiles::species_data_folder($species_id)."{$UserLayer}.asc";
+    $grid_filename_gz  = SpeciesFiles::species_data_folder($species_id)."{$UserLayer}.asc.gz";
+    
+    if (!file_exists($grid_filename_asc))
     {
-        $ascii_grid_webname  = SpeciesFiles::species_data_folder_web($species_id)."{$UserLayer}.asc";
-    }
-    else
-    {
-        $ascii_grid_filename = SpeciesFiles::species_data_folder($species_id)."{$UserLayer}_median.asc"; // old filename convention to add median to the end of the filename        
-        $ascii_grid_webname  = SpeciesFiles::species_data_folder_web($species_id)."{$UserLayer}_median.asc";
-    }
+        // check for GZ file is here 
+        if ( file_exists($grid_filename_gz)  )
+        {
+            // gzip is there bu asc is not then create asc - but leave gz inplace
+            // as gz is loinked from somewhere else.
+            $cmd = "gunzip -c '{$grid_filename_gz}' > '{$grid_filename_asc}'";;
+            exec($cmd);
+        }
         
+    }
     
     
-    if (file_exists($ascii_grid_filename))
+    $grid_filename_web  = SpeciesFiles::species_data_folder_web($species_id)."{$UserLayer}.asc.gz";
+    
+    
+    if (file_exists($grid_filename_asc))
     {
-        $layer = $M->Layers()->AddLayer($ascii_grid_filename);
+        $layer = $M->Layers()->AddLayer($grid_filename_asc);
         $layer instanceof MapServerLayerRaster;
         $layer->HistogramBuckets($bucket_count);
 
         // start ramp at Zero - 
         $ramp = RGB::Ramp(0, 1, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
-
         
         
         $display_threshold = DatabaseMaxent::GetMaxentResult($species_id, DatabaseMaxent::$DisplayThresholdFieldName);
@@ -195,7 +202,7 @@ if ($UserLayer != "")
             <td width="20%" style="text-align:right;"><?php if (!is_null($GUI)) echo round($GUI->Extent()->East(),3); ?>&deg;</td>
         </tr>
         <tr>
-            <td colspan="3"><?php  if ($ascii_grid_webname != '') echo '<a target="_data_download"  href="'.$ascii_grid_webname.'">download ascii grid</a>&nbsp;&nbsp; <i>(or right click `save as`)</i>'; ?> </td>
+            <td colspan="3"><?php  if ($grid_filename_asc != '') echo '<a target="_data_download"  href="'.$grid_filename_web.'">download ascii grid</a>&nbsp;&nbsp; <i>(or right click `save as`)</i>'; ?> </td>
         </tr>
     </table>
     

@@ -22,7 +22,14 @@ $models    = array_flip($models);
 $times     = array_flip($times);
 
 unset($scenarios['CURRENT']);
+foreach (explode(",","SRESA1B,SRESA1FI,SRESA2,SRESB1,SRESB2") as $remove)  unset($scenarios[$remove]);
+
+
 unset($models['CURRENT']);
+unset($models['ALL']);
+
+$models['all'] = "Median";
+
 unset($times['1990']);
 unset($times['1975']);
 
@@ -47,8 +54,12 @@ sort($times);
 // GLOBAL VARIABLES
 <?php
 echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),'ApplicationFolderWeb');
+
 echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web(),'Maxent_Species_Data_folder_web');
-echo htmlutil::AsJavaScriptObjectArray(SpeciesFiles::speciesList(),"full_name","species_id","availableSpecies");
+
+$species_taxa_data = matrix::Load(configuration::SourceDataFolder()."species_common_name_list.txt", ",");
+echo htmlutil::AsJavaScriptObjectArray($species_taxa_data,"full_name","ROW","availableSpecies");
+
 echo htmlutil::AsJavaScriptArray($scenarios,'scenarios');
 echo htmlutil::AsJavaScriptArray($models,   'models');
 echo htmlutil::AsJavaScriptArray($times,    'times');
@@ -106,7 +117,7 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
             foreach ($models as $model)
             {
                 $modelname = $model;
-                if ($model == "ALL") $modelname  = "Median";
+                if ($model == "all") $modelname  = "Median";
                 
                 echo '<option  class="select_model_input" name="ModelTools" id="select_model_'.$model.'" value="'.$model.'" />'.$modelname.'</option>';
             }
@@ -162,7 +173,7 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
     
     <div id="information" class="ui-widget-content ui-corner-all" >
 
-        <iframe  class=""s
+        <iframe  class=""
                     ID="information_content"
                    src="SpeciesSuitabilityInformation.php"
                  width="760"

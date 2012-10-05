@@ -22,7 +22,14 @@ $models    = array_flip($models);
 $times     = array_flip($times);
 
 unset($scenarios['CURRENT']);
+foreach (explode(",","SRESA1B,SRESA1FI,SRESA2,SRESB1,SRESB2") as $remove)  unset($scenarios[$remove]);
+
+
 unset($models['CURRENT']);
+unset($models['ALL']);
+
+$models['all'] = "Median";
+
 unset($times['1990']);
 unset($times['1975']);
 
@@ -94,7 +101,7 @@ echo htmlutil::AsJavaScriptSimpleVariable($Maxent_Species_Data_folder_web,'Maxen
     <div id="download_links" class="ui-widget-content ui-corner-all" style="float: none; clear: both; height: 3000px;" >
 
         <?php 
-            $current = "{$Maxent_Species_Data_folder_web}CURRENT_CURRENT_1975.asc";
+            $current = "{$Maxent_Species_Data_folder_web}1990.asc.gz";
         ?>
 
         <div id="current_condition" class="ui-widget-header ui-corner-all" style="margin: 10px; text-align: center; padding: 8px; width: 300px; height:30px;  font-size: 1.2em;float: left;  height:" >
@@ -153,21 +160,9 @@ echo htmlutil::AsJavaScriptSimpleVariable($Maxent_Species_Data_folder_web,'Maxen
                         // creating link  - if model is ALL check that we get the right filename
                         // look for standard name otherwise look with _median 
 
-                        $true_filename = SpeciesData::species_data_folder($species_id)."{$scenario}_{$model}_{$time}.asc";
-                        $link = basename($true_filename);
+                        $true_filename = SpeciesData::species_data_folder($species_id)."{$scenario}_{$model}_{$time}.asc.gz";
                         
-                        if (!file_exists($true_filename))
-                        {
-                            $true_filename = SpeciesData::species_data_folder($species_id)."{$scenario}_{$model}_{$time}_median.asc";
-                            $link = basename($true_filename);
-                            
-                            if (!file_exists($true_filename))
-                            {
-                                $link = null;
-                            }
-                            
-                        }
-                        
+                        $link = (file_exists($true_filename)) ?  basename($true_filename) : null;
                         
                         echo "\n".'<td width="50" ><a href="'.((is_null($link) ? '#' : $Maxent_Species_Data_folder_web.$link)).'">'.((is_null($link) ? '' : $time)).'</a></td>';
 

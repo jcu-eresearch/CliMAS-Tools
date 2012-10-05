@@ -16,7 +16,7 @@ function addSpecies(species_id,speciesName)
     
     currentScenario = 'CURRENT';
     currentModel = 'CURRENT';
-    currentTime = '1975';
+    currentTime = '1990';
 
     currentCombination = currentScenario + '_' + currentModel + '_' + currentTime;    
 
@@ -57,7 +57,7 @@ function selectDataStyle(src)
     {
         currentScenario = 'CURRENT';
         currentModel = 'CURRENT';
-        currentTime = '1975';
+        currentTime = '1990';
         
         disableSelectorButtons();
     }
@@ -108,7 +108,7 @@ function setCurrentCombination()
     {
         currentScenario = 'CURRENT';
         currentModel = 'CURRENT';
-        currentTime = '1975';        
+        currentTime = '1990';        
         currentCombination = currentScenario + '_' + currentModel + '_' + currentTime;    
         
         $('#information_content').attr('src','SpeciesSuitabilityInformation.php?combination=');  // call info with empty combo

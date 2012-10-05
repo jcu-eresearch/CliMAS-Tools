@@ -47,7 +47,8 @@ class Parameter
     public static $Maxent_Species_Data_Occurance_Filename = "Maxent_Species_Data_Occurance_Filename";
 
     
-    public static $TempFolder = "TempFolder";
+    public static $TempFolder    = "TempFolder";
+    public static $TempFolderWeb = "TempFolderWeb";
 
 
     
