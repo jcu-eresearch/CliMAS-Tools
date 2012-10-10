@@ -1,4 +1,4 @@
-// GLOBAL VARIABLES
+// GLOBAL VARIABLES 
 
 
 function GetZoom() {
@@ -544,7 +544,19 @@ function updateCurrentPackage()
     $('#CountFutureTotals').html(futureCount);
     $('#CountGrandTotal').html(inputsCount * futureCount);
 
-    
+
+
+    if (inputsCount > 0 && jData.scenarios.length > 0 && jData.times.length > 0)
+    {        
+        $('#CreateProcess').removeClass('ui-state-disabled');  // make enabled
+        $('#CreateProcess').click(function() {CreateProcess();}) // add click evenet
+    }
+    else
+    {
+        $('#CreateProcess').addClass('ui-state-disabled'); // make disabled
+        $('#myimage').unbind('click'); / remove click evenet/
+    }
+
 
 }
 
@@ -636,6 +648,8 @@ function addSingleProcess(sData)
 
 
      
+     
+     
 
     $.post("HotSpotsAjaxExecute.php", sData , function(data) {postAddSingleProcess(data);},"json");
 
@@ -647,6 +661,9 @@ function addSingleProcess(sData)
 
 function postAddSingleProcess(data)
 {
+    
+    
+    
     
     var progressStr = "";
     
@@ -775,7 +792,6 @@ function buildRichnessOutputTab(job_description,result,data)
     if (ID == -1) return;
     
     ID = ID.replace('.',"_");
-    ID = ID.replace(' ',"_");
     
     
     var parameters = modelledParametersFromRichnessResult(result);
@@ -1116,7 +1132,7 @@ $(document).ready(function(){
 
     screenSetup();
 
-    $('#tabs').height(699).tabs();
+    $('#tabs').height(3000).tabs();
     $('.selectable')
         .selectable()
         .selectable(
@@ -1151,9 +1167,11 @@ $(document).ready(function(){
 
     $('#CreateProcess')
         .button()
-        .click(function() {CreateProcess();})
         .css('margin',"10%")
         ;
+
+    $('#CreateProcess').addClass('ui-state-disabled');
+
 
     $('#UpdateProcess')
         .button()
@@ -1164,14 +1182,8 @@ $(document).ready(function(){
     $('#InputTypeSpecies').click();
 
 
-    selectAllModels();
-    selectAllScenarios();
+    // selectAllScenarios();
 
-    $('#tabs-2').hide();
-    $('#tabs-3').hide();
-
-    $('#tab_label_2').hide();
-    $('#tab_label_3').hide();
    
     if (cmd != '') previousCommand(cmd);
    

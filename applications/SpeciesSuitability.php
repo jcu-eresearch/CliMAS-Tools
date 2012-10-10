@@ -57,8 +57,9 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),
 
 echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web(),'Maxent_Species_Data_folder_web');
 
-$species_taxa_data = matrix::Load(configuration::SourceDataFolder()."species_common_name_list.txt", ",");
-echo htmlutil::AsJavaScriptObjectArray($species_taxa_data,"full_name","ROW","availableSpecies");
+
+        $species_taxa_data = matrix::Load(configuration::SourceDataFolder()."species_to_id.txt", ",");
+        echo htmlutil::AsJavaScriptObjectArray($species_taxa_data,"name","id","availableSpecies");
 
 echo htmlutil::AsJavaScriptArray($scenarios,'scenarios');
 echo htmlutil::AsJavaScriptArray($models,   'models');

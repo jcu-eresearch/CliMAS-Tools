@@ -137,10 +137,27 @@ class DatabaseClimate {
     }
     
     
-    public static  function GetScenarioDescriptions() 
+    public static  function GetScenarioDescriptions($dataname_contains = null) 
     {
+        
+        if (is_null($dataname_contains)) return Descriptions::fromTable("scenarios");
+        
+        $src = Descriptions::fromTable("scenarios");
+        $src instanceof Descriptions;
 
-        return Descriptions::fromTable("scenarios");
+        $D = new Descriptions();
+        $D->keyIsDescriptive(false);
+
+        foreach ($src->Descriptions() as $obj_id => $row) 
+        {
+            $row instanceof Description;
+            if (util::contains($row->DataName(), $dataname_contains)) 
+                $D->Add($row);
+                    
+        }
+        
+        return $D;
+        
     }
 
     public static  function GetModelsDescriptions() 

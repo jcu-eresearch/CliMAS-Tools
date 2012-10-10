@@ -1675,6 +1675,8 @@ class SpeciesData extends Object {
     /**
      * @param type $species_name - potental species name  (scientific name)
      *
+     * @parm $return_json_as  null = json data not returned  / value = this name will be added as a key to returned array and will contain original JSON data
+     * 
      * @return Array 
      * 
             $d['species_id'] = self::NextSpeciesID();
@@ -1696,7 +1698,7 @@ class SpeciesData extends Object {
             $d['species_guid'] = $f->speciesGuid;
 * 
      */
-    public static function ALASpeciesTaxa($species_name)
+    public static function ALASpeciesTaxa($species_name,$return_json_as = null)
     {
 
         $url =  'http://bie.ala.org.au/ws/search.json?q='.urlencode($species_name);
@@ -1708,22 +1710,19 @@ class SpeciesData extends Object {
             $guid = $data->searchResults->results[0]->guid;
 
             $result0 = get_object_vars($data->searchResults->results[0]);
-
             
             if (!array_key_exists('parentGuid', $result0)) return null;
-            
-            
-            $parent_guid  = $result0['parentGuid'];
 
             $species_data_url = "http://bie.ala.org.au/ws/species/{$guid}.json";
 
-            $species_data = json_decode(file_get_contents($species_data_url));
-
+            $species_data_json_search_results = file_get_contents($species_data_url);
+            
+            $species_data = json_decode($species_data_json_search_results);
+            
             $f = $species_data->classification;
             
             $d = array();
-            
-            $d['parent_guid'] = $parent_guid;
+            $d['parent_guid'] = $result0['parentGuid'];;
             $d['guid'] = $f->guid;
             $d['kingdom'] = $f->kingdom;
             $d['kingdom_guid'] = $f->kingdomGuid;
@@ -1739,11 +1738,18 @@ class SpeciesData extends Object {
             $d['genus_guid'] = $f->genusGuid;
             $d['species'] = $f->species;
             $d['species_guid'] = $f->speciesGuid;
-
+            
+            
             $species_data_url = "http://bie.ala.org.au/ws/species/{$d['species_guid']}.json";
 
-            $data = json_decode(file_get_contents($species_data_url));
+            $d['url'] = $species_data_url;
+            
+            $species_json = file_get_contents($species_data_url);
 
+            if (!is_null($return_json_as)) $d[$return_json_as] = $species_json;
+            
+            $data = json_decode($species_json);
+            
             $commonNames = $data->commonNames;
 
             $names = array();
@@ -1752,8 +1758,6 @@ class SpeciesData extends Object {
                 $single_common_name = trim($commonNameRow->nameString);
                 $names[$single_common_name] = $single_common_name;
             }
-                
-        
             
             $d['common_names'] = $names;
             

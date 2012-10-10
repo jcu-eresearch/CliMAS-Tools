@@ -30,6 +30,25 @@ class htmlutil {
         return $result."\n";
     }
 
+    public static function AsJavaScriptArrayFromFile($filename,$variableName,$sort = false)
+    {
+
+        if (is_null($filename)) return "";
+        if (is_null($variableName)) return "";
+        
+        if (!file_exists($filename)) return "";
+        
+        $values = array_util::Trim(file($filename));
+        
+        if ($sort) sort($values);
+        
+        $result = "var {$variableName} = ['".join("','",$values)."'];";
+        
+        unset($values);
+        return $result."\n";
+    }
+    
+    
     
     /**
      * 

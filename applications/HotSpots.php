@@ -30,13 +30,14 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
     <?php     
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),'ApplicationFolderWeb');
         
-        echo htmlutil::AsJavaScriptArray(SpeciesData::Clazz(),'availableTaxa');
-
-        echo htmlutil::AsJavaScriptArray(SpeciesData::Family(),'availableFamily');
-
-        echo htmlutil::AsJavaScriptArray(GenusData::ModelledForAllGenusNamesOnly() ,'availableGenus');
+        echo htmlutil::AsJavaScriptArrayFromFile(configuration::SourceDataFolder()."clazz_list.txt",'availableTaxa',true);
         
-        echo htmlutil::AsJavaScriptObjectArray(SpeciesFiles::speciesList(),"full_name","species_id","availableSpecies");    
+        echo htmlutil::AsJavaScriptArrayFromFile(configuration::SourceDataFolder()."family_list.txt",'availableFamily',true);
+
+        echo htmlutil::AsJavaScriptArrayFromFile(configuration::SourceDataFolder()."genus_list.txt",'availableGenus',true);
+        
+        $species_taxa_data = matrix::Load(configuration::SourceDataFolder()."species_to_id.txt", ",");
+        echo htmlutil::AsJavaScriptObjectArray($species_taxa_data,"name","id","availableSpecies");
         
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSource');
         
@@ -67,17 +68,16 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
     
 <div id="thecontent">
 
-    
     <div id="tabs">
         <ul>
-            <li id="tab_label_1"><a href="#tabs-1">Inputs</a></li>
-            <li id="tab_label_2"><a href="#tabs-2">Climate Models</a></li>
-            <li id="tab_label_3"><a href="#tabs-3">Emission Scenarios</a></li>
-            <li id="tab_label_4"><a href="#tabs-4">Years</a></li>
-            <li id="tab_label_6"><a href="#tabs-6">Data Calculation</a></li>
+            <li id="tab_label_1"><a href="#tabs-1">1). Species List</a></li>
+            <li id="tab_label_3"><a href="#tabs-3">2). Select Emission Scenarios</a></li>
+            <li id="tab_label_4"><a href="#tabs-4">3). Select Time points</a></li>
+            <li id="tab_label_6"><a href="#tabs-6">4). Start Calculation</a></li>
         </ul>
         <div id="tabs-1">
-            
+        
+            <i>Use this area to build a list of species to be modelled. Use Taxa, Family and genus to add all species from that grouping</i>
             <h3 id="InputsSearchBar" class="ui-widget-header ui-corner-all">
                 <form>
                     <div id="InputTypesSet">
@@ -115,53 +115,31 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
             
             
         </div>
-
-        <div id="tabs-2">
-            <div class="SelectionToolBar ui-widget-header ui-corner-all">
-                <button id="SelectAllModels"  >select all</button>
-                <button id="SelectNoneModels" >deselect all</button>
-                <button id="SelectDefaultModels" >Defaults</button>
-                <span class="text" >median dataset will be calculated across selected models</span>
-            </div>       
-            
-            <ul id="ModelsSelection" class="selectable">
-            <?php 
-                $liFormat = '<li id="Models_{DataName}" class="ui-widget-content ui-corner-all " ><h4>{DataName}</h4><p>{Description}</p></li>'; 
-                echo DatabaseClimate::GetModelsDescriptions()->asFormattedString($liFormat); 
-            ?>
-            </ul>
-            
-            
-            <ul class="references">
-                <li>references:</li>
-                <?php echo DatabaseClimate::GetModelsDescriptions()->asFormattedString('<li><a targte="_ref" href="{URI}">{DataName}</a></li>'); ?>
-            </ul>
-            
-            
-        </div>
         
         <div id="tabs-3">
             <div class="SelectionToolBar ui-widget-header ui-corner-all">
                 <button id="SelectAllScenarios"  >select all</button>
                 <button id="SelectNoneScenarios" >deselect all</button>
                 <button id="SelectDefaultScenarios" >Defaults</button>
-                <button id="SelectSomeScenarios_SRES" >select SRES*</button>
+                <!-- <button id="SelectSomeScenarios_SRES" >select SRES*</button> -->
                 <button id="SelectSomeScenarios_RCP" >select RCP*</button>
             </div>       
             
             <ul id="ScenariosSelection" class="selectable" >
-            <?php 
-                $liFormat = '<li id="Scenarios_{DataName}" class="ui-widget-content ui-corner-all " ><h4>{DataName}</h4><p>{Description}</p> </li>'; 
-                echo DatabaseClimate::GetScenarioDescriptions()->asFormattedString($liFormat); 
+            <?php  
+               // aaa 
+                $liFormat = '<li    id="Scenarios_{DataName}" class="ui-widget-content ui-corner-all " ><h4>{DataName}</h4><p>{Description}</p> </li>'; 
+                echo DatabaseClimate::GetScenarioDescriptions('RCP')->asFormattedString($liFormat); 
             ?>
             </ul>
             <ul class="references">
-                <li>references:</li>
-                <?php echo DatabaseClimate::GetScenarioDescriptions()->asFormattedString('<li><a targte="_ref" href="{URI}">{DataName}</a></li>'); ?>
+                <li>references <i>(links to exernal site)</i>&nbsp;&nbsp;</li>
+                <?php echo DatabaseClimate::GetScenarioDescriptions('RCP')->asFormattedString('<li><a target="_ref" href="{URI}">{DataName}</a></li>'); ?>
             </ul>
             
             
         </div>
+        
 
         <div id="tabs-4">
             <div class="SelectionToolBar ui-widget-header ui-corner-all">

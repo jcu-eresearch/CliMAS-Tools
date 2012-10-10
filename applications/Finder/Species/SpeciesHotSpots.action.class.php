@@ -55,7 +55,7 @@ class SpeciesHotSpots extends SpeciesRichness {
         
         // clean up parameters
         $this->cleanParameters();
-        $this->clazz($this->taxa()); // the UI send Taxa we need to pass the Riuchness as Clazz
+        $this->clazz($this->taxa()); // the UI send Taxa we need to pass to Richness as Clazz
         
         $this->initialised(true);
         $this->UpdateStatus('Hotspot Calculation initialised');

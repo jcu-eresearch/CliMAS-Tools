@@ -52,9 +52,7 @@ class SpeciesRichness extends CommandAction {
         
         $this->getThresholds();
         
-        
         $this->calculateRichness();  
-
         
         $this->getResults();
         
@@ -436,38 +434,43 @@ class SpeciesRichness extends CommandAction {
         
         // find all the files for this species List for a single  - $scenario $time
         
-        $pattern = "{$scenario}_ALL_{$time}.asc"; // filename to be found as this is create from ScenarioTimeMediansForSpecies
-        
+        $ascii_pattern = "{$scenario}_all_{$time}.asc"; // filename to be found as this is create from ScenarioTimeMediansForSpecies
+           $gz_pattern = "{$scenario}_all_{$time}.asc.gz"; 
         
         foreach ($this->SpeciesList() as $species_id ) 
         {
             
-            $filename = SpeciesData::species_data_folder($species_id).$pattern;
-
-            ErrorMessage::Marker("Validate Medians filename = {$filename}");
+            if ($ok == false) continue; // one of the GZ files has error so just loop quickly
             
-            // look for the median file for this species 
-            if (!file_exists($filename))
+            $ascii_filename = SpeciesData::species_data_folder($species_id).$ascii_pattern;
+            $gz_filename = SpeciesData::species_data_folder($species_id).$gz_pattern;
+            
+            ErrorMessage::Marker("Validate Medians filename = {$ascii_filename}");
+            
+            if (!file_exists($gz_filename))
+            {
+                // GZ version of 'median' for this species does not exist
+                $this->addError(new ErrorMessage(__METHOD__, __LINE__, "FILE DOES NOT EXISTS GZ version of Median file for species_id = $species_id "));
+                $ok = false;
+                continue;
+            }
+                
+            
+            // we have the GZ version of the file but we can't / don't have ASCII version
+            if (!file_exists($ascii_filename))
             {
                 
-                ErrorMessage::Marker("Validate Medians creating median files for species {$species_id}");
+                ErrorMessage::Marker("extract asc file from GZ for {$species_id}");
+                $cmd = "gunzip -c '{$gz_filename}' > '{$ascii_filename}'";
+                exec($cmd);
                 
-                // if we can't find the median of all climate models for this species then try create it.
                 $this->UpdateStatus("creating median files for species species_id = {$species_id}");
                 
-                $result = SpeciesData::ScenarioTimeMediansForSpecies($species_id,$scenario,$time,false,false);
-                
-                if ($result instanceof ErrorMessage)
-                {
-                    $this->addError(new ErrorMessage(__METHOD__, __LINE__, "FAILED to create Median file for species_id = $species_id ".print_r($result,true)));
-                    $ok = false;
-                    continue;
-                }
-                
                 // check for median file again
-                if (!file_exists($filename))
+                if (!file_exists($ascii_filename))
                 {
                     $ok = false;
+                    $this->addError(new ErrorMessage(__METHOD__, __LINE__, "FAILED to extract asc from GZ for species_id = $species_id "));                    
                     continue;
                 }
                 
@@ -475,28 +478,28 @@ class SpeciesRichness extends CommandAction {
             }
 
             
-            
+            // HERE w have GZ file and now we have ASC version
 
             if (!$this->ValidateExistenceOnly())
             {
                 
-                $stats = spatial_util::RasterStatisticsBasic($filename);
+                $stats = spatial_util::RasterStatisticsBasic($ascii_filename);
                 if ($stats instanceof Exception) 
                 {
-                    $this->addError(new ErrorMessage(__METHOD__, __LINE__, "Inputfile statsistics are invalid for   $scenario $time  [{$filename}] \n".$stats->getMessage(), true));
+                    $this->addError(new ErrorMessage(__METHOD__, __LINE__, "Inputfile statsistics are invalid for   $scenario $time  [{$ascii_filename}] \n".$stats->getMessage(), true));
                     $ok = false;
                     continue;                    
                 }
                 if (is_null($stats)) 
                 {
-                    $this->addError(new ErrorMessage(__METHOD__, __LINE__, "Inputfile statsistics are invalid for   $scenario $time  [{$filename}] ", true));
+                    $this->addError(new ErrorMessage(__METHOD__, __LINE__, "Inputfile statsistics are invalid for   $scenario $time  [{$ascii_filename}] ", true));
                     $ok = false;
                     continue;                    
                 }
                                  
             }
             
-            $result[$species_id] = $filename;  // only add files that exist and are valid
+            $result[$species_id] = $ascii_filename;  // only add files that exist and are valid
             
             
         }
@@ -574,7 +577,6 @@ class SpeciesRichness extends CommandAction {
         ErrorMessage::Marker($handles);
         
         
-        
         // ASCII files have 6 rowsa of "metadata" skip those
         for ($index = 0; $index < 6; $index++) {
             foreach ($handles as  $species_id => $handle)  
@@ -594,7 +596,7 @@ class SpeciesRichness extends CommandAction {
             // create row (of cells) for each file open
             $cells = array();
             foreach ($handles as  $species_id => $handle) 
-                $cells[$species_id] = explode(" ",fgets($handle));  // load a line from each file - and convert to cells
+                $cells[$species_id] = explode(" ",trim(fgets($handle)));  // load a line from each file - and convert to cells
 
             
             // process a line for each file 
@@ -650,8 +652,7 @@ class SpeciesRichness extends CommandAction {
         
                                       // use the Metadata of the first file as the header for the output
         $file_result =   implode("\n",file::Head(util::first_element($species_files), 6))."\n"   
-                        .implode("\n",$result).
-                        "\n";
+                        .implode("\n",$result)."\n";
         
         
         // $this->UpdateStatus("Going to write ".count(explode("\n",$file_result)) ." lines to {$output_filename}");
@@ -729,30 +730,71 @@ class SpeciesRichness extends CommandAction {
         // for each Clazz, Family, Genus and Species get the Species ID and Name
         // and add to the list
         
+        $sdf = configuration::SourceDataFolder();
+                
         $species_ids = array();
         $this->ProgressPercentIncrement();        
         if (!is_null($this->clazz() ) )
         {
             if (is_array($this->clazz()))
+            {
                 foreach ($this->clazz() as $clazz_name) 
-                    foreach (SpeciesData::TaxaForClazzWithOccurances($clazz_name) as $species_id => $row) 
-                        $species_ids[$species_id] = $species_id;
+                {
+                    // get the list of Species from the "Taxa"
+                
+                    $clazz_ids = array();
+                    exec("ls -1 '{$sdf}ByClazz/{$clazz_name}/ByID/'",$clazz_ids);  // read Species id's for this clazz from folder
+                
+                    foreach ($clazz_ids as $species_id) 
+                        $species_ids[$species_id] = $species_id;    
+                    
+                }
+                
+            }
             else
-                foreach (SpeciesData::TaxaForClazzWithOccurances($this->clazz()) as $species_id => $row) 
-                    $species_ids[$species_id] = $species_id;
+            {
+                
+                $clazz_ids = array();
+                exec("ls -1 '{$sdf}ByClazz/{$this->clazz()}/ByID/'",$clazz_ids);  // read Species id's for this clazz from folder
+
+                foreach ($clazz_ids as $species_id) 
+                    $species_ids[$species_id] = $species_id;    
+                
+            }
             
         }
 
+        
+        
         $this->ProgressPercentIncrement();        
         if (!is_null($this->family() ) )
         {
             if (is_array($this->family()))
+            {
+                
                 foreach ($this->family() as $family_name) 
-                    foreach (SpeciesData::TaxaForfamilyWithOccurances($family_name) as $species_id => $row) 
-                        $species_ids[$species_id] = $species_id;
+                {
+                    // get the list of Species from the "Taxa"
+                    $family_ids = array();
+                    exec("ls -1 '{$sdf}Byfamily/{$family_name}/ByID/'",$family_ids);  // read Species id's for this clazz from folder
+                
+                    foreach ($family_ids as $species_id) 
+                        $species_ids[$species_id] = $species_id;    
+                    
+                }
+                
+                
+            }
             else
-                foreach (SpeciesData::TaxaForfamilyWithOccurances($this->family()) as $species_id => $row) 
-                    $species_ids[$species_id] = $species_id;
+            {
+                
+                $family_ids = array();
+                exec("ls -1 '{$sdf}Byfamily/{$this->family()}/ByID/'",$family_ids);  // read Species id's for this Family from folder
+
+                foreach ($family_ids as $species_id) 
+                    $species_ids[$species_id] = $species_id;    
+                
+            }
             
         }
         
@@ -760,17 +802,40 @@ class SpeciesRichness extends CommandAction {
         $this->ProgressPercentIncrement();
         if (!is_null($this->genus() ) )
         {
+            
+            
             if (is_array($this->genus()))
+            {
+                
                 foreach ($this->genus() as $genus_name) 
-                    foreach (SpeciesData::TaxaForgenusWithOccurances($genus_name) as $species_id => $row) 
-                        $species_ids[$species_id] = $species_id;
+                {
+                    // get the list of Species from the "Taxa"
+                    $genus_ids = array();
+                    exec("ls -1 '{$sdf}ByGenus/{$genus_name}/ByID/'",$genus_ids);  // read Species id's for this Genus from folder
+                
+                    foreach ($genus_ids as $species_id) 
+                        $species_ids[$species_id] = $species_id;    
+                    
+                }
+                
+                
+            }
             else
-                foreach (SpeciesData::TaxaForgenusWithOccurances($this->genus()) as $species_id => $row) 
-                    $species_ids[$species_id] = $species_id;
+            {
+                
+                $genus_ids = array();
+                exec("ls -1 '{$sdf}ByGenus/{$this->genus()}/ByID/'",$genus_ids);  // read Species id's for this clazz from folder
+
+                foreach ($genus_ids as $species_id) 
+                    $species_ids[$species_id] = $species_id;    
+                
+            }
+            
             
         }
 
         
+        // don't have to lookup folders as the actuall species is being passed here
         $this->ProgressPercentIncrement();
         if (!is_null($this->species() ) )
         {
@@ -784,19 +849,12 @@ class SpeciesRichness extends CommandAction {
             
         }
         
-        
-        
-        
         // get species name for $species_ids
         $this->ProgressPercentIncrement();
-        
         
         $this->SpeciesList($species_ids);
         
         $this->UpdateStatus("Species Count: " . count($this->SpeciesList()));
-        
-        print_r($species_ids);
-        
         
         
     }
