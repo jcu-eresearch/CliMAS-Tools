@@ -85,13 +85,9 @@ class SpeciesData extends Object {
      */
     public static function SpeciesQuickInformation($species_id) 
     {
-        $commonName = self::SpeciesCommonNameSimple($species_id);
-        if ($commonName instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $commonName);
-        
-        $speciesName = self::SpeciesName($species_id);
-        if ($speciesName instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $speciesName);
-        
-        return $commonName." (".$speciesName.")";
+        $sdf = configuration::SourceDataFolder();                
+        $result = exec("cat {$sdf}species_to_id.txt | grep ',{$species_id}' | head -n1 | cut -d',' -f1");
+        return $result;
     }
 
     
@@ -99,20 +95,14 @@ class SpeciesData extends Object {
     public static function SpeciesCommonNames($species_id,$index = null) 
     {
         
-        $sql = "select 
-                    species_id                   
-                   ,common_name
-                from species_taxa_tree
-               where species_id = {$species_id}
-               limit 1";
-               
-        $result = DBO::QueryFirst($sql,'species_id');
+        $sdf = configuration::SourceDataFolder();
         
-        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);
+        $commonNames = array();
         
-        $result = array_util::Trim($result);
+        $cmd = "cat {$sdf}species_to_id.txt | grep ',{$species_id}'";
+        exec($cmd,$commonNames);
+        $commonNames = util::leftStrArray(array_util::Replace($commonNames, ",{$species_id}", ""), " (", false);
         
-        $commonNames = array_util::Trim(explode("/",trim($result['common_name'])));
         
         if (count($commonNames) == 0) 
         {
@@ -154,18 +144,12 @@ class SpeciesData extends Object {
     public static function SpeciesName($species_id) 
     {
         
-        $sql = "select 
-                    species_id                   
-                   ,species
-                from species_taxa_tree
-               where species_id = {$species_id}
-               limit 1";
-               
-        $result = DBO::QueryFirst($sql,'species_id');
+        $sdf = configuration::SourceDataFolder();
         
-        if ($result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);
+        $cmd = "cat {$sdf}species_to_id.txt | grep ',{$species_id}' | head -n1 | cut -d'(' -f2 | cut -d')' -f1";
+        $result = exec($cmd);
         
-        return array_util::Value($result, 'species');
+        return $result;
 
     }
     

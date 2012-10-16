@@ -1,6 +1,6 @@
 <?php
 /**
- * For Quicklook for any file patterbn
+ * For a single species create the QUickLook images (pngs) for Sutiability
  *  
  */
 include_once dirname(__FILE__).'/includes.php';

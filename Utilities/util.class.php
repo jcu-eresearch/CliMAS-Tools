@@ -657,12 +657,34 @@ SQL;
     */
     public static function fromLastChar($src, $charType = "")
     {
+
+        if (is_array($src)) return self::fromLastCharArray($src, $charType);
+        
+        
         $pos = strrpos($src, $charType);
         if ($pos === false) return $src;
 
         return substr($src,$pos + 1);
     }
 
+    
+    /**
+    * @method fromLastChar 
+    * @param $src 
+    * @param $charType = "" 
+    * @return mixed
+    */
+    public static function fromLastCharArray($src, $charType = "")
+    {
+
+        $result = array();
+        
+        foreach ($src as $key => $value) 
+            $result[$key] = self::fromLastChar($value, $charType);
+
+        return $result;
+    }
+    
 
     /**
     * @method contains 

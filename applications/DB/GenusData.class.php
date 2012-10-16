@@ -490,6 +490,24 @@ s     * Get list of Genus names where each species has the appropriate number of
     }    
         
         
+    /**
+     *
+     *  List of premodeeled data available in the Richness Folder
+     *  
+     */
+    public static function RichnessPremodelledDataList() 
+    {
+        $result = array_util::Replace(file::Commandline2BasenamePath("find ".configuration::Maxent_Species_Data_folder()."richness/ByGenus -type d | sort"), 
+                                        configuration::Maxent_Species_Data_folder(), 
+                                        "")  ;
+        
+        unset($result['ByGenus']);
+        
+        return $result;
+        
+    }
+    
+    
     
 }
 

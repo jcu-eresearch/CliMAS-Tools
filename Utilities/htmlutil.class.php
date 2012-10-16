@@ -58,18 +58,19 @@ class htmlutil {
      * @param type $valueColumn - name of column to use as value
      * @return string Javascript arra of objectes
      */
-    public static function AsJavaScriptObjectArray($src,$keyColumn,$valueColumn,$variableName)
+    public static function AsJavaScriptObjectArray($src,$keyColumn = null ,$valueColumn = null,$variableName = null)
     {
 
         //[ { label: "Choice1", value: "value1" }, ... ]
+        if (is_null($variableName) ) $variableName = 'fred';
         
         if (!is_array($src)) return "/* DATA ERROR \n ".  print_r($src, true)." \n*/\n";
         
         $values = array();
         foreach ($src as $index => $row) 
         {
-            $label = $row[$keyColumn];
-            $value = $row[$valueColumn];
+            $label = (is_null($keyColumn)) ? $index : $row[$keyColumn];
+            $value = (is_null($valueColumn)) ? $row : $row[$valueColumn];
             
             $values[] = "{ label: \"{$label}\", value: \"{$value}\" }";
         }

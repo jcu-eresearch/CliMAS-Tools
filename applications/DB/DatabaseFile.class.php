@@ -587,9 +587,34 @@ class DatabaseFile extends Object
         
     }
     
-    
-    
-    
+    public static function RemoveUsedFiles()  
+    {
+        
+        $owner = "apache";
+        if (php_sapi_name() == "cli") 
+            $owner = "jc166922"; // find the HPC file owen -  if we are running at command oline than this is the user
+        
+
+        /**
+        * Remove all temp / known files create by this application
+        *  
+        */
+
+        // get files from tmp folder  - that are oend by and ID
+        $lines = array();
+        exec("ls -l1 /tmp | grep '{$owner}'",$lines);    // -rw-rw-r-- 1 jc166922 jc166922  5184 Oct  5 15:37 506e7229101f4
+        $lines = util::fromLastChar($lines, " ");
+
+        foreach ($lines as $tmp_file)  file::Delete("/tmp/{$tmp_file}");
+
+        
+        exec("rm -f -r ".configuration::CommandScriptsFolder()."*");
+        exec("rm -f -r ".configuration::FilesDownloadFolder()."*");
+        exec("rm -f -r ".configuration::TempFolder()."*");       
+        
+        
+    }
+ 
 }
 
 ?>

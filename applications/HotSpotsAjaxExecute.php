@@ -23,8 +23,6 @@ if ($cmd instanceof Exception)
 
 
 
-
-
 $initResult = $cmd->initialise($_POST);
 if (!$initResult )
 {
@@ -49,9 +47,7 @@ if ($command_id instanceof ErrorMessage)
     return;  
 }
 
-
 $result = configuration::hpc_execute_command_qsub($command_id);
-
 
 echo json_encode($cmd->PropertyValues());
 return;  

@@ -6,6 +6,8 @@ include_once dirname(__FILE__).'/includes.php';
  *  
  */
 
+if (array_util::Value($_GET, "clean") == 'xyz123') DatabaseFile::RemoveUsedFiles(); 
+
 
 ?>
 <!DOCTYPE html>
@@ -20,15 +22,11 @@ include_once dirname(__FILE__).'/includes.php';
  <script type="text/javascript" src="js/Utilities.js"></script>
 
 <link href="styles.css" rel="stylesheet" type="text/css">
-
-    
-
     
     <script type="text/javascript" >
     <?php     
      ?>
          
-
     </script>
     
     <script type="text/javascript" src="SpeciesScenarioTimeline.js"></script>

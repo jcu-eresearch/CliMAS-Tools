@@ -1120,6 +1120,38 @@ class file {
     }
     
     
+    /**
+     *
+     * @param type $src  Array of pathnames
+     * 
+     * @return array Key = Basename of filename  value = filename
+     */
+    public static function Filelist2BasenamePath($src)
+    {
+        
+        $result = array();
+        foreach ($src as $path) 
+        {
+            $result[basename($path)] = $path;            
+        }
+        
+        return $result;;
+        
+    }
+    
+    /**
+     * Take in Linux Command line and expect output of command line to be Filepath list
+     * 
+     * @param type $src
+     * @return type 
+     */
+    public static function Commandline2BasenamePath($src)
+    {
+        $result = array();
+        exec($src,$result);
+        return self::Filelist2BasenamePath($result);
+    }
+    
     
 }
 ?>

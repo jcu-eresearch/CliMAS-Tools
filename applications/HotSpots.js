@@ -110,14 +110,37 @@ function addInput(dataType,dataID,dataName)
     }
 
     
+    // GenusRichnessLocation
+
     var removeID = 'remove_'+addID;
-    $('#'+dataType+'Selection').append('<li id="'+addID+'" class="ui-widget-content ui-corner-all " ><button id="'+removeID+'" class="RemoveInput">remove</button><p>'+dataName+'</p> </li>');
-    
+    $('#'+dataType+'Selection').append('<li id="'+addID+'" class="ui-widget-content ui-corner-all " ><button id="'+removeID+'" class="RemoveInput">remove</button><p>'+dataName+'</p><br><div id="QO_SPOT" ></div></li>');
+
+
+    switch(dataType)
+    {
+        case 'Taxa':
+        case 'Family':
+        case 'Genus':
+            var quickOpenID = 'quickOpen_'+addID;
+
+            $('#QO_SPOT').html('<button id="'+quickOpenID+'" class="QuickOpen">view</button>');
+
+            $('#' + quickOpenID)
+                .button()
+                .css('float','left')
+                .click(function () {
+                                quickOpen(this)
+                            });
+
+        break;
+    }    
+
+
+
     
     
     addSelectedTo('#' + addID);
     updateCurrentPackage();
-    
     
     
     $( '#'+ removeID)
@@ -126,18 +149,60 @@ function addInput(dataType,dataID,dataName)
         .css('width','20px')
         .css('float','left')
         .click(function () {
-                
-                var toRemove = this.id.toString().replace('remove_','');
-                $('#' + toRemove).remove();
-                updateCurrentPackage();
-            }
-     );
+                                var toRemove = this.id.toString().replace('remove_','');
+                                $('#' + toRemove).remove();
+                                updateCurrentPackage();
+                            }
+              );
     
     
     
    return addID;
     
 }
+
+function quickOpen(src)
+{
+    var parms = string2Array(src.id.toString(),'_');
+
+    var sData = {dataType: parms[1],
+                  dataName: parms[2]
+                }
+    
+    console.log(sData);
+    
+    // ince the item has been built set what the open button should do - or if not remove it.
+    switch(sData.dataType)
+    {
+        case 'Taxa':break;
+        case 'Family':break;
+        case 'Genus':
+            $.post("HotSpotsAjaxExecuteSingleItem.php", sData , function(data) {post_quickOpen(data);},"json"); 
+            break;
+            
+        case 'Species':break;
+    }    
+    
+}
+
+
+function post_quickOpen(data)
+{
+    
+   // see whats in the data retuned in browser log    
+    $.each(data, function(index, value) 
+    { 
+        console.log('post_quickOpenGenus  ' + index + " = " +value);
+    });
+
+    var tab_count = $('#tabs').tabs('length') - 1 + 10000;
+
+    var idData = {ID: tab_count.toString()}
+
+    buildRichnessOutputTab(data.dataType + ": " + data.dataName,data.result,idData)
+}
+
+
 
 function addSelectedTo(selector)
 {
@@ -256,28 +321,6 @@ function ChangeInputToSpecies()
     
 }
 
-function ChangeInputToLocation()
-{
-    
-    var blurMessage = "Enter location name or select from map";
-    
-    $( "#InputText" ).val(blurMessage);
-    
-    $( "#InputText" ).autocomplete('destroy'); 
-    $( "#InputText" ).autocomplete({ 
-                        source: availableLocation,
-                        select: function(event, ui) 
-                        {
-                            addInput('Location',ui.item.value,ui.item.label);
-                            $(this).val(blurMessage);
-                            return false;
-                        }
-                     });
-    
-    $( "#InputText" ).unbind('blur').blur(function() {$( "#InputText" ).val(blurMessage);})
-    
-    
-}
 
 
 function setupInputs()
@@ -554,7 +597,7 @@ function updateCurrentPackage()
     else
     {
         $('#CreateProcess').addClass('ui-state-disabled'); // make disabled
-        $('#myimage').unbind('click'); / remove click evenet/
+        $('#myimage').unbind('click');/ remove click evenet/
     }
 
 
@@ -580,9 +623,6 @@ function CreateProcess()
 
 function addSingleProcess(sData)
 {
-    
-    console.log("Create for  " );
-    console.log(sData);
 
     var rowElementID = $('#RunningProcessesTable li').children().length;
 
@@ -662,9 +702,6 @@ function addSingleProcess(sData)
 function postAddSingleProcess(data)
 {
     
-    
-    
-    
     var progressStr = "";
     
     progressStr = Value(data.ProgressPercent,0);
@@ -681,12 +718,12 @@ function postAddSingleProcess(data)
     $('#progress_' + data.ui_element_id).html(progressStr + "%");    
     $('#status_' + data.ui_element_id).html(Value(data.Status,""));
     
-    
-    $.each(data, function(index, value) 
-    { 
-        console.log('postAddSingleProcess  ' + index + " = " +value);
-
-    });
+//   see whats in the data retuned in browser log    
+//    $.each(data, function(index, value) 
+//    { 
+//        console.log('postAddSingleProcess  ' + index + " = " +value);
+//
+//    });
     
 }
 
@@ -746,12 +783,6 @@ function UpdateProcess()
 function postUpdateProcess(data)
 {
     
-    //console.log("POST Update Process - get status of all running jobs and report");
-    
-    console.log("Timed Update ?");
-    console.log(data);
-    
-    
     var ui_element_id = Value(data.ui_element_id);
     
     $('#status_' + ui_element_id).html(Value(data.Status,""));
@@ -787,6 +818,16 @@ function postUpdateProcess(data)
 function buildRichnessOutputTab(job_description,result,data)
 {
     
+    console.log('job_description');
+    console.log(job_description);
+    
+    console.log('result');
+    console.log(result);
+
+    console.log('data');
+    console.log(data);
+
+
     var ID = Value(data.ID,-1);
     
     if (ID == -1) return;
@@ -816,12 +857,9 @@ function buildRichnessOutputTab(job_description,result,data)
     
     $("#" + newTabContentId).css("display","block");
 
-    //var combinations = result.split("~");
-
     var combination = null;
 
     var pair = null;
-
         
     var scenario_id = null
     
@@ -837,16 +875,16 @@ function buildRichnessOutputTab(job_description,result,data)
     var msg  = ""; 
     
     
+    var comboFilename_gz = '';
+    
     $.each(parameters.scenarios, function(index, scenario) 
     {
         
         scenario_id = 'row_'+newTabContentId+'_'+scenario;
-        
-        //console.log('scenario_id = ' + scenario_id + "\n");
 
         msg += '<div class="richnessScenario ui-widget-content ui-corner-all" id="'+scenario_id+'">';
         msg += '<h1 class="ui-widget-header ui-corner-all" >' + scenario + '</h1>';
-        msg += '<ul class=" ui-widget-content ui-corner-all"  >'; 
+        msg += '<ul class="ui-widget-content ui-corner-all">'; 
         $.each(parameters.times, function(index, time) 
         {
             
@@ -862,7 +900,7 @@ function buildRichnessOutputTab(job_description,result,data)
             
             comboStart = result.indexOf(combination);
             
-            comboEnd = result.indexOf('~',comboStart);
+            comboEnd = result.indexOf('.asc',comboStart) + 4;
             
             comboLength = comboEnd - comboStart;
                         
@@ -874,10 +912,13 @@ function buildRichnessOutputTab(job_description,result,data)
             if (comboFilename_asc == '') return;
             
             comboFilename_asc = Maxent_Species_Data_folder_web + 'richness/' + comboFilename_asc;
+            comboFilename_gz  = comboFilename_asc + '.gz';
+            
             
             comboFilename_png = comboFilename_asc.replace('.asc','.png');
             
             msg += '<li class="time_cell time_'+time+'" id="'+newTabContentId +  '_' + combination+'">';
+            msg += '<h1 class="ui-widget-header ui-corner-all" >' + time + '&nbsp;&nbsp;&nbsp;<a href="'+comboFilename_gz+'"><img title="download" src="'+IconSource+'/Download-icon.png" style="width: 20px; height: 20px"></a> </h1>';
             msg += '<img src="' + comboFilename_png + '" />' + '';
             msg += '</li>';
 
@@ -887,48 +928,12 @@ function buildRichnessOutputTab(job_description,result,data)
         
     });
 
-
-
-    var time_menu = ''
-
-        time_menu += '<div class="richnessScenario_timeselector ui-widget-content ui-corner-all" id="'+scenario_id+'">';
-        time_menu += '<h1 class="ui-widget-header ui-corner-all" >TIME</h1>';
-        time_menu += '<ul class="ui-widget-content ui-corner-all"  >'; 
-        
-        $.each(parameters.times, function(index, time) 
-        {
-            
-            time_menu += '<li >';
-            time_menu += '<button class="job_time_select" id="timeSelect_' + newTabContentId + '_' + time + '">' + time + '</button>';
-            time_menu += '</li>';
-        });
-        
-        time_menu += "</ul>"; 
-        time_menu += "</div>"; 
-
-    $("#" + newTabContentId).html(time_menu + msg);
-
-    $('.job_time_select')
-        .button()
-        .css('float','left')
-        .css('width','100%')
-        .click(function() {richness_time_select(this)})
-        ;
-
-
-    $('.time_cell').hide();
     
-    $('.time_' + firstTime).show();
-
-    if ($('.job_time_select').length == 1)
-    {
-        // disable ability to hide as there is nothing else to show
-        
-         $('.job_time_select').button( "option", "disabled", true );
-    }
-
+    $("#" + newTabContentId).html(msg);
+    
 
 }
+
 
 function richness_time_select(src)
 {
@@ -1132,7 +1137,7 @@ $(document).ready(function(){
 
     screenSetup();
 
-    $('#tabs').height(3000).tabs();
+    $('#tabs').height(2000).tabs();
     $('.selectable')
         .selectable()
         .selectable(

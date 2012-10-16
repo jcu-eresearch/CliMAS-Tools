@@ -1038,6 +1038,7 @@ class SpeciesRichness extends CommandAction {
         {
             $this->UpdateStatus("FAILED to create richness for {$combination}");
             $this->addError($single_richness_filename);
+            
         }
         
         // we could not create richness
@@ -1045,12 +1046,21 @@ class SpeciesRichness extends CommandAction {
         {
             $this->UpdateStatus("Error creating richness for {$combination}");
             $this->addError(new ErrorMessage(__METHOD__, __LINE__,"Error creating richness for {$this->job_description()} {$combination}", true) );            
+            
+            
         }
         
         if (!is_null($single_richness_filename))
             $this->UpdateStatus("Created richness for {$combination}");
+            
         
-        
+        if (file_exists($single_richness_filename))
+        {
+            // compress file to gz version for download
+            exec("gzip -c {$single_richness_filename} > {$single_richness_filename}.gz");
+        }
+            
+            
         $this->addAsciiGridCombination($combination,$single_richness_filename);
         
         
@@ -1058,6 +1068,8 @@ class SpeciesRichness extends CommandAction {
 
     private function addAsciiGridCombination($combination,$single_richness_filename = null)
     {
+        
+        
         $ag = $this->AsciiGrids();
         $ag[$combination] = $this->ID().configuration::osPathDelimiter().basename($single_richness_filename);
         $this->AsciiGrids($ag);

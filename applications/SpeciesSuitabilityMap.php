@@ -16,7 +16,7 @@ $GUI = null;
 
 $species_id = array_util::Value($_POST, "SpeciesID",null);
 
-$MaxentThreshold = DatabaseMaxent::GetMaxentThreshold($species_id);
+$MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
 if ($MaxentThreshold instanceof ErrorMessage || is_null($MaxentThreshold))  $MaxentThreshold = 0;
 
 

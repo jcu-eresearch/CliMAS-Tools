@@ -1,7 +1,7 @@
 
 #thecontent 
 {
-    height: 3000px;
+    height: 2000px;
     width: 100%; 
     overflow: hidden;
     margin: 5px;
@@ -468,7 +468,7 @@
     font-weight: bold;
     color: black;
     width: 210px;;
-    height: 260px;
+    height: 2900px;
     float:left;
     margin: 6px; 
     padding: 0px;
@@ -498,9 +498,9 @@
     padding: 0px;     
     float:left;
     overflow: hidden;
-    float:none;
+    
     clear: both;
-    height: 220px;
+    height: 2000px;
     width: 99%;
     
 }
