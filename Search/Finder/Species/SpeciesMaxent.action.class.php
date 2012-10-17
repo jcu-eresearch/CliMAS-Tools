@@ -1,418 +1,99 @@
 <?php
 
-
 /**
  *   
+ * @package CommandAction\Species\SpeciesMaxent
+ * 
+ * Wrapper for Maxent.jar and assocoiated projections
+ * 
+ * 
  */
 class SpeciesMaxent extends CommandAction {
     
     
-    public static $OCCURANCE_MINIMUM_LINES = 3;
-
-
-
+    
     public function __construct() {
         parent::__construct();
         $this->CommandName(__CLASS__);
         
         $this->FinderName("SpeciesFinder");
+     
+        $this->isServerRun(false);
+        
         
     }
-
 
     public function __destruct() {
         parent::__destruct();
     }
 
     
-    
     /**
      * This is run from the web server side 
-     * - so NO processing here
-     *  
+     * - so NO processing here 
+     * - check to see if this has already been run / outputs or other items have already been processed 
+     * 
+     * @param src array 
+     *  species   => space delimited string of values
+        scenario  => space delimited string of values
+        model     => space delimited string of values
+        time      => space delimited string of values
+     * 
      */
-    public function initialise() 
+    public function initialise($src = null) 
     {
         
-        $this->SpeciesIDs(FinderFactory::GetMethodResult("SpeciesFinder","SelectedSpeciesIDs"));
-        $this->EmissionScenarioIDs(Session::get("EmissionScenarioSearch", ""));
-        $this->ClimateModelIDs(Session::get("ClimateModelSearch", ""));
-        $this->TimeIDs(Session::get("TimeSearch", ""));
+        if (is_null($src)) return null;
+        
+        $this->SpeciesCombinations(null);
+        $this->ResultsComplete(false);
+        $this->ScriptsToRun();
+        
+        
+                 $this->SpeciesIDs(array_util::Value($src,'species',null,true));
+        $this->EmissionScenarioIDs(array_util::Value($src,'scenario',null,true));
+            $this->ClimateModelIDs(array_util::Value($src,'model',null,true));
+                    $this->TimeIDs(array_util::Value($src,'time',null,true));
+                    
+        // check here to see if we are missing some data
+        
+        
+        $this->buildCombinations(); 
 
-        
-        $this->SpeciesIDs(trim($this->SpeciesIDs()));
-        $this->EmissionScenarioIDs(trim($this->EmissionScenarioIDs()));
-        $this->ClimateModelIDs(trim($this->ClimateModelIDs()));
-        $this->TimeIDs(trim($this->TimeIDs()));
-        
-        
-        //for testing if null
-        if (is_null($this->SpeciesIDs()) || $this->SpeciesIDs() == "") $this->SpeciesIDs("CASSOWARY");
-        if (is_null($this->EmissionScenarioIDs()) || $this->EmissionScenarioIDs() == "") $this->EmissionScenarioIDs("RCP3PD");
-        if (is_null($this->ClimateModelIDs()) || $this->ClimateModelIDs() == "") $this->ClimateModelIDs("cccma-cgcm31");
-        if (is_null($this->TimeIDs())  || $this->TimeIDs() == "") $this->TimeIDs("2015 2025 2035 2045 2055 2065 2075 2085");
-        
-        
         $this->initialised(true);
         
+        if (!$this->isServerRun())
+            $this->GetResults();  // then populates the combinations with anything that has already been done
         
-        // check to see if we really need to go to the GRID
-        $this->SpeciesCombinations($this->buildCombinations());
-        
-        $this->Result($this->progessResults());
-        $alreadyCompleted = $this->progressResultsComplete();
-
-        // if we already have the dat - no reason to go to the server
-        if ($alreadyCompleted)
+        if ($this->ResultsComplete())
         {
-            $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);    
-        }
-
-        
-        
-    }
-
-    
-    /**
-     * Runnning on GRID 
-     * 
-     * - lots of processing can be done here.
-     * 
-     * @return type 
-     */
-    public function Execute()
-    {
-        
-        $this->SpeciesCombinations($this->buildCombinations());
-        
-        $this->getOccurances();
-        
-        $this->Result($this->progessResults());   // this will check to see if the outputs exists  
-        CommandUtil::PutCommandToFile($this); // post any results we already have
-
-        //  make sure we have the occurance data for species   $this->SpeciesCombinations  gives use the list of species to look for
-        
-        
-        // has this alredy been done ?
-        $alreadyCompleted = $this->progressResultsComplete();
-        
-        if ($alreadyCompleted) 
-        {            
-            $this->Status("ALL DONE");
-            $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
-            CommandUtil::PutCommandToFile($this); // update the status and interim results            
+            $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);      // if we already have the dat - no reason to go to the server
+            $this->Queue();
             return $this->Result();   // we are done 
         }
         
-        // check to see if we have the data they asked for ??
-        
-        
-        
-            
-        
-        
-        CommandUtil::QueueUpdateStatus($this, "Started" ); 
-        
-        $this->QsubCollectionID(substr(uniqid(),0,13)); // setup unique ID so we can track all jobs asscoiated with this call
-        
-        $jobsCount = $this->ComputeSelectedSpecies();
-        
-        if ($jobsCount > 0)        
-        {
-            sleep(10);
-
-            $jobList = $this->qsubJobs();
-
-            $this->QsubJobCount(count($jobList));
-
-
-            while (count($jobList) > 0)
-            {
-                // check the status of each job and stop if they are all C 
-
-                // with this we can also set the resuklt to 
-                // the list of acs files we have just generated
-
-                // progessResults()
-
-                $this->Status("We have ".count($jobList)."of ".$this->QsubJobCount()." sub jobs left ");
-                $this->Result($this->progessResults());
-                CommandUtil::PutCommandToFile($this); // update the status and interim results
-
-                sleep(5);
-                $jobList = $this->qsubJobs();
-
-            }
-            
-            
-        }
-        
-        
-        $this->Result($this->progessResults());
-        CommandUtil::PutCommandToFile($this); // update the status and interim results
-
-        return $this->Result();
-
-    }
-
-    
-    private function log($msg)
-    {
-        $fn = "/home/jc166922/tmp.log";
-        
-        if (file_exists($fn))
-            file_put_contents("/home/jc166922/tmp.log",$msg."\n\n", FILE_APPEND);
-        
-    }
-    
-    
-    private function getOccurances()
-    {
-        
-        $os_path = configuration::osPathDelimiter();        
-        
-        foreach (array_keys($this->SpeciesCombinations()) as $speciesID) 
-        {
-            
-            $this->log("get  getOccurances  {$speciesID}");
-            
-            if (! (is_null($speciesID) || $speciesID == ""))
-            {
-                
-                file::mkdir_safe(configuration::Maxent_Species_Data_folder().$speciesID);                
-                
-                $occurFilename =  configuration::Maxent_Species_Data_folder()."{$speciesID}{$os_path}".configuration::Maxent_Species_Data_Occurance_Filename();
-
-                // check that this exists if not then - get data from Database / or ALA ??
-
-                $this->log("get  getOccurances  {$speciesID} filename = {$occurFilename}");
-                
-                // echo "Check for $occurFilename\n";
-
-                if (!file_exists($occurFilename))
-                {
-                    $this->getOccurancesRecordsFor($speciesID,$occurFilename);
-
-                }
-                
-            }
-            
-        }
-        
-        // at this point all Occurrances files will exist
-        
-        
-    }
-    
-    private function getOccurancesRecordsFor($speciesID,$occurFilename)
-    {
-        
-        $this->log("Get data for $occurFilename and place in $occurFilename\n");
-        
-        echo "Get data for $occurFilename and place in $occurFilename\n";
-        
-        CommandUtil::QueueUpdateStatus($this, "Getting Species Occourance data from Datasource for ".  urldecode($speciesID)); 
-        
-        $ok = true;
-        if (!file_exists($occurFilename))
-        {
-            $ok = SpeciesData::SpeciesOccuranceToFile($speciesID, $occurFilename); // get occuances from database
-            
-            if (!$ok) return FALSE; // something  wrong
-            
-            if (!file_exists($occurFilename)) return FALSE; // make sure file exists
-        }
-
-        
-        // sanity check agains the occurance file - probably has atleast 3 rows - ie header and data row and empty last row ?   
-        $lineCount = file::lineCount($occurFilename);
-        if ($lineCount < self::$OCCURANCE_MINIMUM_LINES) return FALSE;;
-        
-        $this->log("data for $occurFilename  written to $occurFilename\n");
-        
-        
-    }
-    
-    
-    
-    /**
-     * At any one time this will have the current results available 
-     * - it will be a list of ASC grid filenames that can be displayed on the web server
-     * 
-     * @return type 
-     */
-    private function progessResults()
-    {
-        
-        $result = array();
-        foreach ($this->SpeciesCombinations() as $speciesID => $combinations) 
-        {
-            
-            // check for this species that the HTML file is greater than 0
-            // if not then 
-            //$result[$speciesID]["current"] = ""
-
-            $htmlFile = $speciesID.configuration::osPathDelimiter().configuration::Maxent_Species_Data_Output_Subfolder().configuration::osPathDelimiter().$speciesID.".html";
-            
-            $htmlFromMaxentLocal = configuration::Maxent_Species_Data_folder().$htmlFile;
-            
-            if (!file_exists($htmlFromMaxentLocal))
-            {
-                $result[$speciesID]['Current Condition'] = "Waiting to start computing ";
-            }
-            else
-            {
-                if (filesize($htmlFromMaxentLocal) == 0)
-                {
-                    $result[$speciesID]['Current Condition'] = "Computing ..... ";
-                }
-                else
-                {
-                    $result[$speciesID]['Current Condition'] = configuration::osPathDelimiter()."{$htmlFile}";
-                }
-                
-            }
-            
-            
-            foreach ($combinations as $combination  => $outputFilename) 
-            {
-                // check to see if the file for this species combination exists
-                // on hpc check to see if the file exists 
-        
-                // $outputfile only points to the path that is the same on both sides
-                
-                $result[$speciesID][$combination] = ""; // empty mean it does not exist
-                if (file_exists(configuration::Maxent_Species_Data_folder().$outputFilename))
-                {                    
-                    $result[$speciesID][$combination] = configuration::osPathDelimiter().$outputFilename;
-                }
-            }
-            
-        }
-        
-        return $result;
-        
-    }
-    
-
-    /** 
-     * Test to see if we have a full complement 
-     * @return bool 
-     */
-    private function progressResultsComplete()
-    {
-        
-        foreach ($this->SpeciesCombinations() as $speciesID => $combinations) 
-        {
-            
-            if (!$this->maxentLogDone($speciesID)) return false;
-            
-            foreach ($combinations as $comboFilename) 
-            {
-                if (!file_exists(configuration::Maxent_Species_Data_folder().$comboFilename))  // $localComboFilename
-                    return false;
-            
-            }
-            
-        }
-            
         return true;
         
     }
     
-    
-    private function maxentLogDone($speciesID)
+    private function Queue()
     {
-        
-        $os_path = configuration::osPathDelimiter();
-        
-        $output_subfolder = configuration::Maxent_Species_Data_Output_Subfolder();
-        
-        $maxentLog = configuration::Maxent_Species_Data_folder()."{$speciesID}{$os_path}{$output_subfolder}{$os_path}maxent.log";
-        
-        
-        if (!file_exists($maxentLog)) return false;
-
-        $lastLogLine = exec("tail -n1 '$maxentLog'");
-
-        if (util::contains($lastLogLine, "Ending"))  return true; // Maxent finished OK
-        
-        return false; // Maxtent did not finish OK
-        
+        DBO::LogError(__METHOD__."(".__LINE__.")"," Updated queue for  ".$this->ID()." .. ".$this->Status());
+        DatabaseCommands::CommandActionQueue($this);
     }
     
     
-    private function qsubJobs()
-    {
-        $lines = array();
-        exec("qstat | grep {$this->QsubCollectionID()}",$lines);
-        return $lines;
-    }
-
-    
-    
-
     /**
-     *
-     * Take inarray contain lists of Species, EmissionScenario, ClimateModel & Time
-     *
-     *  $toCompute = array();
-     *   $toCompute['Species'] = $this->getSpeciesIDs();
-     *   $toCompute['EmissionScenario'] = $this->getIDs("EmissionScenarioSearch");
-     *   $toCompute['ClimateModel'] = $this->getIDs("ClimateModelSearch");
-     *   $toCompute['Time'] = $this->getIDs("TimeSearch");
-     *
-     *
-     * @param type $toCompute
+     * 
      */
-    private  function ComputeSelectedSpecies()
-    {
-
-        echo "ComputeSelectedSpecies\n";
-
-        
-        $jobCount = 0;
-        $scriptsToRun = $this->writeMaxentSpeciesProjectionScriptFile();
-        
-        
-        echo "scriptsToRun = ".count($scriptsToRun)."\n";
-
-        
-        if (count($scriptsToRun) > 0)
-        {
-            CommandUtil::QueueUpdateStatus($this, "Executing All Jobs");
-            
-            foreach ($scriptsToRun as $scriptname) 
-            {
-                
-                echo "add as a QSUB {$scriptname}\n";
-                
-                exec("qsub -N{$this->QsubCollectionID()} {$scriptname}");  
-            }
-            
-            $jobCount = $scriptsToRun;
-            
-        }
-        else
-        {
-            CommandUtil::QueueUpdateStatus($this, "Nothing to do - data already exists");    
-        }
-        
-        return $jobCount;
-        
-    }
-
     private function buildCombinations()
     {
         $species   = explode(" ",$this->SpeciesIDs());
         $scenarios = explode(" ",$this->EmissionScenarioIDs());
         $models    = explode(" ",$this->ClimateModelIDs());
         $times     = explode(" ",$this->TimeIDs());
-
-        $os_path = configuration::osPathDelimiter();
-        $os_dot = configuration::osExtensionDelimiter();
         
-        
+        $full_count =1;
         $result = array();
         foreach ($species as $speciesID)
         {
@@ -421,296 +102,656 @@ class SpeciesMaxent extends CommandAction {
                 foreach ($models  as $modelID)
                     foreach ($times as $timeID)
                     {
-                
-                        $combo = "{$scenarioID}_{$modelID}_{$timeID}";
-                        $future_projection_output = "{$speciesID}{$os_path}".configuration::Maxent_Species_Data_Output_Subfolder()."{$os_path}{$combo}{$os_dot}asc";
-                        $result[$speciesID][$combo] = $future_projection_output;
-                        
+                        $result[$speciesID]["{$scenarioID}_{$modelID}_{$timeID}"] = null;
+                        $full_count++;
                     }
+                        
+                        
                         
         }
 
-        return $result;
+        $this->SpeciesCombinations($result); // sets up the default empty result set
+        
+        $this->ResultsFullCountString($full_count - 1);
+        
         
     }
     
     
-    private function writeMaxentSpeciesProjectionScriptFile()
+    
+    /**
+     * Runnning on GRID 
+     * - Look at inititalisation variables 
+     * - get Species occurances for any species that we don't have
+     * - get current progress, if other process have already done parts of this call.
+     * - launch other jobs thru QSUB that will be able to run paralell jobs for maxent i.e. Future Projections
+     * 
+     * @return type 
+     */
+    public function Execute()
     {
         
+        $this->QsubCollectionID(substr(uniqid(),0,10));
         
-        // for each species we need to run all the combinations (or check to see if thay have been run)
+        // rebuild combos i we don't have them
+        if (is_null($this->SpeciesCombinations()) ||  count($this->SpeciesCombinations()) == 0  ) 
+        {
+            $this->buildCombinations();
+            DBO::LogError(__METHOD__."(".__LINE__.")","Has to rebuild Combinations as thery were not build - Odd ??\n");
+        }
+        
+        
+        // if we have data in the file system but not in database load it in - Just NMain root results for each spcecies
+        // but only load the data if we are running as "Large Server Process"
+        // we don't want to inflict this on the user
+        if ($this->isServerRun())
+            foreach (array_keys($this->SpeciesCombinations()) as $speciesID) 
+                DatabaseMaxent::InsertMainMaxentResults($speciesID);  // this will load for all 
+
+        
+        
+        $this->GetResults();
+        
+        
+        
+        if ($this->ResultsComplete())  // check now to see if we have to  call the GRID
+        {            
+            $this->Status("ALL DONE");
+            $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
+            $this->Queue();
+            return $this->Result();   // we are done 
+        }
+
+        //
+        // We have to call the grid because at least one outyput is missing
+        //
+        
+        $this->Status("Started Model Execution on GRID");
+        $this->Queue();
+        
+        $occurences_ok = $this->getOccurances();
+        if (!$occurences_ok) 
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to get Occurences \n".print_r($this->SpeciesCombinations(),true));
+
+            $this->Status("An Error Occured ".__METHOD__."(".__LINE__.")"." - 1");
+            $this->Result(null);
+            $this->Queue();
+            return null;
+        }
+        
+        
+        
+        $compute_ok = $this->ComputeSelectedSpecies();
+        if (!$compute_ok) 
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to compute Scripts \n".print_r($this->SpeciesCombinations(),true));
+            
+            $this->Status("An Error Occured ".__METHOD__."(".__LINE__.")"." - 2");
+            $this->Result(null);
+            $this->Queue();
+            return null;
+        }
+        
+        
+        if (count($this->ScriptsToRun()) == 0)
+        {
+            $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_FINALISE);
+            $this->GetResults();
+            $this->Queue();
+            return $this->Result();
+        }
+        
+        sleep(10); // wait for Qstat to catch up - before we start poling it
+
+        
+        $jobList = $this->qsubJobs();      // get current number of qsub jobs actually running now
+        
+        while (count($jobList) > 0)
+        {
+
+            $this->GetResults();
+            $this->Queue();
+            
+            sleep(10);
+            $jobList = $this->qsubJobs();
+            
+        }
+        
+        $this->Status("All GRID jobs have been completed ");
+        $this->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
+        $this->GetResults();
+        $this->Queue();
+
+    }
+    
+    
+    /**
+     * 
+     * @return array QSTAT output for all jobs with the same CollectionID 
+     * 
+     */
+    private function qsubJobs()
+    {
+        $lines = array();
+        exec("qstat | grep '{$this->QsubCollectionID()}'",$lines);
+        return $lines;
+    }
+
+    
+    
+    
+    /**
+     * Read database for this species and create species folder for the required species
+     * and retrive Occur.csv and place in species data folder if it does not exist.
+     * 
+     */
+    private function getOccurances()
+    {
+        
+        $speciesIDs = array_keys($this->SpeciesCombinations());
+        
+        foreach ($speciesIDs as $speciesID) 
+        {
+            if (is_null($speciesID)) continue;
+            if ($speciesID == "" ) continue;
+            
+            file::mkdir_safe($this->speciesDataFolder($speciesID));
+            
+            $getOccurResult = $this->getOccurancesRecordsFor($speciesID);
+            
+            
+            
+            if (is_null($getOccurResult))
+            {
+                DBO::LogError(__METHOD__."(".__LINE__.")","Error getting Occurence data for ".$speciesID."\n");
+                return null;
+            }
+            
+        }
+        
+        // at this point all Occurrances files will exist (ie for each species)        
+        return true;
+        
+    }
+    
+    
+    
+    /**
+     *
+     * @param type $speciesID - Species Scientific Name
+     * @param type $occurFilename - Where to write datafrom database
+     * @return boolean 
+     */
+    private function getOccurancesRecordsFor($speciesID)
+    {
+     
+        $occurFilename = $this->species_occurence_filename($speciesID);
+        file::Delete($occurFilename);
+        
+        $file_written = SpeciesData::SpeciesOccuranceToFile($speciesID,$occurFilename); // get occuances from database
+        if (!$file_written) return null;
+        
+        return true;
+        
+    }
+    
+    
+    /**
+     * At any one time this will have the current results available 
+     * - it will be a list of ASC grid filenames that can be displayed on the web server
+     * 
+     * @return type 
+     */
+    private function GetResults()
+    {
+        
+        $result = array();
+        $complete = true;
+        
+        $done_count = 0;
+        
+        foreach ($this->SpeciesCombinations() as $speciesID => $combinations) 
+        {
+
+            DBO::LogError(__METHOD__."(".__LINE__.")","Checking on results for {$speciesID}");
+            
+            
+            $speciesID = trim($speciesID);
+            if ($speciesID == "") continue;
+            
+            if (!$this->MaxentLogDone($speciesID)) 
+            {
+                $complete = false;
+                
+                // since the maxent log does not exiosts we want to  just copy the current results over                
+                foreach ($combinations as $combination => $file_id) 
+                    $result[$speciesID][$combination] = $file_id;
+                
+                continue;  // Next SpeciesID don't check outputs when we don't have a complete maxent log
+            }
+            
+            
+            
+            foreach ($combinations as $combination => $file_id) 
+            {
+                
+                $result[$speciesID][$combination] = $file_id; // copy current values into new result - will copy over null values as well
+                
+                
+                DBO::LogError(__METHOD__."(".__LINE__.")","Checking on results for {$speciesID} ... {$combination}");
+                
+                // the current file_id for this combinartion is not set - go get it / check for it
+                if (is_null($file_id))
+                {
+                    
+                    list($scenario, $model, $time) = explode("_",$combination);    
+                                                                                             
+                    $file_id = $this->GetModelledData($speciesID, $scenario, $model, $time); // we don't know if we have database data for this comnination so go acheck
+                    
+                    if (is_null($file_id))
+                    {
+                        $result[$speciesID][$combination] = null;  // we check for the file / db row and we did not find it so set this combinatrion to null
+                        $complete = false; // we still don't have all results requested
+                    }
+                    else
+                    {
+                        $result[$speciesID][$combination] = $file_id;    
+                    }
+                    
+                }
+                
+                if (strlen($file_id) > 0) $done_count++; // count what ahs been done
+                
+            }
+                        
+        }
+        
+        $this->SpeciesCombinations($result);
+
+        $this->Result($result);
+        
+        $this->ResultsComplete($complete);
+        
+        $this->ResultsDoneCountString($done_count);
+        
+        $this->Status("Items processed ".$this->ResultsDoneCountString()." of ".$this->ResultsFullCountString() );
+        
+    }
+    
+    
+    /**
+     * Find maxent Log and check that the Last line states "Ending"
+     * then we know that this species was processed correctly
+     * 
+     * @param type $speciesID
+     * @return boolean 
+     */
+    private function MaxentLogDone($speciesID)
+    {
+        
+        $maxentLog =    configuration::Maxent_Species_Data_folder().
+                        $speciesID.
+                        configuration::osPathDelimiter().
+                        configuration::Maxent_Species_Data_Output_Subfolder().
+                        configuration::osPathDelimiter().
+                        "maxent.log";
+        
+        
+        if (!file_exists($maxentLog)) return false;   // if we don't have the file then it's not done yet
+
+        $lastLogLine = exec("tail -n1 '$maxentLog'");
+
+        if (util::contains($lastLogLine, "Ending"))  return true; // Maxent finished OK
+        
+        return false; // Maxtent did not finish OK
+        
+    }
+
+    
+    
+
+    /**
+     *
+     * Create script file to run Maxent.jar and retrive status and outputs 
+     *
+     * @return int JobCount - (Number of species to compute) x (Number of Combinations)
+     * 
+     * 
+     */
+    private  function ComputeSelectedSpecies()
+    {
+        
+        $scripts_written_ok = $this->writeScriptFiles();  // array of script path names
+        
+        if (!$scripts_written_ok)
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to create scripts \n");
+            return null;
+        }
+        
+        if (is_null($this->ScriptsToRun())) return null;  // no scripts to run this might be just fune
+        
+        foreach ($this->ScriptsToRun() as $scriptname) 
+        {
+            if (is_null($scriptname) || trim($scriptname) == "" ) continue;
+            $cmd = "qsub -N{$this->QsubCollectionID()} '{$scriptname}'";
+            exec($cmd);  /// QSUB JOBS Submitted here
+        }
+        
+        return true;
+        
+    }
+    
+    
+    /*
+     * Script file used to run maxent.jar and all projectections state in combinations
+     * 
+     */
+    private function writeScriptFiles()
+    {
+        
+        // for each species we need to run all the combinations
+        
         $scripts = array();
         foreach ($this->SpeciesCombinations() as $speciesID => $combinations)
         {
-
-            echo "writeMaxentSpeciesProjectionScriptFile for $speciesID\n";
-
-            
-            file::mkdir_safe(configuration::CommandScriptsFolder().$speciesID);
-            
-            // all combinations for a single species
-            $singleScript = self::writeMaxentSingleSpeciesProjectionScriptFile($speciesID,$combinations);
+            $singleScriptName = $this->writeMaxentSingleSpeciesProjectionScriptFile($speciesID,$combinations); // all combinations for a single species
             
             
+            if (is_null($singleScriptName))
+            {
+                DBO::LogError(__METHOD__."(".__LINE__.")","Failed to create script for  {$speciesID}\n");
+                return null;
+            }
             
             
-            if ($singleScript != "") $scripts[$speciesID] = $singleScript;
+            if ($singleScriptName != "")   $scripts[$speciesID] = $singleScriptName; // add script if we have the name
+            
         }
 
-        return $scripts;
-       
+        $this->ScriptsToRun($scripts); // update list of scriupts that need to run
 
+        return true;
+        
     }
 
 
-
+    /**
+     * Create script file that will submitted to QSUB to run maxent for Current Projection and all future projections requested
+     * 
+     * @param type $speciesID
+     * @param type $combinations
+     * @return string|null 
+     */
     private function writeMaxentSingleSpeciesProjectionScriptFile($speciesID,$combinations)
     {
+        
+        file::mkdir_safe($this->species_scripts_folder($speciesID));
+        file::mkdir_safe($this->species_data_folder($speciesID));
+        file::mkdir_safe($this->species_output_folder($speciesID));
+        
+        $maxent_single_species_script_filename = $this->maxent_single_species_script_filename($speciesID);
+        
+        
+        // create combinration script files here - will contains lines to run MaxEnt and Qsub calls to run future projects  in paralell
+        
+        $script = "";
+        $script .= $this->maxentScript($speciesID);
+        
 
-        $scriptFilename = configuration::CommandScriptsFolder().$speciesID.configuration::osPathDelimiter().$speciesID.'_root'.configuration::CommandScriptsSuffix();
+        foreach ($combinations as $combination => $file_id)
+        {
+            
+            if (!is_null($file_id)) continue;  // we already have this combination
+            
+            // script that will be used to execute just a single combo
+            $singleFutureScriptFilename = $this->singleCombinationScript($speciesID,$combination); 
+
+            if (is_null($singleFutureScriptFilename))
+            {
+                DBO::LogError(__METHOD__."(".__LINE__.")","Call to singleCombinationScript failed SpeciesID = $speciesID  combination = $combination  \n");
+                return null;
+            }
+            
+            
+            // add this script name to the Main "root" script to be run
+            $script .= "\nqsub -N{$this->QsubCollectionID()} '{$singleFutureScriptFilename}'";          
+            
+        }
         
-        $maxent = configuration::MaxentJar();
+            
         
-        $train = configuration::Maxent_Taining_Data_folder();
+        $script = trim($script);
+        if ($script == "") return "";  // if there is nothing to run return empty_string
+
+        
+        // add lines to remove - script once it's complete
+        $script .=  "\n";
+        $script .=  "\nrm {$maxent_single_species_script_filename}\n"; // remove itself after execution
+        $script .=  "\n";
+        
+        
+        file_put_contents($maxent_single_species_script_filename, $script);
+
+        if (!file_exists($maxent_single_species_script_filename))
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Write Script for Species = {$speciesID} maxent_single_species_script_filename = $maxent_single_species_script_filename \n");
+            return null;
+        }
+        
+        return $maxent_single_species_script_filename;   // we have something to RUN so return the filename
+        
+    }
+
+    
+    private function species_scripts_folder($speciesID)
+    {
+        $scripts_folder =  configuration::CommandScriptsFolder().
+                           $speciesID.
+                           configuration::osPathDelimiter();
+
+        return $scripts_folder;
+        
+    }
+    
+
+    private function species_data_folder($speciesID)
+    {
+        $data_folder    =   configuration::Maxent_Species_Data_folder().
+                            $speciesID.
+                            configuration::osPathDelimiter();
+
+        return $data_folder;
+        
+    }
+    
+
+    private function species_output_folder($speciesID)
+    {
+        $output_folder  =   configuration::Maxent_Species_Data_folder().
+                            $speciesID.
+                            configuration::osPathDelimiter().
+                            configuration::Maxent_Species_Data_Output_Subfolder();
+
+        return $output_folder;
+        
+    }
+
+    private function species_output_projection_filename($speciesID, $scenario, $model, $time)
+    {
+        $output_file    =   configuration::Maxent_Species_Data_folder().
+                            $speciesID.
+                            configuration::osPathDelimiter().
+                            configuration::Maxent_Species_Data_Output_Subfolder().
+                            configuration::osPathDelimiter().
+                            "{$scenario}_{$model}_{$time}".'.asc';
+
+        return $output_file;
+        
+    }
+    
+    
+    private function maxent_single_species_script_filename($speciesID)
+    {
+        $scriptFilename =   configuration::CommandScriptsFolder().
+                            $speciesID.
+                            configuration::osPathDelimiter().
+                            $speciesID.'_root'.
+                            configuration::CommandScriptsSuffix();
+
+        return $scriptFilename;
+        
+    }
+    
+    
+    private function maxentScript($speciesID)
+    {
+        
+        if ($this->MaxentLogDone($speciesID)) return ""; // if we already have the maxent data then don't run this part 
+        
+        $species_folder = $this->species_data_folder($speciesID);
+        
+         $maxent = configuration::MaxentJar();
+          $train = configuration::Maxent_Taining_Data_folder();
         $project = configuration::Maxent_Future_Projection_Data_folder();
-        $data_folder = configuration::Maxent_Species_Data_folder();
+          $occur = configuration::Maxent_Species_Data_Occurance_Filename();
+        
+        $output_folder  =  $this->species_output_folder($speciesID);
+        
+        $occur =  $this->species_occurence_filename($speciesID);
 
-        $output_subfolder = configuration::Maxent_Species_Data_Output_Subfolder();
-        $occur = configuration::Maxent_Species_Data_Occurance_Filename();
-
-        $os_path = configuration::osPathDelimiter();
-
-        $species_folder = "{$data_folder}{$speciesID}{$os_path}";
-        $output_folder  = "{$data_folder}{$speciesID}{$os_path}{$output_subfolder}";
-
-        $occur =  "{$data_folder}{$speciesID}{$os_path}{$occur}";
+        $MaxentResultsInsert_php  = configuration::ApplicationFolder()."Search/MaxentResultsInsert.php";
+        
+        $speciesInfo = SpeciesData::SpeciesQuickInformation($speciesID);
         
         
 $maxent_script = <<<AAA
 #!/bin/tcsh
-# speciesID = {$speciesID}
-# Scenarios = {$this->EmissionScenarioIDs()}
-# Models    = {$this->ClimateModelIDs()} 
-# Times     = {$this->TimeIDs()}
-#        
-if (! -e "{$species_folder}" ) then  
-  echo "Folder for {$speciesID} does not exist  ({$species_folder})"
-  exit
-endif
+#
+# execute maxent for  ({$speciesID})
+# ==================================================================================
+#
+# speciesID      = {$speciesID} 
+# Species Info   = {$speciesInfo}
+# Scenarios      = {$this->EmissionScenarioIDs()}
+# Models         = {$this->ClimateModelIDs()} 
+# Times          = {$this->TimeIDs()}
+#
+# file locations
+# Species Folder = {$species_folder}
+# MAXENT         = {$maxent}
+# TRAINCLIMATE   = {$train}
+# PROJECTCLIMATE = {$project}
+s OCCUR          = {$occur}
 
-#define file locations
 set MAXENT={$maxent}
 set TRAINCLIMATE={$train}
 set PROJECTCLIMATE={$project}
 set OCCUR={$occur}
 
-#load the java module for the HPC
 module load java
-
-#make an output directory
-echo Make output folder {$output_folder}
-if (! -e "{$output_folder}" ) then
-  mkdir {$output_folder}
-endif
-
-echo execute model for {$speciesID}
 
 #model the species distribution
 java -mx2048m -jar {$maxent} environmentallayers={$train} samplesfile={$occur} outputdirectory={$output_folder} -J -P -x -z redoifexists autorun
-
-echo execute future projections
-
+php -q '{$MaxentResultsInsert_php}' $speciesID
 
 AAA;
+            return $maxent_script;
 
 
-        // create combinration script files here
-
-        $future_projection_scripts = "";
-
-        echo "loop thru combos to create for $speciesID\n";
-
-        
-        foreach ($combinations as $combination => $comboFilename)
-        {
-            
-            echo "COMBO   $combination = $comboFilename\n";
-            
-            // here we need to check to see if the output already exists
-            // if it does we don't need to add this to the JOB
-            
-            
-            $localComboFilename = configuration::Maxent_Species_Data_folder().$comboFilename;
-            
-            echo "does output exist localComboFilename  ".$localComboFilename."\n";
-            
-            if (!file_exists($localComboFilename))  // only create script if we don't have the file 
-            {
-
-                 echo "NO output exist  ".$localComboFilename."\n";
-                
-                $ss = $this->singleCombinationScript($speciesID,$combination,$localComboFilename); // script that will be used to execute just a single combo
-
-                if ($ss != "")
-                {
-                    $ssFN = file::random_filename(configuration::CommandScriptsFolder()."/{$speciesID}/").configuration::CommandScriptsSuffix() ;
-                    $ssFN = str_replace("//","/",$ssFN);
-
-                    file_put_contents($ssFN, $ss);
-
-                    exec("chmod u+x '$ssFN'");            
-
-                    $subJobName  = "{$this->QsubCollectionID()}s";
-
-                    $future_projection_scripts .= "qsub -N{$subJobName} $ssFN\n";
-
-                }
-                
-            }
-            
-        }
-
-        
-        $includeMaxent = true;
-        
-        // check to see if we need to run "Maxent"
-        $maxentLog = "{$output_folder}{$os_path}maxent.log";
-            
-        
-        echo "maxentLog = $maxentLog\n";
-        
-        if (file_exists($maxentLog))
-        {
-            $lastLogLine = exec("tail -n1 '$maxentLog'");
-            
-            echo "lastLogLine = $lastLogLine\n";
-            
-            if (util::contains($lastLogLine, "Ending")) 
-                    $includeMaxent = false;
-        }
-
-
-        $script = "";
-        if ($includeMaxent) $script .= $maxent_script;
-        if ($future_projection_scripts != "")  $script .= $future_projection_scripts;  // here check to see if the future predectiosn are there as well.
-
-        
-        $script = trim($script);
-        if ($script != "")
-        {
-            file_put_contents($scriptFilename, $script);
-            exec("chmod u+x '{$scriptFilename}'");
-            
-            return $scriptFilename;   // we have something to RUN so return the filename
-            
-        }
-
-        
-        return null;
     }
-
-
-
-//echo "cycle through the projections and project the maps"
-//
-//foreach PROJ (`find $PROJECTCLIMATE -type d` )
-//
-//  set PROJ_OUTPUT="$OUTPUT_FOLDER/`basename $PROJ`.asc"
-//  set SCRIPT_NAME="$SCRIPT_FOLDER/`basename $PROJ`.sh"
-//  set LAMBDAS="$OUTPUT_FOLDER/${SPP}.lambdas"
-//  echo "create and execute scripts for future projectstions $SPP  $PROJ"
-//
-//  echo "#\!/bin/tcsh" > $SCRIPT_NAME
-//  echo "module load java" >> $SCRIPT_NAME
-//  echo "java -mx2048m -cp {$maxent} density.Project /home/jc166922/TDH/maxent_model/{$speciesName}/output/{$speciesName}.lambdas $PROJ $PROJ_OUTPUT fadebyclamping nowriteclampgrid nowritemess -x" >> $SCRIPT_NAME
-//  echo "rm $SCRIPT_NAME*" >> $SCRIPT_NAME
-//
-//  qsub -e $SCRIPT_FOLDER -o $SCRIPT_FOLDER  $SCRIPT_NAME
-//
-//end
-//AAA;
-//
-//#define the species
-//SPP="1"
-//#define file locations
-//MAXENT=/home/ctbccr/TDH/maxent.jar
-//TRAINCLIMATE=/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975
-//PROJECTCLIMATE=/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/
-//OCCUR=occur.csv
-//#load the java module for the HPC
-//module load java
-//#move to the species directory
-//cd /home/ctbccr/TDH/$SPP
-//#make an output directory
-//mkdir output
-//#model the species distribution
-//java -mx2048m -jar $MAXENT environmentallayers=$TRAINCLIMATE samplesfile=$OCCUR outputdirectory=output -J -P -x -z redoifexists autorun
-//#cycle through the projections and project the maps
-//for PROJ in `find $PROJECTCLIMATE -type d` 
-//do
-//java -mx2048m -cp $MAXENT density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x
-//done
-
-//
-//
-
-    private function singleCombinationScript($speciesID,$combination,$localComboFilename)
+    
+    
+    
+    /**
+     * For a single species for a single combination create script that can be submited to QSUB
+     * 
+     * @param type $speciesID
+     * @param type $combination
+     * @param type $localComboFilename
+     * @return string 
+     */
+    private function singleCombinationScript($speciesID,$combination)
     {
-
-        $os_path = configuration::osPathDelimiter();
-        $os_dot = configuration::osExtensionDelimiter();
+        
+        $script_folder =    $this->species_scripts_folder($speciesID);
         
         $maxent = configuration::MaxentJar();
         
-        $project = configuration::Maxent_Future_Projection_Data_folder();
-        $data_folder = configuration::Maxent_Species_Data_folder();
+        $lambdas =  $this->species_lambdas($speciesID);
 
-        $output_subfolder = configuration::Maxent_Species_Data_Output_Subfolder();
-        $occur = configuration::Maxent_Species_Data_Occurance_Filename();
+        $proj =     configuration::Maxent_Future_Projection_Data_folder().
+                    configuration::osPathDelimiter().
+                    $combination;
+        
 
-
-        $output_folder  = "{$data_folder}{$speciesID}{$os_path}{$output_subfolder}";
-        $occur          = "{$data_folder}{$speciesID}{$os_path}{$occur}";
+        $future_projection_output = configuration::Maxent_Species_Data_folder().
+                                    $speciesID.
+                                    configuration::osPathDelimiter().
+                                    configuration::Maxent_Species_Data_Output_Subfolder().
+                                    configuration::osPathDelimiter().
+                                    $combination.
+                                    ".asc";
 
         
-        // $future_projection_output = "{$output_folder}{$os_path}$combination{$os_dot}asc";
+        $scriptFilename =   configuration::CommandScriptsFolder().
+                            $speciesID.
+                            configuration::osPathDelimiter().
+                            $this->ID().'_'.$combination.
+                            configuration::CommandScriptsSuffix();
+        
+        
+        $script  = "#!/bin/tcsh"; 
+        $script .= "\n# combination              = {$combination}";
+        $script .= "\n# speciesID                = {$speciesID}";
+        $script .= "\n# speciesInfo              = ".SpeciesData::SpeciesQuickInformation($speciesID);
+        $script .= "\n# script_folder            = {$script_folder}";
+        $script .= "\n# maxent                   = {$maxent}";
+        $script .= "\n# lambdas                  = {$lambdas}";
+        $script .= "\n# proj                     = {$proj}";
+        $script .= "\n# future_projection_output = {$future_projection_output}";
+        $script .= "\n# scriptFilename           = {$scriptFilename}";
+        $script .= "\n#";
+        
+        $script .= "\nmodule load java";
+        $script .= "\ncd {$script_folder}";
 
-        $future_projection_output = $localComboFilename;
+                    //java -mx2048m -cp $MAXENT   density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x        
+        $script .= "\njava -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x";   
+        $script .= "\nphp -q ".configuration::ApplicationFolder()."Search/MaxentQuickLookInsert.php $speciesID '$future_projection_output'";
+        $script .= "\nrm $scriptFilename";
+        $script .= "\n";
+            
+        file_put_contents($scriptFilename, $script);
         
-        echo "D we need a script \n";
-        echo "Checkig to see if {$future_projection_output} exists\n";
-        
-        
-        $script = "";
-        // if we already have the file then we don't need this script
-        if (!file_exists($future_projection_output))
+        if (!file_exists($scriptFilename))
         {
-
-            $script_folder = configuration::CommandScriptsFolder();
-            $lambdas = "{$output_folder}{$os_path}{$speciesID}.lambdas";
-
-            $script_folder = configuration::CommandScriptsFolder();
-
-            
-            $script .= "#!/bin/tcsh\n";
-            $script .= "module load java\n";
-            $script .= "cd {$script_folder}\n";
-
-            $proj = "{$project}{$os_path}{$combination}";
-
-                        //java -mx2048m -cp $MAXENT   density.Project output/${SPP}.lambdas $PROJ output/`basename $PROJ`.asc fadebyclamping nowriteclampgrid nowritemess -x        
-            $script .= "java -mx2048m -cp {$maxent} density.Project {$lambdas} {$proj} {$future_projection_output} fadebyclamping nowriteclampgrid nowritemess -x\n";    
-            $script .= "\n";
-            
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Write Script for Species = {$speciesID}  combination = $combination scriptFilename = $scriptFilename \n");
+            return null;
         }
         
         
-        return $script;
+        return $scriptFilename;
         
     }
     
     
+    private function species_lambdas($speciesID) {
+        
+        $lambdas =  configuration::Maxent_Species_Data_folder().
+                    $speciesID.
+                    configuration::osPathDelimiter().
+                    configuration::Maxent_Species_Data_Output_Subfolder().
+                    configuration::osPathDelimiter().
+                    $speciesID.
+                    ".lambdas";
+        
+        return $lambdas;
+        
+    }
+    
+
     
     public function SpeciesIDs() {
         if (func_num_args() == 0)
@@ -754,6 +795,14 @@ AAA;
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
+
+    
+    public function ScriptsToRun() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
     
     /**
      * Keep the array of [species][combintations]
@@ -766,12 +815,88 @@ AAA;
         return $this->getProperty();
         return $this->setProperty(func_get_arg(0));
     }
+
     
+    public function isServerRun() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
     
 
+    public function ResultsComplete() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+
+    public function ResultsDoneCountString() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+
+
+    public function ResultsFullCountString() {
+        if (func_num_args() == 0)
+        return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+    }
+    
+    
     public function AttachedCommand() 
     {
         return $this;
+    }
+
+    
+    private function species_occurence_filename($speciesID)
+    {
+        
+        $occurFilename =    configuration::Maxent_Species_Data_folder().
+                            $speciesID.
+                            configuration::osPathDelimiter().
+                            configuration::Maxent_Species_Data_Occurance_Filename();
+        
+        return $occurFilename;
+        
+    }
+
+    
+    
+    private function speciesDataFolder($speciesID)
+    {
+        
+        $species_data_folder =  configuration::Maxent_Species_Data_folder().
+                                $speciesID.
+                                configuration::osPathDelimiter();
+        
+        return $species_data_folder;
+        
+    }
+    
+    
+    
+    
+    /**
+     * Make sure all outputs for a model run exist
+     * 
+     * @param type $species
+     * @param type $scenario
+     * @param type $model
+     * @param type $time
+     * @return null 
+     */
+    public function GetModelledData($species,$scenario, $model, $time)
+    {
+        
+        $asc_file_id        = SpeciesData::GetModelledData($species, $scenario, $model, $time,'ASCII_GRID');
+        $quickLook_file_id  = SpeciesData::GetModelledData($species, $scenario, $model, $time,'QUICK_LOOK');
+        
+        if (is_null($asc_file_id) || is_null($quickLook_file_id) )return null;
+        
+        return $asc_file_id;
     }
     
 }

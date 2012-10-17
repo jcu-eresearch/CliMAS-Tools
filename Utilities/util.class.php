@@ -1,6 +1,112 @@
 <?php
 class util {
 
+    
+    /**
+     * Characters that are not letters or numbers 
+     * - may not be wanted in inputs
+     * 
+     * @var type 
+     */
+    public static $EXTRA_CHARS = '@##$%^&*()_+-={}[]\|:";\'\\<>,.?/`~';
+
+
+    public static function dbq($str,$forceCharacter = false)
+    {
+        if ($forceCharacter) return "E'".  str_replace("'", "\'", $str)."'";
+        
+        if (is_numeric($str)) return $str;
+        
+        if (strtolower($str) == "null") return $str;
+        
+        
+        return "E'".  str_replace("'", "\'", $str)."'";
+    }
+    
+
+    public static function dbqKeyedArray($array,$operator = "=",$delim = ",") 
+    {
+    
+        $results = array();
+        foreach ($array as $key => $value) 
+        {
+            if (is_numeric($value))
+                $results[] = $key." ".$operator." ".$value;    
+            else
+                $results[] = $key." ".$operator." ".util::dbq($value);
+        }
+        
+
+        $result = implode($delim, $results);
+        
+        return $result;
+        
+    }
+    
+    
+    public static function boolean2string($src) 
+    {
+        if ($src == true) return "true";
+        return "false";
+        
+    }
+
+    public static function string2boolean($src) 
+    {
+        if (strtolower($src) == "true") return true;
+        return false;
+        
+    }
+    
+    
+    public static function isPublicMethod($obj,$methodName)
+    {
+        $rm = new ReflectionMethod($obj, $methodName);
+
+        return array_util::Contains(Reflection::getModifierNames($rm->getModifiers()), 'public');
+
+    }
+    
+    
+    public static function Log($from,$str) 
+    {
+        error_log("APPLICATION ERROR:: ".$from."::".$str);
+    }
+    
+    
+    /**
+     * Extract the value of a commandline option that looks like    --option=value
+     * 
+     * @param type $array
+     * @param type $optionName
+     * @param type $default
+     * @return type 
+     */
+    public static function  CommandScriptsFoldermandLineOptionValue($array,$optionName,$default = null)
+    {
+
+        if (!array_util::Contains($array, $optionName)) return $default;
+
+        $fp = array_util::FirstElementsThatContain($array, $optionName);
+        if (is_null($fp)) return $default;
+
+        $value = str_replace("--{$optionName}=", '', $fp);
+        $value = str_replace("'", '', $value);
+
+        
+        if ($value == "true") return true;
+        if ($value == "false") return false;
+        
+        $value = trim($value);
+        
+        if ($value == "") return $default;
+        
+        return $value;
+
+    }
+    
+    
+    
     /**
     * @method isWebBrowser
     * @return mixed
@@ -45,11 +151,11 @@ class util {
 
         for ($index = 0; $index <= $seconds; $index++)
         {
-            echo "$index ";
+            //echo "$index ";
             sleep(1);
         }
 
-        echo "\n";
+       // echo "\n";
     }
 
     /**
@@ -105,7 +211,7 @@ class util {
 
         if (!is_array( util::first_element($src) ))
         {
-            echo "##Error util::uniqueColumnNames  src does not look like a matrix\n";
+            //echo "##Error util::uniqueColumnNames  src does not look like a matrix\n";
             return NULL;
         }
 
@@ -551,12 +657,34 @@ SQL;
     */
     public static function fromLastChar($src, $charType = "")
     {
+
+        if (is_array($src)) return self::fromLastCharArray($src, $charType);
+        
+        
         $pos = strrpos($src, $charType);
         if ($pos === false) return $src;
 
         return substr($src,$pos + 1);
     }
 
+    
+    /**
+    * @method fromLastChar 
+    * @param $src 
+    * @param $charType = "" 
+    * @return mixed
+    */
+    public static function fromLastCharArray($src, $charType = "")
+    {
+
+        $result = array();
+        
+        foreach ($src as $key => $value) 
+            $result[$key] = self::fromLastChar($value, $charType);
+
+        return $result;
+    }
+    
 
     /**
     * @method contains 
@@ -666,8 +794,9 @@ SQL;
     */
     public static function first_element($array)
     {
+        if (!is_array($array)) return null;
+        if (count($array) == 0) return null;
         $vals = array_values($array);
-
         return $vals[0];
     }
 
@@ -1011,14 +1140,25 @@ SQL;
         return $b[1];
     }
 
+    /**
+     *
+     * Remove "Extra chacters from streing"
+     * 
+     * @param type $str
+     * @param type $delim if it's just a simple clean out of delims. i.e. replace with empty char
+     * @param string|array $otherChars  Charcaters you want to replace in string
+     * @param type $replace_wtih what to replace them with (only a simgle replace string for all chars)
+     * @return type 
+     */
     public static function CleanStr($str,$delim = NULL,$otherChars = NULL,$replace_wtih = "_")
     {
         if (!is_null($delim))
+        {
             $str = str_replace($delim ,'',$str);
+        }
 
         $str = str_replace(chr(10),'',$str);
         $str = str_replace(chr(13),'',$str);
-
         
         if (!is_null($otherChars) )
         {
@@ -1032,6 +1172,12 @@ SQL;
         return $str;
     }
 
+    
+    public static function CleanString($str)
+    {
+        return self::CleanStr($str,NULL,self::$EXTRA_CHARS,"");   
+    }
+    
     
     public static function toString($src)
     {

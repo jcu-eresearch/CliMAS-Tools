@@ -17,7 +17,7 @@ session_start();
     $result = database::query($info['sql'], $link);
 
     if ($result == "" || $result == FALSE)
-        echo "NO RESULT";
+       echo "NO RESULT";
     else
         echo util::printableMatrix($result, $delim = ",");
 

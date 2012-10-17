@@ -1,5 +1,4 @@
 <?php
-
 class Session {
     
     private static $ActionsToBeMapped = "ActionsToBeMapped";
@@ -20,7 +19,15 @@ class Session {
 
         $result = array();
         foreach ($actionsToMap as $actionToMap)
-            $result[$actionToMap] = FinderFactory::Result($actionToMap);
+        {
+            $actionResult = FinderFactory::Result($actionToMap);
+            if (!is_null($actionResult))
+                $result[$actionToMap] = $actionResult;
+            else
+                $result[$actionToMap] = $actionToMap;   // add raw string to be mapped
+            
+        }
+            
 
         
         return $result;
@@ -119,6 +126,9 @@ class Session {
      */
     public static function get($key,$default = null)
     {
+        if (!isset($_SESSION)) return null;
+        
+        
         if (!self::has($key)) return $default;
 
         $session_data = self::AppSession();
@@ -200,7 +210,4 @@ class Session {
 
 
 }
-
-
-
 ?>

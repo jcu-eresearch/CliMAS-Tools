@@ -51,11 +51,11 @@ if (is_null($queueID))
 
                 //print_r($cmd);
 
-                $queueID = CommandUtil::Queue($cmd);
+                $queueID = DatabaseCommands::CommandActionQueue($cmd);
 
                 if (is_null($queueID))
                 {
-                    $content = "Could not queue command for some reason ".$cmd->CommandName();
+                    $content = "Could not queue command for some reason ".$cmd->CommandName()."  queueID = $queueID";
                 }
                 else
                 {
@@ -84,7 +84,7 @@ if (is_null($queueID))
 else
 {
     
-    $cmd = CommandUtil::GetCommandFromID($queueID);
+    $cmd = DatabaseCommands::CommandActionRead($queueID);
     
     if (is_null($cmd))
     {

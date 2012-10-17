@@ -1,6 +1,5 @@
 <?php
 include_once 'MapServerLayers.class.php';
-
 class MapServerWrapper extends Object {
     
     private $layers = null;
@@ -13,7 +12,7 @@ class MapServerWrapper extends Object {
         $this->setPropertyByName("OutputImageType",MapServerConfiguration::imageTypePNG());
         $this->setPropertyByName("OutputImageWidth",MapServerConfiguration::imageWidth());
         $this->setPropertyByName("OutputImageHeight",MapServerConfiguration::imageHeight());
-        $this->setPropertyByName("OutputImageBackgroundColour", new RGB() );
+        $this->setPropertyByName("OutputImageBackgroundColour", RGB::transparent() );
         $this->setPropertyByName("Shapepath", "");
         
         $this->layers = new MapServerLayers($this);
@@ -167,5 +166,4 @@ class MapServerWrapper extends Object {
     
     
 }
-
 ?>

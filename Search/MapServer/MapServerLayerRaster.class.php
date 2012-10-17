@@ -1,6 +1,5 @@
 <?php
 include_once 'MapServerLayer.class.php';
-
 class MapServerLayerRaster extends MapServerLayer {
     
     
@@ -27,6 +26,8 @@ class MapServerLayerRaster extends MapServerLayer {
         
         $default = $this->Classes()->DefaultClass();
         $default->Style()->Color(RGB::ColorBlue());
+        
+        $this->HistogramBuckets(10); // default 10 buckets
         
         
     }
@@ -162,5 +163,4 @@ class MapServerLayerRaster extends MapServerLayer {
     
     
 }
-
 ?>

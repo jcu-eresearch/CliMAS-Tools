@@ -1,8 +1,8 @@
 <?php
+
 session_start();
 include_once 'includes.php';
 Session::clear();
-
 function icon($name)
 {
     echo '<img title="'.$name.'" style="height: 30px; width: 30px;" border="0" src="'.configuration::IconSource().$name.'" />';
@@ -26,7 +26,7 @@ function icon($name)
         <iframe ID="Layers"   src="SearchLayers.php"    width="200" height="300" frameBorder="0" border="0" style="overflow:hidden; float: none;" ></iframe>
     </div>
 
-    <div style="float: left; height: 700px; width: 1000px;">
+    <div style="float: left; height: 500px; width: 700px;">
         <div id="ToolBar">
             <a href="#" class="Tool" id="ToolFullExtent"    onclick="SetFullExtent()"><?php icon("FullExtent.png")?></a>
             <a href="#" class="Tool" id="ToolZoomOutLow"    onclick="SetZoom(this,-2.0);" ><?php icon("Zoom-Out-icon.png")?></a>&nbsp;&nbsp
@@ -34,7 +34,7 @@ function icon($name)
             <a href="#" class="Tool" id="ToolZoomInLow"     onclick="SetZoom(this,2.0)"  ><?php icon("Zoom-In-icon.png")?></a>&nbsp;&nbsp
             <!-- <a href="#" class="Tool" id="ToolZoomOutLow1"   onclick="zoomOut();" >Zoom Out1</a>&nbsp;&nbsp -->
         </div>
-        <iframe ID="GUI" src="SearchMap.php" width="900" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" ></iframe>
+        <iframe ID="GUI" src="SearchMap.php" width="700" height="600" frameBorder="0" border="0" style="overflow:hidden; float:left;" ></iframe>
         <br style="clear:both;">
 
         <iframe ID="DataSummary" src="" width="900" height="600" frameBorder="0" border="0" style="overflow:scroll; float:left;" ></iframe>

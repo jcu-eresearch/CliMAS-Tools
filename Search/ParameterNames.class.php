@@ -1,8 +1,14 @@
 <?php
 class Parameter 
 {
+
+    public static $CONFIGURATION_SOURCE = "CONFIGURATION_SOURCE";
+
     public static $APPLICATION_NAME     = "APPLICATION_NAME";
-    public static $APPLICATION_FOLDER   = "APPLICATION_FOLDER";
+
+    public static $APPLICATION_FOLDER     = "APPLICATION_FOLDER";
+    public static $APPLICATION_FOLDER_WEB = "APPLICATION_FOLDER_WEB";
+    
     public static $UTILITIES_CLASSES    = "UTILITIES_CLASSES";
     public static $DOWNLOAD_FOLDER_WEB  = "DOWNLOAD_FOLDER_WEB";
     public static $DOWNLOAD_FOLDER_REAL = "DOWNLOAD_FOLDER_REAL";
@@ -14,6 +20,7 @@ class Parameter
     public static $COMMAND_SCRIPTS_EXE    = "COMMAND_SCRIPTS_EXE";
     public static $COMMAND_SCRIPTS_PREFIX = "COMMAND_SCRIPTS_PREFIX";
     public static $COMMAND_SCRIPTS_SUFFIX = "COMMAND_SCRIPTS_SUFFIX";
+    public static $COMMAND_QUEUE_ID       = "COMMAND_QUEUE_ID";
     
     
     public static $RESOURCES_FOLDER     = "RESOURCES_FOLDER";
@@ -38,7 +45,11 @@ class Parameter
     public static $Maxent_Species_Data_Output_Subfolder = "Maxent_Species_Data_Output_Subfolder";
     public static $Maxent_Species_Data_Occurance_Filename = "Maxent_Species_Data_Occurance_Filename";
 
+    
+    public static $TempFolder = "TempFolder";
 
+    
+    
     
 }
 

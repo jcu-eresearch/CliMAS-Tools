@@ -1,27 +1,28 @@
 <?php
-include_once 'includes.php';
+set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
 
-// read argv and get ID of command that will be run here.
-$commandActionID = array_util::Value($argv, 1);
+include_once dirname(__FILE__).'/includes.php';
+
+$commandActionID = array_util::Value($argv, 1);   // read argv and get ID of command that will be run here.
 if (is_null($commandActionID))
 {
     // log this as failed to execute command action
-    echo "ERROR:: Was not a CommandAction commandActionID is NULL";
+    //echo "ERROR:: Was not a CommandAction commandActionID is NULL\n";
     return;
 }
 
-$cmd = CommandUtil::GetCommandFromID($commandActionID,false);
+$cmd = DatabaseCommands::CommandActionRead($commandActionID);
 if ( !($cmd instanceof CommandAction))
 {
     // it was a command but it was not a command action
-    echo "ERROR:: Was not a COmmandAction";
+    //echo "ERROR:: Was not a COmmandAction\n";
     return;
 }
 
 if (is_null($cmd))
 {
     // it was a command but it was not a command action
-    echo "ERROR:: cmd is NULL ???";
+    //echo "ERROR:: cmd is NULL ???";
     return;
 }
 

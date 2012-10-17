@@ -21,7 +21,6 @@ class Descriptions extends Data {
 
         $file = file($filename);
 
-
         $header = str_getcsv($file[0], $delim, $stringQuote);
 
         // get indexs for each column nam
@@ -53,6 +52,53 @@ class Descriptions extends Data {
     }
 
 
+    
+
+    /**
+     * Convert table data into a Descriptions
+     * 
+     * @param type $tablename        Table to select from 
+     * @param type $DataName         field name to become dataname
+     * @param type $Description      field name to become Description
+     * @param type $MoreInformation  field name to become MoreInformation
+     * @param type $URI              field name to become URI
+     * @return \Descriptions 
+     */
+    public static function fromTable($tablename, $DataName = "dataname", $Description = "description", $MoreInformation = "moreinfo", $URI = "uri")
+    {
+    
+        $q = "select {$DataName},{$Description},{$MoreInformation},{$URI} from {$tablename}";
+        
+        $result = DBO::Query($q, $DataName);
+        
+        if (is_null($result)) return null;
+        
+        $D = new Descriptions();
+        $D->keyIsDescriptive(false);
+
+        if (count($result) > 0)
+        {
+            foreach ($result as $dataname => $row) 
+            {
+            
+                $desc = new Description();
+                $desc->DataName        (array_util::Value($row, $DataName));
+                $desc->Description     (array_util::Value($row, $Description));
+                $desc->MoreInformation (array_util::Value($row, $MoreInformation));
+                $desc->URI             (array_util::Value($row, $URI));
+                $D->Add($desc);
+                
+            }
+            
+        }
+        
+        
+        return $D;
+    
+    }
+        
+    
+    
 
 
     private $descriptions = array();
@@ -173,6 +219,10 @@ class Descriptions extends Data {
         return $result;
     }
 
+    public function Keys()
+    {
+        return array_keys($this->descriptions);
+    }
     
     
     public function keyIsDescriptive() {
@@ -186,5 +236,4 @@ class Descriptions extends Data {
 
 
 }
-
 ?>

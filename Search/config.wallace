@@ -1,0 +1,93 @@
+<?php
+
+/**
+ *
+ *  Values when running on wallaceinitiative.jcu.edu.au
+ *  
+ *   This has multiple configs for different installs
+ * 
+ */
+if (stripos( $hostname, "wallaceinitiative.jcu.edu.au") !== FALSE) 
+{
+    
+    
+    if (stripos( __FILE__, "climate_2012/tdhtools") !== FALSE)
+    {
+     
+        $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." climate_2012/tdhtools  wallaceinitiative.jcu.edu.au";
+        
+        $conf[Parameter::$TempFolder]            = "/local/climate_2012/tmp/";
+        
+        $conf[Parameter::$APPLICATION_FOLDER]    = "/local/climate_2012/tdhtools/";
+        $conf[Parameter::$UTILITIES_CLASSES]     = "/local/climate_2012/tdhtools/Utilities/includes.php";
+        $conf[Parameter::$RESOURCES_FOLDER]      = "/local/climate_2012/tdhtools/Resources/";
+        $conf[Parameter::$SOURCE_DATA_FOLDER]    = "/local/climate_2012/tdhtools/source/";
+        
+        $conf[Parameter::$Descriptions_ClimateModels]      = "/local/climate_2012/tdhtools/Resources/descriptions/gcm.csv";
+        $conf[Parameter::$Descriptions_EmissionScenarios]  = "/local/climate_2012/tdhtools/Resources/descriptions/scenario.csv";
+        $conf[Parameter::$Descriptions_Years]              = "/local/climate_2012/tdhtools/Resources/descriptions/year.txt";
+
+        $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/local/climate_2012/output/";
+        
+        
+        $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://wallaceinitiative.jcu.edu.au/climate_2012/output/";
+        $conf[Parameter::$ICONS_FOLDER]          = "http://wallaceinitiative.jcu.edu.au/climate_2012/tdhtools/Resources/icons/";
+
+        
+        $conf[Parameter::$COMMAND_QUEUE_ID       ]= "wallace_climate_2012";
+        $conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/local/climate_2012/tdhtools/logs/queue.log";
+        $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = "/local/climate_2012/tdhtools/queue/";
+        $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/local/climate_2012/tdhtools/scripts/";
+        $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = "/local/climate_2012/tdhtools/Search/CommandActionExecute.php";
+        
+        $conf[Parameter::$MaxentJar ] = "/local/climate_2012/tdhtools/Search/Finder/Species/maxent.jar";
+        
+        $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
+        $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
+        $conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/ctbccr/TDH/";
+        $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
+        $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
+        
+        
+        
+    }    
+    
+    if (stripos( __FILE__, "climate_2012/demo") !== FALSE)         
+    {
+        
+        $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." climate_2012/demo  wallaceinitiative.jcu.edu.au";
+        
+        $conf[Parameter::$APPLICATION_FOLDER]    = "/local/climate_2012/demo/";
+        $conf[Parameter::$UTILITIES_CLASSES]     = "/local/climate_2012/demo/Utilities/includes.php";
+        $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/local/climate_2012/demo/output/";
+        $conf[Parameter::$RESOURCES_FOLDER]      = "/local/climate_2012/demo/Resources/";
+        $conf[Parameter::$SOURCE_DATA_FOLDER]    = "/local/climate_2012/demo/source/";
+
+        $conf[Parameter::$Descriptions_ClimateModels]      = "/local/climate_2012/demo/Resources/descriptions/gcm.csv";
+        $conf[Parameter::$Descriptions_EmissionScenarios]  = "/local/climate_2012/demo/Resources/descriptions/scenario.csv";
+        $conf[Parameter::$Descriptions_Years]              = "/local/climate_2012/demo/Resources/descriptions/year.txt";
+
+        
+        $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://wallaceinitiative.jcu.edu.au/climate_2012/demo/output/";
+        $conf[Parameter::$ICONS_FOLDER]          = "http://wallaceinitiative.jcu.edu.au/climate_2012/demo/Resources/icons/";        
+
+        $conf[Parameter::$COMMAND_QUEUE_ID       ]= "wallace_demo";
+        $conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/local/climate_2012/demo/logs/queue.log";
+        $conf[Parameter::$COMMAND_QUEUE_FOLDER   ] = "/local/climate_2012/demo/queue/";
+        $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/local/climate_2012/demo/scripts/";
+        $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = "/local/climate_2012/demo/Search/CommandActionExecute.php";
+
+        $conf[Parameter::$MaxentJar ] = "/local/climate_2012/demo/Search/Finder/Species/maxent.jar";
+        
+        $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
+        $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
+        $conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/ctbccr/TDH/";
+        $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
+        $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
+        
+        
+    }    
+    
+}        
+
+?>

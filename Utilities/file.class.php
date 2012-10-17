@@ -1,8 +1,5 @@
 <?php
-
 class file {
-
-
     /*
     * @method getTitleTagValue
     * @param $filename
@@ -24,6 +21,30 @@ class file {
 
         return $title;
     }
+
+    
+//    public static function mime2extension($mimetype)
+//    {
+//        // http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
+//        
+//        $file = file("http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types");
+//        $file = file::arrayFilterOut($file, "#");
+//        
+//        $elements = array_util::ElementsThatContain($file, $mimetype);
+//        
+//        if (count($elements) == 0) return null;
+//        
+//        $element = util::first_element($elements);
+//        
+//        $exts = explode(" ",trim(util::fromLastChar($element, " ")));
+//        
+//        if (count($exts) < 1) return null;
+//        
+//        return $exts[0];
+//        
+//        
+//    }
+
 
 
 
@@ -106,10 +127,17 @@ class file {
     * @param $pathname
     * @return mixed
     */
-    public static function mkdir_safe($pathname)
+    public static function mkdir_safe($pathname,$replace_space = null)
     {
+        if (!is_null($replace_space))
+            $pathname = str_replace (" ", $replace_space, $pathname);
+        
         if (is_dir($pathname)) return; // if it already exists then don't do it
         @mkdir($pathname,0777,true);
+        
+        if (!is_dir($pathname)) return null;
+        
+        return $pathname;
     }
 
 
@@ -261,6 +289,9 @@ class file {
     */
     public static function folder_folders($path, $fs_folder_sep = "/",$basenameAsKey = false)
     {
+        
+        if (is_null($fs_folder_sep)) $fs_folder_sep = "/";
+        
         $path = util::trim_end($path, $fs_folder_sep);
         $path = $path.$fs_folder_sep;
 
@@ -331,6 +362,16 @@ class file {
         return self::folder_with_extension($path, 'png' ,$sep, $basenameAsKey );
     }
 
+    public static function folder_asc($path, $sep = "/", $basenameAsKey = false )
+    {
+        return self::folder_with_extension($path, 'asc' ,$sep, $basenameAsKey );
+    }
+
+    public static function folder_gz($path, $sep = "/", $basenameAsKey = false )
+    {
+        return self::folder_with_extension($path, 'gz' ,$sep, $basenameAsKey );
+    }
+    
 
     /*
     * @method folder_files
@@ -561,17 +602,29 @@ class file {
 
     public static function lineCount($filename)
     {
+        if (!file_exists($filename)) return -1;
+        
         $result = trim(util::leftStr(trim(exec("wc '$filename'")), ' ')) ;
         return $result;
     }
 
 
-    public static function lineCounts($filenames)
+    public static function lineCounts($filenames,$basenameAsKey = false)
     {
 
         $result= array();
         foreach ($filenames as $filename) {
-            $result[$filename] = self::lineCount($filename);
+            
+            if ($basenameAsKey)
+            {
+                $result[basename($filename)] = self::lineCount($filename);
+            }
+            else
+            {
+                $result[$filename] = self::lineCount($filename);    
+            }
+            
+            
         }
         return $result;
     }
@@ -1000,7 +1053,105 @@ class file {
         return $result;
     }
 
+    
+    
+    public static function LS($pattern,$options = "-1",$basenameAsKey = false)
+    {
+        
+        if (is_null($options) ) $options = "-1";
+        
+        $cmd = "ls $options {$pattern}";
+        $result = array();
+        
+        exec($cmd,$result);
+        
+        if (!$basenameAsKey) return $result;
+        
+        $newResult = array();
+        foreach ($result as $key => $value) 
+        {
+            $newResult[basename($value)] = $value;
+        }
+        
+        unset($result);
+        
+        return $newResult;
+    }
 
-
+    public static function LSfolders($pattern = "*",$options = "-1d",$basenameAsKey = true)
+    {
+        
+        if (is_null($options) ) $options = "-1";
+        
+        $pattern .= '/';
+        
+        $cmd = "ls $options {$pattern}";
+        $result = array();
+        
+        exec($cmd,$result);
+        
+        if (!$basenameAsKey) return $result;
+        
+        $newResult = array();
+        foreach ($result as $key => $value) 
+        {
+            $newResult[basename($value)] = $value;
+        }
+        
+        unset($result);
+        
+        return $newResult;
+    }
+    
+    
+    
+    
+    
+    public static function Head($filename,$lines)
+    {
+        $cmd = "head -n {$lines} {$filename}";
+        $result = array();
+        
+        exec($cmd,$result);
+        
+        return $result;
+        
+        
+    }
+    
+    
+    /**
+     *
+     * @param type $src  Array of pathnames
+     * 
+     * @return array Key = Basename of filename  value = filename
+     */
+    public static function Filelist2BasenamePath($src)
+    {
+        
+        $result = array();
+        foreach ($src as $path) 
+        {
+            $result[basename($path)] = $path;            
+        }
+        
+        return $result;;
+        
+    }
+    
+    /**
+     * Take in Linux Command line and expect output of command line to be Filepath list
+     * 
+     * @param type $src
+     * @return type 
+     */
+    public static function Commandline2BasenamePath($src)
+    {
+        $result = array();
+        exec($src,$result);
+        return self::Filelist2BasenamePath($result);
+    }
+    
+    
 }
 ?>

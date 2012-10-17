@@ -9,214 +9,279 @@
  */
 class SpeciesData extends Object {
 
-    //put your code here
-
-    private $speciesDB = null;
-
-    public function __construct($connect = true) {
-        parent::__construct();
-        
-        if ($connect) $this->connect ();
-        
-    }
-
-//Host: tdh-tools-2.hpc.jcu.edu.au
-//User: ap02
-//Password: 
-//Database Name: ap02    
+    
+    public static $OCCURANCE_MINIMUM_LINES = 3;
     
     
-    // SELECT ST_X(location) AS longitude, ST_Y(location) AS latitude FROM occurrences;
-    
-
-    public function connect()
+    /**
+     *
+     * For any species make sure we have occurance data
+     * 
+     * @param type $pattern
+     * @return type 
+     */
+    public static function speciesList($pattern = "%")  //
     {
+        $pattern = util::CleanString($pattern);
+        $sql = "select species_id,(common_name || ' (' || scientific_name || ')' ) as full_name  from modelled_climates  where (common_name LIKE '%{$pattern}%' or scientific_name LIKE '%{$pattern}%' ) ";
+                        
+                       
+        $result = DBO::Query($sql,'species_id');
         
-//        $conString = "";
-//        $conString .= "host="    .ToolsDataConfiguration::Species_DB_Server()." ";
-//        $conString .= "port="    .ToolsDataConfiguration::Species_DB_Port()." ";        
-//        $conString .= "dbname="  .ToolsDataConfiguration::Species_DB_Database()." ";
-//        $conString .= "user="    .ToolsDataConfiguration::Species_DB_Username()." ";
-//        $conString .= "password=".ToolsDataConfiguration::Species_DB_Password()." ";
-//        
-//        $this->speciesDB = pg_connect($conString );
-
+        if (is_null($result))
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Species List via sql [$sql]\n");
+            return null;
+        }
+        
+        return $result;
     }
 
-    public function __destruct() {
+    /**
+     *
+     * @param type $speciesID
+     * @return null|string  
+     */
+    public static function SpeciesQuickInformation($speciesID) 
+    {
+       
+        $sql = "select scientific_name,common_name from species where id = {$speciesID} limit 1";
         
-        if (!is_null($this->speciesDB))
+        $first = DBO::QueryFirst($sql,'scientific_name');
+        
+        if (is_null($first))
         {
-            pg_close($this->speciesDB);
-            unset($this->speciesDB);
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to SpeciesQuickInformation [$sql]\n");
+            return null;
         }
 
-        parent::__destruct();
+        
+        return array_util::Value($first, 'common_name')." (".array_util::Value($first, 'scientific_name').")";
     }
-
     
-    private function query($sql) 
+    
+    public static function SpeciesInfoByID($species_id) 
     {
         
-        // we don't have Postgress SQL php addin so  this is the way query works - thru sending to file and readin file.
+        $sql = "select scientific_name,common_name from species where id = $species_id";
         
-        $sql = str_replace('"', '\"', $sql);
+        $result = DBO::QueryFirst($sql,'id');
         
-        $resultFilename = file::random_filename();
-        
-        $cmd  = " ";
-        $cmd .= "export PGHOST="    .ToolsDataConfiguration::Species_DB_Server()  ." ; ";
-        $cmd .= "export PGPORT="    .ToolsDataConfiguration::Species_DB_Port()    ." ; ";
-        $cmd .= "export PGDATABASE=".ToolsDataConfiguration::Species_DB_Database()." ; ";
-        $cmd .= "export PGUSER="    .ToolsDataConfiguration::Species_DB_Username()." ; ";
-        $cmd .= "export PGPASSWORD=".ToolsDataConfiguration::Species_DB_Password()." ; ";
-        $cmd .= 'psql  --quiet --no-align -c "'.$sql.'" --output '.$resultFilename;
-        
-        exec($cmd);
-        
-        if (!file_exists($resultFilename)) return null;
-        
-        $row = 0;
-        $result = array();
-
-        $handle = fopen($resultFilename, "r");        
-        if ($handle !== FALSE) 
+        if (is_null($result))
         {
-            $headers = fgetcsv($handle, 0, "|");
-            
-            while (($data = fgetcsv($handle, 0, "|")) !== FALSE) 
-            {
-            
-                if (count($data) == count($headers)) // this should stop any odd lines and the last line (nnnn rows)
-                {
-                    for ($c=0; $c < count($data); $c++) 
-                    {
-                        $result[$row][$headers[$c]] = trim($data[$c]);
-                    }
-                }
-                
-                $row++;
-            }
-            fclose($handle);
-            
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to Species Info  species_id = [{$species_id}] [$sql]\n");
+            return null;
         }
-
+        
+        
+        return  $result;
+    }
+    
+    
+    
+    
+    
+    /**
+     * Get file id from datbaase for this combination
+     * 
+     * 
+     * @param type $species
+     * @param type $scenario
+     * @param type $model
+     * @param type $time
+     * @return string|null  file_id for that file  pr Em,pty string says that now file for these parameters
+     */
+    public static function GetModelledData($speciesID,$scenario, $model, $time,$filetype = null, $desc = null)
+    {
+        
+        $filetypeAnd = (is_null($filetype)) ? "" : "and mc.filetype   = ".util::dbq($filetype);
+        $descAnd     = (is_null($desc))     ? "" : "and f.description = ".util::dbq($desc);
+        
+        
+        $sql = "select mc.id as id
+                      ,mc.species_id
+                      ,mc.scientific_name
+                      ,mc.common_name
+                      ,mc.models_id
+                      , m.dataname as model_name
+                      ,mc.scenarios_id
+                      , s.dataname as scenario_name
+                      ,mc.times_id
+                      , t.dataname as time_name
+                      ,mc.filetype
+                      , f.description
+                      ,mc.file_unique_id as file_id
+                from   modelled_climates mc
+                      ,models m
+                      ,scenarios s
+                      ,times t
+                      ,files f
+                where mc.species_id = {$speciesID}
+                  and mc.models_id      = m.id
+                  and mc.scenarios_id   = s.id
+                  and mc.times_id       = t.id
+                  and mc.file_unique_id = f.file_unique_id
+                  and m.dataname = ".util::dbq($model)."
+                  and s.dataname = ".util::dbq($scenario)."
+                  and t.dataname = ".util::dbq($time)." {$filetypeAnd} {$descAnd}
+                  limit 1
+                ;";
+        
+        
+        $result = DBO::QueryFirstValue($sql,'file_id');
         
         return $result;
         
     }
-
+        
     
-    public function speciesList($pattern = "%") 
+    /**
+     * Get file id from datbaase for this combination
+     * 
+     * 
+     * @param type $species
+     * @param type $scenario
+     * @param type $model
+     * @param type $time
+     * @return string|null  file_id for that file  pr Em,pty string says that now file for these parameters
+     */
+    
+    
+    /**
+     *
+     * get FileId for all datra files for this species 90
+     * 
+     * @param type $speciesID
+     * @param type $filetype Limit to this filetype only
+     * @return type 
+     */
+    public static function GetAllModelledData($speciesID,$filetype = null,$key = 'combination')
     {
-        $pattern = str_replace("*", "%", $pattern);
         
-        if (util::last_char($pattern) != "%") $pattern .= "%";
+        $filetypeAnd = (is_null($filetype)) ? "" : "and mc.filetype   = ".util::dbq($filetype);
         
-        $q = "select id as species_id, scientific_name, common_name from species where common_name LIKE '{$pattern}'";
-
-        $result = $this->query($q);
+        
+        $sql = "select mc.id as id
+                      ,mc.species_id
+                      ,mc.scientific_name
+                      ,mc.common_name
+                      ,mc.models_id
+                      , m.dataname as model_name
+                      ,mc.scenarios_id
+                      , s.dataname as scenario_name
+                      ,mc.times_id
+                      , t.dataname as time_name
+                      ,mc.filetype
+                      , f.description
+                      ,mc.file_unique_id as file_unique_id
+                      ,(s.dataname || '_' || m.dataname || '_' || t.dataname) as combination
+                      ,(mc.common_name  || ' (' || mc.scientific_name || ')' ) as full_name
+                from   modelled_climates mc
+                      ,models m
+                      ,scenarios s
+                      ,times t
+                      ,files f
+                where mc.species_id = {$speciesID}
+                  and mc.models_id      = m.id
+                  and mc.scenarios_id   = s.id
+                  and mc.times_id       = t.id
+                  and mc.file_unique_id = f.file_unique_id
+                  {$filetypeAnd}
+                  order by 
+                      m.dataname
+                     ,s.dataname
+                     ,t.dataname
+                ;";
+        
+        
+        $result = DBO::Query($sql,$key);
         
         return $result;
         
     }
     
-
+    
+    
+    
+    
     /**
      * 
      * 
      * @param type $speciesID  - Scientific Name here as then across systems and database rebuilds it wont change
      * @return array  [index] => (longitude,latitude)
      */
-    public function speciesOccurance($speciesID) 
+    public static function SpeciesOccurance($speciesID) 
     {
-
-        $speciesID = trim(urldecode($speciesID));
+        $q = "SELECT ST_X(location) AS longitude, ST_Y(location) AS latitude FROM occurrences where species_id = {$speciesID}";
         
-        // SELECT ST_X(location) AS longitude, ST_Y(location) AS latitude FROM occurrences where species_id = 2966 ;
+        $speciesOccuranceResult = DBO::Query($q);
         
-        
-        // get id for occurrences table  related to  species.species_id
-        
-        $speciesDatabaseID = "select id,scientific_name,common_name from species where scientific_name = '{$speciesID}'";
-        $speciesDatabaseIDResult = $this->query($speciesDatabaseID);
-
-        
-        if (count($speciesDatabaseIDResult) == 0 ) 
+        if (is_null($speciesOccuranceResult)) 
         {
-            // TODO log - message to user ?? / admnin
-            return null;  // could not find 
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to get Species Occurence data from data base using \n q = $q \n speciesID = $speciesID  \n");
+            return null;
         }
-        
-        $firstRow = util::first_element($speciesDatabaseIDResult); // may not be index [0]
-        $databaseIDForSpecies = trim($firstRow['id']);
-        
-        $speciesOccuranceQ = "SELECT ST_X(location) AS longitude, ST_Y(location) AS latitude FROM occurrences where species_id = $databaseIDForSpecies";
-        $speciesOccuranceResult = $this->query($speciesOccuranceQ);
         
         
         return $speciesOccuranceResult;
-        
     }
     
     
+
+
     
-    public static function SpeciesOccuranceToFile($speciesID,$filename) 
+    public function SpeciesOccuranceToFile($speciesID, $occurFilename) 
     {
         
-        $SD = new SpeciesData();
-        $result = $SD->speciesOccurance($speciesID);
-        unset($SD);
+        $result = self::SpeciesOccurance($speciesID);
         
-        $file = '"SPPCODE","LATDEC","LONGDEC"'."\n";  // headers specific to Maxent JAR
-        foreach ($result as $index => $row) 
+        if (is_null($result)) 
         {
-            $line = $speciesID.",".
-                    $row['latitude'].",".
-                    $row['longitude']."\n";
-        
-            $file .= $line;
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to get Species Occurence Data speciesID = $speciesID  \n");
+            return null;
         }
         
         
-        file_put_contents($filename, $file);
+        // this will create occurance file where the "name" of the species will be the Species ID from database
+        // this seems to have to match the Lambdas filename
+        
+        $file = '"SPPCODE","LATDEC","LONGDEC"'."\n";  // headers specific to Maxent JAR
+        foreach ($result as $row) 
+            $file .= $speciesID.",".$row['latitude'].",".$row['longitude']."\n";
+        
+        file_put_contents($occurFilename, $file);
+
+        
+        if (!file_exists($occurFilename)) 
+        {
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to wite Species Occurence Data File speciesID = $speciesID  occurFilename = $occurFilename \n");
+            return null;
+        }
+        
+        
+        // check the validity of the file - a "good" number of lines
+        $lineCount = file::lineCount($occurFilename);
+        
+        echo "occurFilename = $occurFilename  lineCount = $lineCount\n";
+
+        
+        if ($lineCount < self::$OCCURANCE_MINIMUM_LINES) 
+        {
+            file::Delete($occurFilename);
+            DBO::LogError(__METHOD__."(".__LINE__.")","Failed to get Occurence $occurFilename it was too small  speciesID = $speciesID  \n");
+            return null;
+        }
+        
+        
+        
         
         unset($result);
         unset($file);
         
-        return file_exists($filename);
-        
+        return true;
         
     }
     
-
-    
-    public static function SpeciesQuickInformation($speciesID) 
-    {
-        
-        $speciesID = trim(urldecode($speciesID));
-        
-        
-        // get id for occurrences table  related to  species.species_id
-        $speciesDatabaseQ = "select scientific_name,common_name from species where scientific_name = '{$speciesID}' limit 1";
-
-        $SD = new SpeciesData();
-        $speciesDatabaseResult = $SD->query($speciesDatabaseQ);
-        unset($SD);
-        
-        if (count($speciesDatabaseResult) == 0 ) 
-        {
-            // TODO log - message to user ?? / admnin
-            return null;  // could not find 
-        }
-        
-        $first = util::first_element($speciesDatabaseResult);
-        
-        $result = $first['common_name']." (".$first['scientific_name'].")";
-        
-        return $result;
-        
-    }
     
     
     

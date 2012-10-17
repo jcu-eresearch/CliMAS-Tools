@@ -2,6 +2,84 @@
 class array_util
 {
 
+    public static function CleanStrings($src,$translation_array = null,$replace_non_printable = true,$default_char = "")
+    {
+        if (is_null($translation_array))
+        {
+            $translation_array = array();
+            
+            foreach (explode("",util::$EXTRA_CHARS) as $char) 
+                $translation_array[$char] = $default_char;
+            
+        }
+        else
+        {
+            if (is_string($translation_array))
+            {
+                $chars = $translation_array;
+                
+                $translation_array = array();
+                foreach (str_split($chars) as $char) 
+                {
+                    $translation_array[$char] = $default_char;
+                }
+                    
+                
+            }
+            
+            
+        }
+        
+        
+        $result = array();
+        
+        // loop thru each src element
+        foreach ($src as $key => $src_str) 
+        {
+        
+            $result_str = $src_str;
+            
+            //ErrorMessage::Marker("STARTED:   $result_str");
+            
+            // for each source element do char translation
+            foreach ($translation_array as $trans_key => $trans_value) 
+            {
+                //ErrorMessage::Marker("Cleaning: [{$trans_key}] to  [{$trans_value}]  $result_str");
+                $result_str = str_replace($trans_key, $trans_value, $result_str);
+            }
+                
+            //ErrorMessage::Marker("Cleaned chars:   $result_str");
+            
+            if ($replace_non_printable)
+            {
+                for ($asc_num = 0; $asc_num < 32; $asc_num++) 
+                {
+                    //ErrorMessage::Marker("Cleaning:  [".chr($asc_num)."] to  [{$default_char}]  $result_str");
+                    $result_str = str_replace(chr($asc_num), $default_char, $result_str);
+                }
+                    
+                
+                for ($asc_num = 128; $asc_num <= 255; $asc_num++) 
+                {
+                   // ErrorMessage::Marker("Cleaning:  [".chr($asc_num)."] to  [{$default_char}]  $result_str");
+                    $result_str = str_replace(chr($asc_num), $default_char, $result_str);
+                }
+                    
+            }
+            
+            $result[$key] = $result_str;
+            
+            
+        }
+        
+        
+        return $result;
+        
+        
+    }
+    
+    
+    
     /*
     * @method arrayAverage
     * @param $src
@@ -464,7 +542,22 @@ class array_util
         return $result;
     }
 
+    public static function ReplaceInKey($src,$search, $replace)
+    {
+        $result = array();
+        foreach ($src as $key => $value)
+        {
+            $key = str_replace($search, $replace, $key);
+            $result[$key] = $value;
+        }
+            
 
+
+        return $result;
+    }
+
+    
+    
 
     /*
     * @method arrayElements
@@ -496,8 +589,13 @@ class array_util
 
     public static function FirstElementsThatContain($array, $find)
     {
-        $vals = array_values(self::ElementsThatContain($array, $find));
-        if (count($vals) == 0 ) return null;
+        $elements = self::ElementsThatContain($array, $find);
+        
+        if (is_null($elements)) return null;
+        
+        if (count($elements) == 0 ) return null;
+        
+        $vals = array_values($elements);
 
         return $vals[0];
     }
@@ -600,16 +698,25 @@ class array_util
     * @param $findIn
     * @return mixed
     */
-    public static function Value($array, $key,$default = null)
+    public static function Value($array, $key,$default = null,$trim_string = false)
     {
-        if (array_key_exists($key, $array)) return $array[$key];
-        return $default;
+        if (!is_array($array)) return $default;
+        
+        if (!array_key_exists($key, $array))  return $default;
+                
+        if (!$trim_string) return $array[$key];
+        
+        return trim($array[$key]);
+        
     }
 
-
-        // return key where valuein array matches $findValue
+    
+    
 
     /*
+     * 
+     * return key where value in array matches $findValue
+     * 
     * @method findArrayKey
     * @param $findIn
     * @param $findValue
@@ -685,7 +792,19 @@ class array_util
         {
             // array of arrays and they passed a column name and NO default value
             foreach ($src as $value)
-                $unique[$value[$columnName]] = $unique[$value[$columnName]] + 1;
+            {
+                if (!array_key_exists($value[$columnName], $unique))
+                {
+                    $unique[$value[$columnName]] = 1;
+                }
+                else
+                {
+                    $unique[$value[$columnName]] = $unique[$value[$columnName]] + 1;
+                }
+                
+                
+            }
+                
 
         }
         else
@@ -743,7 +862,7 @@ class array_util
     {
         if (is_null($array))
         {
-            echo "##ERROR: array_util::DisplayKeyedArray array passed is NULL\n";
+            //echo "##ERROR: array_util::DisplayKeyedArray array passed is NULL\n";
             return NULL;
         }
 

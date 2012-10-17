@@ -35,44 +35,90 @@ class CommandProcessor
 {
     public static $QSTAT_RUNNING = "R";
     public static $QSTAT_COMPLETED = "C";
-
+    
+    /** 
+     *
+     * - Read queue folder  configuration::CommandQueueFolder()
+     * - look for Commands to process  (Commands are PHPO serialized CommandAction objects)
+     * 
+     * 
+     *  
+     */
     public static function ProcessQueue()
     {
-
-        echo "Queue Folder = ".configuration::CommandQueueFolder()."\n";
         
-        for ($index = 1; $index <= 20; $index++)
+        
+        $processor_running_filename = configuration::ApplicationFolder()."processor_running.flag";
+        
+        if (file_exists($processor_running_filename))
         {
-            $files = file::find_files(configuration::CommandQueueFolder(),  configuration::CommandExtension()); // find command files to process
-            $files = file::arrayFilterOut($files, "previous"); // if there are previous files here ignore them
+            echo "Processor already running\n";
+            exit(0);            
+        }
+        
+        
+        $str  = "\nCommand Processor Started : ". datetimeutil::NowDateTime();
+        $str .= "\n";
+        $str .= "\ncommad line : ".configuration::ApplicationFolder()."Search/Incoming.php";
+        $str .= "\n";
+        $str .= "\nDelete this file to stop the TDH Tools command processor\n";
+        file_put_contents($processor_running_filename,$str);
 
-            foreach ($files as $filepath)
-                self::processSingleQueueItem($filepath);
+        
+        if (!file_exists($processor_running_filename)) 
+        {
+            echo "Failed to sart command processor for TDH TOOLS Queue:".configuration::CommandQueueID()."\n";
+            exit(1);
+        }
+        
+        echo "Reading queue for ".configuration::CommandQueueID()."\n";
+        echo "To gracefully stop process delete {$processor_running_filename}\n";
+        
+        while(file_exists($processor_running_filename))
+        {
+            $commands = DatabaseCommands::CommandActionListIDs();
+            
+            if (count($commands) > 0)
+                foreach ($commands as $commandID) 
+                    self::processSingleQueueItem($commandID);
             
             sleep(3);
+            
         }
+        
+        
+        echo "Gracefully stopped process for TDH TOOLS Queue:".configuration::CommandQueueID()."\n";
+        
 
     }
-
-
-    private function processSingleQueueItem($filepath)
+    
+    
+    /**
+     * Read Single command file
+     *
+     * - unserailize and action command based on it's "state" ExecutionFlag (ref: CommandAction statics)
+     * 
+     * @param string $filepath
+     * @return null null
+     */
+    private function processSingleQueueItem($commandID)
     {
 
-        $command = CommandUtil::GetCommandFromFile($filepath,false);
-
+        $command = DatabaseCommands::CommandActionRead($commandID) ;
+        
+        
         if (is_null($command))
         {
             // echo datetimeutil::now()."checking $filepath\nCommand was NULL\n\n";
             return; // todo:: Log as exception /??
         }
 
-         echo "\n".$command->ID()."  == ".$command->ExecutionFlag()." .. ".$command->Status();
+        echo "\n".$command->ID()."  == ".$command->ExecutionFlag()." .. ".$command->Status();
 
         if (!($command instanceof CommandAction))
         {
-            return; // todo:: Log as exception /??
+            return null; // todo:: Log as exception /??
         }
-
 
         switch ($command->ExecutionFlag()) {
             case CommandAction::$EXECUTION_FLAG_READY:
@@ -83,12 +129,8 @@ class CommandProcessor
                 self::Running($command);
                 break;
 
-            case CommandAction::$EXECUTION_FLAG_TIMEOUT:
-                self::Timeout($command);
-                break;
-
             case CommandAction::$EXECUTION_FLAG_QUEUE_DONE:
-                self::Finalise($command);   //  the Queue said it was completd
+                self::Finalise($command);   //  the QSUB Queue said it was completd
                 break;
 
             case CommandAction::$EXECUTION_FLAG_FINALISE:
@@ -96,33 +138,42 @@ class CommandProcessor
                 break;
 
             case CommandAction::$EXECUTION_FLAG_COMPLETE:
-                // Do nothing
+                self::Completed($command);
                 break;
 
         }
 
-        CommandUtil::PutCommandToFile($command);
+        
 
     }
 
     /**
-     * Command eneters here should be at READY stage
+     * Command entes here at READY stage
      *
-     *
-     * @param iCommand $cmd
-     *
-     * @return mixed COmmand stage at RUNNING
-     *
+     * @param CommandAction $cmd
+     * 
+     * Changes ExecutionFlag  to  CommandAction::$EXECUTION_FLAG_RUNNING
+     * 
      */
     private static function Ready(CommandAction $cmd)
     {
         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_RUNNING);
         self::scriptIt($cmd);
+        DatabaseCommands::CommandActionQueue($cmd);
     }
 
+    
+    /**
+     * Check on Running job  $cmd->ExecutionFlag() ==  CommandAction::$EXECUTION_FLAG_RUNNING
+     * 
+     * Using ID check QSTAT to check in the job is still actually running 
+     * 
+     * Changes ExecutionFlag  to  CommandAction::$EXECUTION_FLAG_COMPLETE if Job is not in QSTAT 
+     * 
+     * @param CommandAction $cmd 
+     */
     private static function Running(CommandAction $cmd)
     {
-        // echo "Checking on Action ".$cmd->ActionName()."  ".$cmd->Status()."\n";
 
         // if you want to do something with a RUNNING JOB
         // DO IT HERE
@@ -134,15 +185,13 @@ class CommandProcessor
         // if so then move JOB to FINALISED
 
         $queueID = $cmd->QueueID();
-
-            echo "Check ing $queueID \n";
+        
         
         $result = "Unknown";
         if (!is_null($queueID))
         {
             
-            $firstBit = util::leftStr($queueID, ".");
-            $result = exec("qstat -f $firstBit | grep -e job_state");
+            $result = exec("qstat -f {$cmd->QueueID()} | grep -e job_state");
 
             if (util::contains($result, "job_state"))
             {
@@ -154,7 +203,7 @@ class CommandProcessor
                     if (trim($split[1]) == self::$QSTAT_COMPLETED)
                     {
                         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
-
+                        DatabaseCommands::CommandActionQueue($cmd);
                         // echo "\nQueue said job is finished= \n".$result."\n\n";
                     }
                     
@@ -167,16 +216,35 @@ class CommandProcessor
 
     }
 
+    /**
+     * Command will be in FINALISED state if the the process being set it.
+     * 
+     * Changes ExecutionFlag  to  CommandAction::$EXECUTION_FLAG_COMPLETE 
+     * 
+     * @param CommandAction $cmd 
+     */
     private static function Finalise(CommandAction $cmd)
     {
         $cmd->ExecutionFlag(CommandAction::$EXECUTION_FLAG_COMPLETE);
+        DatabaseCommands::CommandActionQueue($cmd);
     }
 
-    private static function Timeout(CommandAction $cmd)
+    
+    private static function Completed(CommandAction $cmd)
     {
-
+        // delete if oder than 2 days 
+        
+        
     }
+    
 
+    /**
+     *
+     * For debugging to see progess and state of command as it flows thru
+     * 
+     * @param CommandAction $command
+     * @param type $msg 
+     */
     private static function Log(CommandAction $command,$msg)
     {
         $log  = $command->LastUpdated().",";
@@ -190,21 +258,32 @@ class CommandProcessor
 
         file_put_contents(configuration::CommandQueueLog(),$log , FILE_APPEND);
 
-        echo "$log";
-
-    }
-
-
-    private static function scriptIt(CommandAction $cmd)
-    {
-        $cmd->QueueID(self::executeScript( self::generateScript($cmd) ) ); // from executeScript
+        //echo "$log";
 
     }
 
 
     /**
-     * create shell script with  "CommandActionExecute.php  <command id>"
+     * Generate script to be QSUB'ed 
+     * QSUB can handle simple command line arguments, but too complex and it overruns the line length
+     * 
+     * and send generated script to QSUB
+     * 
+     * @param CommandAction $cmd 
+     */
+    private static function scriptIt(CommandAction $cmd)
+    {
+        $cmd->QueueID(self::executeScript( self::generateScript($cmd) ) ); // from executeScript
+        
+    }
+
+
+    /**
+     * Create TCSH script that will be written to the filesystem to be sent to the GRID
      *
+     * The actaul command be run is "CommandActionExecute.php  <command id>"
+     * 
+     * 
      * @param iCommand $cmd
      */
     private static function generateScript(CommandAction $cmd)
@@ -214,7 +293,6 @@ class CommandProcessor
         $script  = "";
         $script .= "# QSUB script from ".configuration::ApplicationName()."\n";
         $script .= "# Written to execute Command Action with id {$cmd->ID()} \n";
-        $script .= "# this file will usually only exist if it's associated command exists (".CommandUtil::CommandFilename($cmd->ID()).")\n";
 
 
         // echo "cmd is class ".get_class($cmd)."\n";
@@ -238,7 +316,8 @@ class CommandProcessor
         $script .= "# \n";
         $script .= "# datetime script written:".datetimeutil::NowDateTime()."\n";
         $script .= "\n";
-
+ 
+        
         $script .= "php '".configuration::CommandScriptsExecutor()."'  {$cmd->ID()}";
         $script .= "\n";
 
@@ -247,31 +326,33 @@ class CommandProcessor
                            $cmd->ID().
                            configuration::CommandScriptsSuffix();
 
-        echo "script_filename = $script_filename\n";
         
-        
-        
-        $script .= "rm {$script_filename}\n"; // script will remove it self when done
+        // $script .= "rm {$script_filename}\n"; // script will remove it self when done
 
         file_put_contents($script_filename, $script);  // write script to script_filename
-        
         
         return $script_filename;
 
     }
 
+    /**
+     * Execute script 
+     * i.e. push script into QSUB queue and return qsub ID
+     * 
+     * @param string $scriptFilename
+     * @return string Queue ID from QSTAT
+     */
     private static function executeScript($scriptFilename)
     {
+        $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub '{$scriptFilename}'";
         
-        exec("chmod u+x '{$scriptFilename}'"); // may not be needed
-        
-        $cmd = "cd ".configuration::CommandScriptsFolder()." ;  qsub {$scriptFilename}";
-        
-        echo "cmd {$cmd}\n";
+      //  echo "Should do : $cmd\n";
         
         $qsub_id = exec($cmd);  // will do QSUB exec and then get the return with the QSUB ID
-        return $qsub_id;
-
+        
+        $firstBit = util::leftStr($qsub_id, ".");
+        
+        return $firstBit; // return job id - the rest is domain name
     }
 
 

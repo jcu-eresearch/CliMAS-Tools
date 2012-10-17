@@ -2,6 +2,97 @@
 class htmlutil {
 
 
+    public static function AsJavaScriptSimpleVariable($src,$variableName)
+    {
+        if (is_null($src)) return "";
+        if (is_null($variableName)) return "";
+
+        if (is_array($src)) return self::AsJavaScriptArray($src,$variableName);
+        
+        return "var {$variableName} = '{$src}';\n";
+    }    
+    
+    
+    public static function AsJavaScriptArray($src,$variableName)
+    {
+
+        if (is_null($src)) return "";
+        if (is_null($variableName)) return "";
+
+        if (!is_array($src)) return "/* DATA ERROR \n ".  print_r($src, true)." \n*/\n";
+        
+        $values = array();
+        
+        foreach ($src as $value) $values[] = '"'.$value.'"';
+        $result = "var {$variableName} = [".join(",",$values)."];";
+        
+        unset($values);
+        return $result."\n";
+    }
+
+    public static function AsJavaScriptArrayFromFile($filename,$variableName,$sort = false)
+    {
+
+        if (is_null($filename)) return "";
+        if (is_null($variableName)) return "";
+        
+        if (!file_exists($filename)) return "";
+        
+        $values = array_util::Trim(file($filename));
+        
+        if ($sort) sort($values);
+        
+        $result = "var {$variableName} = ['".join("','",$values)."'];";
+        
+        unset($values);
+        return $result."\n";
+    }
+    
+    
+    
+    /**
+     * 
+     * 
+     * @param type $src - BiDimensiaonal array 
+     * @param type $keyColumn - name of column to use as key
+     * @param type $valueColumn - name of column to use as value
+     * @return string Javascript arra of objectes
+     */
+    public static function AsJavaScriptObjectArray($src,$keyColumn = null ,$valueColumn = null,$variableName = null)
+    {
+
+        //[ { label: "Choice1", value: "value1" }, ... ]
+        if (is_null($variableName) ) $variableName = 'fred';
+        
+        if (!is_array($src)) return "/* DATA ERROR \n ".  print_r($src, true)." \n*/\n";
+        
+        $values = array();
+        foreach ($src as $index => $row) 
+        {
+            $label = (is_null($keyColumn)) ? $index : $row[$keyColumn];
+            $value = (is_null($valueColumn)) ? $row : $row[$valueColumn];
+            
+            $values[] = "{ label: \"{$label}\", value: \"{$value}\" }";
+        }
+            
+        $result = "var {$variableName} = [".join(",",$values)."];";
+        unset($values);
+        return $result."\n";
+    }
+    
+    
+    
+    public static function ValueFromGet($key , $default = null) 
+    {
+        return array_util::Value($_GET, $key, $default);        
+    }
+    
+    public static function ValueFromPost($key , $default = null) 
+    {
+        return array_util::Value($_POST, $key, $default);        
+    }
+    
+    
     /*
     * @method table
     * @param $data
@@ -563,7 +654,7 @@ class htmlutil {
     }
 
 
-    public static function KMLPlacemarker($name,$desc ,$lat, $lon, $alt)
+    public static function KMLPlacemarker($name,$desc ,$lat, $lon, $alt,$url_prefix)
     {
 
 $placeMark = <<<PLACEMARK
@@ -654,7 +745,7 @@ STRING;
 
     }
 
-    public static function KMLPhotoSingle($filename,$lat,$lon, $alt,$href=NULL)
+    public static function KMLPhotoSingle($filename,$lat,$lon, $alt,$href = NULL)
     {
 
         $name = util::rightStr($filename, '/',FALSE);
@@ -848,5 +939,9 @@ STRING;
 
     }
 
+    
+    
+    
+    
 }
 ?>

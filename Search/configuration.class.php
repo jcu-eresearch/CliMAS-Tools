@@ -4,6 +4,7 @@ class configuration {
 
     
     public static function DefaultMapableActionClassname() { return "ContextLayerAustralianStates"; }
+    
     public static function MapableBackgroundLayers() { return "ContextLayerMapableBackgroundLayers"; }
     
     
@@ -19,6 +20,12 @@ class configuration {
     {
         global $conf;
         return $conf[Parameter::$APPLICATION_FOLDER]; 
+    }
+
+    public static function ApplicationFolderWeb()
+    {
+        global $conf;
+        return $conf[Parameter::$APPLICATION_FOLDER_WEB]; 
     }
 
 
@@ -81,12 +88,14 @@ class configuration {
 
     public static function SourceDataFolder() {
         global $conf;
-        return $conf[Parameter::$SOURCE_DATA_FOLDER]; 
+        
+        $df = $conf[Parameter::$SOURCE_DATA_FOLDER];
+        return $df; 
     }
 
     public static function ContextSpatialLayersFolder()
     {
-        return self::SourceDataFolder() . "/context" . self::osPathDelimiter();
+        return self::SourceDataFolder() . "context" . self::osPathDelimiter();
     }
     
     public static function osPathDelimiter()      { 
@@ -99,6 +108,11 @@ class configuration {
         return $conf[Parameter::$ExtensionDelimiter]; 
     }
 
+    public static function CommandQueueID() { 
+        global $conf;
+        return $conf[Parameter::$COMMAND_QUEUE_ID]; 
+    }
+    
     public static function CommandQueueLog() { 
         global $conf;
         return $conf[Parameter::$COMMAND_QUEUE_LOG]; 
@@ -163,6 +177,12 @@ class configuration {
         global $conf;
         return $conf[Parameter::$Maxent_Species_Data_Occurance_Filename]; 
     }
+
+    public static function TempFolder() { 
+        global $conf;
+        return $conf[Parameter::$TempFolder]; 
+    }
+    
     
 }
 ?>

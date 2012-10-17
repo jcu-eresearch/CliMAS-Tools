@@ -348,7 +348,7 @@ class ascii_grid
             if (is_null($this->FixedWidth()))
                 if (count($cells) !=  $info['ncols'])
                 {
-                    echo "Column Count Mismatch [$rowIndex] ".count($cells)  ." != ".$info['ncols']." <br> ";
+                    //echo "Column Count Mismatch [$rowIndex] ".count($cells)  ." != ".$info['ncols']." <br> ";
                     continue;
                 }
 
@@ -561,13 +561,13 @@ class ascii_grid
 
         if (is_null($src))
         {
-            echo "##ERROR ascii_grid::calculateSpheroidGridArea src passed as null \n";
+            //echo "##ERROR ascii_grid::calculateSpheroidGridArea src passed as null \n";
             return NULL;
         }
 
         if (!is_array($src))
         {
-            echo "##ERROR ascii_grid::calculateSpheroidGridArea src passed is NOT array \n";
+            //echo "##ERROR ascii_grid::calculateSpheroidGridArea src passed is NOT array \n";
             return NULL;
         }
 
@@ -603,7 +603,7 @@ class ascii_grid
 
         $newFilename = str_replace('.asc', '_fixed.asc', $filename);
 
-        echo "writing fixed with version to ".$newFilename."\n";
+        //echo "writing fixed with version to ".$newFilename."\n";
 
         $file_handle = fopen($newFilename,'w');
         self::SaveFixedWidthHeader($file_handle);

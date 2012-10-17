@@ -29,6 +29,8 @@ class stats
 
         $useableValues = (is_null($nullValue))? $src : array_util::ExtractNullValues($src, null, $nullValue);
 
+        if (count($useableValues) == 0) return $nullValue; // if we have no useable values that means all values where nullValue
+        
         sort($useableValues);
 
         $div2 = (count($useableValues) / 2);

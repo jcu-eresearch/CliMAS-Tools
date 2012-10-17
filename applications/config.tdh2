@@ -1,0 +1,43 @@
+<?php
+/**
+ *
+ *  Develpopment values from workstation hostname  "tdh-tools-2" webserver
+ *  
+ */
+if (stripos( $hostname, "tdh-tools-2") !== FALSE) 
+{
+    
+    $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." tdh-tools-2";
+    
+    $conf[Parameter::$TempFolder ]    = "/www/html/eresearch/tmp/";
+    $conf[Parameter::$TempFolderWeb]  = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/tdhtools/tmp/";    
+    
+    $conf[Parameter::$APPLICATION_FOLDER]    = "/www/html/eresearch/tdhtools/";
+    
+    $conf[Parameter::$APPLICATION_FOLDER_WEB]    = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/tdhtools/";
+    
+    $conf[Parameter::$UTILITIES_CLASSES]     = "/www/html/eresearch/tdhtools/Utilities/includes.php";
+    
+    $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/www/html/eresearch/output/";
+    $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/output/";
+    $conf[Parameter::$RESOURCES_FOLDER]      = "/www/html/eresearch/tdhtools/Resources/";
+    $conf[Parameter::$SOURCE_DATA_FOLDER]    = "/scratch/jc166922/tdh1/source/";
+    
+    $conf[Parameter::$ICONS_FOLDER]          = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/tdhtools/Resources/icons/";
+    
+    $conf[Parameter::$COMMAND_QUEUE_ID       ]= "tdh";
+    $conf[Parameter::$COMMAND_QUEUE_LOG]      = "/scratch/jc166922/tdh2/logs/queue.log";
+    $conf[Parameter::$COMMAND_SCRIPTS_FOLDER] = "/www/html/eresearch/scripts/s";
+    $conf[Parameter::$COMMAND_SCRIPTS_EXE]    = "/www/html/eresearch/tdhtools/applications/CommandActionExecute.php";
+    
+    $conf[Parameter::$MaxentJar ] = "/www/html/eresearch/tdhtools/applications/Finder/Species/maxent.jar";
+
+    $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
+    $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
+    $conf[Parameter::$Maxent_Species_Data_folder ]            = "/www/html/eresearch/source/species/";
+        $conf[Parameter::$Maxent_Species_Data_folder_web ]    = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/source/species/";
+    $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
+    $conf[Parameter::$Maxent_Species_Data_Occurance_Filename] = "occur.csv";
+   
+}        
+?>

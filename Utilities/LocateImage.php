@@ -1,27 +1,25 @@
 <?php
+include_once 'includes.php';
 
-$loc = image_location::LatLong($argv[1]);
-if (!$loc) return;
 
-if ($argc == 2)
+$csv = util::CommandLineOptionValue($argv,'csv',null);
+if (!is_null($csv)) 
 {
-    echo "filename,lat,long,alt\n";
-    echo $loc;
-    return TRUE;
+    
+    echo image_location::LatLong2CSV($csv)."\n";  
+    exit(1);
 }
 
-if (($argc == 3) && ($argv[2] == "-kml") && is_dir($argv[1]))
+$kml = util::CommandLineOptionValue($argv,'kml',null);
+if (!is_null($kml)) 
 {
-    echo image_location::folder2KML($argv[1],$argv[3]);
-    return TRUE;
+    
+    echo image_location::folder2KML($kml)."\n";  
+    exit(1);
 }
 
-
-if (($argc == 3) && ($argv[2] == "-kml") && file_exists($argv[1]))
-{
-    echo image_location::image2KML($argv[1]);
-    return TRUE;
-}
+echo "usage {$argv[0]}  --csv=path_to_images \n";
+echo "usage {$argv[0]}  --kml=path_to_images \n";
 
 
 

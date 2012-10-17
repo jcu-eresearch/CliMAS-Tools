@@ -152,7 +152,7 @@ class OutputFactory  {
             // test to see after include we do actually have the class in memory
             if (!class_exists($outputClassname))
             {
-                echo "<br>{$outputClassname} still does not exist<br>"; //Todo Log this
+               // echo "<br>{$outputClassname} still does not exist<br>"; //Todo Log this
                 return null;
             }
 

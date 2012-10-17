@@ -128,16 +128,14 @@ class FinderFactory {
 
         if (is_null($actionClassname)) 
         {
-            throw new Exception("actionClassname is null");
-            return null; // todo: log
+            return new Exception("actionClassname is null");            
         }
             
         
         $actionClassname = trim($actionClassname);
         if ($actionClassname == "") 
         {
-            throw new Exception("actionClassname is EMPTY");
-            return null; // todo: log
+            return new Exception("actionClassname is EMPTY");            
         }
             
 
@@ -145,8 +143,7 @@ class FinderFactory {
 
         if (is_null($actionFilename)) 
         {
-            //throw new Exception("actionFilename is NULL");
-            return null; // todo: log
+            return new Exception("actionFilename is NULL");
         }
             
 
@@ -156,9 +153,8 @@ class FinderFactory {
 
         if (!( ($result instanceof iAction) || ($result instanceof CommandAction) ) ) 
         {
-            throw new Exception("Included Action is NOT an Action");
-            
-            return null; //TODO: LOG
+            return new Exception("Included Action is NOT an Action");
+
         }
             
 
@@ -181,7 +177,7 @@ class FinderFactory {
         $A = self::Action($actionClassname);
         if (is_null($A))
         {
-            echo "FAILED: Execute {$actionClassname}";  //TODO: logg
+            //echo "FAILED: Execute {$actionClassname}";  //TODO: logg
             return null;   // Return Null
         }
 
@@ -204,7 +200,7 @@ class FinderFactory {
         $A = self::Execute($actionClassname);
         if (is_null($A))
         {
-            echo "FAILED: Result {$actionClassname}";  //TODO: logg
+           // echo "FAILED: Result {$actionClassname}";  //TODO: logg
             return null;   // Return Null
         }
 

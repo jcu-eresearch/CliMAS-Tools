@@ -166,7 +166,7 @@ class RGB extends Object {
 
     public function asHex()
     {
-        return sprintf("%02X%02X%02X%02X", $this->Red(), $this->Green(), $this->Blue());
+        return sprintf("%02X%02X%02X", $this->Red(), $this->Green(), $this->Blue());
     }
 
 
@@ -778,6 +778,36 @@ TEXT;
     }
 
 
+    
+    
+    public static function RampDisplay($ramp,$class = "ColorKey",$id = "ColorKey")
+    {
+        
+        $keys = array_keys($ramp);
+        
+        $first = $keys[0]; $last = $keys[count($keys) - 1];
+        
+        $first_rgb = $ramp[$first];  $last_rgb = $ramp[$last]; 
+        
+        $result  = '<div  id="'.$id.'" class="'.$class.'">';
+        
+        $result .= '<div class="'.$class.'_first_value" id="'.$id.'_fist_value"  style="padding-left:3px; float: left; height: 100%; background-color: #' . $first_rgb->asHex() . ';">'. number_format($first, 3)."</div>";
+        
+        foreach ($ramp as $value => $rgb) 
+        {    
+            $rgb instanceof RGB;
+            $result .= '<div class="'.$class.'_swatch" id="'.$id.'_'.$value.'"  style="float: left; width: 2px; height: 100%; background-color: #' . $rgb->asHex() . ';">&nbsp;</div>';
+        }
+        $result .= '<div class="'.$class.'_last_value" id="'.$id.'_last_value" style="padding-right:3px; float: left; height: 100%; background-color: #' . $last_rgb->asHex() . ';">'. number_format($last, 3)."</div>";
+        
+        $result .= "</div>";
+        
+        return $result;
+        
+    }
+    
+    
+    
 
 
 }

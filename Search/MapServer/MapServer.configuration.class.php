@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Description of MapServer
  *
@@ -7,38 +6,34 @@
  */
 class MapServerConfiguration {
 
-
-    public static $LOCATION_PREFIX_WEBSERVER = "/www/eresearch/TDH-Tools/";
-    public static $LOCATION_PREFIX_HPC       = "/home/jc166922/TDH-Tools/";
-
-    private static function where()
-    {
-        $hostname = trim(exec("hostname --fqdn"));
-        if (stripos( $hostname, "afakes-eresearch") !== FALSE) return self::$LOCATION_PREFIX_WEBSERVER;
-        if (stripos( $hostname, "default.domain") !== FALSE) return self::$LOCATION_PREFIX_HPC;
-        return null;
-    }
-
-    public static function ApplicationName() { return "TDH-TOOLS"; }
-
-    public static function osPathDelimiter()      { return "/"; }
-    public static function osExtensionDelimiter() { return ".";}
-
-
     //** This folder must be configured to be accessible by the Apache
-    public static function pathToMapfiles()   { return self::where()."tmp/MapserverMapfiles"; }
-    public static function pathToImages()     { return self::where()."tmp/MapserverImages"; }
-    public static function pathToImagesWeb()  { return    "/eresearch/TDH-Tools/tmp/MapserverImages"; } // webserver4 accessible version of path for images
-
-    public static function pathToMapSymbols()  { return self::where()."Resources/symbols/symbols35.sym";}
-    public static function pathToMapFonts()    { return self::where()."Resources/fonts/fonts.list";}
+    public static function pathToMapfiles()   
+    { 
+        $folder = configuration::TempFolder()."MapserverMapfiles";
+        file::mkdir_safe($folder);
+        return $folder; 
+    }
     
+    public static function pathToImages()     
+    { 
+        $folder = configuration::FilesDownloadFolder()."MapserverImages";
+        file::mkdir_safe($folder);
+        return $folder;         
+    }
+    
+    public static function pathToImagesWeb()  { return configuration::WebDownloadFolder()."MapserverImages"; } // webserver4 accessible version of path for images
 
+    public static function pathToMapSymbols()  { return configuration::ResourcesFolder()."symbols/symbols35.sym";}
+    public static function pathToMapFonts()    { return configuration::ResourcesFolder()."fonts/fonts.list";}
+
+    
+    
+    
 
     public static function mapfileExtension()  { return "map"; }
 
-    public static function imageHeight() { return 500;}
-    public static function imageWidth()  { return 800;}
+    public static function imageHeight() { return 600;}
+    public static function imageWidth()  { return 700;}
     public static function imageType()   { return "PNG24";}
 
     public static function imageMaxHeight() { return 100000;}
@@ -79,5 +74,4 @@ class MapServerConfiguration {
 
 
 }
-
 ?>

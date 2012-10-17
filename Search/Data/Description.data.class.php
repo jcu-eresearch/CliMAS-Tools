@@ -47,7 +47,14 @@ class Description extends Data {
      */
     public function Description() {
         if (func_num_args() == 0) return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
+        
+        $value = func_get_arg(0);
+        $value = str_replace("'","\'", $value);
+        $value = str_replace('"','\"', $value);
+        
+        $this->setProperty($value);
+        
+        return $this->setProperty($value);
     }
 
     /**
@@ -59,6 +66,7 @@ class Description extends Data {
      */
     public function Source() {
         if (func_num_args() == 0) return $this->getProperty();
+        
         return $this->setProperty(func_get_arg(0));
     }
 
@@ -72,7 +80,13 @@ class Description extends Data {
      */
     public function MoreInformation() {
         if (func_num_args() == 0) return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
+        $value = func_get_arg(0);
+        $value = str_replace("'","\'", $value);
+        $value = str_replace('"','\"', $value);
+        
+        $this->setProperty($value);
+        
+        return $this->setProperty($value);
     }
 
     /**
@@ -86,10 +100,15 @@ class Description extends Data {
      */
     public function URI() {
         if (func_num_args() == 0) return $this->getProperty();
-        return $this->setProperty(func_get_arg(0));
+        
+        $value = func_get_arg(0);
+        $value = str_replace("'","\'", $value);
+        $value = str_replace('"','\"', $value);
+        
+        $this->setProperty($value);
+        
+        return $this->setProperty($value);
     }
 
-
 }
-
 ?>

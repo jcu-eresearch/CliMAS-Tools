@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @package Search\Species\SpeciesAllValues
+ * 
+ * Read database and return Descriptions of all Species
+ *  
+ */
 class SpeciesAllValues extends Action {
 
     public function __construct() {
@@ -17,24 +23,11 @@ class SpeciesAllValues extends Action {
 
     public function Execute()
     {
-
-//        $descs = new Descriptions();
-//
-//        
-//        
-//        $desc = self::DescriptionForSpecies($key);
-//        $desc->Filename($folder);
-//        $descs->Add($desc);
         
         $descs = new Descriptions();
         $descs instanceof Descriptions;
         
-        
-        $sp = new SpeciesData();
-        $speciesSearchResult = $sp->speciesList("Mangrove");
-        unset($sp);
-        
-        
+        $speciesSearchResult = SpeciesData::SpeciesList("");
         
         foreach ($speciesSearchResult as $index => $row) 
         {
@@ -48,20 +41,12 @@ class SpeciesAllValues extends Action {
             $descs->Add($desc);
             
         }
-        
 
 
         $this->Result($descs);
         return $descs;
     }
 
-    private function checkLocal()
-    {
-        // read database here
-
-
-
-    }
 
 
 }

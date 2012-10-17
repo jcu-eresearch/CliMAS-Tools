@@ -137,12 +137,12 @@ class logger
     
     public static function filename()
     {
-        return "//**php_log.txt";
+        return "/tmp/jc166922_php_log.txt";
     }
 
     public static function filename_error()
     {
-        return "//**php_log.err";
+        return "/tmp/jc166922_php_log.err";
     }
     
     

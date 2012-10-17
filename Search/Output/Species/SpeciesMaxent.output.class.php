@@ -47,107 +47,80 @@ class SpeciesMaxentOutput extends Output
 
     public function Content()
     {
-
-        // $this->maxentResults - holds array of .asc grids to be display to the user
-        // we now have them to process other functions as well.
-
-        // this is where we build an output for for the user 
-        // table of images ?
         
-        if (!is_array($this->maxentResults)) return "Waiting for a response from the GRID"; 
-
-        $result = array();
+        $result = "";
         
-        foreach ($this->maxentResults as $speciesID => $combintations) 
+        $images = array();
+        
+        $server_results = $this->speciesMaxent()->Result();
+        foreach ($server_results as $speciesID => $combinations) 
         {
-
-            foreach ($combintations as $combintation => $combintationFilename) 
+            $images[$speciesID] = array();
+            
+            foreach ($combinations as $combination => $file_id) 
             {
-
-                if (substr($combintationFilename,0,1) == configuration::osPathDelimiter())
-                {
-                    $localCombintationFilename = configuration::Maxent_Species_Data_folder().$combintationFilename;
-
-                    $localCombintationFilename = str_replace(configuration::osPathDelimiter().configuration::osPathDelimiter(),configuration::osPathDelimiter() , $localCombintationFilename);
-
-
-                    if ($combintationFilename == "")
-                    {
-                        $result[$speciesID][$combintation] = "Calculating ......";
-                    }
-                    else
-                    {
-                        // echo "$localCombintationFilename<br>";
-                        
-                        $vis = $this->getVisualVersion($speciesID,$combintation,$localCombintationFilename);
-                        $result[$speciesID][$combintation] = $vis;
-                    }
-
-                }
-                else
-                {
-                    $result[$speciesID][$combintation] = $combintationFilename;
-                }
-
-
-            }
-
-        }
-        
-        
-        $r = '<table width="100%" border="0">';
-
-        
-        
-        foreach ($result as $speciesID => $combintations) 
-        {
-
-
-            $fk = util::first_key($combintations);
-            $fe = util::first_element($combintations);
-            
-            $r .= "\n".'<tr>';
-            $r .= "\n".'<td colspan="'.count($combintations).'">';
-            $r .= SpeciesData::SpeciesQuickInformation($speciesID);
-            $r .= "<br>".$fe;
-            $r .= '</td>';
-            $r .= "\n".'</tr>';
-            
-            
-            $r .= "\n".'<tr>';
-            
-            foreach ($combintations as $combintation => $visualElement) 
-            {
-                
-                if ($combintation == $fk) continue;
-                
-                $smt = explode("_",$combintation);
-                
-                $info = "";
-                if (count($smt) == 3)
+                if (!is_null($file_id))
                 {
                     
-                    $info .= "<br>time: ".$smt[2];
-                    $info .= "<br>scenario: ".$smt[0];
-                    $info .= "<br>model: ".$smt[1];
+                    list($scenario, $model, $time) = explode("_",$combination);
+                    
+                    $quick_look_file_id = SpeciesData::GetModelledData($speciesID,$scenario, $model, $time,'QUICK_LOOK');
+                    
+                    $image_url = configuration::ApplicationFolderWeb()."Search/file.php?id={$quick_look_file_id}";
+                    $images[$speciesID][$combination] =  '<li id="out'.$speciesID.':'.$combination.'" class="ui-widget-content SpeciesRangeImageContainer"><img class="SpeciesRangeImage" src="'.$image_url.'" /></li>';
                 }
                 
-                $r .= "\n".'<td>';
-                $r .= $visualElement;
-                $r .= '<div class="info">'.$info.'</div>' ;
-                $r .= '</td>';
-                
             }
+                        
+        }
+        
+        // compare how many images we have with how many we should have and give percent done
+        
+        foreach ($server_results as $speciesID => $combinations) 
+        {
+            $items_required = count($combinations);
+            $items_have = count($images[$speciesID]);
             
-            $r .= "\n".'</tr>';
+            $result .= $this->progress($speciesID,($items_have/$items_required) * 100);
+            
+            if ($items_required == $items_have)
+                foreach ($combinations as $combination => $file_id) {
+                    $result .= $images[$speciesID][$combination];
+                }
             
         }
-       $r .= "\n".'</table>';
-
-       return $r;
+        
+        
+       return $result;
 
     }
 
+    
+    private function progress($speciesID,$percent)
+    {
+        
+        $name = SpeciesData::SpeciesQuickInformation($speciesID);
+        
+$script = <<<SCRIPT
+<li class="ui-widget-content" style="clear: both; float: none;">
+<div id="progressbar__name_$speciesID">$name</div><div id="progressbar_$speciesID"></div>
+<script>
+	$(function() {
+		$( "#progressbar_{$speciesID}" ).progressbar({
+			value: {$percent}
+		});
+	});
+</script>
+</li>
+SCRIPT;
+       
+    
+        return $script;
+                        
+        
+    }
+    
+    
     private function getVisualVersion($speciesID,$combintation,$localCombintationFilename) 
     {
         
@@ -172,6 +145,7 @@ class SpeciesMaxentOutput extends Output
             // copy all source plots to dest plots
             $cmd  = "cp  {$srcfolder}/plots/*  '{$dest_folder}plots/' ";
             
+            
             exec($cmd);
             
             $webLink = configuration::WebDownloadFolder().$speciesID.  configuration::osPathDelimiter().$shortName;
@@ -182,15 +156,21 @@ class SpeciesMaxentOutput extends Output
         
         if ( util::endsWith(strtolower($localCombintationFilename), "asc") )
         {
-            // this is a calculated grid file
-            $mapImage =   MapServerImage::FromFile($localCombintationFilename);
+            if (!file_exists($localCombintationFilename))
+            {
+                $mapImage =   configuration::IconSource()."wait.gif";
+            }
+            else
+            {
+                $mapImage =   MapServerImage::FromFile($localCombintationFilename);     // this is a calculated grid file
+            }
+            
+            
             return '<img class="probabilityMap" src="'.$mapImage.'">';
         }
         
         
-        
         //$vis
-        
         
     }
     
