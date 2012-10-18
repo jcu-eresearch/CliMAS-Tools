@@ -14,7 +14,7 @@ class ClazzData extends Object {
      * @param type $pattern
      * @return type
      */
-    public static function clazzCommonName($clazz = "")
+    public static function clazzCommonName($clazz = "", $plural = true)
     {
         // bail if we didn't get a class
         if ($clazz == '') return '';
@@ -22,13 +22,23 @@ class ClazzData extends Object {
         // search in lower case
         $clazz = strtolower($clazz);
 
-        // too lazy to look up how to make this static
-        $known_names = array(
-            'mammalia' => 'mammals',
-            'aves' => 'birds',
-            'reptilia' => 'reptiles',
-            'amphibia' => 'amphibians'
-        );
+        if ($plural) {
+            // too lazy to look up how to make this static
+            $known_names = array(
+                'mammalia' => 'mammals',
+                'aves' => 'birds',
+                'reptilia' => 'reptiles',
+                'amphibia' => 'amphibians'
+            );
+        } else {
+            $known_names = array(
+                'mammalia' => 'mammal',
+                'aves' => 'bird',
+                'reptilia' => 'reptile',
+                'amphibia' => 'amphibian'
+            );
+
+        }
 
         // if the class we were asked about is in our list of
         // kown names, return the corresponding name

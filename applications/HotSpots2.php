@@ -62,28 +62,52 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
     <div class="formsection">
         <div class="onefield">
             <h3>Select a class</h3>
-<?php
+                <?php
 
-    foreach ( array(
-        'all vertebrates' => 'all',
-        'mammals' => 'MAMMALIA',
-        'birds' => 'AVES'
-    ) as $clazzname => $clazzcode) {
+                    $clazzes = array('MAMMALIA', 'AVES', 'REPTILIA'); // TODO: get this from the file system
 
-        echo ClazzData::clazzCommonName($clazzcode);
-        echo "<label><input type='radio' class='clazz' name='clazztype' value='";
-        echo $clazzcode;
-        if ($clazzcode == 'all') {
-            echo "' checked='checked'>";
-        } else {
-            echo "'>";
-        }
-        echo $clazzname;
-        echo "</label>";
-        echo "";
-    }
-?>
+                    $clazzesPlusAll = array_merge(array('all'), $clazzes);
+
+                    foreach ($clazzesPlusAll as $clazz) {
+                        echo "<label><input type='radio' class='clazz' name='clazztype' value='";
+                        echo $clazz;
+                        if ($clazz == 'all') {
+                            echo "' checked='checked'>all vertebrates";
+                        } else {
+                            echo "'>";
+                            echo ClazzData::clazzCommonName($clazz);
+                        }
+                        echo "</label>";
+                        echo "";
+                    }
+                ?>
         </div>
+
+        <?php
+            foreach ($clazzes as $clazz) {
+                $singleclazzname = ClazzData::clazzCommonName($clazz, false);
+                $pluralclazzname = ClazzData::clazzCommonName($clazz, true);
+                ?>
+                <div class="onefield">
+                    <h3>Select a taxa</h3>
+
+                    <label><input type='radio' class='taxa' name='<?php echo $clazz ?>_taxatype'
+                        value='all_<?php echo $clazz ?>'
+                        checked='checked'
+                    >all <?php echo $pluralclazzname ?></label>
+                    <label><input type='radio' class='taxa' name='<?php echo $clazz ?>_taxatype'
+                        value='family_<?php echo $clazz ?>'
+                    >a <?php echo $singleclazzname ?> family</label>
+                    <label><input type='radio' class='taxa' name='<?php echo $clazz ?>_taxatype'
+                        value='genus_<?php echo $clazz ?>'
+                    >a <?php echo $singleclazzname ?> genus</label>
+                </div>
+                <?php
+            }
+        ?>
+
+
+
     </div>
 </div>
 
