@@ -141,7 +141,7 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 
     <div id="MapContainer" class="ui-widget-content" >
 
-        <iframe class="ui-widget-content ui-corner-all"s
+        <iframe class="ui-widget-content ui-corner-all"
                    ID="GUI"
                   src="SpeciesSuitabilityMap.php"
                 width="730"

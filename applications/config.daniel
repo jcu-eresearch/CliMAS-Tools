@@ -17,11 +17,11 @@ if (stripos( $hostname, "vbox-ubuntu") !== FALSE)
     $conf[Parameter::$APPLICATION_FOLDER]    = $pathprefix . "/TDH-Tools/";
     $conf[Parameter::$UTILITIES_CLASSES]     = $pathprefix . "/TDH-Tools/Utilities/includes.php";
     $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = $pathprefix . "/TDH-Tools/output/";
-    $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://localhost/eresearch/TDH-Tools/output/";
+    $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://ap02:8080/output/";
     $conf[Parameter::$RESOURCES_FOLDER]      = $pathprefix . "/TDH-Tools/Resources/";
-    $conf[Parameter::$SOURCE_DATA_FOLDER]    = $pathprefix . "/TDH-Tools/source/";
+    $conf[Parameter::$SOURCE_DATA_FOLDER]    = $pathprefix . "/source/";
 
-    $conf[Parameter::$ICONS_FOLDER]          = "http://localhost/eresearch/TDH-Tools/Resources/icons/";
+    $conf[Parameter::$ICONS_FOLDER]          = "http://ap02:8080/Resources/icons/";
     
     
     $conf[Parameter::$COMMAND_QUEUE_ID       ] = "daniel_queue";
