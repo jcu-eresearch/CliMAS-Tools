@@ -69,6 +69,8 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
         'mammals' => 'MAMMALIA',
         'birds' => 'AVES'
     ) as $clazzname => $clazzcode) {
+
+        echo ClazzData::clazzCommonName($clazzcode);
         echo "<label><input type='radio' class='clazz' name='clazztype' value='";
         echo $clazzcode;
         if ($clazzcode == 'all') {
@@ -79,7 +81,6 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
         echo $clazzname;
         echo "</label>";
         echo "";
-        echo "<b>" . $clazz . "</b> " . $value . "<br>";
     }
 ?>
         </div>
