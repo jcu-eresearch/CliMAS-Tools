@@ -19,7 +19,6 @@ $species_id = array_util::Value($_POST, "SpeciesID",null);
 $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
 if ($MaxentThreshold instanceof ErrorMessage || is_null($MaxentThreshold))  $MaxentThreshold = 0;
 
-
 $UserLayer = array_util::Value($_POST, "UserLayer","");  // is a combination of Scenario_model_time we need the ascii grid version
 
 $map_path = array_util::Value($_SESSION,'map_path');
@@ -109,15 +108,9 @@ if ($UserLayer != "")
         // start ramp at Zero - 
         $ramp = RGB::Ramp(0, 1, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
         
-        
-        $display_threshold = DatabaseMaxent::GetMaxentResult($species_id, DatabaseMaxent::$DisplayThresholdFieldName);
-        if ( !($display_threshold instanceof ErrorMessage))
-        {
             // chnage all values below thrteshgold to trasparent
-            foreach ($ramp as $key => $rgb)  
-                if ($key < $display_threshold) $ramp[$key] = null; // set colour to black for below threshold
-            
-        }
+        foreach ($ramp as $key => $rgb)  
+            if ($key < $MaxentThreshold) $ramp[$key] = null; // set colour to black for below threshold
 
 
         $layer->ColorTable($ramp);             
@@ -129,7 +122,6 @@ if ($UserLayer != "")
     $MF = Mapfile::create($M);
     $_SESSION['map_path'] = $MF->save($M);
     $map_path = $_SESSION['map_path'];
-
     
     $GUI = MapserverGUI::create($_SESSION['map_path']);
     if (is_null($GUI)) die ("Map Server GUI failed");

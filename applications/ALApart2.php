@@ -17,8 +17,8 @@ ErrorMessage::Marker("RICHNESS: Link Clazz ");
 
 foreach ($clazz_translation as $clazz_name =>$clazz_common_name) 
 {
-    //create_clazz_richness_links($clazz_name,$clazz_common_name);  
-    //create_genus_richness_links($clazz_name,$clazz_common_name);
+    create_clazz_richness_links($clazz_name,$clazz_common_name);  
+    create_genus_richness_links($clazz_name,$clazz_common_name);
     
     create_richness_links_for_hotspot_tool($clazz_name,$clazz_common_name);
     

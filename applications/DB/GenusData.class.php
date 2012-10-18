@@ -6,8 +6,6 @@
  */
 class GenusData extends Object 
 {
-
-    
     
 
     public static function GetProjectedFiles($genus = null ,$filetype = null ,$scenario = null, $model = null, $time = null) 
@@ -506,6 +504,9 @@ s     * Get list of Genus names where each species has the appropriate number of
         return $result;
         
     }
+    
+    
+    
     
     
     
