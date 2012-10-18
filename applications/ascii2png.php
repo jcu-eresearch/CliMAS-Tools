@@ -1,5 +1,6 @@
 <?php
 include_once 'includes.php';
+if (php_sapi_name() != "cli") return;
 /**
  * Using: GDAL
  * 

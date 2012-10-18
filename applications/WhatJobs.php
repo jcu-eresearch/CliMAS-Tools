@@ -1,5 +1,6 @@
 <?php
 include_once dirname(__FILE__).'/includes.php';
+if (php_sapi_name() != "cli") return;
 /**
  * PBS jobs running for a specific string (tdh_) default string for TDH Tools jobs
  *  

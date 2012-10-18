@@ -5,6 +5,8 @@
  */
 include_once dirname(__FILE__).'/includes.php';
 
+if (php_sapi_name() != "cli") return;
+
 $prog = array_util::Value( $argv, 0);
 $species_id = array_util::Value($argv, 1);
 $pattern = array_util::Value($argv, 2);

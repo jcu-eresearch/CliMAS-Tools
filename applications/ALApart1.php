@@ -1,5 +1,6 @@
 <?php
 include_once dirname(__FILE__).'/includes.php';
+if (php_sapi_name() != "cli") return;
 
 $JSON_KEY = 'JSON';
 $clazz_translation = array();
@@ -8,7 +9,6 @@ $clazz_translation['MAMMALIA'] = 'mammals';
 $clazz_translation['REPTILIA'] = 'reptiles';
 
 $real_data_folder = "/scratch/jc148322/AP02/";   // folder with real data 
-
 
 ErrorMessage::Marker("ALA Species and Taxa data");
 

@@ -1,7 +1,6 @@
 <?php
 class htmlutil {
 
-
     public static function AsJavaScriptSimpleVariable($src,$variableName)
     {
         if (is_null($src)) return "";
@@ -11,7 +10,6 @@ class htmlutil {
         
         return "var {$variableName} = '{$src}';\n";
     }    
-    
     
     public static function AsJavaScriptArray($src,$variableName)
     {
@@ -30,7 +28,7 @@ class htmlutil {
         return $result."\n";
     }
 
-    public static function AsJavaScriptArrayFromFile($filename,$variableName,$sort = false)
+    public static function AsJavaScriptArrayFromFile($filename,$variableName,$sort = false,$exclude_list = null)
     {
 
         if (is_null($filename)) return "";

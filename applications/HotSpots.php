@@ -6,6 +6,7 @@
  */
 session_start();
 include_once dirname(__FILE__).'/includes.php';
+if (php_sapi_name() == "cli") return;
 
 $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url then they have returned.
 
@@ -29,6 +30,8 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
     <script type="text/javascript" >
     <?php     
     
+        $exclude_word_list = file(configuration::SourceDataFolder()."exclude_word_list.txt");
+    
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),'ApplicationFolderWeb');
         
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web().'richness/' ,'richness_folder');
@@ -37,7 +40,7 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
         
         echo htmlutil::AsJavaScriptArrayFromFile(configuration::SourceDataFolder()."family_list.txt",'availableFamily',true);
 
-        echo htmlutil::AsJavaScriptArrayFromFile(configuration::SourceDataFolder()."genus_list.txt",'availableGenus',true);
+        echo htmlutil::AsJavaScriptArrayFromFile(configuration::SourceDataFolder()."genus_list.txt",'availableGenus',true,$exclude_word_list);
         
         $species_taxa_data = matrix::Load(configuration::SourceDataFolder()."species_to_id.txt", ",");
         echo htmlutil::AsJavaScriptObjectArray($species_taxa_data,"name","id","availableSpecies");

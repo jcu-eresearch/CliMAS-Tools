@@ -2,6 +2,8 @@
 
 $DEFAULT = "jc166922";
 include_once dirname(__FILE__).'/includes.php';
+if (php_sapi_name() != "cli") return;
+
 /**
  * Try to Stop / remove jobs from PBS queue that contain string from command line  
  * or default 'jc166922'

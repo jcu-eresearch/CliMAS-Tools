@@ -31,8 +31,6 @@ if (array_util::Value($_GET, "clean") == 'xyz123') DatabaseFile::RemoveUsedFiles
     
     <script type="text/javascript" src="SpeciesScenarioTimeline.js"></script>
 
-
-
 <style>
 
 .maincontent
@@ -75,11 +73,6 @@ $(document).ready(function(){
         <img src="<?php echo configuration::IconSource()."Suitability.png" ?>" border="0" /></a>
     </div>
     
-    <div id="SpeciesScenarioTimeline">
-        <a href="SpeciesScenarioTimeline.php">
-            <img src="<?php echo configuration::IconSource()."SpeciesScenarioTimeline.png" ?>" border="0" />
-        </a>
-    </div>
     <div id="Hotspots">
         <a href="HotSpots.php">
             <img src="<?php echo configuration::IconSource()."Hotspots.png" ?>" border="0" />
@@ -87,7 +80,7 @@ $(document).ready(function(){
     </div>
                     
     <div id="EIS">
-        <a href="EnvironmentalImpact.php">
+        <a href="#">
             <img src="<?php echo configuration::IconSource()."Impact.png" ?>" border="0" />
         </a>
     </div>

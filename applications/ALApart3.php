@@ -2,6 +2,7 @@
 
 $inc_folder = dirname(__FILE__);
 include_once "{$inc_folder}/includes.php";
+if (php_sapi_name() != "cli") return;
 
 $JSON_KEY = 'JSON';
 $clazz_translation = array();

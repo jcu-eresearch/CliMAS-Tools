@@ -89,8 +89,6 @@ class SpeciesData extends Object {
         $result = exec("cat {$sdf}species_to_id.txt | grep ',{$species_id}' | head -n1 | cut -d',' -f1");
         return $result;
     }
-
-    
     
     public static function SpeciesCommonNames($species_id,$index = null) 
     {
@@ -587,12 +585,6 @@ class SpeciesData extends Object {
         return $result;
         
     }
-
-    
-    
-    
-    
-    
     
     
     
@@ -644,9 +636,6 @@ class SpeciesData extends Object {
         return $result;
         
     }
-    
-    
-    
 
     public static function id4ScientificName($scientificName,$use_like = false) 
     {
@@ -660,10 +649,7 @@ class SpeciesData extends Object {
             $sql = "select * from species_taxa_tree where species = E'{$scientificName}';";    
         }
         
-        
         $result = DBO::Query($sql,'species_id');
-        
-            
         
         if ($result instanceof ErrorMessage) return ErrorMessage::Stacked(__METHOD__, __LINE__, "", true, $result);
         

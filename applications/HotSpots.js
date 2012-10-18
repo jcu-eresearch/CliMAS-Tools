@@ -113,7 +113,7 @@ function addInput(dataType,dataID,dataName)
     // GenusRichnessLocation
 
     var removeID = 'remove_'+addID;
-    $('#'+dataType+'Selection').append('<li id="'+addID+'" class="ui-widget-content ui-corner-all " ><button id="'+removeID+'" class="RemoveInput">remove</button><p>'+dataName+'</p><br><div id="QO_SPOT" ></div></li>');
+    $('#'+dataType+'Selection').append('<li id="'+addID+'" class="ui-widget-content ui-corner-all " ><button id="'+removeID+'" class="RemoveInput">remove</button><p>'+dataName+'</p><br><div id="QO_SPOT_'+addID+'" ></div></li>');
 
 
     switch(dataType)
@@ -123,7 +123,7 @@ function addInput(dataType,dataID,dataName)
         case 'Genus':
             var quickOpenID = 'quickOpen_'+addID;
 
-            $('#QO_SPOT').html('<button id="'+quickOpenID+'" class="QuickOpen">view</button>');
+            $('#QO_SPOT_' + addID).html('<button id="'+quickOpenID+'" class="QuickOpen">view</button>');
 
             $('#' + quickOpenID)
                 .button()
@@ -818,14 +818,14 @@ function postUpdateProcess(data)
 function buildRichnessOutputTab(job_description,result,data)
 {
     
-    console.log('job_description');
-    console.log(job_description);
-    
-    console.log('result');
-    console.log(result);
-
-    console.log('data');
-    console.log(data);
+//    console.log('job_description');
+//    console.log(job_description);
+//    
+//    console.log('result');
+//    console.log(result);
+//
+//    console.log('data');
+//    console.log(data);
 
 
     var ID = Value(data.ID,-1);
