@@ -158,7 +158,7 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
 
             <?php
                 $outputs = array(
-                    'download' => 'download ASCII grid &amp; PNG',
+                    'download' => 'download data (ascii grid, png image)',
                     'view' => 'view biodiversity map in browser'
                 );
                 foreach ($outputs as $name => $desc) {

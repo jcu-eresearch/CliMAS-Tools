@@ -708,7 +708,6 @@ CSS for Daniel's new UI starts here..
 
 .popupwrapper .toolbar {
     height: 3em;
-    text-align: right;
     background: black;
 }
 
@@ -727,6 +726,7 @@ CSS for Daniel's new UI starts here..
 }
 
 .popupwrapper .toolbar button {
+    float: right;
     height: 2em;
     padding: 0.1em 1em;
     margin: 0.5em;

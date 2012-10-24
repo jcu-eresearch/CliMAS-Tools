@@ -102,16 +102,39 @@ $ ->
                     <div class="toolbar north"><button class="close">close &times;</button></div>
                     <div id="popupmap" class="popupmap"></div>
                     <div class="toolbar south"><button class="close">close &times;</button></div>
-            """).appendTo('body').show('fade')
+            """).appendTo('body').show('fade', 1000)
 
             $('.popupwrapper button.close').click (e)->
                 $('.popupwrapper').hide 'fade', ()->
                     $('.popupwrapper').remove()
 
-            map = L.map('popupmap').setView([51.505, -0.09], 13)
-            L.tileLayer('http://{s}.tile.cloudmade.com/API-key/997/256/{z}/{x}/{y}.png', {
+            map = L.map('popupmap', {
+                minZoom: 3
+#                crs: L.CRS.EPSG3857
+                crs: L.CRS.EPSG4326
+#                crs: L.CRS.Simple
+            }).setView([-27, 135], 4)
+
+            # 831e24daed21488e8205aa95e2a14787 is Daniel's CloudMade API key
+            L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
                 attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
                 maxZoom: 18
+            }).addTo map
+
+#            imageUrl = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/output/MapserverImages/5084c927_5e09_ffffffff.png"
+#            imageUrl = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/output/MapserverImages/50878b8d_5e0a_2.png"
+#            imageUrl = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/output/MapserverImages/50878d11_5e03_4.png"
+            imageUrl = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/output/MapserverImages/50878f91_512_ffffffff.png"
+
+            #
+            # image bounds: [[-8.2688444363376, 111.975], [-46.231133563662, 156.2749]]
+            # or maybe bounds should be: [[-9.9749780, 111.975], [-44.525, 156.2749]]
+            #
+#            imageBounds = [[-8.2688444363376, 111.975], [-46.231133563662, 156.2749]]
+#            imageBounds = [[-9.9749780, 111.975], [-44.525, 156.2749]]
+            imageBounds = [[-8.2687905894135, 111.9749], [-46.231165, 156.2749]]
+            L.imageOverlay(imageUrl, imageBounds, {
+                opacity: 0.5
             }).addTo map
 
         e.preventDefault();
