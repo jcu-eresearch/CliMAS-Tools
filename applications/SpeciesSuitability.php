@@ -1,9 +1,9 @@
 <?php
 /**
  * Main page for Species Suitability tool
- * 
- * 
- *  
+ *
+ *
+ *
  */
 session_start();
 include_once dirname(__FILE__).'/includes.php';
@@ -96,20 +96,20 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 
 
     <div id="UserSelectionBar" class="ui-widget-content ui-corner-all" >
-        
+
         <h2 style="">DATA</h2>
         <select id="datastyle_selection" onchange="selectDataStyle(this)">
             <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_current" value="CURRENT" checked/>CURRENT</option>
             <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_future"  value="FUTURE" />FUTURE</option>
         </select>
-        
-        
+
+
         <h2 style="">SCENARIO</h2>
         <select id="scenario_selection" onchange="selectScenario(this)">
         <?php
             foreach ($scenarios as $scenario)
             echo '<option  class="select_scenario_input" name="ScenarioTools" id="select_scenario_'.$scenario.'" value="'.$scenario.'" />'.$scenario.'</option>';
-        ?>            
+        ?>
         </select>
 
         <h2 style="">MODEL</h2>
@@ -119,24 +119,24 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
             {
                 $modelname = $model;
                 if ($model == "all") $modelname  = "Median";
-                
+
                 echo '<option  class="select_model_input" name="ModelTools" id="select_model_'.$model.'" value="'.$model.'" />'.$modelname.'</option>';
             }
-                
-        ?>            
+
+        ?>
         </select>
-        
+
         <h2 style="">TIME</h2>
         <select id="time_selection" onchange="selectTime(this)">
         <?php
             foreach ($times as $time)
                 echo '<option  class="select_time_input" name="TimeTools" id="select_time_'.$time.'" value="'.$time.'" />'.$time.'</option>';
-        ?>            
+        ?>
         </select>
-        
+
         <div id="download_all">
         </div>
-        
+
     </div>
 
     <div id="MapContainer" class="ui-widget-content" >
@@ -169,9 +169,9 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
         <input  class="MapTool" name="MapsTools" type="radio" id="ToolCentre"   onclick="SetZoom(this,1.0)"                     /><label for="ToolCentre" >Centre</label>
         <input  class="MapTool" name="MapsTools" type="radio" id="ToolZoomIn"   onclick="SetZoom(this,2.0)"   checked="checked" /><label for="ToolZoomIn" >Zoom In</label>
     </div>
-    
+
     <br style="clear: both; float:none;">
-    
+
     <div id="information" class="ui-widget-content ui-corner-all" >
 
         <iframe  class=""
@@ -186,9 +186,9 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
         </iframe>
 
 
-    </div>        
-    
-    
+    </div>
+
+
 
 
 </div>

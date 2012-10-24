@@ -6,6 +6,7 @@
  */
 session_start();
 include_once dirname(__FILE__).'/includes.php';
+if (php_sapi_name() == "cli") return;
 
 $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url then they have returned.
 
@@ -15,22 +16,27 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Richness</title>
-    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
-    <script type="text/javascript" src="js/jquery.pulse.min.js"></script>
-    <script type="text/javascript" src="js/selectMenu.js"></script>
-    <script type="text/javascript" src="js/Utilities.js"></script>
 
     <link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
     <link type="text/css" href="css/selectMenu.css" rel="stylesheet" />
     <link type="text/css" href="styles.css"         rel="stylesheet" />
     <link type="text/css" href="HotSpots.css"       rel="stylesheet" />
 
-    <link type="text/css" href="" rel="stylesheet" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
+    <![endif]-->
+
+    <script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
+
+    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery.pulse.min.js"></script>
+    <script type="text/javascript" src="js/selectMenu.js"></script>
+    <script type="text/javascript" src="js/Utilities.js"></script>
 
     <script type="text/javascript" >
     <?php
-/*
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),'ApplicationFolderWeb');
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web().'richness/' ,'richness_folder');
         echo htmlutil::AsJavaScriptArrayFromFile(configuration::SourceDataFolder()."clazz_list.txt",'availableTaxa',true);
@@ -43,11 +49,10 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSource');
         echo htmlutil::AsJavaScriptSimpleVariable($cmd,'cmd');
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web(),'Maxent_Species_Data_folder_web');
-*/
      ?>
     </script>
-
     <script type="text/javascript" src="HotSpots.js"></script>
+    <script type="text/javascript" src="HotSpots2.js"></script>
 </head>
 <body>
 
@@ -58,8 +63,9 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
     <h2>Visualising biodiversity across Australia</h2>
 </div>
 
-<div id="selectionpanel">
+<div id="selectionpanel"><form id="prebakeform" action="">
     <div class="formsection">
+
         <div class="onefield">
             <h3>Select a class</h3>
                 <?php
@@ -69,8 +75,8 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
                     $clazzesPlusAll = array_merge(array('all'), $clazzes);
 
                     foreach ($clazzesPlusAll as $clazz) {
-                        echo "<label><input type='radio' class='clazz' name='clazztype' value='";
-                        echo $clazz;
+                        echo "<label><input type='radio' class='clazz_selection " . $clazz . "'";
+                        echo " name='clazztype' value='" . $clazz;
                         if ($clazz == 'all') {
                             echo "' checked='checked'>all vertebrates";
                         } else {
@@ -88,28 +94,82 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
                 $singleclazzname = ClazzData::clazzCommonName($clazz, false);
                 $pluralclazzname = ClazzData::clazzCommonName($clazz, true);
                 ?>
-                <div class="onefield">
-                    <h3>Select a taxa</h3>
+                <div class="onefield taxa_selector <?php echo $clazz; ?>">
+                    <h3>&hellip;and a taxon</h3>
 
-                    <label><input type='radio' class='taxa' name='<?php echo $clazz ?>_taxatype'
-                        value='all_<?php echo $clazz ?>'
-                        checked='checked'
+                    <label><input type='radio' class='taxa all' name='<?php echo $clazz ?>_taxatype'
+                        value='all' checked='checked'
                     >all <?php echo $pluralclazzname ?></label>
-                    <label><input type='radio' class='taxa' name='<?php echo $clazz ?>_taxatype'
-                        value='family_<?php echo $clazz ?>'
+                    <label><input type='radio' class='taxa family' name='<?php echo $clazz ?>_taxatype'
+                        value='family'
                     >a <?php echo $singleclazzname ?> family</label>
-                    <label><input type='radio' class='taxa' name='<?php echo $clazz ?>_taxatype'
-                        value='genus_<?php echo $clazz ?>'
+                    <select class="taxa_dd family" name="chosen_family_<?php echo $clazz ?>">
+                        <option disabled="disabled" selected="selected" value="invalid">choose a family...</option>
+                        <option ...></option>
+                    </select>
+
+                    <label><input type='radio' class='taxa genus' name='<?php echo $clazz ?>_taxatype'
+                        value='genus'
                     >a <?php echo $singleclazzname ?> genus</label>
+                    <select class="taxa_dd genus" name="chosen_genus_<?php echo $clazz ?>">
+                        <option disabled="disabled" selected="selected" value="invalid">choose a genus...</option>
+                        <option ...></option>
+                    </select>
+
                 </div>
                 <?php
             }
         ?>
-
-
-
     </div>
-</div>
+
+    <div class="formsection">
+        <div class="onefield year">
+            <h3>Select a year</h3>
+
+            <?php
+                // it's lame, but I'm checking them *all* in the template, so the last one will end up selected.
+                $yearFormat = "<label><input type='radio' class='year' name='year' checked='checked' value='{DataName}'>{DataName} {Description}</label>";
+                echo DatabaseClimate::GetFutureTimesDescriptions()->asFormattedString($yearFormat);
+            ?>
+        </div>
+    </div>
+
+    <div class="formsection">
+        <div class="onefield scenario">
+            <h3>Select an emission scenario</h3>
+
+            <?php
+                $scenarios = array(
+                    'RCP26' => 'RCP 2.6: Emissions reduce substantially',
+                    'RCP45' => 'RCP 4.5: Emissions stabilise before 2100',
+                    'RCP6'  => 'RCP 6: Emissions stabilise after 2100',
+                    'RCP85' => 'RCP 8.5: Emissions increase, "business as usual"'
+                );
+                foreach ($scenarios as $name => $desc) {
+                    echo "<label><input type='radio' class='scenario' name='scenario' checked='checked' value='".$name."'>".$desc."</label>";
+                }
+            ?>
+        </div>
+    </div>
+
+    <div class="formsection">
+        <div class="onefield output">
+            <h3>Select an output option</h3>
+
+            <?php
+                $outputs = array(
+                    'download' => 'download ASCII grid &amp; PNG',
+                    'view' => 'view biodiversity map in browser'
+                );
+                foreach ($outputs as $name => $desc) {
+                    echo "<label><input type='radio' class='ouput' name='output' checked='checked' value='".$name."'>".$desc."</label>";
+                }
+            ?>
+            <button class="generate">fetch biodiversity map</button>
+        </div>
+    </div>
+
+</form></div>
 
 <p></p>
 <hr>

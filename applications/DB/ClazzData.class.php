@@ -26,14 +26,14 @@ class ClazzData extends Object {
             // too lazy to look up how to make this static
             $known_names = array(
                 'mammalia' => 'mammals',
-                'aves' => 'birds',
+                'aves'     => 'birds',
                 'reptilia' => 'reptiles',
                 'amphibia' => 'amphibians'
             );
         } else {
             $known_names = array(
                 'mammalia' => 'mammal',
-                'aves' => 'bird',
+                'aves'     => 'bird',
                 'reptilia' => 'reptile',
                 'amphibia' => 'amphibian'
             );
