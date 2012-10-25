@@ -50,7 +50,7 @@
       return $('#prebakeform .generate').attr('disabled', formIncomplete);
     });
     return $generate.click(function(e) {
-      var clazz, groupLevel, groupName, imageBounds, imageUrl, map, output, scenario, taxaLevel, year;
+      var clazz, data, groupLevel, groupName, map, mapfileUrl, output, scenario, taxaLevel, year;
       year = $('#prebakeform input:radio[name="year"]:checked').val();
       scenario = $('#prebakeform input:radio[name="scenario"]:checked').val();
       output = $('#prebakeform input:radio[name="output"]:checked').val();
@@ -75,17 +75,21 @@
           });
         });
         map = L.map('popupmap', {
-          minZoom: 3,
-          crs: L.CRS.EPSG3395
+          minZoom: 3
         }).setView([-27, 135], 4);
         L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
           attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
           maxZoom: 18
         }).addTo(map);
-        imageUrl = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/output/MapserverImages/50878f91_512_ffffffff.png";
-        imageBounds = [[-8.2687905894135, 111.9749], [-46.231165, 156.2749]];
-        L.imageOverlay(imageUrl, imageBounds, {
-          opacity: 0.5
+        mapfileUrl = window.mapfileRoot;
+        mapfileUrl += 'By' + groupLevel[0].toUpperCase() + groupLevel.slice(1);
+        mapfileUrl += '/' + groupName + '/' + scenario + '_' + year + '.map';
+        console.log(mapfileUrl);
+        data = new L.TileLayer.WMS("http://tdh-tools-1.hpc.jcu.edu.au:81/cgi-bin/mapserv", {
+          layers: 'tdh&map=' + mapfileUrl,
+          format: 'image/png',
+          opacity: 0.75,
+          transparent: true
         }).addTo(map);
       }
       return e.preventDefault();

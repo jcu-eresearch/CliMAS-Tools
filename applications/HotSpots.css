@@ -701,6 +701,30 @@ CSS for Daniel's new UI starts here..
     opacity: 0.5;
 }
 
+
+/* navbar ------------------------------------- */
+
+.navbarwrapper {
+    background: rgba(0,0,0,0.25);
+}
+
+.nav {
+    color: white;
+    background: rgba(255,255,255,0.2);
+    margin: 0 4% 0;  /* 8% text border = 4% margin, 4% padding */
+    padding: 0;
+}
+
+.nav li {
+    padding: 0 1em;
+    margin: 0;
+    display: block;
+    float: left;
+    height: 3em;
+    line-height: 3em;
+    border: 1px outset #999;
+}
+
 /* popup overlay  - - - - - - - - - - - - - - - */
 .popupwrapper {
     position: absolute;

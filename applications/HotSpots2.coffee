@@ -110,10 +110,6 @@ $ ->
 
             map = L.map('popupmap', {
                 minZoom: 3
-#                crs: L.CRS.EPSG3857
-#                crs: L.CRS.EPSG4326
-                crs: L.CRS.EPSG3395
-#                crs: L.CRS.Simple
             }).setView([-27, 135], 4)
 
             # 831e24daed21488e8205aa95e2a14787 is Daniel's CloudMade API key
@@ -122,20 +118,18 @@ $ ->
                 maxZoom: 18
             }).addTo map
 
-#            imageUrl = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/output/MapserverImages/5084c927_5e09_ffffffff.png"
-#            imageUrl = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/output/MapserverImages/50878b8d_5e0a_2.png"
-#            imageUrl = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/output/MapserverImages/50878d11_5e03_4.png"
-            imageUrl = "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/output/MapserverImages/50878f91_512_ffffffff.png"
+            mapfileUrl = window.mapfileRoot
 
-            #
-            # image bounds: [[-8.2688444363376, 111.975], [-46.231133563662, 156.2749]]
-            # or maybe bounds should be: [[-9.9749780, 111.975], [-44.525, 156.2749]]
-            #
-#            imageBounds = [[-8.2688444363376, 111.975], [-46.231133563662, 156.2749]]
-#            imageBounds = [[-9.9749780, 111.975], [-44.525, 156.2749]]
-            imageBounds = [[-8.2687905894135, 111.9749], [-46.231165, 156.2749]]
-            L.imageOverlay(imageUrl, imageBounds, {
-                opacity: 0.5
+            mapfileUrl += 'By' + groupLevel[0].toUpperCase() + groupLevel[1..-1]
+            mapfileUrl += '/' + groupName + '/' + scenario + '_' + year + '.map'
+
+            console.log mapfileUrl
+
+            data = new L.TileLayer.WMS("http://tdh-tools-1.hpc.jcu.edu.au:81/cgi-bin/mapserv", {
+                layers: 'tdh&map=' + mapfileUrl
+                format: 'image/png'
+                opacity: 0.75
+                transparent: true
             }).addTo map
 
         e.preventDefault();
