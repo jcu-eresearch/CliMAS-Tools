@@ -59,19 +59,18 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
 <div class="header clearfix">
     <a href="http://tropicaldatahub.org/"><img class="logo"
         src="../images/TDH_logo_medium.png"></a>
-    <h1>Hotspots</h1>
+    <h1>Biodiversity</h1>
     <h2>Visualising biodiversity across Australia</h2>
 </div>
 
 <div id="selectionpanel"><form id="prebakeform" action="">
-    <div class="formsection">
+    <div class="formsection taxon">
 
         <div class="onefield">
             <h3>Select a class</h3>
                 <?php
 
-                    $clazzes = array('MAMMALIA', 'AVES', 'REPTILIA'); // TODO: get this from the file system
-
+                    $clazzes = ClazzData::GetList();
                     $clazzesPlusAll = array_merge(array('all'), $clazzes);
 
                     foreach ($clazzesPlusAll as $clazz) {
@@ -102,18 +101,28 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
                     >all <?php echo $pluralclazzname ?></label>
                     <label><input type='radio' class='taxa family' name='<?php echo $clazz ?>_taxatype'
                         value='family'
-                    >a <?php echo $singleclazzname ?> family</label>
+                    ><?php echo grammar::IndefiniteArticle($singleclazzname) ?> family</label>
                     <select class="taxa_dd family" name="chosen_family_<?php echo $clazz ?>">
                         <option disabled="disabled" selected="selected" value="invalid">choose a family...</option>
-                        <option ...></option>
+                        <?php
+                            $families = FamilyData::GetList($clazz);
+                            foreach ($families as $family) {
+                                echo "<option value='" . $family . "'>" . ucfirst(strtolower($family)) . "</option>\n";
+                            }
+                        ?>
                     </select>
 
                     <label><input type='radio' class='taxa genus' name='<?php echo $clazz ?>_taxatype'
                         value='genus'
-                    >a <?php echo $singleclazzname ?> genus</label>
+                    ><?php echo grammar::IndefiniteArticle($singleclazzname) ?> genus</label>
                     <select class="taxa_dd genus" name="chosen_genus_<?php echo $clazz ?>">
                         <option disabled="disabled" selected="selected" value="invalid">choose a genus...</option>
-                        <option ...></option>
+                        <?php
+                            $genuses = GenusData::GetList($clazz);
+                            foreach ($genuses as $genus) {
+                                echo "<option value='" . $genus . "'>" . $genus . "</option>\n";
+                            }
+                        ?>
                     </select>
 
                 </div>
@@ -127,8 +136,9 @@ $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url t
             <h3>Select a year</h3>
 
             <?php
-                // it's lame, but I'm checking them *all* in the template, so the last one will end up selected.
-                $yearFormat = "<label><input type='radio' class='year' name='year' checked='checked' value='{DataName}'>{DataName} {Description}</label>";
+                echo "<label><input type='radio' class='year' name='year' value='current'>current</label>";
+
+                $yearFormat = "<label><input type='radio' class='year' name='year' value='{DataName}'>{DataName} {Description}</label>";
                 echo DatabaseClimate::GetFutureTimesDescriptions()->asFormattedString($yearFormat);
             ?>
         </div>

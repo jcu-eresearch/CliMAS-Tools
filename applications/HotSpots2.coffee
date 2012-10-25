@@ -111,7 +111,8 @@ $ ->
             map = L.map('popupmap', {
                 minZoom: 3
 #                crs: L.CRS.EPSG3857
-                crs: L.CRS.EPSG4326
+#                crs: L.CRS.EPSG4326
+                crs: L.CRS.EPSG3395
 #                crs: L.CRS.Simple
             }).setView([-27, 135], 4)
 

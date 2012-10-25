@@ -8,11 +8,24 @@
 class ClazzData extends Object {
 
     /**
+     * Return a list of Clazz names
+     */
+    public static function GetList()
+    {
+        $clazzes = array();
+
+        $datapath = configuration::SourceDataFolder() . 'Taxa';
+        if (!file::reallyExists($datapath)) return $clazzes; // bail if no data
+
+        $clazz_paths = file::folder_folders($datapath, null, true);
+        $clazzes = array_keys($clazz_paths);
+
+        return $clazzes;
+    }
+
+    /**
      *
-     * For any class, return it's common name
-     *
-     * @param type $pattern
-     * @return type
+     * For any class, return its common name
      */
     public static function clazzCommonName($clazz = "", $plural = true)
     {

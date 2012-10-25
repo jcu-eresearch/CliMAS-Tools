@@ -15,6 +15,7 @@ include_once 'image_location.class.php';
 include_once 'location.class.php';
 include_once 'location_coordinate.class.php';
 include_once 'ErrorMessage.class.php';
+include_once 'grammar.class.php';
 
 //include_once 'debug.class.php';
 //include_once 'draw.class.php';

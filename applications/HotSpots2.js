@@ -76,7 +76,7 @@
         });
         map = L.map('popupmap', {
           minZoom: 3,
-          crs: L.CRS.EPSG4326
+          crs: L.CRS.EPSG3395
         }).setView([-27, 135], 4);
         L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
           attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',

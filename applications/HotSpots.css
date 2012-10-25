@@ -660,6 +660,10 @@ CSS for Daniel's new UI starts here..
     padding-bottom: 4em;
 }
 
+#selectionpanel .formsection.taxon {
+    min-width: 11.5em; /* random estimate */
+}
+
 #selectionpanel .taxa_dd {
     position: absolute;
     bottom: 1.5em;
@@ -683,7 +687,7 @@ CSS for Daniel's new UI starts here..
 
 #selectionpanel .year label {
     display: block;
-    text-align: center;
+    padding-left: 1.25em;
 }
 
 #selectionpanel .generate {

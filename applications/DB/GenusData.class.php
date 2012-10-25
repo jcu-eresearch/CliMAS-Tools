@@ -9,14 +9,27 @@ class GenusData extends Object
 
     public static function GetList($class)
     {
-        $datapath = configuration::SourceDataFolder() +
-                configuration::osPathDelimiter + 'Taxa' +
-                configuration::osPathDelimiter + $class
+        $genuses = array();
+
+        $datapath = configuration::SourceDataFolder() . 'Taxa' .
+                configuration::osPathDelimiter() . $class
                 ;
+
+        if (!file::reallyExists($datapath)) return $genuses; // bail if no data
 
         $families = file::folder_folders($datapath, null);
 
-        $genuses = array();
+        foreach ($families as $family => $familypath)
+        {
+            if (!file::reallyExists($familypath)) continue; // skip this family if there's no data for it
+
+            $familygenuses = file::folder_folders($familypath, null, true);
+            foreach ($familygenuses as $genus => $genuspath)
+            {
+                $genuses[] = $genus;
+            }
+        }
+        return $genuses;
     }
 
     public static function GetProjectedFiles($genus = null ,$filetype = null ,$scenario = null, $model = null, $time = null)
