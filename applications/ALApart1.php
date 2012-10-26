@@ -2,23 +2,25 @@
 include_once dirname(__FILE__).'/includes.php';
 if (php_sapi_name() != "cli") return;
 
-
 $execute = false;
 
-$execute_flag = $argv[1];;
+$execute_flag = array_util::Value($argv, 1);
+if (is_null($execute_flag)) $execute_flag = 'NO_EXECUTE';
+
 
 if ($execute_flag !== 'EXECUTE')
 {
     ErrorMessage::Marker("####### DRY RUN ONLY .... no files will be changed #######");
     ErrorMessage::Marker("Please run as  'php {$argv[0]} EXECUTE'  to actually execute and do something ");    
-    
+    $execute = false;
 }
 else
 {
+    ErrorMessage::Marker("####### EXECUTING DATA BUILD #######");
     $execute = true;
 }
 
-ErrorMessage::Marker("GET ALA DATA, and combine with managed SPecies Data to create Taxa a trees ada data lookup files");
+ErrorMessage::Marker("GET ALA DATA, and combine with managed Species Data to create Taxa a trees ada data lookup files");
 
 $JSON_KEY = 'JSON';
 $clazz_translation = array();
@@ -29,6 +31,19 @@ $clazz_translation['REPTILIA'] = 'reptiles';
 
 $real_data_folder = "/scratch/jc148322/AP02/";   // folder with real data 
 ErrorMessage::Marker("real_data_folder = [{$real_data_folder}]" );    
+
+$actionlist_filename = "actionlist.csv";
+ErrorMessage::Marker("actionlist_filename = [{$actionlist_filename}]" );
+
+
+ErrorMessage::Marker("Get modelled_list");
+$modelled = modelled_list($real_data_folder,$actionlist_filename);
+
+ErrorMessage::Marker("Current modelled_list");
+ErrorMessage::Marker($modelled);
+
+
+
 
 $AP02_data_folder  = configuration::Maxent_Species_Data_folder();
 ErrorMessage::Marker("AP02_data_folder  = [{$AP02_data_folder}]" );
@@ -42,15 +57,14 @@ ErrorMessage::Marker("$taxa_data_folder = [{$taxa_data_folder}]" );
 $error_list_filename = "{$sdf}errors.txt";
 ErrorMessage::Marker("$error_list_filename = [{$error_list_filename}]" );
 
-ErrorMessage::Marker("Get modelled_list");
-$modelled = modelled_list($real_data_folder);
 
 
-if (!$execute) ErrorMessage::Marker("remove_data_lookup_files" );
+
+ErrorMessage::Marker("remove_data_lookup_files" );
 if ($execute) remove_data_lookup_files($sdf);
 
 
-if (!$execute) ErrorMessage::Marker("create_taxa_folders" );
+ErrorMessage::Marker("create_taxa_folders" );
 if ($execute) create_taxa_folders($AP02_data_folder,$sdf);
 
 
@@ -67,27 +81,32 @@ $species_to_id = array(); // - hold array where key = "Common Name (Species name
 $count = 1;
 $species_list = species_list_from_folders($real_data_folder);
 
+ErrorMessage::Marker("Current species list");
+ErrorMessage::Marker($species_list);
+
+
 foreach ($species_list as $species_folder_name) 
 {
+
+    ErrorMessage::Marker("Process ... $species_folder_name  {$count} / " . count($species_list) );    
     
     if (!array_key_exists($species_folder_name, $modelled))
     {
         ErrorMessage::Marker("NOT MODELLED - $species_folder_name");
+        file_put_contents($error_list_filename,"NOT MODELLED - $species_folder_name", 0, FILE_APPEND);
         continue;
     }
 
     // if ($count > 2) continue;
     
-    ErrorMessage::Marker("Process ... $species_folder_name  {$count} / " . count($species_list) );    
     
     // check to see if we have '$sdf/ALA_JSON/$species_folder_name.json'
-    $d = ALASpeciesTaxa($species_folder_name,$sdf);
-    
+    $d = ALASpeciesTaxa($species_folder_name,$sdf,$error_list_filename,$execute);
     
     if (is_null($d)) 
-    {
-        ErrorMessage::Marker("\n### ERROR ALA data for $species_folder_name NOT FOUND\n");
-        file_put_contents($error_list_filename,$species_folder_name, 0, FILE_APPEND);
+    {        
+        ErrorMessage::Marker("### ERROR:: No ALA data found for - $species_folder_name");
+        file_put_contents($error_list_filename,"No ALA data found for - $species_folder_name", 0, FILE_APPEND);
         continue;
     }
 
@@ -147,13 +166,17 @@ foreach ($species_list as $species_folder_name)
     
     // get original_species_id from the occur file - so we can then use it to create the id's fo AP02 data
     $original_species_id = exec("head -n2 '$original_occur' | tail -n1 | cut -d, -s -f1");
+    ErrorMessage::Marker("$species_folder_name  ... original_species_id = [{$original_species_id}]");
 
+    
     // create Folder in $AP02_data_folder as $original_species_id
     ErrorMessage::Marker("mkdir {$AP02_data_folder}{$original_species_id}");
     if ($execute)  file::mkdir_safe("{$AP02_data_folder}{$original_species_id}");
     
-    ErrorMessage::Marker("chmod u+rwxs,g+rwxs,o+rwxs '{$AP02_data_folder}{$original_species_id}'");
-    if ($execute)  exec("chmod u+rwxs,g+rwxs,o+rwxs '{$AP02_data_folder}{$original_species_id}'");
+    
+    
+    ErrorMessage::Marker("chmod u+rwxs,g+rwxs,o+rx'{$AP02_data_folder}{$original_species_id}'");
+    if ($execute)  exec("chmod u+rwxs,g+rwxs,o+rx'{$AP02_data_folder}{$original_species_id}'");
     
     
     
@@ -161,8 +184,8 @@ foreach ($species_list as $species_folder_name)
     if ($execute)  file::mkdir_safe("{$AP02_data_folder}{$original_species_id}/output");
     
     
-    ErrorMessage::Marker("chmod u+rwxs,g+rwxs,o+rwxs '{$AP02_data_folder}{$original_species_id}/output'");
-    if ($execute)  exec("chmod u+rwxs,g+rwxs,o+rwxs '{$AP02_data_folder}{$original_species_id}/output'");
+    ErrorMessage::Marker("chmod u+rwxs,g+rwxs,o+rx '{$AP02_data_folder}{$original_species_id}/output'");
+    if ($execute)  exec("chmod u+rwxs,g+rwxs,o+rx '{$AP02_data_folder}{$original_species_id}/output'");
 
     
     ErrorMessage::Marker("link {$original_occur} to {$original_species_id}/occur.csv");
@@ -175,7 +198,6 @@ foreach ($species_list as $species_folder_name)
     
     // set original maxentResults.csv here  
     $original_maxentResults = "{$real_data_folder}{$clazz_translation[$d['clazz']]}/models/{$species_folder_name}/output/maxentResults.csv";
-    
     
     ErrorMessage::Marker("link {$original_maxentResults} to {$original_species_id}/output/maxentResults.csv");
     
@@ -405,22 +427,34 @@ function create_taxa_folders($AP02_data_folder,$sdf)
 function species_list_from_folders($real_data_folder)
 {
     
+    ErrorMessage::Marker("Getting species list from [{$real_data_folder}]");
+    
+    
     $species_list = array();
     
+    ErrorMessage::Marker("Getting species amphibians list from [{$real_data_folder}amphibians/models/]");
     exec("ls -1 {$real_data_folder}amphibians/models/",$species_list );
+
+    
+    ErrorMessage::Marker("Getting species mammals list from [{$real_data_folder}mammals/models/]");
     exec("ls -1 {$real_data_folder}mammals/models/"   ,$species_list );
+
+    
+    ErrorMessage::Marker("Getting species reptiles list from [{$real_data_folder}reptiles/models/]");
     exec("ls -1 {$real_data_folder}reptiles/models/",  $species_list );
 
+    
+    
     return $species_list;
     
 }
 
 
-function modelled_list($real_data_folder)
+function modelled_list($real_data_folder,$actionlist_filename = "actionlist.csv")
 {
-    ErrorMessage::Marker("Read MODELLED list from [{$real_data_folder}]" );
+    ErrorMessage::Marker("Read MODELLED list from [{$real_data_folder}{$actionlist_filename}]" );
     $modelled = array();
-    exec(" cat {$real_data_folder}actionlist.csv | grep -v 'not_modelled' | grep -v 'class' | less",$modelled);
+    exec(" cat {$real_data_folder}{$actionlist_filename} | grep -v 'not_modelled' | grep -v 'class' | less",$modelled);
     $modelled = array_flip(util::leftStrArray(array_util::Replace($modelled, '"', ''), ',', false));
     
     return $modelled;
@@ -428,7 +462,7 @@ function modelled_list($real_data_folder)
 }
 
 
-function ALASpeciesTaxa($species_folder_name,$sdf)
+function ALASpeciesTaxa($species_folder_name,$sdf,$error_list_filename,$execute)
 {
     
     $species_name = str_replace("_", " ", $species_folder_name);
@@ -436,7 +470,6 @@ function ALASpeciesTaxa($species_folder_name,$sdf)
     file::mkdir_safe("{$sdf}ALA_JSON/$species_folder_name");
     
     try {
-        
         
         ErrorMessage::Marker("Get data from ALA for [{$species_name}]");
         
@@ -451,6 +484,17 @@ function ALASpeciesTaxa($species_folder_name,$sdf)
                                 file_get_contents('http://bie.ala.org.au/ws/search.json?q='.urlencode($species_name))
                              );
         }
+        
+        if (!file_exists("{$sdf}ALA_JSON/$species_folder_name/search_result.json"))
+        {
+            
+            ErrorMessage::Marker("ERROR GETTING ALA DATA - $species_folder_name");
+            file_put_contents($error_list_filename,"ERROR GETTING ALA DATA - $species_folder_name", 0, FILE_APPEND);
+            continue;
+            
+            
+        }
+        
         
         $data = json_decode(file_get_contents("{$sdf}ALA_JSON/$species_folder_name/search_result.json"));
         
