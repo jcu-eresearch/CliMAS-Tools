@@ -841,6 +841,8 @@ SQL;
         if ($posFrom === FALSE) $posFrom = 0;          // if we can't find from then set to start of string
         if ($posTo   === FALSE) $posTo = strlen($src); // if we can't find to set to end of string
         
+        
+        
         $result = substr($src, $posFrom, $posTo - $posFrom );
 
         if (!$include_delim)
