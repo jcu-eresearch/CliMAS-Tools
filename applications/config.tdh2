@@ -29,7 +29,7 @@ if (stripos( $hostname, "tdh-tools-2") !== FALSE)
     $conf[Parameter::$COMMAND_QUEUE_ID       ]= "tdh";
     $conf[Parameter::$COMMAND_QUEUE_LOG]      = "/home/TDH/apps/Gilbert/logs/queue.log";
     $conf[Parameter::$COMMAND_SCRIPTS_FOLDER] = "/home/TDH/apps/Gilbert/scripts/";
-    $conf[Parameter::$COMMAND_SCRIPTS_EXE]    = "/home/TDH/apps/applications/CommandActionExecute.php";
+    $conf[Parameter::$COMMAND_SCRIPTS_EXE]    = "/var/www/webroot/tools/applications/CommandActionExecute.php";
     
     $conf[Parameter::$MaxentJar]              = "/var/www/webroot/tools/applications/Finder/Species/maxent.jar";
 
