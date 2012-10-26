@@ -79,10 +79,11 @@ if (!file_exists(configuration::MaxentJar()  ))
     exit(1);
 }
 
-if (!is_dir(configuration::Maxent_Taining_Data_folder()  ))
-{
-    echo "WARNING:: Maxent_Taining_Data_folder does not exist: ".configuration::Maxent_Taining_Data_folder()."\n";    
-}
+// OBSOLETE 2012-10-26 Adam Fakes - I have set the appropriate folder names bur these are obselete now
+//if (!is_dir(configuration::Maxent_Taining_Data_folder()  ))
+//{
+//    echo "WARNING:: Maxent_Taining_Data_folder does not exist: ".configuration::Maxent_Taining_Data_folder()."\n";    
+//}
 
 // OBSOLETE 2012-10-26 Adam Fakes - I have set the appropriate folder names bur these are obselete now
 //if (!is_dir(configuration::Maxent_Future_Projection_Data_folder()  ))
