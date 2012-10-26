@@ -4,7 +4,7 @@
  *  Develpopment values from  "tdh2 HPC side"
  *  This will be the config is uses when it's running on the HPC in the /scratch/jc166922/tdh2 folder
  * 
- *  
+ *   /home/TDH/apps/Gilbert/tools/applications
  */
 if (stripos( $hostname, ".default.domain") !== FALSE) 
 {
