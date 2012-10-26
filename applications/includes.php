@@ -30,7 +30,7 @@ if (file_exists("{$af}config.tdh1"))     include_once $af.'config.tdh1';
 if (file_exists("{$af}config.tdh1-hpc")) include_once $af.'config.tdh1-hpc';
 if (file_exists("{$af}config.tdh2"))     include_once $af.'config.tdh2';
 if (file_exists("{$af}config.tdh2-hpc")) include_once $af.'config.tdh2-hpc';
-//if (file_exists("{$af}config.afakes"))   include_once $af.'config.afakes';
+if (file_exists("{$af}config.home.tdh")) include_once $af.'config.home.tdh';
 
 include_once dirname(__FILE__).'/configuration.class.php';
 
