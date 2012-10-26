@@ -2,29 +2,57 @@
 include_once dirname(__FILE__).'/includes.php';
 if (php_sapi_name() != "cli") return;
 
+
+$execute = false;
+
+$execute_flag = $argv[1];;
+
+if ($execute_flag !== 'EXECUTE')
+{
+    ErrorMessage::Marker("####### DRY RUN ONLY .... no files will be changed #######");
+    ErrorMessage::Marker("Please run as  'php {$argv[0]} EXECUTE'  to actually execute and do something ");    
+    
+}
+else
+{
+    $execute = true;
+}
+
+ErrorMessage::Marker("GET ALA DATA, and combine with managed SPecies Data to create Taxa a trees ada data lookup files");
+
 $JSON_KEY = 'JSON';
 $clazz_translation = array();
 $clazz_translation['AMPHIBIA'] = 'amphibians';
 $clazz_translation['MAMMALIA'] = 'mammals';
 $clazz_translation['REPTILIA'] = 'reptiles';
 
-$real_data_folder = "/scratch/jc148322/AP02/";   // folder with real data 
 
-ErrorMessage::Marker("ALA Species and Taxa data");
+$real_data_folder = "/scratch/jc148322/AP02/";   // folder with real data 
+ErrorMessage::Marker("real_data_folder = [{$real_data_folder}]" );    
 
 $AP02_data_folder  = configuration::Maxent_Species_Data_folder();
+ErrorMessage::Marker("AP02_data_folder  = [{$AP02_data_folder}]" );
 
 $sdf = configuration::SourceDataFolder();
-
-$error_list_filename = "{$sdf}errors.txt";
-
-remove_data_lookup_files();
-
-create_taxa_folders();
-
-$modelled = modelled_list();
+ErrorMessage::Marker("(SourceDataFolder) sdf = [{$sdf}]" );
 
 $taxa_data_folder = "{$sdf}Taxa/";
+ErrorMessage::Marker("$taxa_data_folder = [{$taxa_data_folder}]" );
+
+$error_list_filename = "{$sdf}errors.txt";
+ErrorMessage::Marker("$error_list_filename = [{$error_list_filename}]" );
+
+ErrorMessage::Marker("Get modelled_list");
+$modelled = modelled_list($real_data_folder);
+
+
+if (!$execute) ErrorMessage::Marker("remove_data_lookup_files" );
+if ($execute) remove_data_lookup_files($sdf);
+
+
+if (!$execute) ErrorMessage::Marker("create_taxa_folders" );
+if ($execute) create_taxa_folders($AP02_data_folder,$sdf);
+
 
 
 // arrays to store unique values - to be saved later for lookup data
@@ -36,12 +64,11 @@ $common_names = array();
 
 $species_to_id = array(); // - hold array where key = "Common Name (Species name)" - so we have somethinf to load into species lookup 
 
-
 $count = 1;
-$species_list = species_list_from_folders();
+$species_list = species_list_from_folders($real_data_folder);
+
 foreach ($species_list as $species_folder_name) 
 {
-    
     
     if (!array_key_exists($species_folder_name, $modelled))
     {
@@ -54,7 +81,7 @@ foreach ($species_list as $species_folder_name)
     ErrorMessage::Marker("Process ... $species_folder_name  {$count} / " . count($species_list) );    
     
     // check to see if we have '$sdf/ALA_JSON/$species_folder_name.json'
-    $d = ALASpeciesTaxa($species_folder_name);
+    $d = ALASpeciesTaxa($species_folder_name,$sdf);
     
     
     if (is_null($d)) 
@@ -79,19 +106,25 @@ foreach ($species_list as $species_folder_name)
     $single_species_folder = "{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/";
 
     ErrorMessage::Marker("Create folder {$single_species_folder}");
-    file::mkdir_safe("{$single_species_folder}");
+    if ($execute) file::mkdir_safe("{$single_species_folder}");
     
-    file_put_contents("{$taxa_data_folder}{$d['clazz']}/clazz_guid.txt", $d['clazz_guid']."\n");
+    ErrorMessage::Marker("Create file [{$taxa_data_folder}{$d['clazz']}/clazz_guid.txt]");
+    if ($execute) file_put_contents("{$taxa_data_folder}{$d['clazz']}/clazz_guid.txt", $d['clazz_guid']."\n");
 
-    file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/family_guid.txt", $d['family_guid']."\n");
+    ErrorMessage::Marker("Create file [{$taxa_data_folder}{$d['clazz']}/{$d['family']}/family_guid.txt");
+    if ($execute) file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/family_guid.txt", $d['family_guid']."\n");
 
-    file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/genus_guid.txt", $d['genus_guid']."\n");
+    ErrorMessage::Marker("Create file {$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/genus_guid.txt");
+    if ($execute) file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/genus_guid.txt", $d['genus_guid']."\n");
      
-    file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/species_guid.txt", $d['species_guid']."\n");
+    ErrorMessage::Marker("Create file {$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/species_guid.txt");
+    if ($execute) file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/species_guid.txt", $d['species_guid']."\n");
 
-    file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/scientific_name.txt", $d['species']."\n");
+    ErrorMessage::Marker("Create file {$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/scientific_name.txt");
+    if ($execute) file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/scientific_name.txt", $d['species']."\n");
     
-    file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/data.json", $d[$JSON_KEY]."\n");
+    ErrorMessage::Marker("Create file {$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/data.json");
+    if ($execute) file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/data.json", $d[$JSON_KEY]."\n");
     
     
     // set original occur.csv here  - we want to read the first line of the occur.csv and get the "species_id" that was used
@@ -99,34 +132,45 @@ foreach ($species_list as $species_folder_name)
     
     // create link to original occur inside Taxa Heirachy
     $ln = "ln -s '{$original_occur}' '{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/occur.csv'";     
-    exec($ln);
     
+    ErrorMessage::Marker("$ln");
+    if ($execute)  exec($ln);
 
     
     $original_ascii_data_folder = "{$real_data_folder}{$clazz_translation[$d['clazz']]}/models/{$species_folder_name}/output/ascii/";
     
     // create link to original ascii / gz  foldet to inside Taxa Heirachy
     $ln = "ln -s '{$original_ascii_data_folder}' '{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/output'";     
-    exec($ln);
+    ErrorMessage::Marker("$ln");
+    if ($execute)  exec($ln);
     
     
     // get original_species_id from the occur file - so we can then use it to create the id's fo AP02 data
     $original_species_id = exec("head -n2 '$original_occur' | tail -n1 | cut -d, -s -f1");
 
     // create Folder in $AP02_data_folder as $original_species_id
-    file::mkdir_safe("{$AP02_data_folder}{$original_species_id}");
+    ErrorMessage::Marker("mkdir {$AP02_data_folder}{$original_species_id}");
+    if ($execute)  file::mkdir_safe("{$AP02_data_folder}{$original_species_id}");
     
-    exec("chmod u+rwxs,g+rwxs,o+rwxs '{$AP02_data_folder}{$original_species_id}'");
+    ErrorMessage::Marker("chmod u+rwxs,g+rwxs,o+rwxs '{$AP02_data_folder}{$original_species_id}'");
+    if ($execute)  exec("chmod u+rwxs,g+rwxs,o+rwxs '{$AP02_data_folder}{$original_species_id}'");
     
-    file::mkdir_safe("{$AP02_data_folder}{$original_species_id}/output");
-    exec("chmod u+rwxs,g+rwxs,o+rwxs '{$AP02_data_folder}{$original_species_id}/output'");
     
+    
+    ErrorMessage::Marker("mkdir {$AP02_data_folder}{$original_species_id}/output");
+    if ($execute)  file::mkdir_safe("{$AP02_data_folder}{$original_species_id}/output");
+    
+    
+    ErrorMessage::Marker("chmod u+rwxs,g+rwxs,o+rwxs '{$AP02_data_folder}{$original_species_id}/output'");
+    if ($execute)  exec("chmod u+rwxs,g+rwxs,o+rwxs '{$AP02_data_folder}{$original_species_id}/output'");
+
     
     ErrorMessage::Marker("link {$original_occur} to {$original_species_id}/occur.csv");
     
     $ln = "ln -s '{$original_occur}' '{$AP02_data_folder}{$original_species_id}/occur.csv'";
-    //ErrorMessage::Marker($ln);
-    exec($ln);
+    ErrorMessage::Marker("$ln");
+    if ($execute)  exec($ln);
+    
     
     
     // set original maxentResults.csv here  
@@ -136,14 +180,16 @@ foreach ($species_list as $species_folder_name)
     ErrorMessage::Marker("link {$original_maxentResults} to {$original_species_id}/output/maxentResults.csv");
     
     $ln = "ln -s '{$original_maxentResults}' '{$AP02_data_folder}/{$original_species_id}/output/maxentResults.csv'";
-    //ErrorMessage::Marker($ln);
-    exec($ln);
+    ErrorMessage::Marker("$ln");
+    if ($execute)  exec($ln);
     
 
     // species commmon names
     if (is_array($d['common_names']))
     {
-        file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/common_names.txt", implode("\n",$d['common_names'])."\n");
+        
+        ErrorMessage::Marker("WRITE {$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/common_names.txt");
+        if ($execute)  file_put_contents("{$taxa_data_folder}{$d['clazz']}/{$d['family']}/{$d['genus']}/{$species_folder_name}/common_names.txt", implode("\n",$d['common_names'])."\n");
         
         foreach ($d['common_names'] as $common_name) 
         {        
@@ -173,44 +219,67 @@ foreach ($species_list as $species_folder_name)
     foreach ($gz_files as $gz_basename => $gz_pathname) 
     {
         $ln = "ln -s '{$gz_pathname}' '{$AP02_data_folder}{$original_species_id}/output/{$gz_basename}'"; 
-        exec($ln);
+        ErrorMessage::Marker("$ln");
+        if ($execute)  exec($ln);
     }
+    
     
     ErrorMessage::Marker("Create Data Links - Clazz {$d['clazz']} ");
 
-    file::mkdir_safe("{$sdf}ByClazz/{$d['clazz']}");
-    file::mkdir_safe("{$sdf}ByClazz/{$d['clazz']}/ByID");
-    file::mkdir_safe("{$sdf}ByClazz/{$d['clazz']}/ByName");
+    
+    ErrorMessage::Marker("mkdir {$sdf}ByClazz/{$d['clazz']}");
+    if ($execute)  file::mkdir_safe("{$sdf}ByClazz/{$d['clazz']}");
+
+    ErrorMessage::Marker("mkdir {$sdf}ByClazz/{$d['clazz']}/ByID");
+    if ($execute)  file::mkdir_safe("{$sdf}ByClazz/{$d['clazz']}/ByID");
+    
+    ErrorMessage::Marker("mkdir {$sdf}ByClazz/{$d['clazz']}/ByName");
+    if ($execute)  file::mkdir_safe("{$sdf}ByClazz/{$d['clazz']}/ByName");
     
     $ln = "ln -s '{$AP02_data_folder}{$original_species_id}/' '{$sdf}ByClazz/{$d['clazz']}/ByID/{$original_species_id}'"; 
-    exec($ln);
+    ErrorMessage::Marker("$ln");
+    if ($execute)  exec($ln);
     
     $ln = "ln -s '{$AP02_data_folder}{$original_species_id}/' '{$sdf}ByClazz/{$d['clazz']}/ByName/{$species_folder_name}'"; 
-    exec($ln);
+    ErrorMessage::Marker("$ln");
+    if ($execute)  exec($ln);
     
     
-    file::mkdir_safe("{$sdf}ByFamily/{$d['family']}");
-    file::mkdir_safe("{$sdf}ByFamily/{$d['family']}/ByID");
-    file::mkdir_safe("{$sdf}ByFamily/{$d['family']}/ByName");
+    ErrorMessage::Marker("mkdir {$sdf}ByFamily/{$d['family']}");
+    if ($execute)  file::mkdir_safe("{$sdf}ByFamily/{$d['family']}");
+    
+    ErrorMessage::Marker("mkdir {$sdf}ByFamily/{$d['family']}/ByID");
+    if ($execute)  file::mkdir_safe("{$sdf}ByFamily/{$d['family']}/ByID");
+
+    ErrorMessage::Marker("mkdir {$sdf}ByFamily/{$d['family']}/ByName");
+    if ($execute)  file::mkdir_safe("{$sdf}ByFamily/{$d['family']}/ByName");
 
     $ln = "ln -s '{$AP02_data_folder}{$original_species_id}/' '{$sdf}ByFamily/{$d['family']}/ByID/{$original_species_id}'"; 
-    exec($ln);
+    ErrorMessage::Marker("$ln");
+    if ($execute)  exec($ln);
     
     $ln = "ln -s '{$AP02_data_folder}{$original_species_id}/' '{$sdf}ByFamily/{$d['family']}/ByName/{$species_folder_name}'"; 
-    exec($ln);
+    ErrorMessage::Marker("$ln");
+    if ($execute)  exec($ln);
     
     
+    ErrorMessage::Marker("mkdir {$sdf}ByGenus/{$d['genus']}");
+    if ($execute)  file::mkdir_safe("{$sdf}ByGenus/{$d['genus']}");
+
+    ErrorMessage::Marker("mkdir {$sdf}ByGenus/{$d['genus']}/ByID");
+    if ($execute)  file::mkdir_safe("{$sdf}ByGenus/{$d['genus']}/ByID");
     
-    file::mkdir_safe("{$sdf}ByGenus/{$d['genus']}");
-    file::mkdir_safe("{$sdf}ByGenus/{$d['genus']}/ByID");
-    file::mkdir_safe("{$sdf}ByGenus/{$d['genus']}/ByName");
+    ErrorMessage::Marker("mkdir {$sdf}ByGenus/{$d['genus']}/ByName");
+    if ($execute)  file::mkdir_safe("{$sdf}ByGenus/{$d['genus']}/ByName");
     
     
     $ln = "ln -s '{$AP02_data_folder}{$original_species_id}/' '{$sdf}ByGenus/{$d['genus']}/ByID/{$original_species_id}'"; 
-    exec($ln);
+    ErrorMessage::Marker("$ln");
+    if ($execute)  exec($ln);
     
     $ln = "ln -s '{$AP02_data_folder}{$original_species_id}/' '{$sdf}ByGenus/{$d['genus']}/ByName/{$species_folder_name}'"; 
-    exec($ln);
+    ErrorMessage::Marker("$ln");
+    if ($execute)  exec($ln);
     
     
     $count++;
@@ -220,38 +289,66 @@ foreach ($species_list as $species_folder_name)
 
 // Save Lookup Data
 
-ksort($clazz);          file_put_contents("{$sdf}clazz_list.txt",    implode("\n",$clazz)."\n");
-ksort($family);         file_put_contents("{$sdf}family_list.txt",   implode("\n",$family)."\n");
-ksort($genus);          file_put_contents("{$sdf}genus_list.txt",    implode("\n",$genus)."\n");
-ksort($species);        file_put_contents("{$sdf}species_list.txt",  implode("\n",$species)."\n");
-ksort($common_names);   file_put_contents("{$sdf}common_names.txt",  implode("\n",$common_names)."\n");
-ksort($species_to_id);  file_put_contents("{$sdf}species_to_id.txt", "name,id\n".implode("\n",$species_to_id)."\n");
+ksort($clazz);
+ErrorMessage::Marker("WRITE {$sdf}clazz_list.txt");
+if ($execute)  file_put_contents("{$sdf}clazz_list.txt",    implode("\n",$clazz)."\n");
 
-// will allow apache to add files to these folders, but data is symbolicly linked and wont be changed
+ksort($family);         
+ErrorMessage::Marker("WRITE {$sdf}family_list.txt");
+if ($execute)  file_put_contents("{$sdf}family_list.txt",   implode("\n",$family)."\n");
 
-exec("chmod -R u+rwxs,g+rwxs,+o+rwsx {$sdf}*");
+ksort($genus);
+ErrorMessage::Marker("WRITE {$sdf}genus_list.txt");
+if ($execute)  file_put_contents("{$sdf}genus_list.txt",    implode("\n",$genus)."\n");
 
-function remove_data_lookup_files()
+ksort($species);
+ErrorMessage::Marker("WRITE {$sdf}species_list.txt");
+if ($execute)  file_put_contents("{$sdf}species_list.txt",  implode("\n",$species)."\n");
+
+ksort($common_names);
+ErrorMessage::Marker("WRITE {$sdf}common_names.txt");
+if ($execute)  file_put_contents("{$sdf}common_names.txt",  implode("\n",$common_names)."\n");
+
+ksort($species_to_id);  
+ErrorMessage::Marker("WRITE {$sdf}species_to_id.txt");
+if ($execute)  file_put_contents("{$sdf}species_to_id.txt", "name,id\n".implode("\n",$species_to_id)."\n");
+
+// 
+
+ErrorMessage::Marker("will allow apache to add files to these folders, but data is symbolicly linked and wont be changed");
+
+ErrorMessage::Marker("chmod -R u+rwxs,g+rwxs,+o+rwsx {$sdf}*");
+if ($execute)  exec("chmod -R u+rwxs,g+rwxs,+o+rwsx {$sdf}*");
+
+
+ErrorMessage::Marker("######## COMPLETED ######## ");
+
+
+function remove_data_lookup_files($sdf)
 {
-    ErrorMessage::Marker("remove_data_lookup_files");
-    
-    $sdf = configuration::SourceDataFolder();
-    
+    ErrorMessage::Marker("remove data lookup files");
+
+    ErrorMessage::Marker("remove data lookup files [clazz_list.txt]");
     $clazz_list_filename = "{$sdf}clazz_list.txt";
     file::Delete($clazz_list_filename);
 
+    ErrorMessage::Marker("remove data lookup files [family_list.txt]");
     $family_list_filename = "{$sdf}family_list.txt";
     file::Delete($family_list_filename);
 
+    ErrorMessage::Marker("remove data lookup files [genus_list.txt]");
     $genus_list_filename = "{$sdf}genus_list.txt";
     file::Delete($genus_list_filename);
 
+    ErrorMessage::Marker("remove data lookup files [species_list.txt]");
     $species_list_filename = "{$sdf}species_list.txt";
     file::Delete($species_list_filename);
 
+    ErrorMessage::Marker("remove data lookup files [common_names.txt]");
     $common_list_filename = "{$sdf}common_names.txt";
     file::Delete($common_list_filename);
 
+    ErrorMessage::Marker("remove data lookup files [species_to_id.txt]");
     $species_to_id_filename = "{$sdf}species_to_id.txt";
     file::Delete($species_to_id_filename);
     
@@ -259,59 +356,71 @@ function remove_data_lookup_files()
 }
 
 
-
-function create_taxa_folders()
+function create_taxa_folders($AP02_data_folder,$sdf)
 {
     
-    ErrorMessage::Marker("create_taxa_folders");
+    ErrorMessage::Marker("create taxa folders in [{$AP02_data_folder}]");
     
-    $maxent_data = configuration::Maxent_Species_Data_folder();
-    ErrorMessage::Marker("Remove all AP02 Species ID data / links  from [{$maxent_data}]");
-    exec("rm -r -f {$maxent_data}/*");
+    ErrorMessage::Marker("Remove all AP02 Species ID data / links  from [{$AP02_data_folder}]");
+    exec("rm -r -f {$AP02_data_folder}/*");
 
     
-
-    $sdf = configuration::SourceDataFolder();
+    ErrorMessage::Marker("create Taxa folder - Heirachy  groupings");
     
-    ErrorMessage::Marker("create Taxa folder - Heirachy of Species groupings");
-    exec("rm -r -f '{$sdf}Taxa/'");
-    file::mkdir_safe("{$sdf}Taxa/");  // hold heirarchy of Clazz/Family/Genus/Species
+    if (is_dir("{$sdf}Taxa/"))             
+        exec("rm -r -f '{$sdf}Taxa/'");     // clear it if it exist
+    else
+        file::mkdir_safe("{$sdf}Taxa/");    // create it if it does NOT exist
+    
+
+    
 
     ErrorMessage::Marker("create Taxa folder - Clazz - All species belonging to this Clazz  [{{$sdf}ByClazz}]");
-    exec("rm -f -r '{$sdf}ByClazz/'");
-    file::mkdir_safe("{$sdf}/ByClazz");    
+    if (is_dir("{$sdf}ByClazz/"))
+        exec("rm -f -r '{$sdf}ByClazz/'");
+    else
+        file::mkdir_safe("{$sdf}/ByClazz");    
 
+        
+        
     ErrorMessage::Marker("create Taxa folder - Family - All species belonging to this Family [{{$sdf}ByFamily}]");
-    exec("rm -r -f '{$sdf}ByFamily/'");
-    file::mkdir_safe("{$sdf}/ByFamily/");
+    if (is_dir("{$sdf}ByFamily/"))    
+        exec("rm -r -f '{$sdf}ByFamily/'");
+    else
+        file::mkdir_safe("{$sdf}/ByFamily/");
 
+        
+        
     ErrorMessage::Marker("create Taxa folder - Genus - All species belonging to this Genus [{{$sdf}ByGenus}]");
-    exec("rm -r -f '{$sdf}ByGenus/'");
-    file::mkdir_safe("{$sdf}/ByGenus");
+    if (is_dir("{$sdf}ByGenus/"))
+        exec("rm -r -f '{$sdf}ByGenus/'");
+    else
+        file::mkdir_safe("{$sdf}/ByGenus");
     
+        
     
 }
 
 
-function species_list_from_folders()
+function species_list_from_folders($real_data_folder)
 {
     
     $species_list = array();
     
-    exec("ls -1 /scratch/jc148322/AP02/amphibians/models/",$species_list );
-    exec("ls -1 /scratch/jc148322/AP02/mammals/models/"   ,$species_list );
-    exec("ls -1 /scratch/jc148322/AP02/reptiles/models/",  $species_list );
+    exec("ls -1 {$real_data_folder}amphibians/models/",$species_list );
+    exec("ls -1 {$real_data_folder}mammals/models/"   ,$species_list );
+    exec("ls -1 {$real_data_folder}reptiles/models/",  $species_list );
 
     return $species_list;
     
 }
 
 
-function modelled_list()
+function modelled_list($real_data_folder)
 {
-    ErrorMessage::Marker("Read MODELLED list");
+    ErrorMessage::Marker("Read MODELLED list from [{$real_data_folder}]" );
     $modelled = array();
-    exec(" cat /scratch/jc148322/AP02/actionlist.csv | grep -v 'not_modelled' | grep -v 'class' | less",$modelled);
+    exec(" cat {$real_data_folder}actionlist.csv | grep -v 'not_modelled' | grep -v 'class' | less",$modelled);
     $modelled = array_flip(util::leftStrArray(array_util::Replace($modelled, '"', ''), ',', false));
     
     return $modelled;
@@ -319,13 +428,11 @@ function modelled_list()
 }
 
 
-function ALASpeciesTaxa($species_folder_name)
+function ALASpeciesTaxa($species_folder_name,$sdf)
 {
-
-    $sdf = configuration::SourceDataFolder();
     
     $species_name = str_replace("_", " ", $species_folder_name);
-
+    
     file::mkdir_safe("{$sdf}ALA_JSON/$species_folder_name");
     
     try {
