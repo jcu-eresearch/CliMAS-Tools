@@ -93,7 +93,7 @@ foreach ($species_list as $species_folder_name)
     if (!array_key_exists($species_folder_name, $modelled))
     {
         ErrorMessage::Marker("NOT MODELLED - $species_folder_name");
-        file_put_contents($error_list_filename,"NOT MODELLED - $species_folder_name", 0, FILE_APPEND);
+        file_put_contents($error_list_filename,"NOT MODELLED - $species_folder_name",FILE_APPEND);
         continue;
     }
 
