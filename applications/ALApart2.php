@@ -138,11 +138,11 @@ function create_genus_richness_links($clazz_name,$clazz_common_name,$real_data_f
     
     ErrorMessage::Marker("Link Genus Richness for [{$clazz_name}]");
     
-    ErrorMessage::Marker("mkdir {$msdf}ByGenus");
-    if ($execute) file::mkdir_safe("{$msdf}ByGenus");
+    ErrorMessage::Marker("mkdir {$msdf}richness/ByGenus");
+    if ($execute) file::mkdir_safe("{$msdf}richness/ByGenus");
     
-    ErrorMessage::Marker("remove contents of {$msdf}ByGenus");
-    if ($execute) exec("rm -f -r {$msdf}ByGenus/*");
+    ErrorMessage::Marker("remove contents of {$msdf}richness/ByGenus");
+    if ($execute) exec("rm -f -r {$msdf}richness/ByGenus/*");
     
     
     
@@ -177,7 +177,7 @@ function create_genus_richness_links($clazz_name,$clazz_common_name,$real_data_f
         exec("find {$real_data_folder}{$clazz_common_name}/richness/*{$genus_name}.asc.gz",$single_genus_richness_files);
 
         
-        if ($execute)  file::mkdir_safe("{$msdf}ByGenus/{$genus_name}");
+        if ($execute)  file::mkdir_safe("{$msdf}richness/ByGenus/{$genus_name}");
         
         foreach ($single_genus_richness_files as $single_genus_richness_file) 
         {
@@ -186,7 +186,7 @@ function create_genus_richness_links($clazz_name,$clazz_common_name,$real_data_f
             ErrorMessage::Marker("$ln");
             if ($execute)  exec($ln);    
             
-            $ln = "ln -s '$single_genus_richness_file' '{$msdf}ByGenus/{$genus_name}'";
+            $ln = "ln -s '$single_genus_richness_file' '{$msdf}richness/ByGenus/{$genus_name}'";
             ErrorMessage::Marker("$ln");
             if ($execute)  exec($ln);    
             
