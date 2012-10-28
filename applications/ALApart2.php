@@ -141,10 +141,6 @@ function create_genus_richness_links($clazz_name,$clazz_common_name,$real_data_f
     ErrorMessage::Marker("mkdir {$msdf}richness/ByGenus");
     if ($execute) file::mkdir_safe("{$msdf}richness/ByGenus");
     
-    ErrorMessage::Marker("remove contents of {$msdf}richness/ByGenus");
-    if ($execute) exec("rm -f -r {$msdf}richness/ByGenus/*");
-    
-    
     
     // get list of genus for this clazz
     
