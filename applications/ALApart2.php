@@ -41,6 +41,16 @@ ErrorMessage::Marker("AP02_data_folder  = [{$AP02_data_folder}]" );
 ErrorMessage::Marker("RICHNESS: Using Clazz Lookup Species Sets");
 
 
+$msdf = configuration::Maxent_Species_Data_folder();
+
+ErrorMessage::Marker("mkdir {$msdf}richness");
+if ($execute) file::mkdir_safe("{$msdf}richness");
+
+ErrorMessage::Marker("remove contents of  {$msdf}richness");
+if ($execute) exec("rm -f -r {$msdf}richness/*");
+
+
+
 foreach ($clazz_translation as $clazz_name => $clazz_common_name) 
 {
     ErrorMessage::Marker("RICHNESS: CLAZZ $clazz_name => $clazz_common_name");
@@ -61,8 +71,11 @@ exit();
 function create_richness_links_for_hotspot_tool($clazz_name,$clazz_common_name,$real_data_folder,$execute)
 {
     $msdf = configuration::Maxent_Species_Data_folder();
+    
+    
     $msdf_richness = "{$msdf}richness/ByGenus/";
 
+    
     $richness_files = array();
     exec("find {$real_data_folder}{$clazz_common_name}/richness/*.asc.gz",$richness_files);
 
