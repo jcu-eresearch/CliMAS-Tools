@@ -912,10 +912,10 @@ function buildRichnessOutputTab(job_description,result,data)
             if (comboFilename_asc == '') return;
             
             comboFilename_asc = Maxent_Species_Data_folder_web + 'richness/' + comboFilename_asc;
-            comboFilename_gz  = comboFilename_asc + '.gz';
             
+            comboFilename_gz  = richness_folder + comboFilename_asc + '.gz';
             
-            comboFilename_png = comboFilename_asc.replace('.asc','.png');
+            comboFilename_png =  richness_folder + comboFilename_asc.replace('.asc','.png');
             
             msg += '<li class="time_cell time_'+time+'" id="'+newTabContentId +  '_' + combination+'">';
             msg += '<h1 class="ui-widget-header ui-corner-all" >' + time + '&nbsp;&nbsp;&nbsp;<a href="'+comboFilename_gz+'"><img title="download" src="'+IconSource+'/Download-icon.png" style="width: 20px; height: 20px"></a> </h1>';
