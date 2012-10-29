@@ -630,6 +630,10 @@ CSS for Daniel's new UI starts here..
 
 #selectionpanel .onefield {
     padding: 1em 0;
+
+    -moz-transition: opacity 0.1s ease-in-out;
+    -webkit-transition: opacity 0.1s ease-in-out;
+    transition: opacity 0.1s ease-in-out;
 }
 
 #selectionpanel label {
@@ -645,6 +649,10 @@ CSS for Daniel's new UI starts here..
     border: 6px solid rgba(0,0,0,0.15);
     border-width: 6px 0;
     border-radius: 12px;
+
+    /* ie poison here */
+    *display: inline;
+    zoom: 1;
 }
 
 #selectionpanel .formsection h3 {
@@ -697,33 +705,11 @@ CSS for Daniel's new UI starts here..
     padding: 0.25em 0;
 }
 
-#selectionpanel [disabled] {
-    opacity: 0.5;
+#selectionpanel button[disabled], #selectionpanel .disabled {
+    opacity: 0.33;
+    filter: alpha(opacity=33);
 }
 
-
-/* navbar ------------------------------------- */
-
-.navbarwrapper {
-    background: rgba(0,0,0,0.25);
-}
-
-.nav {
-    color: white;
-    background: rgba(255,255,255,0.2);
-    margin: 0 4% 0;  /* 8% text border = 4% margin, 4% padding */
-    padding: 0;
-}
-
-.nav li {
-    padding: 0 1em;
-    margin: 0;
-    display: block;
-    float: left;
-    height: 3em;
-    line-height: 3em;
-    border: 1px outset #999;
-}
 
 /* popup overlay  - - - - - - - - - - - - - - - */
 .popupwrapper {

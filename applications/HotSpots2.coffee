@@ -48,6 +48,22 @@ $ ->
 
 
     #
+    # disable the emission scenario thingy when they choose "current"
+    #
+    $('#prebakeform .year').change (event)->
+        console.log 'done it'
+        if $('#prebakeform .year:checked').prop('value') == 'current'
+            $('#prebakeform input:radio[name="scenario"]').attr 'disabled', true
+            $('#prebakeform .scenario').addClass 'disabled'
+        else
+            $('#prebakeform input:radio[name="scenario"]').attr 'disabled', false
+            $('#prebakeform .scenario').removeClass 'disabled'
+
+    # now trigger that event
+    $('#prebakeform .year').first().change()
+
+
+    #
     # when they click the generate button..
     #
     $generate = $ '#prebakeform .generate'

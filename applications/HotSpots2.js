@@ -33,6 +33,17 @@
         });
       }
     });
+    $('#prebakeform .year').change(function(event) {
+      console.log('done it');
+      if ($('#prebakeform .year:checked').prop('value') === 'current') {
+        $('#prebakeform input:radio[name="scenario"]').attr('disabled', true);
+        return $('#prebakeform .scenario').addClass('disabled');
+      } else {
+        $('#prebakeform input:radio[name="scenario"]').attr('disabled', false);
+        return $('#prebakeform .scenario').removeClass('disabled');
+      }
+    });
+    $('#prebakeform .year').first().change();
     $generate = $('#prebakeform .generate');
     $('#prebakeform input').add('#prebakeform select').change(function(event) {
       var clazz, formIncomplete, groupName, taxaLevel;

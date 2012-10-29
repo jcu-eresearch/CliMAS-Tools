@@ -48,7 +48,7 @@ h1 {
 	padding: 2em 0 1em;
 	text-align: left;
 	font-size: 200%;
-	text-shadow: 1px 1px 1px #999;
+	text-shadow: 1px 1px 2px #999;
 }
 
 h1.pagehead {
@@ -66,7 +66,8 @@ h1.pagehead {
 
 h2 {
     font-size: 150%;
-    padding: 2em 0 1em;
+    padding: 2em 0 0.33em;
+    margin-bottom: 1em;
 }
 
 /* header - - - - - - - - - - - - */
@@ -80,6 +81,7 @@ h2 {
 }
 
 .header img.logo {
+    border: none;
     margin: 15px 0 0;
     float: right;
     opacity: 0.25;
@@ -105,15 +107,105 @@ h2 {
     font-size: inherit;
     text-shadow: 1px 1px 2px #000;
     padding: 0;
-    margin: 2px 0 30px;
+    margin: 2px 0 24px;
+    border: none;
 }
 
+/* navbar ------------------------------------------------------ */
+
+/*
+    normal background: #242732 / 36,39,50
+    darker: #1e212a / 30,33,42
+    lighter: #2e3240 / 46,50,64
+*/
+
+.navbarwrapper {
+    background: #242732;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2e3240', endColorstr='#1e212a');
+    background: -webkit-linear-gradient(top, rgba(46,50,64, 1) 0%, rgba(30,33,42, 1) 100%);
+    background: -moz-linear-gradient(top, rgba(46,50,64, 1) 0%, rgba(30,33,42, 1) 100%);
+    background: -o-linear-gradient(top, rgba(46,50,64, 1) 0%, rgba(30,33,42, 1) 100%);
+    background: -ms-linear-gradient(top, rgba(46,50,64, 1) 0%, rgba(30,33,42, 1) 100%);
+    background: linear-gradient(top, rgba(46,50,64, 1) 0%, rgba(30,33,42, 1) 100%);
+}
+
+.nav {
+    margin: 0 4% 0;  /* 8% text border = 4% margin, 4% padding */
+
+    padding: 0 4%;
+    border-left:  1px solid rgba(46,50,64, 0.75);
+    border-right: 1px solid rgba(30,33,42, 0.75);
+}
+
+.nav li {
+    padding: 0;
+    margin: 0;
+    display: block;
+    float: left;
+}
+
+.nav li a {
+    display: block;
+    float: left;
+    height: 2em;
+    padding: 0 2em;
+    margin: 0;
+
+    line-height: 2em;
+    font-size: 90%;
+    color: #efe6c5;
+    text-shadow: 0 1px 0 rgba(46,50,64, 1), 0 -1px 0 rgba(30,33,42, 1);
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+
+    border: 1px solid rgba(46,50,64, 1);
+    border-right: 1px solid rgba(30,33,42, 1);
+    border-bottom: 1px solid rgba(30,33,42, 1);
+    white-space: nowrap;
+    overflow: hidden;
+
+    -moz-transition: opacity 0.1s ease-in-out;
+    -webkit-transition: opacity 0.1s ease-in-out;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.nav li a:hover {
+    opacity: 1;
+    filter: alpha(opacity=100);
+    text-decoration: none;
+}
+
+.nav li a.current {
+    opacity: 1;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1e212a', endColorstr='#2e3240');
+    background: -webkit-linear-gradient(top, rgba(30,33,42, 1) 0%, rgba(46,50,64, 1) 100%);
+    background: -moz-linear-gradient(top, rgba(30,33,42, 1) 0%, rgba(46,50,64, 1) 100%);
+    background: -o-linear-gradient(top, rgba(30,33,42, 1) 0%, rgba(46,50,64, 1) 100%);
+    background: -ms-linear-gradient(top, rgba(30,33,42, 1) 0%, rgba(46,50,64, 1) 100%);
+    background: linear-gradient(top, rgba(30,33,42, 1) 0%, rgba(46,50,64, 1) 100%);
+    border:  1px solid rgba(46,50,64, 1);
+    border-left: 1px solid rgba(30,33,42, 1);
+    border-top: 1px solid rgba(30,33,42, 1);
+}
 
 /* content ----------------------------------------------------- */
 
 .maincontent {
     background: #efe6c5;
-    padding: 1em 3em 3em;
+    margin: 0 4% 0;  /* 8% text border = 4% margin, 4% padding */
+    padding: 1em 4% 5em;
+    line-height: 1.4;
+}
+
+/*
+    normal: efe6c5 / 239,230,197
+    lighter: fff5d1 / 255,245,209 (or just #fff)
+    darker: cfc6a9 / 207,198,169
+*/
+
+.maincontent h2 {
+    text-shadow: 0 1px 0 #fff, 0 -1px 0 #cfc6a9;
+    border-bottom: 2px groove rgba(255,255,255, 0.45);
 }
 
 td, th {
@@ -141,16 +233,34 @@ li {
     margin: 1em 0 2em;
 }
 
-.footer {
-    color: white;
+
+/* credits ---------------------------------------------------- */
+
+.maincontent .bottom.credits {
+    margin: 2em -4.7619% -5em; /* bottom margin = (-1) * .maincontent bottom margin */
+}
+
+.credits {
+    background: white;
+    padding: 1.5em 3em 2em;
     text-align: center;
+    -webkit-box-shadow: inset 0 1em 1.5em -0.5em rgba(0,0,0, 0.5), inset 0 -0.8em 1.5em -0.5em rgba(0,0,0, 0.5);
+    -moz-box-shadow:    inset 0 1em 1.5em -0.5em rgba(0,0,0, 0.5), inset 0 -0.8em 1.5em -0.5em rgba(0,0,0, 0.5);
+    box-shadow:         inset 0 1em 1.5em -0.5em rgba(0,0,0, 0.5), inset 0 -0.8em 1.5em -0.5em rgba(0,0,0, 0.5);
 }
 
-.footer a {
-    color: #abf;
+.credits a {
+    margin: 1em 2em;
+    display: inline-block;
+    vertical-align: middle;
 }
 
-/* hgide/show additionalcontent sections ----------------------- */
+.credits img { border: none; }
+
+
+
+
+/* hide/show additionalcontent sections ----------------------- */
 
 .additionalcontent {
     margin: 1em 0 2em;
@@ -258,120 +368,34 @@ li {
     background-color: rgba(255,255,255,0.85);
 }
 
-/* linktable  ------------------------------------------------ */
+/* footer ----------------------------------------------------- */
 
-.linktable {
+.footer-wrapper {
     text-align: center;
+    font-size: 80%;
+    margin: 0 4% 0;  /* 8% text border = 4% margin, 4% padding */
+    padding: 3px 4% 6px;
+    background: #242732;
+    color: rgba(255,255,255, 1);
 }
 
-.linktable a {
-    display: block;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    /* width: 100%; specifying width breaks in IE */
-    height: 100%;
+.footer img {
+    vertical-align: middle;
 }
-
-.linktable td:first-child, .linktable th:first-child {
-    padding-left: 3em;
+.footer a {
+    color: rgba(170,187,255, 1);
 }
-
-.linktable td:last-child, .linktable th:last-child {
-    padding-right: 3em;
-}
-
-.linktable td, .linktable th {
-    padding: 1.25em .75em;
-    font-size: 90%;
-}
-
-.linktable .tophalf td, .linktable .tophalf th {
-    padding-bottom: 0.1em;
-}
-
-.linktable .bottomhalf td, .linktable .bottomhalf th {
-    padding-top: 0.1em;
-}
-
-.linktable .middle td, .linktable .middle th {
-    padding-top: 0.1em;
-    padding-bottom: 0.1em;
-}
-
-.modeselector {
-    display: none;
-}
-
-.linktable .hidden {
-    display: none;
-}
-
-.linktable .hidden.reallynothidden {
-    display: table-cell;
-}
-
-.linktable .rowcollabels {
-    position: relative;
-    /* no, maybe just leave out hte diagonal line
-    background: -moz-linear-gradient(60deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 49.5%, #000 50%, rgba(0,0,0,0) 50.5%, rgba(0,0,0,0), 100%);
-    background: -webkit-linear-gradient(60deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 49.5%, #000 50%, rgba(0,0,0,0) 50.5%, rgba(0,0,0,0) 100%);
-    background: linear-gradient(60deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 49.5%, #000 50%, rgba(0,0,0,0) 50.5%, rgba(0,0,0,0) 100%);
-    */
-}
-
-.linktable tr:nth-child(odd) {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,1)), color-stop(45px,rgba(0,0,0,0)));
-    background: -webkit-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
-    background: -moz-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
-    background: -o-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
-    background: -ms-linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
-    background: linear-gradient(top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 45px);
-}
-
-.linktable .rightlabel, .linktable .downlabel {
-    font-weight: bold;
-    padding: 1.5em;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-}
-
-.linktable .rightlabel {
-    text-align: right;
-    bottom: 67%;
-    left: 33%;
-}
-
-.linktable .downlabel {
-    text-align: left;
-    top: 33%;
-    right: 33%;
-}
-
-/* footer and credits ----------------------------------------- */
 
 .footer {
-	margin: 0;
-	padding: 3em 1em;
+    opacity: 0.5;
+    -moz-transition: opacity 0.33s ease-in-out;
+    -webkit-transition: opacity 0.33s ease-in-out;
+    transition: opacity 0.33s ease-in-out;
 }
 
-.credits {
-	background: white;
-	padding: 1.5em 3em 2em;
-	text-align: center;
-	-webkit-box-shadow: inset 0 1em 1.5em -0.5em #000, inset 0 -0.8em 1.5em -0.5em #000;
-	-moz-box-shadow:    inset 0 1em 1.5em -0.5em #000, inset 0 -0.8em 1.5em -0.5em #000;
-	box-shadow:         inset 0 1em 1.5em -0.5em #000, inset 0 -0.8em 1.5em -0.5em #000;
+.footer:hover {
+    opacity: 1;
 }
 
-.credits a {
-	margin: 1em 2em;
-	display: inline-block;
-}
-
-.credits img { border: none; }
 
 
