@@ -918,7 +918,7 @@ function buildRichnessOutputTab(job_description,result,data)
             comboFilename_png =  comboFilename_asc.replace('.asc','.png');
             
             msg += '<li class="time_cell time_'+time+'" id="'+newTabContentId +  '_' + combination+'">';
-            msg += '<h1 class="ui-widget-header ui-corner-all" >' + time + '&nbsp;&nbsp;&nbsp;<a href="'+comboFilename_gz+'"><img title="download" src="'+IconSource+'/Download-icon.png" style="width: 20px; height: 20px"></a> </h1>';
+            msg += '<h1 class="ui-widget-header ui-corner-all" >' + time + '&nbsp;&nbsp;&nbsp;<a target="_download" href="'+comboFilename_gz+'"><img title="download" src="'+IconSource+'Download-icon.png" style="width: 20px; height: 20px"></a> </h1>';
             msg += '<img src="' + comboFilename_png + '" />' + '';
             msg += '</li>';
 
