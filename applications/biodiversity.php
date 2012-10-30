@@ -22,7 +22,11 @@ $possibleNames = array(
 $pagetitle = $possibleNames[ array_rand($possibleNames) ];
 $pagesubtitle = "Visualising biodiversity across Australia";
 
-$page = $_GET['page'];
+if (array_key_exists('page', $_GET)) {
+    $page = $_GET['page'];
+} else {
+    $page = null;
+}
 
 ?>
 <!DOCTYPE html>

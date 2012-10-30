@@ -142,6 +142,7 @@ h2 {
     margin: 0;
     display: block;
     float: left;
+    border: none;
 }
 
 .nav li a {

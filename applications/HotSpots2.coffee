@@ -1,4 +1,4 @@
-
+#
 # CoffeeScript - this file compiles to JavaScript.
 # http://coffeescript.org/#installation
 #
@@ -45,7 +45,6 @@ $ ->
                 switch event.srcElement.value
                     when 'family' then $familyDD.css 'visibility', 'visible'
                     when 'genus'  then $genusDD.css 'visibility', 'visible'
-
 
     #
     # disable the emission scenario thingy when they choose "current"
