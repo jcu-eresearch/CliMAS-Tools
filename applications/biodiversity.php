@@ -9,8 +9,8 @@ if (php_sapi_name() == "cli") return;
 $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url then they have returned.
 
 $possibleNames = array(
-    "( ̲:̲̅:̲̅:̲̅[̲̅ ̲̅]̲̅:̲̅:̲̅:̲̲̅̅)",
     "Biowealth",
+    "( ̲:̲̅:̲̅:̲̅[̲̅ ̲̅]̲̅:̲̅:̲̅:̲̲̅̅)",
     "Biomaps",
     "Biowealth Mapper",
     "Biodiversity",
@@ -20,6 +20,7 @@ $possibleNames = array(
 );
 
 $pagetitle = $possibleNames[ array_rand($possibleNames) ];
+$pagetitle = $possibleNames[ 0 ];
 $pagesubtitle = "Visualising biodiversity across Australia";
 
 if (array_key_exists('page', $_GET)) {
@@ -234,11 +235,15 @@ if (array_key_exists('page', $_GET)) {
 
                 <?php
                     $outputs = array(
-                        'download' => 'download data (ascii grid, png image)',
-                        'view' => 'view biodiversity map in browser'
+                        'download' => 'download ASCII grid',
+                        'view' => 'view biodiversity map'
                     );
                     foreach ($outputs as $name => $desc) {
-                        echo "<label><input type='radio' class='ouput' name='output' checked='checked' value='".$name."'>".$desc."</label>";
+                        echo "<label ";
+                        if ($name == 'download') echo " class='disabled' ";
+                        echo "><input type='radio' class='ouput' name='output' checked='checked' ";
+                        if ($name == 'download') echo " disabled='disabled' ";
+                        echo " value='".$name."'>".$desc."</label>";
                     }
                 ?>
                 <button class="generate">fetch biodiversity map</button>
