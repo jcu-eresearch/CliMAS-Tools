@@ -11,11 +11,9 @@ include_once dirname(__FILE__).'/includes.php';
 unset($_SESSION['map_path']);
 Session::ClearLayers();
 
-
 $scenarios = DatabaseClimate::GetScenarios();
 $models    = DatabaseClimate::GetModels();
 $times     = DatabaseClimate::GetTimes();
-
 
 $scenarios = array_flip($scenarios);
 $models    = array_flip($models);
@@ -41,15 +39,21 @@ sort($scenarios);
 sort($models);
 sort($times);
 
+if (array_key_exists('page', $_GET)) {
+    $page = $_GET['page'];
+} else {
+    $page = null;
+}
 
+$pagetitle = "Biosuitability";
+$pagesubtitle = "Vertebrate distributions based on climate suitability";
 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Species Suitability</title>
-
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title><?php echo $pagetitle; ?></title>
 <script>
 // GLOBAL VARIABLES
 <?php
@@ -79,16 +83,58 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 
 <link href="styles.css" rel="stylesheet" type="text/css">
 
-<style>
-
-</style>
-
 </head>
 <body>
-    <h1 class="pagehead"><a href="index.php"><img src="<?php echo configuration::IconSource()."Suitability.png" ?>" border="0" /></a></h1>
+<div class="header clearfix">
+    <a href="http://tropicaldatahub.org/"><img class="logo"
+        src="../images/TDH_logo_medium.png"></a>
+    <h1><?php echo $pagetitle; ?></h1>
+    <h2><?php echo $pagesubtitle; ?></h2>
+</div>
+
+<?php
+    $navSetup = array(
+        'tabs' => array(
+            'map tool' => 'SpeciesSuitability.php',
+            'about the map tool' => 'SpeciesSuitability.php?page=about',
+            'using the tool' => 'SpeciesSuitability.php?page=using',
+            'the science' => 'SpeciesSuitability.php?page=science',
+            'credits' => 'SpeciesSuitability.php?page=credits'
+        ),
+        'current' => 'SpeciesSuitability.php' . ( ($page) ? ('?page=' . $page) : '' )
+    );
+    include 'NavBar.php';
+?>
+
+<?php if ($page == 'about') { // ============================================== ?>
 
 <div class="maincontent">
+    <?php include 'SpeciesSuitability-about.html'; ?>
+</div>
 
+<?php } else if ($page == 'using') { // ======================================= ?>
+
+<div class="maincontent">
+    <?php include 'SpeciesSuitability-using.html'; ?>
+</div>
+
+
+<?php } else if ($page == 'science') { // ===================================== ?>
+
+<div class="maincontent">
+    <?php include 'SpeciesSuitability-science.html'; ?>
+</div>
+
+
+<?php } else if ($page == 'credits') { // ===================================== ?>
+
+<div class="maincontent">
+    <?php include 'SpeciesSuitability-credits.html'; ?>
+</div>
+
+<?php } else { // ============================================================= ?>
+
+<div class="maincontent">
 
     <div id="ToolBar" class="ui-widget-header ui-corner-all" >
             <input id="species" value="Type in the species of interest">
@@ -185,39 +231,14 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
                 >
         </iframe>
 
-
     </div>
 
-
-
-
-</div>
-
-<div class="credits">
-    <a href="http://www.jcu.edu.au/ctbcc/">
-        <img src="../images/ctbcc_sm.png" alt="Centre for Tropical Biodiversity and Climate Change">
-    </a>
-    <a href="http://www.tyndall.ac.uk/">
-        <img src="../images/themenews_logo.jpg" alt="Tyndall Centre for Climate Change Research">
-    </a>
-    <a href="http://www.jcu.edu.au">
-        <img src="../images/jcu_logo_sm.png" alt="JCU Logo">
-    </a>
-    <a href="http://eresearch.jcu.edu.au/">
-        <img src="../images/eresearch.png" alt="eResearch Centre, JCU">
-    </a>
-</div>
-
-
-<div class="footer">
-    <p class="contact">
-        please contact Jeremy VanDerWal
-        (<a href="mailto:jeremy.vanderwal@jcu.edu.au">jeremy.vanderwal@jcu.edu.au</a>)
-        with any queries.
-    </p>
 </div>
 
 <div id="messages_container" style="height:0px; width:0px;"></div>
+
+<?php } // ==================================================================== ?>
+<?php include 'ToolsFooter.php' ?>
 
 </body>
 </html>

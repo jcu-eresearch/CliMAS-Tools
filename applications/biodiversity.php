@@ -250,9 +250,15 @@ if (array_key_exists('page', $_GET)) {
             </div>
         </div>
 
-    </form></div>
+    </form>
 
-<?php } ?>
+    <p class="linkselsewhere">
+        <a href="HotSpots.php">customised maps &raquo;</a>
+    </p>
+
+</div>
+
+<?php } // ==================================================================== ?>
 <?php include 'ToolsFooter.php' ?>
 
 </body>
