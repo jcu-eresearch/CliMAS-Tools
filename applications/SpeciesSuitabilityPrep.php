@@ -89,12 +89,9 @@ if (file_exists($map_path))
     
 }
 
-
-
 $layer = $M->Layers()->AddLayer($grid_filename_asc);
 $layer instanceof MapServerLayerRaster;
 $layer->HistogramBuckets($bucket_count);
-
 
 
 // start ramp at Zero - 
@@ -130,11 +127,9 @@ if (!file_exists($map_path))
     
 }
 
-
 $result = array();
 $result['map_path'] = $map_path;
 echo json_encode($result);    
 exit();        
-
 
 ?>
