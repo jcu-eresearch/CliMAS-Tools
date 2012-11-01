@@ -6,9 +6,12 @@
  */
 class Mapfile extends Object{
 
-    public static function save(MapServerWrapper $src)
+    
+    public static function save(MapServerWrapper $src,$filename = null,$forLeaflet = false)
     {
         $MF = new Mapfile($src);
+        $MF->forLeaflet($forLeaflet);
+        $MF->Pathname($filename);        
         return $MF->write();
     }
 
@@ -24,6 +27,9 @@ class Mapfile extends Object{
         parent::__construct();
         $this->source_wrapper = $src;
         $this->Extent($this->Wrapper()->Extent());
+        $this->forLeaflet(false);
+        $this->Pathname(null);
+        
     }
     
     public function __destruct() {    
@@ -45,10 +51,12 @@ class Mapfile extends Object{
     
     public function write() 
     {
-        file::reallyDelete($this->Wrapper()->MapfilePathname());
-        file_put_contents($this->Wrapper()->MapfilePathname(), $this->Text());
-        if (!file_exists($this->Wrapper()->MapfilePathname())) return "";
-        return $this->Wrapper()->MapfilePathname();
+        $fn = (!is_null($this->Pathname())) ? $this->Pathname() :  $this->Wrapper()->MapfilePathname();
+        
+        file::reallyDelete($fn );
+        file_put_contents($fn , $this->Text());
+        if (!file_exists($fn )) return "";
+        return $fn ;
     }
 
     
@@ -190,19 +198,25 @@ CLASS;
         
     }
     
-
-    private function raster_color_classes_NullValue(MapServerLayerRaster $layer)
-    {
-        
-        
-    }
-    
     
     private function layer_raster(MapServerLayerRaster $layer)
     {
         
         $min = sprintf("%01.9f", $layer->Minimum());
         $max = sprintf("%01.9f", $layer->Maximum());
+        
+        
+        $leaflet_extra_projection = "";
+        
+if ($this->forLeaflet()) 
+$leaflet_extra_projection = 
+'PROJECTION
+	"proj=longlat"
+        "ellps=WGS84"
+        "datum=WGS84"
+        "no_defs"
+END';
+
         
         
 $r = <<<R
@@ -218,6 +232,8 @@ $r = <<<R
         PROCESSING   "BANDS=1"
         OFFSITE      -1 -1 -1
 
+        {$leaflet_extra_projection}
+        
         CLASSITEM "[pixel]"
         
         {$this->raster_color_classes($layer)}
@@ -243,6 +259,19 @@ R;
         if (!(is_null($layer->LabelItem()) || $layer->LabelItem() == ""))
             $labelItem = "LABELITEM    '{$layer->LabelItem()}'";    
         
+            
+        $leaflet_extra_projection = "";
+        
+if ($this->forLeaflet()) 
+$leaflet_extra_projection = 
+'PROJECTION
+	"proj=longlat"
+        "ellps=WGS84"
+        "datum=WGS84"
+        "no_defs"
+END';
+
+
 $r = <<<R
    
     LAYER 
@@ -250,6 +279,9 @@ $r = <<<R
         DATA   "{$layer->Filename()}"
         STATUS {$layer->Status()}
         TYPE   {$layer->LayerType()}
+        
+        {$leaflet_extra_projection}
+        
         {$classItem}
         {$labelItem}
         {$classes}
@@ -402,15 +434,51 @@ OUTPUT;
     }
     
     
-    
-    
     public function Text() {
+        
+        $exent = "EXTENT        {$this->extent_string()}";
+        $units = "";
+        $size = "SIZE          {$this->size()}";
+        
+        $leaflet_extra_metadata = "";
+        $leaflet_extra_projection = "";
+        
+        
+if ($this->forLeaflet()) 
+{
+$leaflet_extra_metadata = <<<LEAF_META
+        METADATA
+          "wms_title"          "WMS TDH Tools Server"  
+          "wms_onlineresource" "http://{$_SERVER['SERVER_NAME']}/cgi-bin/mapserv?" 
+          "wms_enable_request" "*"   ##necessary
+        END
+LEAF_META;
+
+$leaflet_extra_projection = <<<LEAF_PROJ
+   PROJECTION
+      "init=epsg:3857"
+    END
+LEAF_PROJ;
+          
+$exent = "";  // if we are using leaflet then we need to leav out exent
+
+$units = "UNITS         METERS";  // if we are using leaflet then we need units to be set to meters
+
+$size = "";  // if we are using leaflet then we need allow URL to request sizes
+
+}       
+        
+
+
         
 $output = <<<OUTPUT
 MAP
+    NAME          "WMS-TDH-TOOLS"
+    STATUS        ON
     IMAGETYPE     {$this->Wrapper()->OutputImageType()}
-    EXTENT        {$this->extent_string()}
-    SIZE          {$this->size()}
+    {$exent}
+    {$units}
+    {$size}
     SHAPEPATH    "{$this->shapepath()}"
     IMAGECOLOR    {$this->image_color()}
     FONTSET      "{$this->fontset()}"
@@ -419,7 +487,10 @@ MAP
     WEB
         IMAGEPATH "{$this->imagePath()}"
         IMAGEURL  "{$this->imageURL()}"
+        {$leaflet_extra_metadata}
     END
+        
+    {$leaflet_extra_projection}
         
     {$this->layers()}
     {$this->caption()}
@@ -431,6 +502,19 @@ OUTPUT;
     }
     
     
+    
+    public function forLeaflet() {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+        
+    }
+    
+    
+    public function Pathname() {
+        if (func_num_args() == 0) return $this->getProperty();
+        return $this->setProperty(func_get_arg(0));
+        
+    }
     
     
 }
