@@ -120,6 +120,21 @@ function setCurrentCombination()
 function userSelectedLayer()
 {
 
+    $.ajax('SpeciesSuitabilityPrep.php', {
+        async: false,
+        cache: false,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+            UserLayer: currentCombination,
+            SpeciesID: currentSpeciesID
+        },
+        success: function(data, testStatus, jqx) {
+            console.log(['got data back:', data]);
+        }
+    });
+
+/*
     // data needs to be posted at the mapserver
     $("#UserLayer").val(currentCombination);    // file_id of grid file - sets the fileid to be posted at map server
     $("#SpeciesID").val(currentSpeciesID);
@@ -148,7 +163,7 @@ function userSelectedLayer()
 
     $('#GUI').contents().find('#MAP_FORM').submit();
 
-
+*/
 }
 
 
