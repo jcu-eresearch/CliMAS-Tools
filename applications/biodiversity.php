@@ -12,15 +12,17 @@ $possibleNames = array(
     "Biowealth",
     "( ̲:̲̅:̲̅:̲̅[̲̅ ̲̅]̲̅:̲̅:̲̅:̲̲̅̅)",
     "Biomaps",
-    "Biowealth Mapper",
     "Biodiversity",
-    "Biowealth of Australia",
     "Wilson",
-    "Species richness"
+    "Species richness",
+    "&Sigma;sp",
+    "&Sigma;spp",
+    "&Sigma;pecies",
+    "&Sigma;Species"
 );
 
 $pagetitle = $possibleNames[ array_rand($possibleNames) ];
-$pagetitle = $possibleNames[ 0 ];
+//$pagetitle = $possibleNames[ 0 ];
 $pagesubtitle = "Visualising biodiversity across Australia";
 
 if (array_key_exists('page', $_GET)) {
@@ -36,6 +38,8 @@ if (array_key_exists('page', $_GET)) {
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><?php echo $pagetitle; ?></title>
 
+    <link rel="shortcut icon" href="<?php echo configuration::IconSource(); ?>favicon-trans.png" />
+
     <link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
     <link type="text/css" href="css/selectMenu.css" rel="stylesheet" />
     <link type="text/css" href="styles.css"         rel="stylesheet" />
@@ -45,7 +49,6 @@ if (array_key_exists('page', $_GET)) {
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
     <![endif]-->
-
     <script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
 
     <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>

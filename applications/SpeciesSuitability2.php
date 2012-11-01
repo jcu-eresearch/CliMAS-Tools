@@ -73,16 +73,23 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 ?>
 </script>
 
+<link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
+<link type="text/css" href="css/selectMenu.css"     rel="stylesheet" />
+<link type="text/css" href="SpeciesSuitability2.css" rel="stylesheet" />
+
+<link href="styles.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
+<![endif]-->
+<script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
+
 <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
 <script type="text/javascript" src="js/selectMenu.js"></script>
 <script type="text/javascript" src="js/Utilities.js"></script>
-<script type="text/javascript" src="SpeciesSuitability.js"></script>
-<link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
-<link type="text/css" href="css/selectMenu.css"     rel="stylesheet" />
-<link type="text/css" href="SpeciesSuitability.css" rel="stylesheet" />
-
-<link href="styles.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="SpeciesSuitability2.js"></script>
 
 </head>
 <body>
@@ -96,11 +103,11 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 <?php
     $navSetup = array(
         'tabs' => array(
-            'map tool' => 'SpeciesSuitability.php',
-            'about the map tool' => 'SpeciesSuitability.php?page=about',
-            'using the tool' => 'SpeciesSuitability.php?page=using',
-            'the science' => 'SpeciesSuitability.php?page=science',
-            'credits' => 'SpeciesSuitability.php?page=credits'
+            'map tool' => 'SpeciesSuitability2.php',
+            'about the map tool' => 'SpeciesSuitability2.php?page=about',
+            'using the tool' => 'SpeciesSuitability2.php?page=using',
+            'the science' => 'SpeciesSuitability2.php?page=science',
+            'credits' => 'SpeciesSuitability2.php?page=credits'
         ),
         'current' => 'SpeciesSuitability.php' . ( ($page) ? ('?page=' . $page) : '' )
     );
@@ -137,58 +144,70 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 
 <div class="maincontent">
 
-    <div id="ToolBar" class="ui-widget-header ui-corner-all" >
-            <input id="species" value="Type in the species of interest">
+    <div id="ToolBar">
+            <input id="species" placeholder="Type in the species of interest">
     </div>
 
+    <div id="leafletmap"></div>
 
-    <div id="UserSelectionBar" class="ui-widget-content ui-corner-all" >
+    <div id="UserSelectionBar" class="formsection">
 
-        <h2 style="">DATA</h2>
-        <select id="datastyle_selection" onchange="selectDataStyle(this)">
-            <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_current" value="CURRENT" checked/>CURRENT</option>
-            <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_future"  value="FUTURE" />FUTURE</option>
-        </select>
+        <div class="onefield">
+            <h2>Species data</h2>
+            <a id="download_all" target="_blank" href="#" disabled="disabled">download data</a>
+        </div>
 
+        <div class="onefield">
+            <h2>View on map</h2>
+            <select id="datastyle_selection" onchange="selectDataStyle(this)">
+                <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_current" value="CURRENT" checked/>current</option>
+                <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_future"  value="FUTURE" />future</option>
+            </select>
+        </div>
 
-        <h2 style="">SCENARIO</h2>
-        <select id="scenario_selection" onchange="selectScenario(this)">
-        <?php
-            foreach ($scenarios as $scenario)
-            echo '<option  class="select_scenario_input" name="ScenarioTools" id="select_scenario_'.$scenario.'" value="'.$scenario.'" />'.$scenario.'</option>';
-        ?>
-        </select>
+        <div class="onefield">
+            <h2>Scenario</h2>
+            <select id="scenario_selection" onchange="selectScenario(this)">
+            <?php
+                foreach ($scenarios as $scenario)
+                echo '<option  class="select_scenario_input" name="ScenarioTools" id="select_scenario_'.$scenario.'" value="'.$scenario.'" />'.$scenario.'</option>';
+            ?>
+            </select>
+        </div>
 
-        <h2 style="">MODEL</h2>
-        <select id="model_selection" onchange="selectModel(this)">
-        <?php
-            foreach ($models as $model)
-            {
-                $modelname = $model;
-                if ($model == "all") $modelname  = "Median";
+        <div class="onefield">
+            <h2>Model</h2>
+            <select id="model_selection" onchange="selectModel(this)">
+            <?php
+                foreach ($models as $model)
+                {
+                    $modelname = $model;
+                    if ($model == "all") $modelname  = "Median";
 
-                echo '<option  class="select_model_input" name="ModelTools" id="select_model_'.$model.'" value="'.$model.'" />'.$modelname.'</option>';
-            }
+                    echo '<option  class="select_model_input" name="ModelTools" id="select_model_'.$model.'" value="'.$model.'" />'.$modelname.'</option>';
+                }
 
-        ?>
-        </select>
+            ?>
+            </select>
+        </div>
 
-        <h2 style="">TIME</h2>
-        <select id="time_selection" onchange="selectTime(this)">
-        <?php
-            foreach ($times as $time)
-                echo '<option  class="select_time_input" name="TimeTools" id="select_time_'.$time.'" value="'.$time.'" />'.$time.'</option>';
-        ?>
-        </select>
-
-        <div id="download_all">
+        <div class="onefield">
+            <h2>Time</h2>
+            <select id="time_selection" onchange="selectTime(this)">
+            <?php
+                foreach ($times as $time)
+                    echo '<option  class="select_time_input" name="TimeTools" id="select_time_'.$time.'" value="'.$time.'" />'.$time.'</option>';
+            ?>
+            </select>
         </div>
 
     </div>
 
-    <div id="MapContainer" class="ui-widget-content" >
+    <br style="clear: both;"><br><br><hr>
 
-        <iframe class="ui-widget-content ui-corner-all"
+    <div id="MapContainer">
+
+        <iframe
                    ID="GUI"
                   src="SpeciesSuitabilityMap.php"
                 width="730"
@@ -197,7 +216,7 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
                border="0"
                  style="margin: 0px; overflow:hidden; float:none; clear:both;"
                 onload="map_gui_loaded()"
-                 >
+                >
         </iframe>
 
 
@@ -210,16 +229,16 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 
     </div>
 
-    <div id="MapTools" class="ui-widget-content ui-corner-all">
-        <button class="MapTool" id="ToolFullExtent" onclick="SetFullExtent();" >Reset Map</button>
+    <div id="MapTools">
+        <button class="MapTool" id="ToolFullExtent" onclick="SetFullExtent();">Reset Map</button>
         <input  class="MapTool" name="MapsTools" type="radio" id="ToolZoomOut"  onclick="SetZoom(this,-2.0);"                   /><label for="ToolZoomOut">Zoom Out</label>
-        <input  class="MapTool" name="MapsTools" type="radio" id="ToolCentre"   onclick="SetZoom(this,1.0)"                     /><label for="ToolCentre" >Centre</label>
-        <input  class="MapTool" name="MapsTools" type="radio" id="ToolZoomIn"   onclick="SetZoom(this,2.0)"   checked="checked" /><label for="ToolZoomIn" >Zoom In</label>
+        <input  class="MapTool" name="MapsTools" type="radio" id="ToolCentre"   onclick="SetZoom(this,1.0)"                     /><label for="ToolCentre">Centre</label>
+        <input  class="MapTool" name="MapsTools" type="radio" id="ToolZoomIn"   onclick="SetZoom(this,2.0)"   checked="checked" /><label for="ToolZoomIn">Zoom In</label>
     </div>
 
     <br style="clear: both; float:none;">
 
-    <div id="information" class="ui-widget-content ui-corner-all" >
+    <div id="information">
 
         <iframe  class=""
                     ID="information_content"
@@ -229,7 +248,7 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
            frameBorder="0"
                 border="0"
                 onload="map_gui_loaded()"
-                >
+               >
         </iframe>
 
     </div>

@@ -1,0 +1,200 @@
+/*
+    Document   : SpeciesSuitability
+    Created on : 19/09/2012, 2:11:35 PM
+    Author     : jc166922
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root {
+    display: block;
+}
+
+input, select {
+    font-size: 100%;
+}
+
+.ui-autocomplete {
+		max-height: 150px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		padding-right: 20px;
+	}
+
+#ToolBar {
+    margin: 2em 0;
+    padding: 0;
+
+}
+
+#species {
+    padding: 0.5em 2%;
+    margin: 0;
+    font-size: 150%;
+    width: 95.75%;
+}
+
+.formsection {
+    display: block;
+    width: 23%;
+    float: left;
+    padding: 0;
+
+    text-align: right;
+    margin: 0;
+
+    border: 6px solid rgba(0,0,0,0.15);
+    border-width: 6px 0;
+    border-radius: 12px;
+
+    /* ie poison here */
+    zoom: 1;
+}
+
+button[disabled], select[disabled] {
+    opacity: 0.33;
+    filter: alpha(opacity=33);
+}
+
+
+#UserSelectionBar h2 {
+    text-transform: lowercase;
+    text-align: left;
+    border: none;
+    font-size: inherit;
+    font-weight: bold;
+    opacity: 0.8;
+    margin: 0;
+    padding: 0 0 0.5em;
+}
+
+.formsection .onefield {
+    padding: 1em 0;
+    -moz-transition: opacity 0.1s ease-in-out;
+    -webkit-transition: opacity 0.1s ease-in-out;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.formsection select {
+    padding: 0.25em 0;
+    width: 90%;
+}
+
+#leafletmap {
+    float: right;
+    width: 74%;
+    height: 26em;
+}
+
+
+
+
+
+
+
+
+
+#XXXMapTools
+{
+    float:left;
+    height: 650px;
+    width: 40px;
+    clear:right;
+    padding: 10px;
+}
+
+#XXXCurrentSpecies
+{
+    float: left;
+    width: 200px;
+    height: 40px;
+}
+
+
+
+
+
+#XXXMapContainer
+{
+    float: left;
+    height: 670px;
+    width: 710px;
+    overflow: hidden;
+
+}
+
+#XXXColorKeyContainer
+{
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    height: 24px;
+    overflow:hidden;
+    clear:both;
+
+}
+
+#XXXColorKey
+{
+    float: left;
+}
+
+#XXXmap_overview
+{
+    width:  200px;
+    height: 160px;
+    overflow: hidden;
+}
+
+#XXXdownload
+{
+    width:  200px;
+    height: 30px;
+    overflow: hidden;
+}
+
+
+#XXXinformation
+{
+    width:  970px;
+    height: 600px;
+    overflow: hidden;
+
+}
+
+#XXXinformation_content
+{
+    margin: 0px;
+    overflow:hidden;
+    float:none;
+    clear:both;
+    margin-left: 200px;
+
+}
+
+
+
+
+#XXXUserSelectionBar h2
+{
+    margin: 0px;
+    padding: 0px;
+    text-transform: lowercase;
+    font-weight: bold;
+
+    margin-top: 40px;
+    margin-left: 5px;
+    letter-spacing: 0.4em;
+
+
+}
+
+#XXXUserSelectionBar select
+{
+    margin: 0px;
+    padding: 0px;
+    font-weight: bold;
+    margin-left: 5px;
+
+
+}
