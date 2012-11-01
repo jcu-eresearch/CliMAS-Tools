@@ -31,7 +31,8 @@ if (is_null($species_id))
     exit();
 }
 
-
+if ($UserLayer == "CURRENT_CURRENT_1990") $UserLayer = "1990";
+$UserLayer = str_replace("_ALL_", "_all_", $UserLayer);
 
 // create map file and send back path to map file.
 
