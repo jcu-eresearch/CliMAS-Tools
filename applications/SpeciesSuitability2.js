@@ -121,7 +121,7 @@ function userSelectedLayer()
 {
 
     if (currentCombination == "CURRENT_CURRENT_1990") {
-        currentCombination == "1990";
+        currentCombination = "1990";
     }
 
     $.ajax('SpeciesSuitabilityPrep.php', {
