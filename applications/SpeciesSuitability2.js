@@ -2,12 +2,12 @@
  *
  *
  */
-var currentDataStyle = '';
+var currentDataStyle = 'CURRENT';
 var currentSpeciesName = '';
 var currentSpeciesID = '';
 var currentScenario = '';
 var currentModel = '';
-var currentTime = '';
+var currentTime = '1990';
 var currentCombination = '';
 
 function addSpecies(species_id,speciesName)
