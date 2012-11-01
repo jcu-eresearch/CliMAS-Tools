@@ -98,7 +98,7 @@ function setCurrentCombination()
         currentScenario = 'CURRENT';
         currentModel = 'CURRENT';
         currentTime = '1990';
-        currentCombination = currentScenario + '_' + currentModel + '_' + currentTime;
+        currentCombination = currentTime;
 
         $('#information_content').attr('src','SpeciesSuitabilityInformation.php?combination=');  // call info with empty combo
     }
@@ -132,7 +132,7 @@ function userSelectedLayer()
             console.log(['got data back:', data]);
 
             data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
-                layers: 'tdh&map=' + data.map_path,
+                layers: currentCombination + '_' + currentSpeciesID + '&map=' + data.map_path,
                 format: 'image/png',
                 opacity: 0.75,
                 transparent: true
