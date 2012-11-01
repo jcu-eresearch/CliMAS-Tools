@@ -121,7 +121,6 @@ function userSelectedLayer()
 {
 
     $.ajax('SpeciesSuitabilityPrep.php', {
-        async: false,
         cache: false,
         dataType: 'json',
         type: 'POST',
@@ -131,39 +130,16 @@ function userSelectedLayer()
         },
         success: function(data, testStatus, jqx) {
             console.log(['got data back:', data]);
+
+            data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
+                layers: 'tdh&map=' + data.map_path,
+                format: 'image/png',
+                opacity: 0.75,
+                transparent: true
+            }).addTo(window.map);
         }
     });
 
-/*
-    // data needs to be posted at the mapserver
-    $("#UserLayer").val(currentCombination);    // file_id of grid file - sets the fileid to be posted at map server
-    $("#SpeciesID").val(currentSpeciesID);
-
-
-    console.log('userSelectedLayer = ' + currentCombination);
-    console.log('currentSpeciesID = ' + currentSpeciesID);
-
-    var offset = $('#GUI').offset();
-    var guiHeight = $('#GUI').height();
-    var guiWidth = $('#GUI').width();
-
-    var map_loading_div = '<div id="MLD">Loading '
-                        + currentSpeciesName
-                        + '<br><img style="width:100%; height:30%;" src="'+IconSource +'Loading.gif"></div>';
-
-
-    $('#messages_container').append(map_loading_div);
-
-    $('#MLD')
-        .width(guiWidth * 0.8).height(90)
-        .offset({ top: (offset.top + (guiHeight/2) - ($('#MLD').height() / 2)), left: (offset.left + (guiWidth/2) - ($('#MLD').width() / 2)) })
-        .button()
-        .fadeIn(200)
-        ;
-
-    $('#GUI').contents().find('#MAP_FORM').submit();
-
-*/
 }
 
 
