@@ -95,6 +95,8 @@ $layer = $M->Layers()->AddLayer($grid_filename_asc);
 $layer instanceof MapServerLayerRaster;
 $layer->HistogramBuckets($bucket_count);
 
+$layer->set('name', 'maplayer');
+
 // start ramp at Zero -
 $ramp = RGB::Ramp(0, 1, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
 
