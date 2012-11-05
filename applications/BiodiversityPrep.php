@@ -92,7 +92,6 @@ if (file_exists($map_path)) {
 }
 
 $layer = $M->Layers()->AddLayer($grid_filename_asc);
-$layer->setProperty('name', 'maplayer');
 $layer instanceof MapServerLayerRaster;
 $layer->HistogramBuckets($bucket_count);
 
