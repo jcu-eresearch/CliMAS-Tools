@@ -104,7 +104,6 @@
             }).addTo(map);
             gridUrl = window.mapfileRoot;
             gridUrl += "";
-            console.log(mapfileUrl);
             return data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
               layers: data.map_path.slice(0, -3) + '&map=' + data.map_path,
               format: 'image/png',

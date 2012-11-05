@@ -152,8 +152,6 @@ $ ->
 
                     gridUrl += ""
 
-                    console.log mapfileUrl
-
                     data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
                         layers: data.map_path[..-4] + '&map=' + data.map_path
                         format: 'image/png'
