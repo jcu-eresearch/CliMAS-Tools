@@ -153,7 +153,7 @@ $ ->
                     gridUrl += ""
 
                     data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
-                        layers: data.map_path[..-5] + '&map=' + data.map_path
+                        layers: data.map_path[5..-5] + '&map=' + data.map_path
                         format: 'image/png'
                         opacity: 0.75
                         transparent: true
