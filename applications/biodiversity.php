@@ -80,7 +80,7 @@ if (array_key_exists('page', $_GET)) {
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web(),'Maxent_Species_Data_folder_web');
      ?>
     </script>
-    <script type="text/javascript" src="HotSpots2.js"></script>
+    <script type="text/javascript" src="biodiversity.js"></script>
 </head>
 <body>
 
