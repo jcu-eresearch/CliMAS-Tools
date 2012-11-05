@@ -61,7 +61,7 @@ if (!file_exists($grid_filename_gz)) {
 
 $grid_filename_prefix = "/tmp/{$clazz}_richness_{$settings}_{$taxon}";
 
-$grid_filename_asc = $grid_filename_prefix + ".asc";
+$grid_filename_asc = $grid_filename_prefix . ".asc";
 
 // get the ascii grid filename
 if (!file_exists($grid_filename_asc))
@@ -82,7 +82,7 @@ if (!file_exists($grid_filename_asc))
     exit();
 }
 
-$map_path =  $grid_filename_prefix + ".map";
+$map_path =  $grid_filename_prefix . ".map";
 $result['map_path'] = $map_path;
 
 // Already have a MAP file so just hand it back for this Map
