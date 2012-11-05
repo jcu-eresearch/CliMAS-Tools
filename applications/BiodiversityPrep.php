@@ -60,7 +60,6 @@ if (!file_exists($grid_filename_gz)) {
 // $grid_filename_asc = SpeciesFiles::species_data_folder($species_id)."{$UserLayer}.asc";
 
 $grid_filename_prefix = "/tmp/{$clazz}_richness_{$settings}_{$taxon}";
-
 $grid_filename_asc = $grid_filename_prefix . ".asc";
 
 // get the ascii grid filename
@@ -97,7 +96,7 @@ $layer->HistogramBuckets($bucket_count);
 
 
 // start ramp at Zero -
-$ramp = RGB::Ramp(1, 100, $bucket_count,RGB::Gradient(RGB::GradientGreenBeige()));
+$ramp = RGB::Ramp(1, 100, $bucket_count, RGB::ReverseGradient(RGB::GradientGreenBeige()));
 
 /*
 $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
