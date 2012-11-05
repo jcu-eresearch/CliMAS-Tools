@@ -3,16 +3,16 @@
 /**
  *
  *  Development values from workstation hostname "vbox-ubuntu" (Daniel's dev VM)
- *  
+ *
  */
 
-if (stripos( $hostname, "vbox-ubuntu") !== FALSE) 
+if (stripos( $hostname, "vbox-ubuntu") !== FALSE)
 {
-    
+
     $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." vbox-ubuntu";
-    
+
     $pathprefix = "/home/daniel/projects/ap02";
-    
+
     $conf[Parameter::$TempFolder]            = $pathprefix . "/tmp/";
     $conf[Parameter::$APPLICATION_FOLDER]    = $pathprefix . "/TDH-Tools/";
     $conf[Parameter::$UTILITIES_CLASSES]     = $pathprefix . "/TDH-Tools/Utilities/includes.php";
@@ -20,15 +20,16 @@ if (stripos( $hostname, "vbox-ubuntu") !== FALSE)
     $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://ap02:8080/output/";
     $conf[Parameter::$RESOURCES_FOLDER]      = $pathprefix . "/TDH-Tools/Resources/";
     $conf[Parameter::$SOURCE_DATA_FOLDER]    = $pathprefix . "/source/";
+    $conf[Parameter::$SDM_FOLDER]            = $pathprefix . "/SDM/";
 
     $conf[Parameter::$ICONS_FOLDER]          = "http://ap02:8080/Resources/icons/";
-    
-    
+
+
     $conf[Parameter::$COMMAND_QUEUE_ID       ] = "daniel_queue";
     $conf[Parameter::$COMMAND_QUEUE_LOG      ] = $pathprefix . "/TDH-Tools/logs/queue.log";
     $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = $pathprefix . "/TDH-Tools/scripts/";
     $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = $pathprefix . "/TDH-Tools/applications/CommandActionExecute.php";
-    
-}   
+
+}
 
 ?>

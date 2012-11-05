@@ -61,7 +61,7 @@
       return $('#prebakeform .generate').attr('disabled', formIncomplete);
     });
     return $generate.click(function(e) {
-      var clazz, data, groupLevel, groupName, map, mapfileUrl, output, scenario, taxaLevel, year;
+      var clazz, groupLevel, groupName, output, scenario, taxaLevel, year;
       year = $('#prebakeform input:radio[name="year"]:checked').val();
       scenario = $('#prebakeform input:radio[name="scenario"]:checked').val();
       output = $('#prebakeform input:radio[name="output"]:checked').val();
@@ -78,31 +78,42 @@
         }
       }
       console.log([year, scenario, output, groupLevel, groupName]);
-      if (output === 'view') {
-        $("<div class=\"popupwrapper\" style=\"display: none\">\n    <div class=\"toolbar north\"><button class=\"close\">close &times;</button></div>\n    <div id=\"popupmap\" class=\"popupmap\"></div>\n    <div class=\"toolbar south\"><button class=\"close\">close &times;</button></div>").appendTo('body').show('fade', 1000);
-        $('.popupwrapper button.close').click(function(e) {
-          return $('.popupwrapper').hide('fade', function() {
-            return $('.popupwrapper').remove();
-          });
-        });
-        map = L.map('popupmap', {
-          minZoom: 3
-        }).setView([-27, 135], 4);
-        L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
-          attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
-          maxZoom: 18
-        }).addTo(map);
-        mapfileUrl = window.mapfileRoot;
-        mapfileUrl += 'By' + groupLevel[0].toUpperCase() + groupLevel.slice(1);
-        mapfileUrl += '/' + groupName + '/' + scenario + '_' + year + '.map';
-        console.log(mapfileUrl);
-        data = new L.TileLayer.WMS("http://tdh-tools-1.hpc.jcu.edu.au:81/cgi-bin/mapserv", {
-          layers: 'tdh&map=' + mapfileUrl,
-          format: 'image/png',
-          opacity: 0.75,
-          transparent: true
-        }).addTo(map);
-      }
+      $.ajax('BiodiversityPrep.php', {
+        cache: false,
+        dataType: 'json',
+        data: {
+          "class": clazz,
+          taxon: groupName,
+          settings: "" + scenario + "_" + year
+        },
+        success: function(data, testStatus, jqx) {
+          var gridUrl, map;
+          if (output === 'view') {
+            $("<div class=\"popupwrapper\" style=\"display: none\">\n    <div class=\"toolbar north\"><button class=\"close\">close &times;</button></div>\n    <div id=\"popupmap\" class=\"popupmap\"></div>\n    <div class=\"toolbar south\"><button class=\"close\">close &times;</button></div>").appendTo('body').show('fade', 1000);
+            $('.popupwrapper button.close').click(function(e) {
+              return $('.popupwrapper').hide('fade', function() {
+                return $('.popupwrapper').remove();
+              });
+            });
+            map = L.map('popupmap', {
+              minZoom: 3
+            }).setView([-27, 135], 4);
+            L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
+              attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+              maxZoom: 18
+            }).addTo(map);
+            gridUrl = window.mapfileRoot;
+            gridUrl += "";
+            console.log(mapfileUrl);
+            return data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
+              layers: 'tdh&map=' + mapfileUrl,
+              format: 'image/png',
+              opacity: 0.75,
+              transparent: true
+            }).addTo(map);
+          }
+        }
+      });
       return e.preventDefault();
     });
   });

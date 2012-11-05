@@ -94,7 +94,8 @@ if (array_key_exists('page', $_GET)) {
 <?php
     $navSetup = array(
         'tabs' => array(
-            'map tool' => 'biodiversity.php',
+            'quick map' => 'biodiversity.php',
+            'custom map' => 'HotSpots.php',
             'about the map tool' => 'biodiversity.php?page=about',
             'using the tool' => 'biodiversity.php?page=using',
             'the science' => 'biodiversity.php?page=science',

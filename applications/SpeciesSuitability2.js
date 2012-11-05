@@ -5,19 +5,13 @@
 var currentDataStyle = 'CURRENT';
 var currentSpeciesName = '';
 var currentSpeciesID = '';
-var currentScenario = '';
-var currentModel = '';
+var currentScenario = 'CURRENT';
+var currentModel = 'CURRENT';
 var currentTime = '1990';
 var currentCombination = '';
 
 function addSpecies(species_id,speciesName)
 {
-    currentDataStyle = 'CURRENT';
-
-    currentScenario = 'CURRENT';
-    currentModel = 'CURRENT';
-    currentTime = '1990';
-
     currentCombination = currentScenario + '_' + currentModel + '_' + currentTime;
 
     currentSpeciesName = speciesName;
@@ -32,8 +26,6 @@ function addSpecies(species_id,speciesName)
     $('#download_all').attr('href', "SpeciesSuitabilityDownload.php?species_id="+species_id);
     $('#download_all').removeAttr('disabled');
 }
-
-
 
 function selectDataStyle(src)
 {
@@ -119,7 +111,6 @@ function setCurrentCombination()
 
 function userSelectedLayer()
 {
-
     if (currentCombination == "CURRENT_CURRENT_1990") {
         currentCombination = "1990";
     }
@@ -258,94 +249,11 @@ $(document).ready(function(){
     L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
       maxZoom: 18
     }).addTo(map);
-/*
-    mapfileUrl = window.mapfileRoot;
-    mapfileUrl += 'By' + groupLevel[0].toUpperCase() + groupLevel.slice(1);
-    mapfileUrl += '/' + groupName + '/' + scenario + '_' + year + '.map';
-    console.log(mapfileUrl);
-    data = new L.TileLayer.WMS("http://tdh-tools-1.hpc.jcu.edu.au:81/cgi-bin/mapserv", {
-      layers: 'tdh&map=' + mapfileUrl,
-      format: 'image/png',
-      opacity: 0.75,
-      transparent: true
-    }).addTo(map);
-*/
 
-/*
-    $( "#ToolFullExtent")
-        .button({ text: false, icons: { primary: "ui-icon-image"  } })
-        .height(40)
-        .css('float','none')
-        .css('clear','both')
-        ;
-
-    $( "#ToolZoomOut")
-        .button({ text: false, icons: { primary: "ui-icon-zoomout"} })
-        .click(function() { setTools(this); })
-        .height(30)
-        .css('float','none')
-        .css('clear','both')
-        ;
-
-    $( "#ToolCentre" )
-        .button({ text: false, icons: { primary: "ui-icon-plus"   } })
-        .click(function() { setTools(this); })
-        .height(30)
-        .css('float','none')
-        .css('clear','both')
-        ;
-
-
-    $( "#ToolZoomIn")
-        .button({ text: false, icons: { primary: "ui-icon-zoomin" } })
-        .click(function() { setTools(this); })
-        .height(30)
-        .css('float','none')
-        .css('clear','both')
-        ;
-
-    $("#species")
-        .blur(function() { $(this).val(currentSpeciesName); return false; })
-        .focus(function() { $(this).val(''); return false; })
-        ;
-*/
     disableFuturePropertySelectors();
 
     $('#datastyle_selection').attr('disabled', 'disabled');
 
-/*
-    $('#datastyle_selection')
-        .css('float','none')
-        .css('clear','both')
-        .css('width','90%')
-        .css('height','30px')
-        .css('margin','2%')
-        ;
-
-    $('#scenario_selection')
-        .css('float','none')
-        .css('clear','both')
-        .css('width','90%')
-        .css('height','30px')
-        .css('margin','2%')
-        ;
-
-    $('#model_selection')
-        .css('float','none')
-        .css('clear','both')
-        .css('width','90%')
-        .css('height','30px')
-        .css('margin','2%')
-        ;
-
-    $('#time_selection')
-        .css('float','none')
-        .css('clear','both')
-        .css('width','90%')
-        .css('height','30px')
-        .css('margin','2%')
-        ;
-*/
 
 });
 

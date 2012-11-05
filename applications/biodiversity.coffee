@@ -108,48 +108,59 @@ $ ->
 
         console.log [year, scenario, output, groupLevel, groupName]
 
-        if output == 'view'
-            #
-            # they want to see the map
-            #
-            $("""
-                <div class="popupwrapper" style="display: none">
-                    <div class="toolbar north"><button class="close">close &times;</button></div>
-                    <div id="popupmap" class="popupmap"></div>
-                    <div class="toolbar south"><button class="close">close &times;</button></div>
-            """).appendTo('body').show('fade', 1000)
+        # hit the prep url to unzip the asciigrid
+        $.ajax 'BiodiversityPrep.php', {
+            cache: false
+            dataType: 'json'
+            data: {
+                class: clazz
+                taxon: groupName
+                settings: "#{scenario}_#{year}"
+            }
+            success: (data, testStatus, jqx) ->
 
-            $('.popupwrapper button.close').click (e)->
-                $('.popupwrapper').hide 'fade', ()->
-                    $('.popupwrapper').remove()
+                if output == 'view'
+                    #
+                    # they want to see the map
+                    #
+                    $("""
+                        <div class="popupwrapper" style="display: none">
+                            <div class="toolbar north"><button class="close">close &times;</button></div>
+                            <div id="popupmap" class="popupmap"></div>
+                            <div class="toolbar south"><button class="close">close &times;</button></div>
+                    """).appendTo('body').show('fade', 1000)
 
-            map = L.map('popupmap', {
-                minZoom: 3
-            }).setView([-27, 135], 4)
+                    $('.popupwrapper button.close').click (e)->
+                        $('.popupwrapper').hide 'fade', ()->
+                            $('.popupwrapper').remove()
 
-            # 831e24daed21488e8205aa95e2a14787 is Daniel's CloudMade API key
-            L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
-                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
-                maxZoom: 18
-            }).addTo map
+                    map = L.map('popupmap', {
+                        minZoom: 3
+                    }).setView([-27, 135], 4)
 
-            mapfileUrl = window.mapfileRoot
+                    # 831e24daed21488e8205aa95e2a14787 is Daniel's CloudMade API key
+                    L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
+                        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
+                        maxZoom: 18
+                    }).addTo map
 
-            mapfileUrl += 'By' + groupLevel[0].toUpperCase() + groupLevel[1..-1]
-            mapfileUrl += '/' + groupName + '/' + scenario + '_' + year + '.map'
+                    gridUrl = window.mapfileRoot
 
-            console.log mapfileUrl
+                    # mapfileUrl = window.mapfileRoot
+                    # mapfileUrl += 'By' + groupLevel[0].toUpperCase() + groupLevel[1..-1]
+                    # mapfileUrl += '/' + groupName + '/' + scenario + '_' + year + '.map'
 
-            data = new L.TileLayer.WMS("http://tdh-tools-1.hpc.jcu.edu.au:81/cgi-bin/mapserv", {
-                layers: 'tdh&map=' + mapfileUrl
-                format: 'image/png'
-                opacity: 0.75
-                transparent: true
-            }).addTo map
+                    gridUrl += ""
+
+                    console.log mapfileUrl
+
+                    data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
+                        layers: 'tdh&map=' + mapfileUrl
+                        format: 'image/png'
+                        opacity: 0.75
+                        transparent: true
+                    }).addTo map
+        }
 
         e.preventDefault();
-
-
-
-
 
