@@ -97,7 +97,7 @@ $layer->HistogramBuckets($bucket_count);
 
 
 // start ramp at Zero -
-$ramp = RGB::Ramp(1, 100, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
+$ramp = RGB::Ramp(1, 100, $bucket_count,RGB::Gradient(RGB::GradientYellowOrangeRed()));
 
 /*
 $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
