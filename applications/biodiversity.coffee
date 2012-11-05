@@ -119,7 +119,10 @@ $ ->
             }
             success: (data, testStatus, jqx) ->
 
-                if output == 'view'
+                if not data.map_path
+                    alert "Sorry, data for that selection is not available."
+
+                else if output == 'view'
                     #
                     # they want to see the map
                     #
@@ -143,14 +146,6 @@ $ ->
                         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
                         maxZoom: 18
                     }).addTo map
-
-                    gridUrl = window.mapfileRoot
-
-                    # mapfileUrl = window.mapfileRoot
-                    # mapfileUrl += 'By' + groupLevel[0].toUpperCase() + groupLevel[1..-1]
-                    # mapfileUrl += '/' + groupName + '/' + scenario + '_' + year + '.map'
-
-                    gridUrl += ""
 
                     data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
                         layers: data.map_path[5..-5] + '&map=' + data.map_path
