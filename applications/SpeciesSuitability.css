@@ -1,4 +1,4 @@
-/* 
+/*
     Document   : SpeciesSuitability
     Created on : 19/09/2012, 2:11:35 PM
     Author     : jc166922
@@ -6,14 +6,13 @@
         Purpose of the stylesheet follows.
 */
 
-root { 
+root {
     display: block;
 }
 
-#selectable_layers .ui-selecting { background: #FECA40; }
-#selectable_layers .ui-selected { background: #F39814; color: white; }
-#selectable_layers { list-style-type: none; margin: 0; padding: 0; width: 90%; }
-#selectable_layers li { margin: 3px; padding: 0.4em; font-size: 0.8em; height: 90px; }
+input, select {
+    font-size: 100%;
+}
 
 .ui-autocomplete {
 		max-height: 150px;
@@ -22,25 +21,80 @@ root {
 		padding-right: 20px;
 	}
 
+#ToolBar {
+    margin: 2em 0;
+    padding: 0;
 
-.maincontent
-{
-    height: 1000px;
-    overflow: hidden;
+}
+
+#species {
+    padding: 0.5em 2%;
+    margin: 0;
+    font-size: 150%;
+    width: 95.75%;
+}
+
+.formsection {
+    display: block;
+    width: 23%;
+    float: left;
+    padding: 0;
+
+    text-align: right;
+    margin: 0;
+
+    border: 6px solid rgba(0,0,0,0.15);
+    border-width: 6px 0;
+    border-radius: 12px;
+
+    /* ie poison here */
+    zoom: 1;
+}
+
+button[disabled], select[disabled] {
+    opacity: 0.33;
+    filter: alpha(opacity=33);
 }
 
 
-#ToolBar
-{
-    padding-top: 4px;
-    padding-left: 4px;
-    height: 44px;
-    width: 970px;
-    float: none;
-    clear: both;
+#UserSelectionBar h2 {
+    text-transform: lowercase;
+    text-align: left;
+    border: none;
+    font-size: inherit;
+    font-weight: bold;
+    opacity: 0.8;
+    margin: 0;
+    padding: 0 0 0.5em;
 }
 
-#MapTools
+.formsection .onefield {
+    padding: 1em 0;
+    -moz-transition: opacity 0.1s ease-in-out;
+    -webkit-transition: opacity 0.1s ease-in-out;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.formsection select {
+    padding: 0.25em 0;
+    width: 90%;
+}
+
+#leafletmap {
+    float: right;
+    width: 74%;
+    height: 26em;
+}
+
+
+
+
+
+
+
+
+
+#XXXMapTools
 {
     float:left;
     height: 650px;
@@ -49,7 +103,7 @@ root {
     padding: 10px;
 }
 
-#CurrentSpecies
+#XXXCurrentSpecies
 {
     float: left;
     width: 200px;
@@ -58,17 +112,9 @@ root {
 
 
 
-#UserSelectionBar
-{
-    float: left;
-    height: 670px;
-    width: 200px;
-    overflow: hidden;
-    overflow-y: auto;
-}
 
 
-#MapContainer
+#XXXMapContainer
 {
     float: left;
     height: 670px;
@@ -77,7 +123,7 @@ root {
 
 }
 
-#ColorKeyContainer
+#XXXColorKeyContainer
 {
     width: 100%;
     padding: 0px;
@@ -88,19 +134,19 @@ root {
 
 }
 
-#ColorKey
+#XXXColorKey
 {
     float: left;
 }
 
-#map_overview
+#XXXmap_overview
 {
     width:  200px;
     height: 160px;
     overflow: hidden;
 }
 
-#download
+#XXXdownload
 {
     width:  200px;
     height: 30px;
@@ -108,47 +154,47 @@ root {
 }
 
 
-#information
+#XXXinformation
 {
     width:  970px;
     height: 600px;
     overflow: hidden;
-    
+
 }
 
-#information_content
+#XXXinformation_content
 {
-    margin: 0px; 
-    overflow:hidden; 
-    float:none; 
-    clear:both;  
+    margin: 0px;
+    overflow:hidden;
+    float:none;
+    clear:both;
     margin-left: 200px;
-    
+
 }
 
 
 
 
-#UserSelectionBar h2
+#XXXUserSelectionBar h2
 {
     margin: 0px;
     padding: 0px;
     text-transform: lowercase;
     font-weight: bold;
-    
+
     margin-top: 40px;
     margin-left: 5px;
     letter-spacing: 0.4em;
-    
-        
+
+
 }
 
-#UserSelectionBar select
+#XXXUserSelectionBar select
 {
     margin: 0px;
     padding: 0px;
     font-weight: bold;
     margin-left: 5px;
-    
-    
+
+
 }
