@@ -98,6 +98,7 @@ $layer->HistogramBuckets($bucket_count);
 // start ramp at Zero -
 $ramp = RGB::Ramp(0, 1, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
 
+/*
 $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
 
 if ($MaxentThreshold instanceof ErrorMessage)
@@ -107,7 +108,8 @@ if ($MaxentThreshold instanceof ErrorMessage)
     echo json_encode($result);
     exit();
 }
-
+*/
+$MaxentThreshold = 0;
 
 foreach (array_keys($ramp) as $key )
     if ($key < $MaxentThreshold) $ramp[$key] = null;    // chnage all values below threshold to trasparent
