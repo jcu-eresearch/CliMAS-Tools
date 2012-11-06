@@ -22,7 +22,7 @@ $possibleNames = array(
 );
 
 $pagetitle = $possibleNames[ array_rand($possibleNames) ];
-//$pagetitle = $possibleNames[ 0 ];
+$pagetitle = "The Biodiversity Map Tool";
 $pagesubtitle = "Visualising biodiversity across Australia";
 
 if (array_key_exists('page', $_GET)) {

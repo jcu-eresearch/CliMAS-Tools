@@ -46,6 +46,7 @@ if (array_key_exists('page', $_GET)) {
 }
 
 $pagetitle = "Biosuitability";
+$pagetitle = "The Suitability Map Tool";
 $pagesubtitle = "Vertebrate distributions based on climate suitability";
 
 ?>
