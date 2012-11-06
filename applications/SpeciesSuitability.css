@@ -57,6 +57,12 @@ input, select {
     border: 0.15em outset rgba(255,255,255, 0.75);
 }
 
+#download_all.disabled:hover {
+    cursor: default;
+    background: rgba(255,255,255, 0.5);
+    border: 0.15em outset rgba(255,255,255, 0.5);
+}
+
 #download_all.disabled {
     opacity: 0.5;
     filter: alpha(opacity=50);

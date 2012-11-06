@@ -83,8 +83,6 @@ function selectDataStyle(src) {
     var id = src.id.toString();
     currentDataStyle = $('#'+ id + ' option:selected').val();
 
-    console.log('currentDataStyle = ' + currentDataStyle);
-
     if (currentDataStyle == "CURRENT") {
         currentScenario = 'CURRENT';
         currentModel = 'CURRENT';
@@ -153,14 +151,17 @@ function userSelectedLayer() {
             SpeciesID: currentSpeciesID
         },
         success: function(data, testStatus, jqx) {
-            console.log(['got data back:', data]);
+            if (window.speciesLayer) {
+                window.map.removeLayer(window.speciesLayer);
+            }
 
-            data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
+            window.speciesLayer = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
                 layers: currentCombination + '_' + currentSpeciesID + '&map=' + data.map_path,
                 format: 'image/png',
                 opacity: 0.75,
                 transparent: true
-            }).addTo(window.map);
+            });
+            window.speciesLayer.addTo(window.map);
         }
     });
 }
