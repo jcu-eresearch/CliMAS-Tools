@@ -154,7 +154,7 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 
         <div class="onefield">
             <h2>Species data</h2>
-            <a id="download_all" target="_blank" href="#" disabled="disabled">download data</a>
+            <a id="download_all" target="_blank" href="#" class="disabled">download species data</a>
         </div>
 
         <div class="onefield">
@@ -170,7 +170,7 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
             <select id="scenario_selection" onchange="selectScenario(this)">
             <?php
                 foreach ($scenarios as $scenario)
-                echo '<option  class="select_scenario_input" name="ScenarioTools" id="select_scenario_'.$scenario.'" value="'.$scenario.'" />'.$scenario.'</option>';
+                echo '<option selected="selected" class="select_scenario_input" name="ScenarioTools" id="select_scenario_'.$scenario.'" value="'.$scenario.'" />'.$scenario.'</option>';
             ?>
             </select>
         </div>
@@ -182,7 +182,7 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
                 foreach ($models as $model)
                 {
                     $modelname = $model;
-                    if ($model == "all") $modelname  = "Median";
+                    if ($model == "all") $modelname  = "best estimate";
 
                     echo '<option  class="select_model_input" name="ModelTools" id="select_model_'.$model.'" value="'.$model.'" />'.$modelname.'</option>';
                 }
@@ -196,7 +196,7 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
             <select id="time_selection" onchange="selectTime(this)">
             <?php
                 foreach ($times as $time)
-                    echo '<option  class="select_time_input" name="TimeTools" id="select_time_'.$time.'" value="'.$time.'" />'.$time.'</option>';
+                    echo '<option selected="selected" class="select_time_input" name="TimeTools" id="select_time_'.$time.'" value="'.$time.'" />'.$time.'</option>';
             ?>
             </select>
         </div>

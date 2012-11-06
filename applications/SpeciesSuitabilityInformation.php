@@ -1,9 +1,9 @@
 <?php
 /**
  * Read Query String variable "combination" and find Scenario and Model Descriptions
- *  
+ *
  * combination must be in the form   SCENARIO_MODEL_TIME
- * 
+ *
  */
 session_start();
 include_once 'includes.php';
@@ -23,13 +23,13 @@ if (!is_null($combination) && util::contains($combination, '_'))
 
     $scenario_desc = DatabaseClimate::GetScenarioDescription($scenario);
     $model_desc    = DatabaseClimate::GetModelDescription($model);
-    
+
     $format = '<a target="scenario" href="{URI}"><b>{DataName}</b></a>&nbsp;&nbsp;&nbsp;<i>{Description}</i><br>{MoreInformation}';
     $scenario_info = $scenario_desc->asFormattedString($format);
-    
+
     $format = '<a target="model" href="{URI}"><b>{DataName}</b></a>&nbsp;&nbsp;&nbsp;<i>{Description}</i><br>{MoreInformation}';
     $model_info = $model_desc->asFormattedString($format);
-    
+
 }
 
 
@@ -44,25 +44,25 @@ if (!is_null($combination) && util::contains($combination, '_'))
 
     <link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
     <link type="text/css" href="css/selectMenu.css" rel="stylesheet" />
-    
+
     <script type="text/javascript" >
-    <?php     
+    <?php
      ?>
-         
+
     $(document).ready(function(){
-        
-        
+
+
     });
 
 
     </script>
-    
-    <script type="text/javascript" src="SpeciesScenarioTimeline.js"></script>
-   
+
+    <!-- script type="text/javascript" src="SpeciesScenarioTimeline.js"></script -->
+
 </HEAD>
-    <BODY>        
+    <BODY>
         <div id="ScenarioInformation"><?php echo $scenario_info; ?></div><br>
         <div id="ModelInformation"><?php echo $model_info; ?></div>
-        
+
     </body>
 </html>

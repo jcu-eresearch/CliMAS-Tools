@@ -34,6 +34,34 @@ input, select {
     width: 95.75%;
 }
 
+#download_all {
+    font-weight: normal;
+    color: inherit;
+    display: inline-block;
+    text-align: center;
+    height: 1.75em;
+    line-height: 1.65em;
+    width: 88%;
+    background: rgba(255,255,255, 0.5);
+    border: 0.15em outset rgba(255,255,255, 0.5);
+    -moz-border-radius: 0.15em;
+    -webkit-border-radius: 0.15em;
+    border-radius: 0.15em;
+    /* ie poison here */
+    zoom: 1;
+}
+
+#download_all:hover {
+    text-decoration: none;
+    background: rgba(255,255,255, 0.75);
+    border: 0.15em outset rgba(255,255,255, 0.75);
+}
+
+#download_all.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+
 .formsection {
     display: block;
     width: 23%;

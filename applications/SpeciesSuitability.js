@@ -9,9 +9,64 @@ var currentScenario = 'CURRENT';
 var currentModel = 'CURRENT';
 var currentTime = '1990';
 var currentCombination = '';
+// --------------------------------------------------------
+// --------------------------------------------------------
+$(document).ready(function() {
 
-function addSpecies(species_id,speciesName)
-{
+    // add the map
+    window.map = L.map('leafletmap').setView([-27, 135], 3);
+
+    L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
+      maxZoom: 18
+    }).addTo(map);
+
+    // set up the species dropdown
+    $( "#species" ).autocomplete({
+        source: availableSpecies,
+        select: function(event, ui) {
+            addSpecies(ui.item.value,ui.item.label);
+            $(this).val(ui.item.label);
+            correctlyEnableForm();
+            return false;
+        },
+        change: correctlyEnableForm
+    });
+
+    // set up the download link to not do anything if it's disabled
+    $('#download_all').click( function(e) {
+        // prevent click if button is disabled
+        if ($(this).hasClass('disabled')) {
+            e.preventDefault();
+        }
+    });
+
+    // set up the form enablement
+    correctlyEnableForm();
+});
+// --------------------------------------------------------
+// --------------------------------------------------------
+function correctlyEnableForm() {
+    var species = $('#species').val();
+    var datastyle = $('#datastyle_selection').val();
+
+    if (species == '') {
+        $('#datastyle_selection').attr('disabled', 'disabled');
+        $('#download_all').addClass('disabled');
+        disableFuturePropertySelectors();
+
+    } else if (datastyle == 'CURRENT') {
+        $('#datastyle_selection').removeAttr('disabled');
+        $('#download_all').removeClass('disabled');
+        disableFuturePropertySelectors();
+
+    } else { // datastyle == 'FUTURE'
+        $('#datastyle_selection').removeAttr('disabled');
+        $('#download_all').removeClass('disabled');
+        enableFuturePropertySelectors();
+    }
+}
+// --------------------------------------------------------
+function addSpecies(species_id,speciesName) {
     currentCombination = currentScenario + '_' + currentModel + '_' + currentTime;
 
     currentSpeciesName = speciesName;
@@ -19,83 +74,61 @@ function addSpecies(species_id,speciesName)
 
     $('#datastyle_selection').removeAttr('disabled');
 
-    disableFuturePropertySelectors();
-
     userSelectedLayer();
 
     $('#download_all').attr('href', "SpeciesSuitabilityDownload.php?species_id="+species_id);
-    $('#download_all').removeAttr('disabled');
 }
-
-function selectDataStyle(src)
-{
+// --------------------------------------------------------
+function selectDataStyle(src) {
     var id = src.id.toString();
     currentDataStyle = $('#'+ id + ' option:selected').val();
 
     console.log('currentDataStyle = ' + currentDataStyle);
 
-    if (currentDataStyle == "CURRENT")
-    {
+    if (currentDataStyle == "CURRENT") {
         currentScenario = 'CURRENT';
         currentModel = 'CURRENT';
         currentTime = '1990';
 
         disableFuturePropertySelectors();
-    }
-    else
-    {
+    } else {
         enableFuturePropertySelectors();
-
     }
-
-
     setCurrentCombination();
-
     userSelectedLayer();
-
-
 }
-
-
-function selectScenario(src)
-{
+// --------------------------------------------------------
+function selectScenario(src) {
     var id = src.id.toString();
     currentScenario = $('#'+ id + ' option:selected').val();
     setCurrentCombination();
     userSelectedLayer();
 }
-
-function selectModel(src)
-{
+// --------------------------------------------------------
+function selectModel(src) {
     var id = src.id.toString();
     currentModel = $('#'+ id + ' option:selected').val();
     setCurrentCombination();
     userSelectedLayer();
 }
-
-function selectTime(src)
-{
+// --------------------------------------------------------
+function selectTime(src) {
     var id = src.id.toString();
     currentTime = $('#'+ id + ' option:selected').val();
 
     setCurrentCombination();
     userSelectedLayer();
 }
-
-function setCurrentCombination()
-{
-
-    if (currentDataStyle == 'CURRENT')
-    {
+// --------------------------------------------------------
+function setCurrentCombination() {
+    if (currentDataStyle == 'CURRENT') {
         currentScenario = 'CURRENT';
         currentModel = 'CURRENT';
         currentTime = '1990';
         currentCombination = currentTime;
 
         $('#information_content').attr('src','SpeciesSuitabilityInformation.php?combination=');  // call info with empty combo
-    }
-    else
-    {
+    } else {
         currentScenario = $('#scenario_selection option:selected').val();
         currentModel    = $('#model_selection option:selected').val();
         currentTime     = $('#time_selection option:selected').val();
@@ -104,13 +137,9 @@ function setCurrentCombination()
 
         $('#information_content').attr('src','SpeciesSuitabilityInformation.php?combination='+currentCombination);
     }
-
-
 }
-
-
-function userSelectedLayer()
-{
+// --------------------------------------------------------
+function userSelectedLayer() {
     if (currentCombination == "CURRENT_CURRENT_1990") {
         currentCombination = "1990";
     }
@@ -134,30 +163,21 @@ function userSelectedLayer()
             }).addTo(window.map);
         }
     });
-
 }
-
-
-
-function enableFuturePropertySelectors()
-{
+// --------------------------------------------------------
+function enableFuturePropertySelectors() {
     $('#scenario_selection').removeAttr('disabled');
     $('#model_selection').removeAttr('disabled');
     $('#time_selection').removeAttr('disabled');
 }
-
-function disableFuturePropertySelectors()
-{
-
+// --------------------------------------------------------
+function disableFuturePropertySelectors() {
     $('#scenario_selection').attr('disabled', 'disabled');
     $('#model_selection').attr('disabled', 'disabled');
     $('#time_selection').attr('disabled', 'disabled');
-
 }
-
-
-function currentAsciiGrid()
-{
+// --------------------------------------------------------
+function currentAsciiGrid() {
     var result =    Maxent_Species_Data_folder_web
                   + currentSpeciesID + '/'
                   + 'output/'
@@ -165,95 +185,48 @@ function currentAsciiGrid()
 
     return result;
 }
-
-
-function setMapOverview()
-{
-
+// --------------------------------------------------------
+function setMapOverview() {
     var mapa = $("#GUI").contents().find("#mapa");
 
-    if ($('#map_overview').html() == "")
-    {
+    if ($('#map_overview').html() == "") {
         $('#map_overview').html('<img style="width: 100%; height="130%" src="'+ mapa.attr('src') +'">');
-
-
-
     }
-
-
 }
-
-
-
+// --------------------------------------------------------
 function GetZoom() {
     document.getElementById('ZoomFactor').value = parent.document.getElementById('ZoomFactor').value;
 }
-
-
-function map_gui_loaded()
-{
-    if (exists('#MLD'))
-    {
+// --------------------------------------------------------
+function map_gui_loaded() {
+    if (exists('#MLD')) {
         $('#MLD').fadeOut(200).remove();
         $('#MLD').remove();
     }
-
 }
-
-
-
-function setTools(src)
-{
+// --------------------------------------------------------
+function setTools(src) {
      $( "#" + src.id.toString() ).toggleClass( "ui-state-active", 100 );
 
 }
 
-
-function ReloadDiv(divID)
-{
+// --------------------------------------------------------
+function ReloadDiv(divID) {
     document.getElementById(divID).src = document.getElementById(divID).src
 }
 
-
-
-function ReloadGUI()
-{
+// --------------------------------------------------------
+function ReloadGUI() {
     ReloadDiv('GUI') ;
 }
 
-
+// --------------------------------------------------------
 function SetZoom(caller,zoom_value) {
     document.getElementById('ZoomFactor').value = zoom_value;
 }
 
+// --------------------------------------------------------
 function SetFullExtent() {
     ReloadGUI();
 }
-
-
-
-$(document).ready(function(){
-
-    $( "#species" ).autocomplete({
-        source: availableSpecies,
-        select: function(event, ui) {
-            addSpecies(ui.item.value,ui.item.label);
-            $(this).val(ui.item.label);
-            return false;
-        }
-    });
-
-    // add the map
-    window.map = L.map('leafletmap').setView([-27, 135], 3);
-
-    L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
-      maxZoom: 18
-    }).addTo(map);
-
-    disableFuturePropertySelectors();
-
-    $('#datastyle_selection').attr('disabled', 'disabled');
-
-
-});
 
