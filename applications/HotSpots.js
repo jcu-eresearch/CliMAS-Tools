@@ -1,38 +1,29 @@
-// GLOBAL VARIABLES 
-
+// GLOBAL VARIABLES
 
 function GetZoom() {
     document.getElementById('ZoomFactor').value = parent.document.getElementById('ZoomFactor').value;
 }
-    
 
-function map_gui_loaded()
-{
+function map_gui_loaded() {
     if (exists('#MLD')) $('#MLD').fadeOut(200).remove();
 }
 
-
-
-function setTools(src)
-{
-     $( "#" + src.id.toString() ).toggleClass( "ui-state-active", 100 );
+function setTools(src) {
+    $( "#" + src.id.toString() ).toggleClass( "ui-state-active", 100 );
 
 }
 
-
-function ReloadDiv(divID) 
-{
+function ReloadDiv(divID) {
     document.getElementById(divID).src = document.getElementById(divID).src
 }
 
-function ReloadGUI() 
-{
+function ReloadGUI() {
     ReloadDiv('GUI') ;
 }
 
 
 function SetZoom(caller,zoom_value) {
-    document.getElementById('ZoomFactor').value = zoom_value;   
+    document.getElementById('ZoomFactor').value = zoom_value;
 }
 
 function SetFullExtent() {
@@ -44,80 +35,61 @@ function ClearAll() {
 }
 
 
-function screenSetup()
-{
+function screenSetup() {
 
     if ($(window).width() > 1200)
         $('#thecontent').css("width",1200);
     else
         $('#thecontent').css("width",$(window).width());
-        
+
 }
 
 
-function mapToolsInit()
-{
-    
+function mapToolsInit() {
     $( "#ToolClearAll")
         .button({text: false, icons: {primary: "ui-icon-image"}})
-        .height(40)
-        ;
+        .height(40);
 
     $( "#ToolFullExtent")
         .button({text: false, icons: {primary: "ui-icon-image"}})
-        .height(40)
-        ;
+        .height(40);
 
     $( "#ToolZoomOut")
         .button({text: false, icons: {primary: "ui-icon-zoomout"}})
         .click(function() {setTools(this);})
-        .height(30)
-        ;
+        .height(30);
 
     $( "#ToolCentre" )
         .button({text: false, icons: {primary: "ui-icon-plus"}})
         .click(function() {setTools(this);})
-        .height(30)
-        ;
-
+        .height(30);
 
     $( "#ToolZoomIn")
         .button({text: false, icons: {primary: "ui-icon-zoomin"}})
         .click(function() {setTools(this);})
-        .height(30)
-        ;
-    
+        .height(30);
 }
 
 
-function addInput(dataType,dataID,dataName)
-{
-    
-    
-    var addID = dataType + '_'+dataID;
-    
-    // check to see that ID doesn't already exists
-    
-    if ( exists('#' + addID)) 
-    {
-        var properties = {
-            color : '#FF0000',
-            fontWeight : 'bold'
-        };
+function addInput(dataType,dataID,dataName) {
 
-        $('#' + addID).pulse(properties, {pulses : 2});        
+    var addID = dataType + '_'+dataID;
+
+    // check to see that ID doesn't already exists
+
+    if (exists('#' + addID)) {
+        $('#' + addID).pulse({ color: '#FF0000', fontWeight: 'bold' }, { pulses: 3 } );
         return null;
     }
 
-    
+
     // GenusRichnessLocation
 
     var removeID = 'remove_'+addID;
-    $('#'+dataType+'Selection').append('<li id="'+addID+'" class="ui-widget-content ui-corner-all " ><button id="'+removeID+'" class="RemoveInput">remove</button><p>'+dataName+'</p><br><div id="QO_SPOT_'+addID+'" ></div></li>');
+    $('#'+dataType+'Selection').append('<li id="'+addID+'" class="itembox" ><button id="'+removeID+'" class="RemoveInput">remove</button><p>'+dataName+'</p><br><div id="QO_SPOT_'+addID+'" ></div></li>');
 
-
-    switch(dataType)
-    {
+/*
+    switch(dataType) {
         case 'Taxa':
         case 'Family':
         case 'Genus':
@@ -133,16 +105,17 @@ function addInput(dataType,dataID,dataName)
                             });
 
         break;
-    }    
+    }
+*/
 
 
 
-    
-    
+
+
     addSelectedTo('#' + addID);
     updateCurrentPackage();
-    
-    
+
+
     $( '#'+ removeID)
         .button({text: false, icons: {primary: "ui-icon-close"}})
         .css('height','20px')
@@ -154,44 +127,39 @@ function addInput(dataType,dataID,dataName)
                                 updateCurrentPackage();
                             }
               );
-    
-    
-    
+
+
+
    return addID;
-    
+
 }
 
-function quickOpen(src)
-{
+function quickOpen(src) {
     var parms = string2Array(src.id.toString(),'_');
 
     var sData = {dataType: parms[1],
                   dataName: parms[2]
                 }
-    
+
     console.log(sData);
-    
+
     // ince the item has been built set what the open button should do - or if not remove it.
-    switch(sData.dataType)
-    {
+    switch(sData.dataType) {
         case 'Taxa':break;
         case 'Family':break;
         case 'Genus':
-            $.post("HotSpotsAjaxExecuteSingleItem.php", sData , function(data) {post_quickOpen(data);},"json"); 
+            $.post("HotSpotsAjaxExecuteSingleItem.php", sData , function(data) {post_quickOpen(data);},"json");
             break;
-            
+
         case 'Species':break;
-    }    
-    
+    }
+
 }
 
 
-function post_quickOpen(data)
-{
-    
-   // see whats in the data retuned in browser log    
-    $.each(data, function(index, value) 
-    { 
+function post_quickOpen(data) {
+   // see whats in the data retuned in browser log
+    $.each(data, function(index, value) {
         console.log('post_quickOpenGenus  ' + index + " = " +value);
     });
 
@@ -203,26 +171,21 @@ function post_quickOpen(data)
 }
 
 
-
-function addSelectedTo(selector)
-{
+function addSelectedTo(selector) {
     $(selector).hover(function () {hoverSelectElementsIn(this);},function () {hoverSelectElementsOut(this);});
-    
 }
 
 
-function inputTypesSetClick(src)
-{
-    var changeTo = src.id.toString().replace("InputType","");  // chnage input to 
-    
-    switch(changeTo)
-    {
+function inputTypesSetClick(src) {
+    var changeTo = src.id.toString().replace("InputType","");  // chnage input to
+
+    switch(changeTo) {
         case 'Taxa':ChangeInputToTaxa();break;
         case 'Family':ChangeInputToFamily();break;
         case 'Genus':ChangeInputToGenus();break;
         case 'Species':ChangeInputToSpecies();break;
         case 'Location':ChangeInputToLocation();break;
-    }    
+    }
 
 
 
@@ -230,105 +193,92 @@ function inputTypesSetClick(src)
 
 }
 
-function ChangeInputToTaxa()
-{
-    
-    var blurMessage = "Enter taxanomic name";
-    
-    $( "#InputText" ).val(blurMessage);
-    
-    $( "#InputText" ).autocomplete('destroy'); 
-    $( "#InputText" ).autocomplete({ 
+function ChangeInputToTaxa() {
+    var blurMessage = "Enter class name";
+
+    $( "#InputText" ).attr('placeholder', blurMessage);
+
+    $( "#InputText" ).autocomplete('destroy');
+    $( "#InputText" ).autocomplete({
                         source: availableTaxa,
-                        select: function(event, ui) 
-                        {
+                        select: function(event, ui) {
                             addInput('Taxa',ui.item.value,ui.item.label);
-                            $(this).val(blurMessage);
+                            $(this).attr('placeholder', blurMessage);
                             return false;
                         }
                      });
-    
-    $( "#InputText" ).unbind('blur').blur(function() {$( "#InputText" ).val(blurMessage);})
-    
+
+    $( "#InputText" ).unbind('blur').blur(function() {$( "#InputText" ).attr('placeholder', blurMessage);})
+
 }
 
 
-function ChangeInputToFamily()
-{
-    
+function ChangeInputToFamily() {
     var blurMessage = "Enter family name";
-    
-    $( "#InputText" ).val(blurMessage);
-    
-    $( "#InputText" ).autocomplete('destroy'); 
-    $( "#InputText" ).autocomplete({ 
+
+    $( "#InputText" ).attr('placeholder', blurMessage);
+
+    $( "#InputText" ).autocomplete('destroy');
+    $( "#InputText" ).autocomplete({
                         source: availableFamily,
-                        select: function(event, ui) 
-                        {
+                        select: function(event, ui) {
                             addInput('Family',ui.item.value,ui.item.label);
-                            $(this).val(blurMessage);
+                            $(this).attr('placeholder', blurMessage);
                             return false;
                         }
                      });
-    
-    $( "#InputText" ).unbind('blur').blur(function() {$( "#InputText" ).val(blurMessage);})
-    
+
+    $( "#InputText" ).unbind('blur').blur(function() {$( "#InputText" ).attr('placeholder', blurMessage);})
+
 }
 
-function ChangeInputToGenus()
-{
-    
+function ChangeInputToGenus() {
     var blurMessage = "Enter genus name";
-    
-    $( "#InputText" ).val(blurMessage);
-    
-    $( "#InputText" ).autocomplete('destroy'); 
-    $( "#InputText" ).autocomplete({ 
+
+    $( "#InputText" ).attr('placeholder', blurMessage);
+
+    $( "#InputText" ).autocomplete('destroy');
+    $( "#InputText" ).autocomplete({
                         source: availableGenus,
-                        select: function(event, ui) 
-                        {
+                        select: function(event, ui) {
                             var addid = addInput('Genus',ui.item.value,ui.item.label);
-                            
-                            $(this).val(blurMessage);
+
+                            $(this).attr('placeholder', blurMessage);
                             return false;
                         }
                      });
-    
-    $( "#InputText" ).unbind('blur').blur(function() {$( "#InputText" ).val(blurMessage);})
-    
+
+    $( "#InputText" ).unbind('blur').blur(function() {$( "#InputText" ).attr('placeholder', blurMessage);})
+
 }
 
 
-function ChangeInputToSpecies()
-{
-    
+function ChangeInputToSpecies() {
     var blurMessage = "Enter species name";
-    
-    $( "#InputText" ).val(blurMessage);
-    
-    $( "#InputText" ).autocomplete('destroy'); 
-    $( "#InputText" ).autocomplete({ 
+
+    $( "#InputText" ).attr('placeholder', blurMessage);
+
+    $( "#InputText" ).autocomplete('destroy');
+    $( "#InputText" ).autocomplete({
                         source: availableSpecies,
-                        select: function(event, ui) 
-                        {
+                        select: function(event, ui) {
                             addInput('Species',ui.item.value,ui.item.label);
-                            $(this).val(blurMessage);
+                            $(this).attr('placeholder', blurMessage);
                             return false;
                         }
                      });
-    
-    $( "#InputText" ).unbind('blur').blur(function() {$( "#InputText" ).val(blurMessage);})
-    
+
+    $( "#InputText" ).unbind('blur').blur(function() {$( "#InputText" ).attr('placeholder', blurMessage);})
+
 }
 
 
 
-function setupInputs()
-{
-    $('#InputsSearchBar').css("padding-left","5px");
-    
-    $('#InputTypesSet').buttonset();
+function setupInputs() {
+//    $('#InputsSearchBar').css("padding-left","5px");
 
+//    $('#InputTypesSet').buttonset();
+/*
     $('#InputTypesSet label')
         .css("height",20)
         .css("font-size","0.6em")
@@ -338,110 +288,99 @@ function setupInputs()
         .css("float","left")
         .css("margin-right","10px")
     ;
-
+*/
     $('#InputTypesSet input')
         .click(function () {inputTypesSetClick(this);})
     ;
-    
+
 }
 
-function hoverSelectElementsIn(src)
-{
+function hoverSelectElementsIn(src) {
+/*
     var id = src.id.toString();
-    
+
     var state = 'ui-state-active';
-    
+
     $('#' + id).addClass(state) ;
     $('#' + id).find('h4').addClass(state) ;
-    $('#' + id).find('p').addClass(state) ; 
+    $('#' + id).find('p').addClass(state) ;
+*/
 }
 
-function hoverSelectElementsOut(src)
-{
+function hoverSelectElementsOut(src) {
+/*
     var id = src.id.toString();
     var state = 'ui-state-active';
- 
+
     $('#' + id).removeClass(state) ;
     $('#' + id).find('h4').removeClass(state) ;
-    $('#' + id).find('p').removeClass(state) ; 
- 
+    $('#' + id).find('p').removeClass(state) ;
+*/
 }
 
 
 
-function selectAllModels()
-{
-    
-    var ofWhat = "Models";    
+function selectAllModels() {
+    var ofWhat = "Models";
     $('#' + ofWhat + "Selection").find('li').addClass('ui-selected') ;
     $('#' + ofWhat + "Selection").find('h4').addClass('ui-selected') ;
     $('#' + ofWhat + "Selection").find('p').addClass('ui-selected') ;
-    updateCurrentPackage();    
-    
+    updateCurrentPackage();
+
 }
 
 
-function selectAllScenarios()
-{
-    
-    var ofWhat = "Scenarios";    
+function selectAllScenarios() {
+    var ofWhat = "Scenarios";
     $('#' + ofWhat + "Selection").find('li').addClass('ui-selected') ;
-    $('#' + ofWhat + "Selection").find('h4').addClass('ui-selected') ;
-    $('#' + ofWhat + "Selection").find('p').addClass('ui-selected') ;
-    updateCurrentPackage();    
-    
+//    $('#' + ofWhat + "Selection").find('h4').addClass('ui-selected') ;
+//    $('#' + ofWhat + "Selection").find('p').addClass('ui-selected') ;
+    updateCurrentPackage();
+
 }
 
 
 
-function selectElements(src)
-{
-    
+function selectElements(src) {
     var id = src.id.toString();
-    
+
     var ofWhat = "";
-    
-    if(id.indexOf("SelectAll") != -1)
-    {
-        ofWhat = id.replace("SelectAll","");    
+
+    if(id.indexOf("SelectAll") != -1) {
+        ofWhat = id.replace("SelectAll","");
         $('#' + ofWhat + "Selection").find('li').addClass('ui-selected') ;
         $('#' + ofWhat + "Selection").find('h4').addClass('ui-selected') ;
         $('#' + ofWhat + "Selection").find('p').addClass('ui-selected') ;
         updateCurrentPackage();
     }
-    
-    if(id.indexOf("SelectNone") != -1)
-    {
-        ofWhat = id.replace("SelectNone","");    
+
+    if(id.indexOf("SelectNone") != -1) {
+        ofWhat = id.replace("SelectNone","");
         $('#' + ofWhat + "Selection").find('li').removeClass('ui-selected') ;
         $('#' + ofWhat + "Selection").find('h4').removeClass('ui-selected') ;
         $('#' + ofWhat + "Selection").find('p').removeClass('ui-selected') ;
         updateCurrentPackage();
-    }    
-    
-    if(id.indexOf("SelectDefault") != -1)
-    {
-        ofWhat = id.replace("SelectDefault","");    
+    }
+
+    if(id.indexOf("SelectDefault") != -1) {
+        ofWhat = id.replace("SelectDefault","");
         selectElementsDefault(ofWhat);
         updateCurrentPackage();
-    }    
+    }
 
 
-    if(id.indexOf("SelectSome") != -1)
-    {
-        ofWhat = id.replace("SelectSome","");    
+    if(id.indexOf("SelectSome") != -1) {
+        ofWhat = id.replace("SelectSome","");
         selectElementsSome(ofWhat.split("_")[0],ofWhat.split("_")[1]);
         updateCurrentPackage();
-    }    
+    }
 
 
 
 }
 
 
-function selectWhereIDContains(rootSelector,listElementSelector,toFind,addClass)
-{
-    $(rootSelector).find(listElementSelector)
+function selectWhereIDContains(rootSelector,listElementSelector,toFind,addClass) {$(rootSelector).find(listElementSelector)
         .each(function(index) {
             if (toFind == null)
             {
@@ -463,11 +402,9 @@ function selectWhereIDContains(rootSelector,listElementSelector,toFind,addClass)
 }
 
 
-function deselectWhereIDContains(rootSelector,listElementSelector,toFind,removeClass)
-{
-    $(rootSelector).find(listElementSelector)
+function deselectWhereIDContains(rootSelector,listElementSelector,toFind,removeClass) {$(rootSelector).find(listElementSelector)
         .each(function(index) {
-            
+
             if (toFind == null)
             {
                 root = $("#"+this.id.toString());
@@ -489,55 +426,44 @@ function deselectWhereIDContains(rootSelector,listElementSelector,toFind,removeC
 
 
 
-function selectElementsDefault(selectFor)
-{
-    
-    switch(selectFor)
-    {
+function selectElementsDefault(selectFor) {
+    switch(selectFor) {
         case 'Models':
             deselectWhereIDContains('#' + selectFor + 'Selection','li',null  ,'ui-selected')
               selectWhereIDContains('#' + selectFor + 'Selection','li',"ccsr",'ui-selected');
             break;
-        
+
         case 'Scenarios':
             deselectWhereIDContains('#' + selectFor + 'Selection','li',null  ,'ui-selected')
               selectWhereIDContains('#' + selectFor + 'Selection','li',"RCP",'ui-selected');
             break;
-        
+
         case 'Times':
             deselectWhereIDContains('#' + selectFor + 'Selection','li',null,'ui-selected')
               selectWhereIDContains('#' + selectFor + 'Selection','li',null,'ui-selected');
             break;
-    }    
-    
-    
+    }
+
+
 }
 
-function selectElementsSome(selectFor,selectSomeFilterString)
-{
-    
-    switch(selectFor)
-    {
+function selectElementsSome(selectFor,selectSomeFilterString) {
+    switch(selectFor) {
         case 'Models':
             break;
-        
+
         case 'Scenarios':
               deselectWhereIDContains('#' + selectFor + 'Selection','li',null  ,'ui-selected')
                 selectWhereIDContains('#' + selectFor + 'Selection','li',selectSomeFilterString,'ui-selected');
             break;
-        
+
         case 'Times':
             break;
-
-    }    
-    
-    
-    
+    }
 }
 
-function currentData()
-{
-    var jData = { 
+function currentData() {
+    var jData = {
               taxa: selected('#TaxaSelection'     ,"li", null," ",'Taxa_'     ,null)
            ,family: selected('#FamilySelection'   ,"li", null," ",'Family_'   ,null)
             ,genus: selected('#GenusSelection'    ,"li", null," ",'Genus_'    ,null)
@@ -548,11 +474,11 @@ function currentData()
   ,job_description: $('#job_description').val()
     ,ui_element_id: ''
     }
-    
+
     //console.log(jData);
-    
+
     return jData;
-    
+
 }
 
 
@@ -560,28 +486,26 @@ function currentData()
 
 /**
  *  Current Display of selected items
- * 
+ *
  */
-function updateCurrentPackage()
-{
-    
+function updateCurrentPackage() {
     var jData = currentData();
-    
+
          $('#CountTaxa').html(jData.taxa.length);
        $('#CountFamily').html(jData.family.length);
         $('#CountGenus').html(jData.genus.length);
       $('#CountSpecies').html(jData.species.length);
-     
-       
+
+
     $('#CountScenarios').html(jData.scenarios.length);
         $('#CountTimes').html(jData.times.length);
 
 
      var inputsCount = jData.taxa.length +  jData.family.length + jData.genus.length + jData.species.length;
-     
+
      // var futureCount = jData.models.length * jData.scenarios.length * jData.times.length;
      var futureCount = jData.times.length; // at the moment we are including all scenarios (all models are mdeians of all cliemnt models)
-     
+
 
     $('#CountInputTotals').html(inputsCount);
     $('#CountFutureTotals').html(futureCount);
@@ -589,8 +513,7 @@ function updateCurrentPackage()
 
 
 
-    if (inputsCount > 0 && jData.scenarios.length > 0 && jData.times.length > 0)
-    {        
+    if (inputsCount > 0 && jData.scenarios.length > 0 && jData.times.length > 0) {
         $('#CreateProcess').removeClass('ui-state-disabled');  // make enabled
         $('#CreateProcess').click(function() {CreateProcess();}) // add click evenet
     }
@@ -607,8 +530,7 @@ function updateCurrentPackage()
 
 var statusUpdateTimer = null;
 
-function CreateProcess()
-{
+function CreateProcess() {
     // check currentDataPackage() to mak sure we have al;l the data we need to running
     var sData = currentData();
 
@@ -621,8 +543,7 @@ function CreateProcess()
 }
 
 
-function addSingleProcess(sData)
-{
+function addSingleProcess(sData) {
 
     var rowElementID = $('#RunningProcessesTable li').children().length;
 
@@ -641,18 +562,18 @@ function addSingleProcess(sData)
     var cancelButton = '<button id="cancel_'+ rowElementID +'">CANCEL</button>';
 
 
-    
+
     //var calcCount   = '<h1 class="ui-widget-content ui-corner-all">' + (sData.models.length * sData.scenarios.length * sData.times.length) +'<p>datasets</p> </h1>';
 
     // atre only want to calc the nimber inputs * the number of Times
     var calcCount   = '<h1 class="ui-widget-content ui-corner-all">' + (sData.times.length) +'<p>datasets</p> </h1>';
-    
+
     var displayName = '<h2>' + displayNameStr + '</h2>';
-    
+
     var button = '<button id="info_'+ rowElementID +'">'+ Value(sData.job_description,'')+'</button>';
-    
+
     var progress = '<div id="progress_'+ rowElementID +'"><img style="width: 100%; height: 100%" src="'+IconSource+'Loading.gif"></div>';
-    
+
     var html = '<li class="ui-widget-content">' + cancelButton + button + calcCount + displayName +  progress + '<p id="status_'+rowElementID+'">........</p></li>'+"\n";
 
     $('#RunningProcessesTable').append(html);
@@ -687,53 +608,50 @@ function addSingleProcess(sData)
         ;
 
 
-     
-     
-     
+
+
+
 
     $.post("HotSpotsAjaxExecute.php", sData , function(data) {postAddSingleProcess(data);},"json");
 
     // json / ajax calls here to execute this process
-    
+
     // clear selected and - gray out the run button again
-    
+
 }
 
-function postAddSingleProcess(data)
-{
-    
+function postAddSingleProcess(data) {
     var progressStr = "";
-    
+
     progressStr = Value(data.ProgressPercent,0);
     if (progressStr == 'null') progressStr = 0;
 
     // give the php Object id to the Info button
     $('#info_' + data.ui_element_id)
         .data('action_id',Value(data.NiceID))
-        ;  
+        ;
 
 
     $('#info_' + data.ui_element_id).button( "option", "disabled", false );
 
-    $('#progress_' + data.ui_element_id).html(progressStr + "%");    
+    $('#progress_' + data.ui_element_id).html(progressStr + "%");
     $('#status_' + data.ui_element_id).html(Value(data.Status,""));
-    
-//   see whats in the data retuned in browser log    
-//    $.each(data, function(index, value) 
-//    { 
+
+//   see whats in the data retuned in browser log
+//    $.each(data, function(index, value)
+//    {
 //        console.log('postAddSingleProcess  ' + index + " = " +value);
 //
 //    });
-    
+
 }
 
 
 
 
-function UpdateProcess()
-{
-    // get selected 
-    
+function UpdateProcess() {
+    // get selected
+
     //console.log("Update Process - get status of all running jobs and report");
 
     // get all #info_*
@@ -743,30 +661,30 @@ function UpdateProcess()
     var id = null;
     var action_id = null;
     var ui_element_id = null;
-    
-    $('[id*="info_"]').each( function() {
-    
-        id = this.id.toString();
-    
-        action_id = $('#'+id).data('action_id');
-    
-        ui_element_id = id.replace('info_','');
-    
 
-        // when we scan for updates  - check the progress percent 
-        // should only log jobs for update where   progress percent <  100   $('#info_' + data.ui_element_id).data('ProgressPercent',Value(data.ProgressPercent));  
-    
-    
+    $('[id*="info_"]').each( function() {
+
+        id = this.id.toString();
+
+        action_id = $('#'+id).data('action_id');
+
+        ui_element_id = id.replace('info_','');
+
+
+        // when we scan for updates  - check the progress percent
+        // should only log jobs for update where   progress percent <  100   $('#info_' + data.ui_element_id).data('ProgressPercent',Value(data.ProgressPercent));
+
+
         //console.log("Update Process - with action_id  " + action_id);
-    
-        sData = { 
+
+        sData = {
               action_id:  action_id,
           ui_element_id:  ui_element_id
-              
+
         }
-    
+
         $.post("HotSpotsAjaxUpdate.php", sData , function(data) {postUpdateProcess(data);},"json");
-    
+
     });
 
 
@@ -778,49 +696,44 @@ function UpdateProcess()
 
 /**
  *  Update screen for one job (row)
- *  
+ *
  */
-function postUpdateProcess(data)
-{
-    
+function postUpdateProcess(data) {
     var ui_element_id = Value(data.ui_element_id);
-    
-    $('#status_' + ui_element_id).html(Value(data.Status,""));
-    
-    $('#info_' + data.ui_element_id).data('result',Value(data.Result));  
-    $('#info_' + data.ui_element_id).data('job_description',Value(data.job_description));  
 
-    $('#info_' + data.ui_element_id).data('ProgressPercent',Value(data.ProgressPercent));  
+    $('#status_' + ui_element_id).html(Value(data.Status,""));
+
+    $('#info_' + data.ui_element_id).data('result',Value(data.Result));
+    $('#info_' + data.ui_element_id).data('job_description',Value(data.job_description));
+
+    $('#info_' + data.ui_element_id).data('ProgressPercent',Value(data.ProgressPercent));
 
     $('#progress_' + ui_element_id).html(Value(data.ProgressPercent) + "%");
-    
-    
-                              
-    if (data.ExecutionFlag == 'EXECUTION_FLAG_COMPLETE')
-    {
-        clearInterval(statusUpdateTimer);  // this needs to happen when all have been complete    
-        
+
+
+
+    if (data.ExecutionFlag == 'EXECUTION_FLAG_COMPLETE') {
+        clearInterval(statusUpdateTimer);  // this needs to happen when all have been complete
+
         // setup button to allow user to show results for this job.
         buildRichnessOutputTab(Value(data.job_description,''),Value(data.Result),data)
-        
+
         $('#tabs').tabs('select', $('#tabs').tabs('length') -1 ); // once complete and tab is there chnage to it
-        
+
     }
-    
-    
-    
+
+
+
 }
 
 
 /**
  * Create new table for this job
  */
-function buildRichnessOutputTab(job_description,result,data)
-{
-    
+function buildRichnessOutputTab(job_description,result,data) {
 //    console.log('job_description');
 //    console.log(job_description);
-//    
+//
 //    console.log('result');
 //    console.log(result);
 //
@@ -829,158 +742,152 @@ function buildRichnessOutputTab(job_description,result,data)
 
 
     var ID = Value(data.ID,-1);
-    
+
     if (ID == -1) return;
-    
+
     ID = ID.replace('.',"_");
-    
-    
+
+
     var parameters = modelledParametersFromRichnessResult(result);
 
     var newTabContentId = 'completed_'+ID;
 
     if (exists('#' + newTabContentId)) return;
-    
+
     $('working').append('<div id="'+newTabContentId+'"></div>');
 
     var cmd_id = Value(data.ID,-1);
 
     var returnLinkHREF = '';
-    if (cmd_id != -1)
-    {
+    if (cmd_id != -1) {
         var url = ApplicationFolderWeb + "applications/HotSpots.php?cmd=" + Value(data.ID);
         returnLinkHREF = '<a target="_results' + ID + '" href="'+url+'"><img name="Bookmark result" alt="Bookmark result" style="width: 20px; height: 20px" border="0" src="'+IconSource+'bookmark.png"></a>';
     }
 
 
     $('#tabs').tabs("add",'#' + newTabContentId,"Richness:: " + job_description + '&nbsp;' + returnLinkHREF);
-    
+
     $("#" + newTabContentId).css("display","block");
 
     var combination = null;
 
     var pair = null;
-        
+
     var scenario_id = null
-    
+
     var comboStart = null;
     var comboEnd = null;
     var comboLength = null;
     var comboStr = "";
     var comboFilename_asc = '';
     var comboFilename_png = '';
-    
+
     var firstTime = '';
-    
-    var msg  = ""; 
-    
-    
+
+    var msg  = "";
+
+
     var comboFilename_gz = '';
-    
-    $.each(parameters.scenarios, function(index, scenario) 
-    {
-        
+
+    $.each(parameters.scenarios, function(index, scenario) {
+
         scenario_id = 'row_'+newTabContentId+'_'+scenario;
 
         msg += '<div class="richnessScenario ui-widget-content ui-corner-all" id="'+scenario_id+'">';
         msg += '<h1 class="ui-widget-header ui-corner-all" >' + scenario + '</h1>';
-        msg += '<ul class="ui-widget-content ui-corner-all">'; 
-        $.each(parameters.times, function(index, time) 
+        msg += '<ul class="ui-widget-content ui-corner-all">';
+        $.each(parameters.times, function(index, time)
         {
-            
+
             comboFilename_asc = "";
             comboFilename_png = "";
-            
+
             time = $.trim(time);
             if (time == '') return;
-                        
+
             if (firstTime == '') firstTime = time;
-            
+
             combination = scenario + '_' + time;
-            
+
             comboStart = result.indexOf(combination);
-            
+
             comboEnd = result.indexOf('.asc',comboStart) + 4;
-            
+
             comboLength = comboEnd - comboStart;
-                        
+
             comboStr = result.substr(comboStart,comboLength);
-            
+
             comboFilename_asc = $.trim(comboStr.replace(combination + "=",""));
 
-            
+
             if (comboFilename_asc == '') return;
-            
+
             comboFilename_asc = Maxent_Species_Data_folder_web + 'richness/' + comboFilename_asc;
-            
+
             comboFilename_gz  = comboFilename_asc + '.gz';
-            
+
             comboFilename_png =  comboFilename_asc.replace('.asc','.png');
-            
+
             msg += '<li class="time_cell time_'+time+'" id="'+newTabContentId +  '_' + combination+'">';
             msg += '<h1 class="ui-widget-header ui-corner-all" >' + time + '&nbsp;&nbsp;&nbsp;<a target="_download" href="'+comboFilename_gz+'"><img title="download" src="'+IconSource+'Download-icon.png" style="width: 20px; height: 20px"></a> </h1>';
             msg += '<img src="' + comboFilename_png + '" />' + '';
             msg += '</li>';
 
         });
-        msg += "</ul>"; 
-        msg += "</div>"; 
-        
+        msg += "</ul>";
+        msg += "</div>";
+
     });
 
-    
+
     $("#" + newTabContentId).html(msg);
-    
+
 
 }
 
 
-function richness_time_select(src)
-{
- 
+function richness_time_select(src) {
+
    var id = src.id.toString();
- 
+
    $('.job_time_select').removeClass('ui-state-active');
    $('#'+id).addClass('ui-state-active');
- 
+
    var bits = id.split('_');
- 
+
    var time = bits[2];
- 
+
     $('.time_cell').hide();
-    
+
     $('.time_' + time).show();
- 
+
 }
 
 /**
-s * From result passed back via AJX - return arrays of Scenario names, MOdel names, and times   
- *    
+s * From result passed back via AJX - return arrays of Scenario names, MOdel names, and times
+ *
  * returns object
  *    scenarios: array of scenario names
  *    models:    array of model names
- *    times:     array of times 
- * 
+ *    times:     array of times
+ *
  */
-function modelledParametersFromRichnessResult(result)
-{
-    
+function modelledParametersFromRichnessResult(result) {
     var combinations = result.split("~");
 
 
     var pair = null;
     var combination = null;
-    
+
     var scenario = null;
     var time     = null;
 
     var scenario_str  = '';
     var time_str     = '';
 
-    $.each(combinations, function(index, combination_quicklook) 
-    { 
-        
-        
+    $.each(combinations, function(index, combination_quicklook) {
+
+
         pair = combination_quicklook.split('=');
         combination = pair[0].split('_');
 
@@ -989,7 +896,7 @@ function modelledParametersFromRichnessResult(result)
 
         if (!contains(scenario_str,scenario))
         {
-            if (scenario_str == "") 
+            if (scenario_str == "")
                 scenario_str  = scenario
             else
                 scenario_str += ","+ scenario
@@ -997,7 +904,7 @@ function modelledParametersFromRichnessResult(result)
 
         if (!contains(time_str,time))
         {
-            if (time_str == "") 
+            if (time_str == "")
                 time_str  = time
             else
                 time_str += ","+ time
@@ -1014,7 +921,7 @@ function modelledParametersFromRichnessResult(result)
 
     // returns object
     // scenarios: array of scenario names
-    // times:     array of times 
+    // times:     array of times
 
     return result;
 
@@ -1023,48 +930,42 @@ function modelledParametersFromRichnessResult(result)
 
 
 /**
- * Happens if they passed in cmd=12345.122345 on url 
+ * Happens if they passed in cmd=12345.122345 on url
  */
-function previousCommand(cmd)
-{
-    
+function previousCommand(cmd) {
         if (cmd == '') return;
-    
-        sData = { 
+
+        sData = {
               action_id:cmd
         }
-    
-    
-    
+
+
+
         $.post("HotSpotsAjaxGetCommandValues.php", sData , function(data) {postPreviousCommand(data);},"json");
-    
+
 }
 
 
-function postPreviousCommand(data)
-{
-    
-    
+function postPreviousCommand(data) {
+
     buildRichnessOutputTab(Value(data.job_description), Value(data.Result),data)
-    
+
     $('#tabs').tabs('select', $('#tabs').tabs('length') -1 );
-    
-    
+
+
 }
 
 
 
 var dialog = null;
 
-function infoDialog(src)
-{
-    
-    var dialogContent = 'Reteiving Job Information<br>' + 
+function infoDialog(src) {
+    var dialogContent = 'Reteiving Job Information<br>' +
                         '<img src="'+IconSource+'wait.gif">';
-    
+
     var infoButtonID = src.id.toString();
 
-    var result = $('#' + infoButtonID).data('result');  
+    var result = $('#' + infoButtonID).data('result');
 
 
     var action_id = $('#' + infoButtonID).data('action_id');
@@ -1072,7 +973,7 @@ function infoDialog(src)
     console.log("from info button result =    " + result);
 
     console.log("get info for  " + action_id);
-    
+
 
     dialog = $('<div></div>')
             .html(dialogContent)
@@ -1083,50 +984,48 @@ function infoDialog(src)
             });
 
     dialog.dialog('open');
-    
-    
+
+
     // send to server command_id and the ID of the element that sent it.
-    
-    var 
-        jData = { 
+
+    var
+        jData = {
              action_id: action_id
         }
-    
-    
-    $.post("HotSpotsCommandInfoAjax.php", jData , function(data) {postInfoDialog(data);},"json");    
-    
-    
-    
+
+
+    $.post("HotSpotsCommandInfoAjax.php", jData , function(data) {postInfoDialog(data);},"json");
+
+
+
 }
 
 
 
 
-function postInfoDialog(data)
-{
+function postInfoDialog(data) {
 
 
     // for debug
-    $.each(data, function(index, value) 
-    { 
+    $.each(data, function(index, value) {
         console.log('postInfoDialog .. ' + index + " = " +value);
-    });    
+    });
 
     var msg = '';
 
     var job_description = Value(data.job_description);
-    
+
     var status = Value(data.Status);
 
     var result = Value(data.Result);
 
     msg = "<h1>" + job_description + "</h1><br><i>" + status + "</i>";
-    
+
 
     $(dialog).html(msg);
 
     dialog = null;
-    
+
 }
 
 
@@ -1137,11 +1036,11 @@ $(document).ready(function(){
 
     screenSetup();
 
-    $('#tabs').height(2000).tabs();
+//    $('#tabs').tabs();
     $('.selectable')
         .selectable()
         .selectable(
-              {stop: function(event, ui) {updateCurrentPackage();} 
+              {stop: function(event, ui) {updateCurrentPackage();}
             })
     ;
 
@@ -1157,22 +1056,21 @@ $(document).ready(function(){
         ;
 
     setupInputs();
-    
+
     $('.SelectionToolBar button')
-        .button()
-        .css("font-size","0.8em")
-        .css("height","90%")
-        .css("margin","2px")
+//        .button()
+//        .css("font-size","0.8em")
+//        .css("height","90%")
+//        .css("margin","2px")
         .click(function() {selectElements(this);})
-        ;    
-    
+        ;
+
 
     $('.selectable li').hover(function () {hoverSelectElementsIn(this);},function () {hoverSelectElementsOut(this);});
 
 
     $('#CreateProcess')
-        .button()
-        .css('margin',"10%")
+//        .button()
         ;
 
     $('#CreateProcess').addClass('ui-state-disabled');
@@ -1189,11 +1087,11 @@ $(document).ready(function(){
 
     // selectAllScenarios();
 
-   
+
     if (cmd != '') previousCommand(cmd);
-   
-   
-   
-   
+
+
+
+
 
 });

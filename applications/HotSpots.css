@@ -1,12 +1,18 @@
 
-#thecontent
-{
-    height: 2000px;
-    width: 100%;
-    overflow: hidden;
-    margin: 5px;
+.formsection {
+    clear: both;
 }
 
+p.usagetip {
+    font-size: 90%;
+    margin-top: -0.75em;
+    padding: 0 0 1em;
+    opacity: 0.9;
+}
+
+#InputTypesSet label {
+    margin: 0 0.5em;
+}
 
 #MapContainer
 {
@@ -29,6 +35,9 @@
     display: none;
 }
 
+#CreateProcess {
+    padding: 0.5em 2em;
+}
 
 .ui-autocomplete {
 		max-height: 200px;
@@ -38,15 +47,8 @@
 	}
 
 .ui-selecting {
-    background: #FECA40;
+    background: green !important;
 }
-
-.ui-selected {
-    background: #F39814;
-    color: white;
-}
-
-
 
 .selectable {
     list-style-type: none;
@@ -58,6 +60,8 @@
 }
 
 .selectable li {
+    position: relative;
+
     margin: 3px;
     padding: 0.4em;
     font-size: 1.0em;
@@ -66,32 +70,61 @@
     float: left;
     overflow: hidden;
 
+    background: rgba(255,255,255, 0.5);
+    border: 2px outset rgba(200,200,200, 0.35);
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    border-radius: 0.5em;
 }
 
-.selectable li  h4 {
+.selectable li:hover {
+    background: rgba(255,255,255, 0.8);
+}
+
+.UserInputs .itembox, .selectable li.ui-selected {
+    background: rgba(180,255,190, 0.75);
+    border: 2px inset rgba(200,200,200, 0.35);
+}
+
+.selectable li h4 {
     margin: 0em;
     padding: 0em;
     font-size: 1.0em;
 }
 
+.selectable li.ui-selected h4:after {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    content: 'selected';
+    opacity: 0.66;
+    color: #060;
+    float: right;
+    font-size: 75%;
+    height: 1.5em;
+    padding: 0 0.5em;
+
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    border-radius: 0.5em;
+}
+
+
 .selectable li p {
     margin: 0em;
     padding: 0em;
     font-size: 0.8em;
-    font-style: italic;
     overflow: hidden
 }
 
-
-.selector
-{
+.selector {
     width: 10%;
     float:left;
     height: 100%;
 }
 
-.selector h3
-{
+.selector h3 {
     height: 50px;
 }
 
@@ -149,33 +182,29 @@
     list-style-type: none;
     margin: 0;
     padding: 0;
-    height: 95%;
     width: 100%;
 
 }
 
 .UserInputs li {
-    margin: 3px;
+    margin-right: 1em;
     padding: 0.4em;
-    font-size: 1.0em;
     height: 70px;
     width: 20%;
     float: left;
     overflow: hidden;
 
+    background: rgba(255,255,255, 0.5);
+    border: 2px inset rgba(200,200,200, 0.35);
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    border-radius: 0.5em;
 }
 
-.UserInputs li  h4 {
-    margin: 0em;
-    padding: 0em;
-    font-size: 1.0em;
-}
 
 .UserInputs li p {
     margin: 0em;
     padding: 0em;
-    font-size: 0.8em;
-    font-style: italic;
     overflow: hidden
 }
 

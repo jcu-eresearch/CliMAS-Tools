@@ -29,7 +29,9 @@ $(document).ready(function() {
             correctlyEnableForm();
             return false;
         },
-        change: correctlyEnableForm
+        change: correctlyEnableForm,
+        close: correctlyEnableForm
+
     });
 
     // set up the download link to not do anything if it's disabled
