@@ -137,7 +137,7 @@ if (array_key_exists('page', $_GET)) {
 <div id="selectionpanel">
 
     <p class="toolintro">
-        Examine biodiversity of Australian vertebrate species, and projections of how biodiversity will change in the future.
+        Examine biodiversity of land-based Australian birds, mammals, reptiles and amphibians, and projections of how biodiversity will change in the future.
     </p>
 
     <form id="prebakeform" action="">

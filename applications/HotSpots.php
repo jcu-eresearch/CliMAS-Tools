@@ -102,6 +102,11 @@ $pagesubtitle = "Visualising biodiversity across Australia";
 
 <div class="maincontent">
 
+    <p class="toolintro">
+        Generate custom biodiversity maps for your selected set
+        of Australian vertebrates.
+    </p>
+
     <div class="formsection" id="tabs-1">
         <h2>Species List</h2>
         <p class="usagetip">
