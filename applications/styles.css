@@ -207,9 +207,17 @@ h3 {
 
     text-align: center;
     font-size: 90%;
-    padding: 0 10% 1em;
-    margin: 0 auto 2em;
-    border-bottom: 2px groove rgba(255,255,255, 0.45);
+    padding: 2em 10% 0.5em;
+    margin: -2em auto 2em;
+    border-bottom: 1px inset rgba(255,255,255, 0.45);
+
+    background: -moz-radial-gradient(bottom center, ellipse cover, rgba(255,255,255, 0.66) 10%, rgba(255,255,255, 0) 70%); /* FF3.6+ */
+    background: -webkit-gradient(radial, bottom center, 0px, center center, 70%, color-stop(0%,rgba(255,255,255, 0.66)), color-stop(70%,rgba(255,255,255, 0))); /* Chrome,Safari4+ */
+    background: -webkit-radial-gradient(bottom center, ellipse cover, rgba(255,255,255, 0.66) 10%,rgba(255,255,255, 0) 70%); /* Chrome10+,Safari5.1+ */
+    background: -o-radial-gradient(bottom center, ellipse cover, rgba(255,255,255, 0.66) 10%,rgba(255,255,255, 0) 70%); /* Opera 12+ */
+    background: -ms-radial-gradient(bottom center, ellipse cover, rgba(255,255,255, 0.66) 10%,rgba(255,255,255, 0) 70%); /* IE10+ */
+    background: radial-gradient(ellipse at bottom center, rgba(255,255,255, 0.66) 10%,rgba(255,255,255, 0) 70%); /* W3C */
+
 }
 
 .maincontent .toolintro {
