@@ -8,21 +8,7 @@ if (php_sapi_name() == "cli") return;
 
 $cmd = htmlutil::ValueFromGet('cmd',''); // if we have a command_id on the url then they have returned.
 
-$possibleNames = array(
-    "Biowealth",
-    "( ̲:̲̅:̲̅:̲̅[̲̅ ̲̅]̲̅:̲̅:̲̅:̲̲̅̅)",
-    "Biomaps",
-    "Biodiversity",
-    "Wilson",
-    "Species richness",
-    "&Sigma;sp",
-    "&Sigma;spp",
-    "&Sigma;pecies",
-    "&Sigma;Species"
-);
-
-$pagetitle = $possibleNames[ array_rand($possibleNames) ];
-$pagetitle = "The Biodiversity Map Tool";
+$pagetitle = "CliMAS Biodiversity";
 $pagesubtitle = "Visualising biodiversity across Australia";
 
 if (array_key_exists('page', $_GET)) {
@@ -36,7 +22,7 @@ if (array_key_exists('page', $_GET)) {
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title><?php echo $pagetitle; ?></title>
+    <title><?php echo preg_replace("/<[^>]*>/", "", $pagetitle); ?></title>
 
     <link rel="shortcut icon" href="<?php echo configuration::IconSource(); ?>favicon-trans.png" />
 

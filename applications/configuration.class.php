@@ -7,7 +7,6 @@
  *
  */
 
-
 class configuration {
 
     public static function DefaultMapableActionClassname() { return "ContextLayerAustralianVegetation"; }
@@ -22,6 +21,8 @@ class configuration {
 
         // this folder must match the tdh1-hpc configuration.
         $script = "/scratch/jc166922/tdh1/tdhtools/applications/".$script.'.php';
+
+        $script = "/scratch/pvrdwb/tdhtools/applications/".$script.'.php';
 
         $cmd = "sshpass -f/var/www/.ssh/1234567890 ssh jc166922@login.hpc.jcu.edu.au php -q {$script} {$parameters}";
         $result = array();

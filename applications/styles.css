@@ -70,6 +70,12 @@ h2 {
     margin-bottom: 1em;
 }
 
+h3 {
+    font-size: inherit;
+    padding: 2em 0 0.33em;
+    margin-bottom: 1em;
+}
+
 /* header - - - - - - - - - - - - */
 
 .header {
@@ -228,6 +234,11 @@ h2 {
     border-bottom: 2px groove rgba(255,255,255, 0.45);
 }
 
+.maincontent h3 {
+    text-shadow: 0 1px 0 #fff, 0 -1px 0 #cfc6a9;
+    xborder-bottom: 2px groove rgba(255,255,255, 0.225);
+}
+
 td, th {
     padding: 0.5em;
 }
@@ -253,6 +264,23 @@ li {
     margin: 1em 0 2em;
 }
 
+dl {
+    padding-left: 2em;
+}
+
+dt {
+    display: block;
+    width: 7em;
+    clear: left;
+    font-weight: bold;
+    line-height: 1.4em;
+}
+
+dd {
+    display: block;
+    margin-top: -1.4em;
+    padding-left: 7em;
+}
 
 p.linkselsewhere {
     text-align: right;
