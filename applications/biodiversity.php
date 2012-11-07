@@ -134,7 +134,13 @@ if (array_key_exists('page', $_GET)) {
 
 <?php } else { // ============================================================= ?>
 
-    <div id="selectionpanel"><form id="prebakeform" action="">
+<div id="selectionpanel">
+
+    <p class="toolintro">
+        Examine biodiversity of Australian vertebrate species, and projections of how biodiversity will change in the future.
+    </p>
+
+    <form id="prebakeform" action="">
         <div class="formsection taxon">
 
             <div class="onefield">

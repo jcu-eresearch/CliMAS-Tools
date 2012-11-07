@@ -191,6 +191,25 @@ h2 {
 
 /* content ----------------------------------------------------- */
 
+.toolintro {
+    xbackground: rgba(207,198,169, 0.1);
+    xborder: 2px groove rgba(255,255,255, 0.45);
+    xborder: 1px inset rgba(255,255,255, 0.45);
+    -xmoz-border-radius: 1em;
+    -xwebkit-border-radius: 1em;
+    xborder-radius: 1em;
+
+    text-align: center;
+    font-size: 90%;
+    padding: 0 0 1em;
+    margin: 0 auto 2em;
+    border-bottom: 2px groove rgba(255,255,255, 0.45);
+}
+
+.maincontent .toolintro {
+    margin-top: 2.2em;
+}
+
 .maincontent {
     background: #efe6c5;
     margin: 0 4% 0;  /* 8% text border = 4% margin, 4% padding */

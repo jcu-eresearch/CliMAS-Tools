@@ -145,6 +145,10 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 
 <div class="maincontent">
 
+    <p class="toolintro">
+        Examine climate space available to Australian vertebrate species, and projections of how suitable space will change in the future.
+    </p>
+
     <div id="ToolBar">
             <input id="species" placeholder="Type in the species of interest">
     </div>
