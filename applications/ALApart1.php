@@ -432,7 +432,7 @@ function species_list_from_folders($real_data_folder)
 
 
     $species_list = array();
-
+/*
     ErrorMessage::Marker("Getting species amphibians list from [{$real_data_folder}amphibians/models/]");
     exec("ls -1 {$real_data_folder}amphibians/models/",$species_list );
 
@@ -443,7 +443,7 @@ function species_list_from_folders($real_data_folder)
 
     ErrorMessage::Marker("Getting species reptiles list from [{$real_data_folder}reptiles/models/]");
     exec("ls -1 {$real_data_folder}reptiles/models/",  $species_list );
-
+*/
 
     ErrorMessage::Marker("Getting species birds list from [{$real_data_folder}birds/models/]");
     exec("ls -1 {$real_data_folder}birds/models/",  $species_list );
