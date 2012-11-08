@@ -47,7 +47,18 @@ $clazz = ClazzData::clazzCommonName($clazz, true);
 
 $M = new MapServerWrapper();
 
+// if they wanted current, that's called "1990"
+if (preg_match('_current', $settings)) {
+    $settings = '1990';
+}
+
+// if they asked for all of a class, that uses the classes' common name
+if ($clazz == ClazzData::clazzCommonName($taxon, true)) {
+    $taxon = strtolower($clazz);
+}
+
 $grid_filename_gz  = configuration::SDMFolder() . "{$clazz}/richness/{$settings}_{$taxon}.asc.gz";
+
 if (!file_exists($grid_filename_gz)) {
     $result = array();
     $result['grid_filename_gz'] = $grid_filename_gz;

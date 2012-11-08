@@ -50,7 +50,6 @@ $ ->
     # disable the emission scenario thingy when they choose "current"
     #
     $('#prebakeform .year').change (event)->
-        console.log 'done it'
         if $('#prebakeform .year:checked').prop('value') == 'current'
             $('#prebakeform input:radio[name="scenario"]').attr 'disabled', true
             $('#prebakeform .scenario').addClass 'disabled'
@@ -105,8 +104,6 @@ $ ->
             else
                 groupLevel = taxaLevel
                 groupName = $("#prebakeform select[name='chosen_#{taxaLevel}_#{clazz}']").val()
-
-        console.log [year, scenario, output, groupLevel, groupName]
 
         # hit the prep url to unzip the asciigrid
         $.ajax 'BiodiversityPrep.php', {

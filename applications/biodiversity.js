@@ -34,7 +34,6 @@
       }
     });
     $('#prebakeform .year').change(function(event) {
-      console.log('done it');
       if ($('#prebakeform .year:checked').prop('value') === 'current') {
         $('#prebakeform input:radio[name="scenario"]').attr('disabled', true);
         return $('#prebakeform .scenario').addClass('disabled');
@@ -77,7 +76,6 @@
           groupName = $("#prebakeform select[name='chosen_" + taxaLevel + "_" + clazz + "']").val();
         }
       }
-      console.log([year, scenario, output, groupLevel, groupName]);
       $.ajax('BiodiversityPrep.php', {
         cache: false,
         dataType: 'json',
