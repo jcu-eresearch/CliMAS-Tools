@@ -60,7 +60,7 @@ class ClazzData extends Object {
         }
 
         // if we got here, we don't have anything left to try.
-        return "";
+        return $clazz;
     }
 
 
