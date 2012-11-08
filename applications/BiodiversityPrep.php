@@ -132,6 +132,8 @@ foreach (array_keys($ramp) as $key )
 foreach (array_keys($ramp) as $key )
     if ($key == 0) $ramp[$key] = null;    // chnage all values below threshold to trasparent
 
+error_log(var_dump($ramp));
+
 $layer->ColorTable($ramp);
 
 $MF = Mapfile::create($M);
