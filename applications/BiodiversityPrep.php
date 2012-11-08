@@ -48,7 +48,7 @@ $clazz = ClazzData::clazzCommonName($clazz, true);
 $M = new MapServerWrapper();
 
 // if they wanted current, that's called "1990"
-if (preg_match('_current', $settings)) {
+if (preg_match('current', $settings)) {
     $settings = '1990';
 }
 
