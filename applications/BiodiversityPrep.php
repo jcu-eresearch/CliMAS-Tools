@@ -57,9 +57,6 @@ if ($clazz == ClazzData::clazzCommonName($taxon, true)) {
     $taxon = strtolower($clazz);
 }
 
-
-error_log("\n\nclazz is " . $clazz);
-
 // if they asked for all vertebrates, that in a different place
 if ($clazz == 'all') {
     $grid_filename_gz  = configuration::SDMFolder() . "vertebrate_richness/{$settings}_vertebrates.asc.gz";
