@@ -30,7 +30,7 @@ $clazz_translation['MAMMALIA'] = 'mammals';
 $clazz_translation['REPTILIA'] = 'reptiles';
 $clazz_translation['AVES'] = 'birds';
 
-$real_data_folder = "/scratch/jc148322/AP02/";   // folder with real data
+$real_data_folder = "/home/TDH/data/Gilbert/SDM/";   // folder with real data
 ErrorMessage::Marker("real_data_folder = [{$real_data_folder}]" );
 
 
