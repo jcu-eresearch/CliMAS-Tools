@@ -58,7 +58,7 @@ if ($clazz == ClazzData::clazzCommonName($taxon, true)) {
 }
 
 
-error_log("\n\nclazz is " . $clazz)
+error_log("\n\nclazz is " . $clazz);
 
 // if they asked for all vertebrates, that in a different place
 if ($clazz == 'all') {
