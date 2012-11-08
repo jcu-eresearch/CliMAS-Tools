@@ -198,26 +198,19 @@ h3 {
 /* content ----------------------------------------------------- */
 
 .toolintro {
-    xbackground: rgba(207,198,169, 0.1);
-    xborder: 2px groove rgba(255,255,255, 0.45);
-    xborder: 1px inset rgba(255,255,255, 0.45);
-    -xmoz-border-radius: 1em;
-    -xwebkit-border-radius: 1em;
-    xborder-radius: 1em;
-
     text-align: center;
-    font-size: 90%;
+    font-size: 85%;
+    color: rgba(0,0,0, 0.75);
     padding: 2em 10% 0.5em;
-    margin: -2em auto 2em;
-    border-bottom: 1px inset rgba(255,255,255, 0.45);
+    margin: -2.5em auto 2em;
+    border-bottom: 1px solid rgba(216,201,167, 0.66);
 
-    background: -moz-radial-gradient(bottom center, ellipse cover, rgba(255,255,255, 0.66) 10%, rgba(255,255,255, 0) 70%); /* FF3.6+ */
-    background: -webkit-gradient(radial, bottom center, 0px, center center, 70%, color-stop(0%,rgba(255,255,255, 0.66)), color-stop(70%,rgba(255,255,255, 0))); /* Chrome,Safari4+ */
-    background: -webkit-radial-gradient(bottom center, ellipse cover, rgba(255,255,255, 0.66) 10%,rgba(255,255,255, 0) 70%); /* Chrome10+,Safari5.1+ */
-    background: -o-radial-gradient(bottom center, ellipse cover, rgba(255,255,255, 0.66) 10%,rgba(255,255,255, 0) 70%); /* Opera 12+ */
-    background: -ms-radial-gradient(bottom center, ellipse cover, rgba(255,255,255, 0.66) 10%,rgba(255,255,255, 0) 70%); /* IE10+ */
-    background: radial-gradient(ellipse at bottom center, rgba(255,255,255, 0.66) 10%,rgba(255,255,255, 0) 70%); /* W3C */
-
+    background: -moz-radial-gradient(bottom center, ellipse cover, rgba(216,201,167, 0.80) 10%, rgba(216,201,167, 0) 70%); /* FF3.6+ */
+    background: -webkit-gradient(radial, bottom center, 0px, center center, 70%, color-stop(0%,rgba(216,201,167, 0.80)), color-stop(70%,rgba(216,201,167, 0))); /* Chrome,Safari4+ */
+    background: -webkit-radial-gradient(bottom center, ellipse cover, rgba(216,201,167, 0.80) 10%,rgba(216,201,167, 0) 70%); /* Chrome10+,Safari5.1+ */
+    background: -o-radial-gradient(bottom center, ellipse cover, rgba(216,201,167, 0.80) 10%,rgba(216,201,167, 0) 70%); /* Opera 12+ */
+    background: -ms-radial-gradient(bottom center, ellipse cover, rgba(216,201,167, 0.80) 10%,rgba(216,201,167, 0) 70%); /* IE10+ */
+    background: radial-gradient(ellipse at bottom center, rgba(216,201,167, 0.80) 10%,rgba(216,201,167, 0) 70%); /* W3C */
 }
 
 .maincontent .toolintro {

@@ -80,8 +80,9 @@ if (array_key_exists('page', $_GET)) {
 <?php
     $navSetup = array(
         'tabs' => array(
+            '&laquo; CliMAS tools' => 'index.php',
             'quick map' => 'biodiversity.php',
-            'custom map' => 'HotSpots.php',
+//            'custom map' => 'HotSpots.php',
             'about the map tool' => 'biodiversity.php?page=about',
             'using the tool' => 'biodiversity.php?page=using',
             'the science' => 'biodiversity.php?page=science',
@@ -247,11 +248,11 @@ if (array_key_exists('page', $_GET)) {
         </div>
 
     </form>
-
+<?php /*
     <p class="linkselsewhere">
         <a href="HotSpots.php">customised maps &raquo;</a>
     </p>
-
+*/ ?>
 </div>
 
 <?php } // ==================================================================== ?>

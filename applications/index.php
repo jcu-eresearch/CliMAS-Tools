@@ -8,7 +8,7 @@ include_once dirname(__FILE__).'/includes.php';
 
 if (array_util::Value($_GET, "clean") == 'xyz123') DatabaseFile::RemoveUsedFiles();
 
-$pagetitle = "Biodiversity tools";
+$pagetitle = "CliMAS tools";
 $pagesubtitle = "Tools related to modelling climate change, climate suitability and biodiversity";
 
 ?>
@@ -18,25 +18,6 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><?php echo $pagetitle; ?></title>
     <link href="styles.css" rel="stylesheet" type="text/css">
-
-    <script type="text/javascript" >
-    <?php
-     ?>
-
-    </script>
-
-        <script type="text/javascript" src="SpeciesScenarioTimeline.js"></script>
-
-    <style>
-    </style>
-
-    <script>
-
-    $(document).ready(function(){
-    });
-
-    </script>
-
 </head>
 <body>
 
@@ -51,6 +32,9 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
     $navSetup = array(
         'tabs' => array(
             'tool index' => 'index.php',
+            'Suitability' => 'SpeciesSuitability.php',
+            'Biodiversity' => 'biodiversity.php',
+            'Reports' => '/bifocal',
         ),
         'current' => 'index.php'
     );
@@ -61,7 +45,7 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
 
     <div style="display: inline-block; vertical-align: top; width: 28%; margin-right: 5%">
         <h2><a href="SpeciesSuitability.php">
-            Species Suitability
+            CliMAS Suitability
         </a></h2><p>
             See climate suitability maps for individual species, now and in the future.
         </p><p>
@@ -71,7 +55,7 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
 
     <div style="display: inline-block; vertical-align: top; width: 28%; margin-right: 5%">
         <h2><a href="biodiversity.php">
-            Biodiversity
+            CliMAS Biodiversity
         </a></h2><p>
             See biodiversity (count of species suitable to an area) maps, now and in the future.
         </p><p>
@@ -81,7 +65,7 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
 
     <div style="display: inline-block; vertical-align: top; width: 28%">
         <h2><a href="/bifocal">
-            BIFOCCAL Reports
+            CliMAS Reports
         </a></h2><p>
             Create regionally-focussed reports on the future of climate change and biodiversity.
         </p><p>

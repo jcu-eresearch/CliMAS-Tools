@@ -45,8 +45,7 @@ if (array_key_exists('page', $_GET)) {
     $page = null;
 }
 
-$pagetitle = "Biosuitability";
-$pagetitle = "The Suitability Map Tool";
+$pagetitle = "CliMAS Suitability";
 $pagesubtitle = "Vertebrate distributions based on climate suitability";
 
 ?>
@@ -104,7 +103,8 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 <?php
     $navSetup = array(
         'tabs' => array(
-            'map tool' => 'SpeciesSuitability.php',
+            '&laquo; CliMAS tools' => 'index.php',
+            'suitability map' => 'SpeciesSuitability.php',
             'about the map tool' => 'SpeciesSuitability.php?page=about',
             'using the tool' => 'SpeciesSuitability.php?page=using',
             'the science' => 'SpeciesSuitability.php?page=science',
