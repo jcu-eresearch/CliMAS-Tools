@@ -21,6 +21,11 @@ $clazz_list = array(
     'AMPHIBIA' => "amphibians"
 );
 
+// short version for testing
+$clazz_list = array(
+    'AMPHIBIA' => "amphibians"
+);
+
 // where to find json info for species
 //    at path: $json_root / [Species_name]
 $json_root = "/home/TDH/data/Gilbert/source3/ALA_JSON/";
@@ -125,12 +130,9 @@ function dirList($path) {
 // make a dir, if we are in execute mode
 function save_to_file($file, $content) {
     global $execute;
+
     if ($execute) {
-
-echo "!!!!! about to put stuff into file {$file} !!!!!";
-
         safemkdir( pathinfo($file, PATHINFO_DIRNAME) );
-
         file_put_contents( $file, $content );
     } else {
         ErrorMessage::Marker("(DRYRUN) not saving file " . $file);
@@ -142,9 +144,6 @@ function safemkdir($dir) {
     global $execute;
 
     if ($execute) {
-
-echo "!!!!! making dir {$dir} !!!!!";
-
         file::mkdir_safe($dir);
     } else {
         ErrorMessage::Marker("(DRYRUN) not making directory " . $dir);
