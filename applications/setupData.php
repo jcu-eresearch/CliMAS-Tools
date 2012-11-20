@@ -163,7 +163,7 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
     global $execute;
 
     $species_name = str_replace("_", " ", $species_info['name']);
-    $sp_json_dir = $json_dir . '/' . $species_name;
+    $sp_json_dir = $json_dir . '/' . $species_info['name'];
 
     safemkdir($sp_json_dir);
 
