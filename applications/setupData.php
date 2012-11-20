@@ -105,9 +105,7 @@ foreach ($clazz_list as $clazz_latin => $clazz_english) {
 
 ErrorMessage::Marker("Filling in species taxonomic info..");
 foreach ($species_list as $species_name => $species_data) {
-
-    $species_list[$species_name] = injectSpeciesTaxaInfo($species_data, $json_root, $error_logfile)
-
+    $species_list[$species_name] = injectSpeciesTaxaInfo($species_data, $json_root, $error_logfile);
 }
 ErrorMessage::Marker(" .. done filling in species info.");
 
