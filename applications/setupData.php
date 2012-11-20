@@ -123,6 +123,16 @@ function dirList($path) {
 }
 // ------------------------------------------------------------------
 // make a dir, if we are in execute mode
+function save_to_file($file, $content) {
+    global $execute;
+    if ($execute) {
+        file_put_contents( $file, $content );
+    } else {
+        ErrorMessage::Marker("(DRYRUN) not saving file " . $file);
+    }
+}
+// ------------------------------------------------------------------
+// make a dir, if we are in execute mode
 function safemkdir($dir) {
     global $execute;
 
@@ -141,12 +151,12 @@ function fetchIfRequired($filename, $url) {
 
     if (!file_exists($filename)) {
         ErrorMessage::Marker("Fetching data from {$url} ..");
-        file_put_contents( $filename, file_get_contents($url) );
+        save_to_file( $filename, file_get_contents($url) );
     }
 
     if (!file_exists($filename)) {
         ErrorMessage::Marker("### Error getting data from ALA at URL " . $url);
-        file_put_contents($error_logfile,"ERROR GETTING ALA DATA FROM URL " . $url, 0, FILE_APPEND);
+        save_to_file($error_logfile,"ERROR GETTING ALA DATA FROM URL " . $url, 0, FILE_APPEND);
         return false;
 
     } else {
