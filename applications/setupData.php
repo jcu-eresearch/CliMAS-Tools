@@ -23,10 +23,10 @@ $clazz_list = array(
 
 // where to find json info for species
 //    at path: $json_root / [Species_name]
-$json_root = "/home/TDH/Gilbert/source3/ALA_JSON/";
+$json_root = "/home/TDH/data/Gilbert/source3/ALA_JSON/";
 
 // somewhere to log errors to
-$error_logfile = "/home/TDH/Gilbert/setup_data_errors.log";
+$error_logfile = "/home/TDH/data/Gilbert/setup_data_errors.log";
 
 print_r($clazz_list);
 
