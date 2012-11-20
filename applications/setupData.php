@@ -23,7 +23,7 @@ $clazz_list = array(
 
 // where to find json info for species
 //    at path: $json_root / [Species_name]
-$json_root = "/home/TDH/Gilbert/source/ALA_JSON/";
+$json_root = "/home/TDH/Gilbert/source3/ALA_JSON/";
 
 // somewhere to log errors to
 $error_logfile = "/home/TDH/Gilbert/setup_data_errors.log";
@@ -173,13 +173,13 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
     global $execute;
 
     $species_name = str_replace("_", " ", $species_info['name']);
-    $sp_json_dir = $json_dir . '/' . $species_info['name'];
+    $sp_json_dir = $json_dir . $species_info['name'] . '/';
 
     safemkdir($sp_json_dir);
 
     try {
         // fill out search_result.json
-        $file = $sp_json_dir . "/search_result.json";
+        $file = $sp_json_dir . "search_result.json";
         $url = 'http://bie.ala.org.au/ws/search.json?q=' . urlencode($species_name);
         if (fetchIfRequired($file, $url)) {
             ErrorMessage::Progress();
@@ -198,7 +198,7 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
 
         if (!array_key_exists('parentGuid', $result0)) return $species_info;
 
-        $file = $sp_json_dir . "/species_data_search_results.json";
+        $file = $sp_json_dir . "species_data_search_results.json";
         $url = "http://bie.ala.org.au/ws/species/{$guid}.json";
         if (fetchIfRequired($file, $url)) {
             ErrorMessage::Progress();
@@ -242,7 +242,7 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
 
         $species_info['common_names'] = $names;
 
-        file_put_contents($sp_json_dir . "/data_array.txt", print_r($species_info,true));
+        file_put_contents($sp_json_dir . "data_array.txt", print_r($species_info,true));
 
         return $species_info;
 
