@@ -28,7 +28,9 @@ print_r($clazz_list);
 $execute = false;
 
 $action = array_util::Value($argv, 1);
-if (is_null($action)) $action = 'HELP';
+if (is_null($action)) {
+    $action = 'HELP';
+}
 
 if ($action == 'HELP') {
     ErrorMessage::Marker("setupData.php Help");
@@ -38,11 +40,11 @@ if ($action == 'HELP') {
     ErrorMessage::Marker("Run 'php {$argv[0]} EXECUTE' to actually do the job.");
     return;
 
-else if ($action == 'DRYRUN') {
+} else if ($action == 'DRYRUN') {
     ErrorMessage::Marker("####### DRY RUN ONLY... no files will be changed #######");
     ErrorMessage::Marker("Please run as 'php {$argv[0]} EXECUTE' to actually do the job.");
 
-else if ($action == 'EXECUTE') {
+} else if ($action == 'EXECUTE') {
     ErrorMessage::Marker("####### EXECUTING... we're through the looking glass here, people #######");
     $execute = true;
 }
