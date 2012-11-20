@@ -126,6 +126,7 @@ function dirList($path) {
 function save_to_file($file, $content) {
     global $execute;
     if ($execute) {
+        safemkdir( pathinfo($file, PATHINFO_DIRNAME) );
         file_put_contents( $file, $content );
     } else {
         ErrorMessage::Marker("(DRYRUN) not saving file " . $file);
