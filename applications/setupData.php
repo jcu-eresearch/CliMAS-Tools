@@ -100,13 +100,13 @@ foreach ($clazz_list as $clazz_latin => $clazz_english) {
 // FIND TAXA INFO for species, going to ALA when necessary
 //
 
+ErrorMessage::Marker("Filling in species taxonomic info..");
 foreach ($species_list as $species_name => $species_data) {
-    ErrorMessage::Marker("Filling in species taxonomic info..");
 
-    $species_data['name'] = $species_name;
+    $species_list[$species_name]['name'] = $species_name;
 
-    ErrorMessage::Marker(" .. done filling in species info.");
 }
+ErrorMessage::Marker(" .. done filling in species info.");
 
 
 
