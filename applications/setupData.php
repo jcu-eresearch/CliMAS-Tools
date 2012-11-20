@@ -9,7 +9,8 @@ if (php_sapi_name() != "cli") return;
 //
 // places:
 //
-// where to find models - at the path / $model_root / $clazz_list[class] / Species_name
+// where to find models:
+//    at path: / $model_root / $clazz_list[class] / models / [Species_name]
 $model_root = "/home/TDH/data/SDM/";
 
 $clazz_list = array(
@@ -66,7 +67,7 @@ foreach ($clazz_list as $clazz_latin => $clazz_english) {
     ErrorMessage::Marker("Reading {$clazz_english} modelled species...");
 
     // get list of species-model-directories that exist for this class
-    $spp_in_class = dirList($model_root . $clazz_english);
+    $spp_in_class = dirList($model_root . $clazz_english . '/models/');
 
     // complain if there weren't any models there.
     if (count($spp_in_class) < 1) {
@@ -81,6 +82,7 @@ foreach ($clazz_list as $clazz_latin => $clazz_english) {
         $species_list[$species_name] = $species_info;
         ErrorMessage::Progress();
     }
+    ErrorMessage::EndProgress();
 
     ErrorMessage::Marker("Done reading {$clazz_english}.");
 }

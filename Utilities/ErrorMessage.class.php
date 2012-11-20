@@ -20,6 +20,14 @@ class ErrorMessage extends Object {
         }
     }
 
+    // print a dot (and no newline) to stdout to show progress
+    public static function EndProgress() {
+        if (php_sapi_name() == "cli") {
+            // apparently fputs doesn't buffer
+            fputs(STDOUT, '\n');
+        }
+    }
+
     public static function Marker($message)
     {
 
