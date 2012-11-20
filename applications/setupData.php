@@ -186,6 +186,7 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
         } else {
             ErrorMessage::EndProgress();
             ErrorMessage::Marker("Couldn't get identifying data for {$species_name}.");
+            return $species_info;
         }
 
         $data = json_decode(file_get_contents($file));
