@@ -126,7 +126,11 @@ function dirList($path) {
 function save_to_file($file, $content) {
     global $execute;
     if ($execute) {
+
+echo "!!!!! about to put stuff into file {$file} !!!!!";
+
         safemkdir( pathinfo($file, PATHINFO_DIRNAME) );
+
         file_put_contents( $file, $content );
     } else {
         ErrorMessage::Marker("(DRYRUN) not saving file " . $file);
@@ -138,6 +142,9 @@ function safemkdir($dir) {
     global $execute;
 
     if ($execute) {
+
+echo "!!!!! making dir {$dir} !!!!!";
+
         file::mkdir_safe($dir);
     } else {
         ErrorMessage::Marker("(DRYRUN) not making directory " . $dir);
