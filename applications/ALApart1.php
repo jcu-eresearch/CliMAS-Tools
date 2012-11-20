@@ -45,7 +45,6 @@ ErrorMessage::Marker($modelled);
 
 
 
-
 $AP02_data_folder  = configuration::Maxent_Species_Data_folder();
 ErrorMessage::Marker("AP02_data_folder  = [{$AP02_data_folder}]" );
 
@@ -346,6 +345,7 @@ if ($execute)  exec("chmod -R u+rwxs,g+rwxs,+o+rwsx {$sdf}*");
 
 ErrorMessage::Marker("######## COMPLETED ######## ");
 
+// ---------------------------------------------------------------------------------------------------
 
 function remove_data_lookup_files($sdf)
 {
@@ -378,6 +378,7 @@ function remove_data_lookup_files($sdf)
 
 }
 
+// ---------------------------------------------------------------------------------------------------
 
 function create_taxa_folders($AP02_data_folder,$sdf)
 {
@@ -424,6 +425,7 @@ function create_taxa_folders($AP02_data_folder,$sdf)
 
 }
 
+// ---------------------------------------------------------------------------------------------------
 
 function species_list_from_folders($real_data_folder)
 {
@@ -452,6 +454,7 @@ function species_list_from_folders($real_data_folder)
 
 }
 
+// ---------------------------------------------------------------------------------------------------
 
 function modelled_list($real_data_folder,$actionlist_filename = "actionlist.csv")
 {
@@ -464,6 +467,7 @@ function modelled_list($real_data_folder,$actionlist_filename = "actionlist.csv"
 
 }
 
+// ---------------------------------------------------------------------------------------------------
 
 function ALASpeciesTaxa($species_folder_name,$sdf,$error_list_filename,$execute)
 {
@@ -494,10 +498,7 @@ function ALASpeciesTaxa($species_folder_name,$sdf,$error_list_filename,$execute)
             ErrorMessage::Marker("ERROR GETTING ALA DATA - $species_folder_name");
             file_put_contents($error_list_filename,"ERROR GETTING ALA DATA - $species_folder_name", 0, FILE_APPEND);
             continue;
-
-
         }
-
 
         $data = json_decode(file_get_contents("{$sdf}ALA_JSON/$species_folder_name/search_result.json"));
 
@@ -542,7 +543,6 @@ function ALASpeciesTaxa($species_folder_name,$sdf,$error_list_filename,$execute)
         $d['url_classification'] = "http://bie.ala.org.au/ws/species/{$guid}.json";
         $d['url_species_data']   = "http://bie.ala.org.au/ws/species/{$guid}.json";
 
-
         if (!file_exists("{$sdf}ALA_JSON/$species_folder_name/species_data.json"))
         {
             ErrorMessage::Marker("No Species data stored - get from ALA  [{$species_name}]");
@@ -551,7 +551,6 @@ function ALASpeciesTaxa($species_folder_name,$sdf,$error_list_filename,$execute)
                                 file_get_contents($d['url_species_data'])
                              );
         }
-
 
         $data = json_decode(file_get_contents("{$sdf}ALA_JSON/$species_folder_name/species_data.json"));
 
@@ -577,8 +576,6 @@ function ALASpeciesTaxa($species_folder_name,$sdf,$error_list_filename,$execute)
     return null;
 
 }
-
-
 
 
 
