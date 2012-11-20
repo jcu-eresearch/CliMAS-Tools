@@ -119,6 +119,10 @@ ErrorMessage::Marker(" .. done filling in species info.");
 print_r($species_list);
 
 // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// helper functions
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 // dirList returns a list (array of strings) of file/dir names at the path specified.
 function dirList($path) {
     if (!file::reallyExists($path)) return array(); // bail if no data
@@ -157,15 +161,32 @@ function fetchIfRequired($filename, $url) {
     global $error_logfile;
 
     if (!file_exists($filename)) {
-        ErrorMessage::Marker("Fetching data from {$url} ..");
-        save_to_file( $filename, file_get_contents($url) );
+        // try getting the url a few times...
+        $attempts = 0;
+        $content = false;
+        while ($attempts < 5 && $content === false) {
+            $delay = $attempts * $attempts * $attempts;
+            ErrorMessage::EndProgress();
+            ErrorMessage::Marker("(waiting {$delay} seconds before retrying)");
+            sleep($delay);
+            $content = file_get_contents($url);
+            $attempts++;
+        }
+        if ($content) {
+            save_to_file( $filename, $content );
+        } else {
+            ErrorMessage::EndProgress();
+            ErrorMessage::Marker("### Error getting data from ALA at URL " . $url);
+            save_to_file($error_logfile,"ERROR GETTING ALA DATA FROM URL " . $url, 0, FILE_APPEND);
+            return false;
+        }
     }
 
     if (!file_exists($filename)) {
-        ErrorMessage::Marker("### Error getting data from ALA at URL " . $url);
-        save_to_file($error_logfile,"ERROR GETTING ALA DATA FROM URL " . $url, 0, FILE_APPEND);
+        ErrorMessage::EndProgress();
+        ErrorMessage::Marker("### File {$filename} not updated with data from URL " . $url);
+        save_to_file($error_logfile,"ERROR SAVING ALA DATA INTO FILE " . $filename, 0, FILE_APPEND);
         return false;
-
     } else {
         return true;
     }
