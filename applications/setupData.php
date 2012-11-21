@@ -175,7 +175,7 @@ function fetchIfRequired($filename, $url) {
         $content = false;
         while ($attempts < 5 && $content === false) {
             $delay = $attempts * $attempts * $attempts;
-            uf ($delay > 1) {
+            if ($delay > 1) {
                 ErrorMessage::EndProgress();
                 ErrorMessage::Marker("(waiting {$delay} seconds before retrying)");
             }
