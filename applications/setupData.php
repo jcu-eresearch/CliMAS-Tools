@@ -34,8 +34,6 @@ $json_root = "/home/TDH/data/Gilbert/ALA_JSON/";
 // somewhere to log errors to
 $error_logfile = "/home/TDH/data/Gilbert/setup_data_errors.log";
 
-print_r($clazz_list);
-
 // ==================================================================
 // READ FLAGS from command line
 //
@@ -86,15 +84,18 @@ if ($action == 'HELP') {
 // here's the big list of all species modelled.
 $species_list = array();
 
+ErrorMessage::Marker("Reading modelled species..");
+
 foreach ($clazz_list as $clazz_latin => $clazz_english) {
 
-    ErrorMessage::Marker("Reading {$clazz_english} modelled species..");
+    ErrorMessage::Progress("({$clazz_english})");
 
     // get list of species-model-directories that exist for this class
     $spp_in_class = dirList($model_root . $clazz_english . '/models/');
 
     // complain if there weren't any models there.
     if (count($spp_in_class) < 1) {
+        ErrorMessage::EndProgress();
         ErrorMessage::Marker("### No {$clazz_english} models found.  That seems odd.");
     }
 
@@ -113,10 +114,10 @@ foreach ($clazz_list as $clazz_latin => $clazz_english) {
         $species_list[$species_name] = $species_info;
         ErrorMessage::Progress();
     }
-    ErrorMessage::EndProgress();
-
-    ErrorMessage::Marker(" ..done reading {$clazz_english}.");
 }
+
+ErrorMessage::EndProgress();
+ErrorMessage::Marker(" ..done reading species.");
 
 // now, $species_list looks like this:
 //     [Species_name1] => Array( [data_dir] => "../birds/models/Species_name1" ),
@@ -132,13 +133,18 @@ if ($testing) {
 }
 
 ErrorMessage::Marker("Filling in species taxonomic info..");
+$last_clazz = '';
 foreach ($species_list as $species_name => $species_data) {
-    $species_list[$species_name] = injectSpeciesTaxaInfo($species_data, $json_root, $error_logfile);
+    $new_data = injectSpeciesTaxaInfo($species_data, $json_root, $error_logfile);
+    $species_list[$species_name] = $new_data;
+    if ($new_data['clazz'] != $last_clazz) {
+        ErrorMessage::Progress('(' . $new_data['clazz'] . ')');
+        $last_clazz = $new_data['clazz'];
+    }
     ErrorMessage::Progress();
 }
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done filling in species info.");
-
 
 // ==================================================================
 // symlink ALL the places!
@@ -216,7 +222,7 @@ ErrorMessage::Marker(" .. done linking.");
 // all done
 //
 if ($testing) {
-    // print_r($species_list);
+    print_r($species_list[0]);
 }
 
 // ------------------------------------------------------------------

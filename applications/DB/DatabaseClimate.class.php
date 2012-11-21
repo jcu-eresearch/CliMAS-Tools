@@ -65,7 +65,6 @@ class DatabaseClimate {
         unset($result['ALL']);
         unset($result['CURRENT']);
 
-
         return $result;
     }
 
