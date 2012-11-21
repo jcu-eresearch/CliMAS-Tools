@@ -29,7 +29,7 @@ $data_root = "/home/TDH/data/Gilbert/source3/";
 
 // where to find json info for species
 //    at path: $json_root / [Species_name]
-$json_root = $data_root . "ALA_JSON/";
+$json_root = "/home/TDH/data/Gilbert/ALA_JSON/";
 
 // somewhere to log errors to
 $error_logfile = "/home/TDH/data/Gilbert/setup_data_errors.log";
@@ -156,7 +156,7 @@ foreach ($species_list as $species_name => $species_data) {
 
     // this bit symlinks the entire original ascii dir of gz's into our new outputs dir
     ln($homebase . '/output', $species_data['data_dir'] . '/output/ascii');
-    ErrorMessage::Progress(':');
+    // ErrorMessage::Progress(':');
     /*
     // this bit creates a real output dir, and symlinks the gz's into it.
     safemkdir($homebase . '/output');
@@ -183,27 +183,24 @@ foreach ($species_list as $species_name => $species_data) {
     safemkdir($clazzpath . '/ByID');
     safemkdir($clazzpath . '/ByName');
     ln("{$clazzpath}/ByID/{$species_data['id']}",     $homebase);
-    ErrorMessage::Progress();
     ln("{$clazzpath}/ByName/{$species_data['name']}", $homebase);
-    ErrorMessage::Progress();
+    // ErrorMessage::Progress();
 
     // link /ByFamily/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
     $familypath = $data_root . 'ByFamily/' . $species_data['family'];
     safemkdir($familypath . '/ByID');
     safemkdir($familypath . '/ByName');
     ln("{$familypath}/ByID/{$species_data['id']}",     $homebase);
-    ErrorMessage::Progress();
     ln("{$familypath}/ByName/{$species_data['name']}", $homebase);
-    ErrorMessage::Progress();
+    // ErrorMessage::Progress();
 
     // link /ByGenus/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
     $genuspath = $data_root . 'ByGenus/' . $species_data['genus'];
     safemkdir($genuspath . '/ByID');
     safemkdir($genuspath . '/ByName');
     ln("{$genuspath}/ByID/{$species_data['id']}",     $homebase);
-    ErrorMessage::Progress();
     ln("{$genuspath}/ByName/{$species_data['name']}", $homebase);
-    ErrorMessage::Progress();
+    // ErrorMessage::Progress();
 
     // link /Taxa/{classname}/{familyname}/{genusname}/{sp} back to homebase
     $taxapath = $data_root . 'Taxa/' . $species_data['clazz'] . '/' . $species_data['family'] . '/' . $species_data['genus'];
@@ -294,8 +291,7 @@ function fetchIfRequired($filename, $url) {
         while ($attempts < 5 && $content === false) {
             $delay = $attempts * $attempts * $attempts;
             if ($delay > 1) {
-                ErrorMessage::EndProgress();
-                ErrorMessage::Marker("(waiting {$delay} seconds before retrying)");
+                ErrorMessage::Progress("({$delay}s wait)");
             }
             sleep($delay);
             $content = file_get_contents($url);
