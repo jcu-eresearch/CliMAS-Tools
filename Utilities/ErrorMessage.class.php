@@ -13,9 +13,9 @@
 class ErrorMessage extends Object {
 
     // print a dot (and no newline) to stdout to show progress
-    public static function Progress() {
+    public static function Progress($symbol = '.') {
         if (php_sapi_name() == "cli") {
-            print('.');
+            print($symbol);
             flush();
         }
     }
