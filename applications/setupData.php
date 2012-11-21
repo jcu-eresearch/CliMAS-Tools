@@ -147,8 +147,9 @@ foreach ($species_list as $species_name => $species_data) {
     // symlink data into the home base dir
     ln($homebase . '/occur.csv', $species_data['data_dir'] . '/occur.csv');
     safemkdir($homebase . '/output');
-    foreach( glob($species_data['data_dir'] . '/output/*') as $output_file) {
-        ln($homebase . '/output/', $output_file);
+    foreach( glob($species_data['data_dir'] . '/output/ascii/*') as $output_file) {
+        $dest = $homebase . '/output/' . pathinfo($output_file, PATHINFO_FILENAME);
+        ln($dest, $output_file);
     }
 
     ErrorMessage::Progress();
