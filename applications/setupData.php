@@ -151,7 +151,7 @@ foreach ($species_list as $species_name => $species_data) {
     $dest = $homebase . '/output/';
     $source = $species_data['data_dir'] . '/output/ascii/';
     foreach( glob($source .'*') as $asciifile) {
-        ln($dest . pathinfo($sasciifile, PATHINFO_FILENAME), $asciifile);
+        ln($dest . pathinfo($asciifile, PATHINFO_FILENAME), $asciifile);
         ErrorMessage::Progress();
     }
     ErrorMessage::Progress(':');
