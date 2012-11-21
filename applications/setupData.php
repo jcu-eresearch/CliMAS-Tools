@@ -149,9 +149,12 @@ foreach ($species_list as $species_name => $species_data) {
     safemkdir($homebase . '/output');
 
     $dest = $homebase . '/output/';
-    $source = $species_data['data_dir'] . '/output/ascii/*';
-    ln($dest, $source);
-    ErrorMessage::Progress();
+    $source = $species_data['data_dir'] . '/output/ascii/';
+    foreach( glob($source .'*') as $asciifile) {
+        ln($dest . pathinfo($sasciifile, PATHINFO_FILENAME), $asciifile);
+        ErrorMessage::Progress();
+    }
+    ErrorMessage::Progress(':');
 
     // now there's a home base.  Also link /species/{speciesid} to it
     $species_id = exec("head -n2 '{$homebase}/occur.csv' | tail -n1 | cut -d, -s -f1");
@@ -188,15 +191,9 @@ function ln($link, $real) {
     global $error_logfile;
 
     if (!$execute) return true;
-
     if (is_file($link)) return true;
 
-    $ln = " ln -s {$real} {$link} ";
-    exec($ln);
-
-/*
-    // this part fails if you were symlinking a directory.
-    if (is_link($link)) {
+    if (symlink($real, $link)) {
         return true;
     } else {
         ErrorMessage::EndProgress();
@@ -204,8 +201,6 @@ function ln($link, $real) {
         save_to_file($error_logfile,"symlinking {$link} -> {$real} failed", 0, FILE_APPEND);
         return false;
     }
-*/
-    return true;
 }
 // ------------------------------------------------------------------
 // dirList returns a list (array of strings) of file/dir names at the path specified.
