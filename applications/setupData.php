@@ -148,9 +148,9 @@ foreach ($species_list as $species_name => $species_data) {
     ln($homebase . '/occur.csv', $species_data['data_dir'] . '/occur.csv');
     safemkdir($homebase . '/output');
 
-    $links = $homebase . '/output/';
-    $files = $species_data['data_dir'] . '/output/ascii/*';
-    ln($links, $files);
+    $dest = $homebase . '/output/';
+    $source = $species_data['data_dir'] . '/output/ascii/*';
+    ln($dest, $source);
     ErrorMessage::Progress();
 
     // now there's a home base.  Also link /species/{speciesid} to it
