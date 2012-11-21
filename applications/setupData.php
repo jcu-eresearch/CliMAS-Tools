@@ -250,7 +250,7 @@ ErrorMessage::Marker(" .. done linking.");
 // all done
 //
 if ($testing) {
-    print_r($species_list[0]);
+    print_r(reset($species_list)); // reset returns the first array element
 }
 
 // ------------------------------------------------------------------
