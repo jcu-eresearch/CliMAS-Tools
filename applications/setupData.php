@@ -100,7 +100,12 @@ foreach ($clazz_list as $clazz_latin => $clazz_english) {
 
     // go through the species we found
     foreach ($spp_in_class as $species_name) {
+
         $sp_data_dir = $model_root . $clazz_english . '/models/' . $species_name;
+
+        // maybe there's no ASCII dir, because this species couldn't be modelled.
+        if (!is_dir($sp_data_dir . '/output/ascii')) continue;
+
         $species_info = array();
         $species_info['data_dir'] = $sp_data_dir;
         $species_info['name'] = $species_name;
@@ -147,7 +152,14 @@ foreach ($species_list as $species_name => $species_data) {
     safemkdir($homebase);
 
     // symlink data into the home base dir
+
     ln($homebase . '/occur.csv', $species_data['data_dir'] . '/occur.csv');
+
+    // this bit symlinks the entire original ascii dir of gz's into our new outputs dir
+    ln($homebase . '/output', $species_data['data_dir'] . '/output/ascii');
+    ErrorMessage::Progress(':');
+    /*
+    // this bit creates a real output dir, and symlinks the gz's into it.
     safemkdir($homebase . '/output');
     $dest = $homebase . '/output/';
     $source = $species_data['data_dir'] . '/output/ascii/';
@@ -155,6 +167,7 @@ foreach ($species_list as $species_name => $species_data) {
         ln($dest . pathinfo($asciifile, PATHINFO_FILENAME), $asciifile);
         ErrorMessage::Progress(':');
     }
+    */
 
     // now there's a home base.
 
