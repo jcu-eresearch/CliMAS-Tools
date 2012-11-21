@@ -192,6 +192,8 @@ function ln($from, $to) {
     $ln = " ln -s '{$to}' '{$from}' ";
     exec($ln);
 
+/*
+    // this part fails if you were symlinking a directory.
     if (is_link($from)) {
         return true;
     } else {
@@ -200,6 +202,8 @@ function ln($from, $to) {
         save_to_file($error_logfile,"symlinking {$from} -> {$to} failed", 0, FILE_APPEND);
         return false;
     }
+*/
+    return true;
 }
 // ------------------------------------------------------------------
 // dirList returns a list (array of strings) of file/dir names at the path specified.
