@@ -115,22 +115,43 @@ foreach ($clazz_list as $clazz_latin => $clazz_english) {
 //
 
 if ($testing) {
-    // just do twenty species
+    // if we're testing, just do twenty species
     $species_list = array_splice($species_list, 0, 20);
 }
 
 ErrorMessage::Marker("Filling in species taxonomic info..");
 foreach ($species_list as $species_name => $species_data) {
     $species_list[$species_name] = injectSpeciesTaxaInfo($species_data, $json_root, $error_logfile);
+    ErrorMessage::Progress();
 }
+ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done filling in species info.");
 
-print_r($species_list);
+
+// ==================================================================
+// symlink ALL the places!
+//
+
+// first symlink a home base dir
+
+
+
+// ==================================================================
+// all done
+//
+if ($testing) {
+    print_r($species_list);
+}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // helper functions
 // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// cleans a string down to a-z, A-Z, 0-9, and underscore.
+function clean($string) {
+    return preg_replace('/[^a-zA-Z0-9_]+/', '_', $string);
+}
 // ------------------------------------------------------------------
 // dirList returns a list (array of strings) of file/dir names at the path specified.
 function dirList($path) {
@@ -250,22 +271,22 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
 
         $f = $species_data->classification;
 
-        $species_info['parent_guid']  = $result0['parentGuid'];
-        $species_info['guid']         = $f->guid;
-        $species_info['kingdom']      = $f->kingdom;
-        $species_info['kingdom_guid'] = $f->kingdomGuid;
-        $species_info['phylum']       = $f->phylum;
-        $species_info['phylum_guid']  = $f->phylumGuid;
-        $species_info['clazz']        = $f->clazz;
-        $species_info['clazz_guid']   = $f->clazzGuid;
-        $species_info['orderz']       = $f->order;
-        $species_info['orderz_guid']  = $f->orderGuid;
-        $species_info['family']       = $f->family;
-        $species_info['family_guid']  = $f->familyGuid;
-        $species_info['genus']        = $f->genus;
-        $species_info['genus_guid']   = $f->genusGuid;
-        $species_info['species']      = $f->species;
-        $species_info['species_guid'] = $f->speciesGuid;
+        $species_info['parent_guid']  =        $result0['parentGuid'];
+        $species_info['guid']         =        $f->guid;
+        $species_info['kingdom']      = clean( $f->kingdom );
+        $species_info['kingdom_guid'] =        $f->kingdomGuid;
+        $species_info['phylum']       = clean( $f->phylum );
+        $species_info['phylum_guid']  =        $f->phylumGuid;
+        $species_info['clazz']        = clean( $f->clazz );
+        $species_info['clazz_guid']   =        $f->clazzGuid;
+        $species_info['orderz']       = clean( $f->order );
+        $species_info['orderz_guid']  =        $f->orderGuid;
+        $species_info['family']       = clean( $f->family );
+        $species_info['family_guid']  =        $f->familyGuid;
+        $species_info['genus']        = clean( $f->genus );
+        $species_info['genus_guid']   =        $f->genusGuid;
+        $species_info['species']      = clean( $f->species );
+        $species_info['species_guid'] =        $f->speciesGuid;
         $species_info['url_search']         = 'http://bie.ala.org.au/ws/search.json?q='.urlencode($species_name);
         $species_info['url_classification'] = "http://bie.ala.org.au/ws/species/{$guid}.json";
         $species_info['url_species_data']   = "http://bie.ala.org.au/ws/species/{$guid}.json";
