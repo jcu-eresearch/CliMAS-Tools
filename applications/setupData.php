@@ -192,7 +192,7 @@ function ln($from, $to) {
     $ln = " ln -s '{$to}' '{$from}' ";
     exec($ln);
 
-    if (is_file($from)) {
+    if (is_link($from)) {
         return true;
     } else {
         ErrorMessage::EndProgress();
