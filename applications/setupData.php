@@ -218,7 +218,7 @@ ErrorMessage::Marker(" .. done linking.");
 // all done
 //
 if ($testing) {
-    print_r($species_list);
+    // print_r($species_list);
 }
 
 // ------------------------------------------------------------------
