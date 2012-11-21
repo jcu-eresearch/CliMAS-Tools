@@ -82,14 +82,13 @@ class DatabaseClimate {
 
     public static  function GetTimes()
     {
-        /* retiring database stuff - DB Nov 2012 */ /*
         $result = self::getDataname('times');
         if ($result instanceof ErrorMessage)
             return ErrorMessage::Stacked (__METHOD__,__LINE__,"Can't get Data name from times", true,$result);
 
         unset($result['1990']);
         unset($result['1975']);
-        */
+        /*
         // I think this is what's supposed to come back..
         $result = array(
             2015 => '2015',
@@ -101,6 +100,7 @@ class DatabaseClimate {
             2075 => '2075',
             2085 => '2085'
         );
+        */
         return $result;
     }
 
