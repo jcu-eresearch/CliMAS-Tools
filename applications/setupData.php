@@ -140,6 +140,8 @@ ErrorMessage::Marker(" .. done filling in species info.");
 ErrorMessage::Marker("Linking..");
 foreach ($species_list as $species_name => $species_data) {
 
+    ErrorMessage::Progress('linking {$species_name}.. ');
+
     // first make a home base dir at .../species/{Species_name}/
     $homebase = $data_root . 'species/' . $species_data['name'];
     safemkdir($homebase);
@@ -154,7 +156,6 @@ foreach ($species_list as $species_name => $species_data) {
         ln($dest . pathinfo($asciifile, PATHINFO_FILENAME), $asciifile);
         ErrorMessage::Progress();
     }
-    ErrorMessage::Progress(':');
 
     // now there's a home base.  Also link /species/{speciesid} to it
     $species_id = exec("head -n2 '{$homebase}/occur.csv' | tail -n1 | cut -d, -s -f1");
@@ -163,7 +164,7 @@ foreach ($species_list as $species_name => $species_data) {
 
     ln($data_root . 'species/' . $species_id, $data_root . 'species/' . $species_data['name']);
 
-
+    ErrorMessage::EndProgress();
 }
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done linking.");
