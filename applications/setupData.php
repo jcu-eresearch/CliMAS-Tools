@@ -176,6 +176,7 @@ function clean($string) {
 // ------------------------------------------------------------------
 // make a symlink called $from that points to $to.
 function ln($from, $to) {
+    if (is_file($from)) return true;
     if (symlink($to, $from)) {
         return true;
     } else {
