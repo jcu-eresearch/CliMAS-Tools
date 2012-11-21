@@ -235,9 +235,10 @@ ErrorMessage::Marker("Creating species_to_id file with common names..");
 // read in the exclude_names file
 $excludes = array();
 if (file_exists($name_exclusion_file)) {
-    $excludes = explode("\n", file_get_contents($name_exclusion_file));
+    $excludes = explode( "\n", file_get_contents($name_exclusion_file) );
 }
-
+// now build the species_to_id file
+$names = array();
 foreach ($species_list as $species_name => $species_data) {
 
     ErrorMessage::Progress();
