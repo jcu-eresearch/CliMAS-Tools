@@ -150,7 +150,7 @@ if ($testing) {
 // ------------------------------------------------------------------
 // cleans a string down to a-z, A-Z, 0-9, and underscore.
 function clean($string) {
-    return preg_replace('/[^a-zA-Z0-9_]+/', '_', $string);
+    return preg_replace('/[^a-zA-Z0-9 _]+/', '_', $string);
 }
 // ------------------------------------------------------------------
 // dirList returns a list (array of strings) of file/dir names at the path specified.
