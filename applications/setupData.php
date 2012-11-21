@@ -147,12 +147,18 @@ foreach ($species_list as $species_name => $species_data) {
     // symlink data into the home base dir
     ln($homebase . '/occur.csv', $species_data['data_dir'] . '/occur.csv');
     safemkdir($homebase . '/output');
+
+    $dest = $homebase . '/output/';
+    $source = $species_data['data_dir'] . '/output/ascii/';
+    $ln = " ln -s '{$source}' '{$dest}' ";
+    if ($execute) exec($ln);
+/*
     foreach( glob($species_data['data_dir'] . '/output/ascii/*') as $output_file) {
         $dest = $homebase . '/output/' . pathinfo($output_file, PATHINFO_FILENAME);
         ln($dest, $output_file);
         ErrorMessage::Progress();
     }
-
+*/
     ErrorMessage::Progress(':');
 }
 ErrorMessage::EndProgress();
@@ -177,6 +183,9 @@ function clean($string) {
 // ------------------------------------------------------------------
 // make a symlink called $from that points to $to.
 function ln($from, $to) {
+    global $execute;
+    if (!$execute) return true;
+
     if (is_file($from)) return true;
     if (symlink($to, $from)) {
         return true;
