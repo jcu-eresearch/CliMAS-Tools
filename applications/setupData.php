@@ -168,7 +168,8 @@ foreach ($species_list as $species_name => $species_data) {
 
     // link /ByClazz/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
     $clazzpath = $data_root . 'ByClazz/' . $species_data['clazz'];
-    safemkdir($clazzpath);
+    safemkdir($clazzpath . '/ByID');
+    safemkdir($clazzpath . '/ByName');
     ln("{$clazzpath}/ByID/{$species_data['id']}",     $homebase);
     ln("{$clazzpath}/ByName/{$species_data['name']}", $homebase);
     ErrorMessage::Progress();
