@@ -140,7 +140,7 @@ ErrorMessage::Marker(" .. done filling in species info.");
 ErrorMessage::Marker("Linking..");
 foreach ($species_list as $species_name => $species_data) {
 
-    ErrorMessage::Progress("linking {$species_name}.. ");
+    ErrorMessage::Progress(" linking {$species_name}.. ");
 
     // first make a home base dir at .../species/{Species_name}/
     $homebase = $data_root . 'species/' . $species_data['name'];
@@ -149,7 +149,6 @@ foreach ($species_list as $species_name => $species_data) {
     // symlink data into the home base dir
     ln($homebase . '/occur.csv', $species_data['data_dir'] . '/occur.csv');
     safemkdir($homebase . '/output');
-
     $dest = $homebase . '/output/';
     $source = $species_data['data_dir'] . '/output/ascii/';
     foreach( glob($source .'*') as $asciifile) {
@@ -157,16 +156,25 @@ foreach ($species_list as $species_name => $species_data) {
         ErrorMessage::Progress();
     }
 
-    // now there's a home base.  Also link /species/{speciesid} to it
+    // now there's a home base.
+
+    // discover species id from the occur.csv in the homebase.
     $species_id = exec("head -n2 '{$homebase}/occur.csv' | tail -n1 | cut -d, -s -f1");
     $species_data['id'] = $species_id;
     $species_list[$species_name] = $species_data;
 
+    // link /species/{speciesid} to homebase
     ln($data_root . 'species/' . $species_id, $data_root . 'species/' . $species_data['name']);
+
+    // link /ByClazz/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
+    $clazzpath = $data_root . 'ByClazz/' . $species_data['CLAZZ'];
+    ln("{$clazzpath}/ByID/{$species_data['id']}",     $homebase);
+    ln("{$clazzpath}/ByName/{$species_data['name']}", $homebase);
+    ErrorMessage::Progress();
+
 
     ErrorMessage::EndProgress();
 }
-ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done linking.");
 
 // ==================================================================
