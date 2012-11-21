@@ -31,6 +31,9 @@ $data_root = "/home/TDH/data/Gilbert/source3/";
 //    at path: $json_root / [Species_name]
 $json_root = "/home/TDH/data/Gilbert/ALA_JSON/";
 
+// file to read bad common names from
+$name_exclusion_file = $data_root . "exclude_names.txt";
+
 // somewhere to log errors to
 $error_logfile = "/home/TDH/data/Gilbert/setup_data_errors.log";
 
@@ -150,7 +153,13 @@ ErrorMessage::Marker(" .. done filling in species info.");
 // symlink ALL the places!
 //
 ErrorMessage::Marker("Linking..");
+$last_clazz = '';
 foreach ($species_list as $species_name => $species_data) {
+
+    if ($species_data['clazz'] != $last_clazz) {
+        ErrorMessage::Progress('(' . $new_data['clazz'] . ')');
+        $last_clazz = $species_data['clazz'];
+    }
 
     // first make a home base dir at .../species/{Species_name}/
     $homebase = $data_root . 'species/' . $species_data['name'];
@@ -219,6 +228,24 @@ ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done linking.");
 
 // ==================================================================
+// make the species_to_id.txt file
+//
+ErrorMessage::Marker("Creating species_to_id file with common names..");
+
+// read in the exclude_names file
+$excludes = array();
+if (file_exists($name_exclusion_file)) {
+    $excludes = explode("\n", file_get_contents($name_exclusion_file));
+}
+
+foreach ($species_list as $species_name => $species_data) {
+
+    ErrorMessage::Progress();
+}
+ErrorMessage::EndProgress();
+ErrorMessage::Marker(" .. done linking.");
+
+// ==================================================================
 // all done
 //
 if ($testing) {
@@ -276,6 +303,8 @@ function save_to_file($file, $content) {
 // make a dir, if we are in execute mode
 function safemkdir($dir) {
     global $execute;
+
+    if (is_dir($dir)) return;
 
     if ($execute) {
         file::mkdir_safe($dir);
