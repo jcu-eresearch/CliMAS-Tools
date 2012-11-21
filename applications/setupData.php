@@ -104,6 +104,7 @@ foreach ($clazz_list as $clazz_latin => $clazz_english) {
         $sp_data_dir = $model_root . $clazz_english . '/models/' . $species_name;
 
         // maybe there's no ASCII dir, because this species couldn't be modelled.
+        // in that case, just don't add this species to the list.
         if (!is_dir($sp_data_dir . '/output/ascii')) continue;
 
         $species_info = array();
