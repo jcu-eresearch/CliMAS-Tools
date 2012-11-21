@@ -236,13 +236,29 @@ ErrorMessage::Marker("Creating species_to_id file with common names..");
 $excludes = array();
 if (file_exists($name_exclusion_file)) {
     $excludes = explode( "\n", file_get_contents($name_exclusion_file) );
+    ErrorMessage::Progress();
 }
 // now build the species_to_id file
 $names = array();
 foreach ($species_list as $species_name => $species_data) {
-
+    $done_one = false;
+    // make an entry for each acceptable common name
+    foreach ($species_data['common_names'] as $candidate_name => $dummy) {
+        if (!in_array($candidate_name, $excludes)) {
+            $names[] = "{$candidate_name} ({$species_data['species']}),{$species_data['id']}";
+            $done_one = true;
+        }
+    }
+    // did we end up with no names?
+    if (!done_one) {
+        // no acceptable common names, so juse use the scientific name
+        $names[] = "{$species_data['species']},{$species_data['id']}";
+    }
     ErrorMessage::Progress();
 }
+// now we've got a big list of names.  write it out to the file.
+file_put_contents($name_exclusion_file, implode("\n", $names);
+// and wrap up
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done linking.");
 
