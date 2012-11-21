@@ -70,7 +70,7 @@ if ($action == 'HELP') {
 
     // short version for testing
     $clazz_list = array(
-        'AMPHIBIA' => "amphibians"
+        'AVES' => 'birds'
     );
 }
 
