@@ -150,16 +150,15 @@ foreach ($species_list as $species_name => $species_data) {
 
     $dest = $homebase . '/output/';
     $source = $species_data['data_dir'] . '/output/ascii/';
-    $ln = " ln -s '{$source}' '{$dest}' ";
-    if ($execute) exec($ln);
-/*
-    foreach( glob($species_data['data_dir'] . '/output/ascii/*') as $output_file) {
-        $dest = $homebase . '/output/' . pathinfo($output_file, PATHINFO_FILENAME);
-        ln($dest, $output_file);
-        ErrorMessage::Progress();
-    }
-*/
-    ErrorMessage::Progress(':');
+    ln($dest, $source);
+    ErrorMessage::Progress();
+
+    // now there's a home base.  Also link /species/{speciesid} to it
+    $species_id = exec("head -n2 '{$homebase}/occur.csv' | tail -n1 | cut -d, -s -f1");
+    $speices_data['id'] = $species_id;
+
+    ln($data_root . 'species/' . $species_id, $data_root . 'species/' . $species_data['name']);
+
 }
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done linking.");
@@ -184,15 +183,21 @@ function clean($string) {
 // make a symlink called $from that points to $to.
 function ln($from, $to) {
     global $execute;
+    global $error_logfile;
+
     if (!$execute) return true;
 
     if (is_file($from)) return true;
-    if (symlink($to, $from)) {
+
+    $ln = " ln -s '{$to}' '{$from}' ";
+    exec($ln);
+
+    if (is_file($from)) {
         return true;
     } else {
         ErrorMessage::EndProgress();
-        ErrorMessage::Marker("### Couldn't symlink {$from} -> {$to} which seems bad.");
-        save_to_file($error_logfile,"Couldn't symlink {$from} -> {$to} which seems bad." . $url, 0, FILE_APPEND);
+        ErrorMessage::Marker("### symlinking {$from} -> {$to} failed.");
+        save_to_file($error_logfile,"symlinking {$from} -> {$to} failed", 0, FILE_APPEND);
         return false;
     }
 }
