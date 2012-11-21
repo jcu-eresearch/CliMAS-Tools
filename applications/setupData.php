@@ -182,26 +182,26 @@ function clean($string) {
     return preg_replace('/[^a-zA-Z0-9 _]+/', '_', $string);
 }
 // ------------------------------------------------------------------
-// make a symlink called $from that points to $to.
-function ln($from, $to) {
+// make a symlink called $link that points to $real.
+function ln($link, $real) {
     global $execute;
     global $error_logfile;
 
     if (!$execute) return true;
 
-    if (is_file($from)) return true;
+    if (is_file($link)) return true;
 
-    $ln = " ln -s '{$to}' '{$from}' ";
+    $ln = " ln -s {$real} {$link} ";
     exec($ln);
 
 /*
     // this part fails if you were symlinking a directory.
-    if (is_link($from)) {
+    if (is_link($link)) {
         return true;
     } else {
         ErrorMessage::EndProgress();
-        ErrorMessage::Marker("### symlinking {$from} -> {$to} failed.");
-        save_to_file($error_logfile,"symlinking {$from} -> {$to} failed", 0, FILE_APPEND);
+        ErrorMessage::Marker("### symlinking {$link} -> {$real} failed.");
+        save_to_file($error_logfile,"symlinking {$link} -> {$real} failed", 0, FILE_APPEND);
         return false;
     }
 */
