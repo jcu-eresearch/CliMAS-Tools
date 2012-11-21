@@ -140,7 +140,7 @@ ErrorMessage::Marker(" .. done filling in species info.");
 ErrorMessage::Marker("Linking..");
 foreach ($species_list as $species_name => $species_data) {
 
-    ErrorMessage::Progress('linking {$species_name}.. ');
+    ErrorMessage::Progress("linking {$species_name}.. ");
 
     // first make a home base dir at .../species/{Species_name}/
     $homebase = $data_root . 'species/' . $species_data['name'];
@@ -192,7 +192,7 @@ function ln($link, $real) {
     global $error_logfile;
 
     if (!$execute) return true;
-    if (is_file($link)) return true;
+    if (is_file($link) || is_link($link)) return true;
 
     if (symlink($real, $link)) {
         return true;
