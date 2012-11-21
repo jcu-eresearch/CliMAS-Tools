@@ -146,8 +146,6 @@ ErrorMessage::Marker(" .. done filling in species info.");
 ErrorMessage::Marker("Linking..");
 foreach ($species_list as $species_name => $species_data) {
 
-    ErrorMessage::Progress(" linking {$species_name}.. ");
-
     // first make a home base dir at .../species/{Species_name}/
     $homebase = $data_root . 'species/' . $species_data['name'];
     safemkdir($homebase);
@@ -185,6 +183,7 @@ foreach ($species_list as $species_name => $species_data) {
     safemkdir($clazzpath . '/ByID');
     safemkdir($clazzpath . '/ByName');
     ln("{$clazzpath}/ByID/{$species_data['id']}",     $homebase);
+    ErrorMessage::Progress();
     ln("{$clazzpath}/ByName/{$species_data['name']}", $homebase);
     ErrorMessage::Progress();
 
@@ -193,6 +192,7 @@ foreach ($species_list as $species_name => $species_data) {
     safemkdir($familypath . '/ByID');
     safemkdir($familypath . '/ByName');
     ln("{$familypath}/ByID/{$species_data['id']}",     $homebase);
+    ErrorMessage::Progress();
     ln("{$familypath}/ByName/{$species_data['name']}", $homebase);
     ErrorMessage::Progress();
 
@@ -201,6 +201,7 @@ foreach ($species_list as $species_name => $species_data) {
     safemkdir($genuspath . '/ByID');
     safemkdir($genuspath . '/ByName');
     ln("{$genuspath}/ByID/{$species_data['id']}",     $homebase);
+    ErrorMessage::Progress();
     ln("{$genuspath}/ByName/{$species_data['name']}", $homebase);
     ErrorMessage::Progress();
 
@@ -209,9 +210,9 @@ foreach ($species_list as $species_name => $species_data) {
     safemkdir($taxapath);
     ln("{$taxapath}/{$species_data['name']}", $homebase);
     ErrorMessage::Progress();
-
-    ErrorMessage::EndProgress();
 }
+
+ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done linking.");
 
 // ==================================================================
