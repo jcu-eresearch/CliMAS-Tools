@@ -236,7 +236,7 @@ function ln($link, $real) {
     global $error_logfile;
 
     if (!$execute) return true;
-    if (is_file($link) || is_link($link)) return true;
+    if ( file_exists($link) ) return true;
 
     if (symlink($real, $link)) {
         return true;
