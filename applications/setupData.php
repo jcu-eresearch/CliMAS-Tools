@@ -21,11 +21,6 @@ $clazz_list = array(
     'AMPHIBIA' => "amphibians"
 );
 
-// short version for testing
-$clazz_list = array(
-    'AMPHIBIA' => "amphibians"
-);
-
 // where to find json info for species
 //    at path: $json_root / [Species_name]
 $json_root = "/home/TDH/data/Gilbert/source3/ALA_JSON/";
@@ -39,6 +34,7 @@ print_r($clazz_list);
 // READ FLAGS from command line
 //
 $execute = false;
+$testing = false;
 
 $action = array_util::Value($argv, 1);
 if (is_null($action)) {
@@ -60,6 +56,16 @@ if ($action == 'HELP') {
 } else if ($action == 'EXECUTE') {
     ErrorMessage::Marker("####### EXECUTING... we're through the looking glass here, people #######");
     $execute = true;
+
+} else if ($action == 'TEST') {
+    ErrorMessage::Marker("####### TEST EXECUTING... don't use this unless you're a developer #######");
+    $execute = true;
+    $testing = true;
+
+    // short version for testing
+    $clazz_list = array(
+        'AMPHIBIA' => "amphibians"
+    );
 }
 
 // so now $execute is true if they want to actually do stuff.
@@ -108,13 +114,16 @@ foreach ($clazz_list as $clazz_latin => $clazz_english) {
 // FIND TAXA INFO for species, going to ALA when necessary
 //
 
+if ($testing) {
+    // just do twenty species
+    $species_list = array_splice($species_list, 0, 20);
+}
+
 ErrorMessage::Marker("Filling in species taxonomic info..");
 foreach ($species_list as $species_name => $species_data) {
     $species_list[$species_name] = injectSpeciesTaxaInfo($species_data, $json_root, $error_logfile);
 }
 ErrorMessage::Marker(" .. done filling in species info.");
-
-
 
 print_r($species_list);
 
