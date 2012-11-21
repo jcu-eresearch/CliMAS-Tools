@@ -21,9 +21,15 @@ $clazz_list = array(
     'AMPHIBIA' => "amphibians"
 );
 
+// where to put all the species info
+//    at path: $info_root / species / [Species_name]
+//        and: $info_root / ByFamily / [FAMILY} / [Species_name]
+//        etc etc etc
+$data_root = "/home/TDH/data/Gilbert/source3/";
+
 // where to find json info for species
 //    at path: $json_root / [Species_name]
-$json_root = "/home/TDH/data/Gilbert/source3/ALA_JSON/";
+$json_root = $data_root . "ALA_JSON/";
 
 // somewhere to log errors to
 $error_logfile = "/home/TDH/data/Gilbert/setup_data_errors.log";
@@ -131,10 +137,24 @@ ErrorMessage::Marker(" .. done filling in species info.");
 // ==================================================================
 // symlink ALL the places!
 //
+ErrorMessage::Marker("Linking..");
+foreach ($species_list as $species_name => $species_data) {
 
-// first symlink a home base dir
+    // first make a home base dir at .../species/{Species_name}/
+    $homebase = $data_root . 'species/' . $species_data['name'];
+    safemkdir($homebase);
 
+    // symlink data into the home base dir
+    ln($homebase . '/occur.csv', $species_data['data_dir'] . '/occur.csv');
+    safemkdir($homebase . '/output');
+    foreach( glob($species_data['data_dir'] . '/output/*') as $output_file) {
+        ln($homebase . '/output/', $output_file);
+    }
 
+    ErrorMessage::Progress();
+}
+ErrorMessage::EndProgress();
+ErrorMessage::Marker(" .. done linking.");
 
 // ==================================================================
 // all done
@@ -148,9 +168,21 @@ if ($testing) {
 // helper functions
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-// cleans a string down to a-z, A-Z, 0-9, and underscore.
+// cleans a string down to a-z, A-Z, 0-9, space and underscore.
 function clean($string) {
     return preg_replace('/[^a-zA-Z0-9 _]+/', '_', $string);
+}
+// ------------------------------------------------------------------
+// make a symlink called $from that points to $to.
+function ln($from, $to) {
+    if (symlink($to, $from)) {
+        return true;
+    } else {
+        ErrorMessage::EndProgress();
+        ErrorMessage::Marker("### Couldn't symlink {$from} -> {$to} which seems bad.");
+        save_to_file($error_logfile,"Couldn't symlink {$from} -> {$to} which seems bad." . $url, 0, FILE_APPEND);
+        return false;
+    }
 }
 // ------------------------------------------------------------------
 // dirList returns a list (array of strings) of file/dir names at the path specified.
