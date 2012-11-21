@@ -155,7 +155,8 @@ foreach ($species_list as $species_name => $species_data) {
 
     // now there's a home base.  Also link /species/{speciesid} to it
     $species_id = exec("head -n2 '{$homebase}/occur.csv' | tail -n1 | cut -d, -s -f1");
-    $speices_data['id'] = $species_id;
+    $species_data['id'] = $species_id;
+//    $species_list[$species_name] = $species_data;
 
     ln($data_root . 'species/' . $species_id, $data_root . 'species/' . $species_data['name']);
 
