@@ -257,7 +257,7 @@ foreach ($species_list as $species_name => $species_data) {
     ErrorMessage::Progress();
 }
 // now we've got a big list of names.  write it out to the file.
-file_put_contents($name_exclusion_file, implode("\n", $names);
+file_put_contents($name_exclusion_file, implode("\n", $names));
 // and wrap up
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done linking.");
