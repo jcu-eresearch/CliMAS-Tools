@@ -250,7 +250,7 @@ foreach ($species_list as $species_name => $species_data) {
         }
     }
     // did we end up with no names?
-    if (!done_one) {
+    if (!$done_one) {
         // no acceptable common names, so juse use the scientific name
         $names[] = "{$species_data['species']},{$species_data['id']}";
     }
