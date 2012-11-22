@@ -73,6 +73,9 @@ if ($action == 'HELP') {
     $clazz_list = array(
         'AVES' => 'birds'
     );
+
+    // special testing data_root
+    $data_root =  preg_replace('/\/$/', '_test/', $data_root);
 }
 
 // so now $execute is true if they want to actually do stuff.
@@ -157,7 +160,7 @@ $last_clazz = '';
 foreach ($species_list as $species_name => $species_data) {
 
     if ($species_data['clazz'] != $last_clazz) {
-        ErrorMessage::Progress('(' . $new_data['clazz'] . ')');
+        ErrorMessage::Progress('(' . $species_data['clazz'] . ')');
         $last_clazz = $species_data['clazz'];
     }
 
@@ -381,13 +384,15 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
     $sp_json_dir = $json_dir . $species_info['name'] . '/';
 
     safemkdir($sp_json_dir);
+    $backone = "\e[1D";
+    ErrorMessage::Progress('|');
 
     try {
         // fill out search_result.json
         $file = $sp_json_dir . "search_result.json";
         $url = 'http://bie.ala.org.au/ws/search.json?q=' . urlencode($species_name);
         if (fetchIfRequired($file, $url)) {
-            ErrorMessage::Progress();
+            ErrorMessage::Progress($backone . "!");
         } else {
             ErrorMessage::EndProgress();
             ErrorMessage::Marker("Couldn't get identifying data for {$species_name}.");
@@ -406,7 +411,7 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
         $file = $sp_json_dir . "species_data_search_results.json";
         $url = "http://bie.ala.org.au/ws/species/{$guid}.json";
         if (fetchIfRequired($file, $url)) {
-            ErrorMessage::Progress();
+            ErrorMessage::Progress($backone . ":");
         } else {
             ErrorMessage::EndProgress();
             ErrorMessage::Marker("Couldn't get taxonomic data for {$species_name}.");
@@ -448,6 +453,7 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
         $species_info['common_names'] = $names;
 
         file_put_contents($sp_json_dir . "data_array.txt", print_r($species_info,true));
+        ErrorMessage::Progress($backone);
 
         return $species_info;
 
