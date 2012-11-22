@@ -191,6 +191,7 @@ foreach ($species_list as $species_name => $species_data) {
     // discover species id from the occur.csv in the homebase.
     $species_id = exec("head -n2 '{$homebase}/occur.csv' | tail -n1 | cut -d, -s -f1");
     $species_id = trim($species_id, '"');
+    $species_id = preg_replace('/\([^\)])/', '', $species_id);
     $species_data['id'] = $species_id;
     $species_list[$species_name] = $species_data;
 
@@ -280,8 +281,13 @@ if ($testing) {
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // cleans a string down to a-z, A-Z, 0-9, space and underscore.
+// throws away anything that's in brackets.
 function clean($string) {
-    return preg_replace('/[^a-zA-Z0-9 _]+/', '_', $string);
+    return preg_replace(
+        '/[^a-zA-Z0-9 _]+/',
+        '_',
+        preg_replace('/\([^\)])/', '', $string)
+    );
 }
 // ------------------------------------------------------------------
 // make a symlink called $link that points to $real.
