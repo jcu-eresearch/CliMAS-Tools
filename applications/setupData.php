@@ -242,7 +242,7 @@ if (file_exists($name_exclusion_file)) {
     ErrorMessage::Progress();
 }
 // now build the species_to_id file
-$names = array();
+$names = array("name,id");
 foreach ($species_list as $species_name => $species_data) {
     $done_one = false;
     // make an entry for each acceptable common name
