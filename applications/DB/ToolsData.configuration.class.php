@@ -1,6 +1,6 @@
 <?php
 /**
- * datbasae  configuration and default values
+ * database configuration and default values
  *
  * TODO:: Needs to come from Config file that is specific to HOstname
  *

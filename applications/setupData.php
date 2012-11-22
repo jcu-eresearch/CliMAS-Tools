@@ -15,7 +15,7 @@ if (php_sapi_name() != "cli") return;
 $model_root = "/home/TDH/data/SDM/";
 
 $clazz_list = array(
-    'AVES' => 'birds',
+//    'AVES' => 'birds',
     'MAMMALIA' => "mammals",
     'REPTILIA' => "reptiles",
     'AMPHIBIA' => "amphibians"
