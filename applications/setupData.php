@@ -25,7 +25,7 @@ $clazz_list = array(
 //    at path: $info_root / species / [Species_name]
 //        and: $info_root / ByFamily / [FAMILY} / [Species_name]
 //        etc etc etc
-$data_root = "/home/TDH/data/Gilbert/source3/";
+$data_root = "/home/TDH/data/Gilbert/source/";
 
 // where to find json info for species
 //    at path: $json_root / [Species_name]
