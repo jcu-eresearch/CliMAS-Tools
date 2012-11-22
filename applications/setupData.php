@@ -238,7 +238,7 @@ ErrorMessage::Marker("Creating species_to_id file with common names..");
 // read in the exclude_names file
 $excludes = array();
 if (file_exists($name_exclusion_file)) {
-    $excludes = explode( "\n", file_get_contents($name_exclusion_file) );
+    $excludes = explode( "\n", strtolower(file_get_contents($name_exclusion_file)) );
     ErrorMessage::Progress();
 }
 // now build the species_to_id file
@@ -247,8 +247,9 @@ foreach ($species_list as $species_name => $species_data) {
     $done_one = false;
     // make an entry for each acceptable common name
     foreach ($species_data['common_names'] as $candidate_name => $dummy) {
-        if (!in_array($candidate_name, $excludes)) {
-            $names[] = "\"{$candidate_name} ({$species_data['species']})\",\"{$species_data['id']}\"";
+        $long_name = "{$candidate_name} ({$species_data['species']})";
+        if (!in_array(strtolower($candidate_name), $excludes) && !in_array(strtolower($long_name), $excludes)) {
+            $names[] = "{$long_name},{$species_data['id']}";
             $done_one = true;
         }
     }
