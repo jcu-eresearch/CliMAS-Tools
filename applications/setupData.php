@@ -453,7 +453,7 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
         $species_info['common_names'] = $names;
 
         file_put_contents($sp_json_dir . "data_array.txt", print_r($species_info,true));
-        ErrorMessage::Progress($backone . ".");
+        ErrorMessage::Progress($backone);
 
         return $species_info;
 
