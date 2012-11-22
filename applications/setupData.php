@@ -249,7 +249,7 @@ foreach ($species_list as $species_name => $species_data) {
     foreach ($species_data['common_names'] as $candidate_name => $dummy) {
         $long_name = "{$candidate_name} ({$species_data['species']})";
         if (!in_array(strtolower($candidate_name), $excludes) && !in_array(strtolower($long_name), $excludes)) {
-            $names[] = "{$long_name},{$species_data['id']}";
+            $names[] = "\"{$long_name}\",\"{$species_data['id']}\"";
             $done_one = true;
         }
     }
