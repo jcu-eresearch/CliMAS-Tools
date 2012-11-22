@@ -170,13 +170,18 @@ foreach ($species_list as $species_name => $species_data) {
 
     // symlink data into the home base dir
 
+    // the occurrence file
     ln($homebase . '/occur.csv', $species_data['data_dir'] . '/occur.csv');
 
-    // this bit symlinks the entire original ascii dir of gz's into our new outputs dir
+    // the maxent output (this has the threshold value in it)
+    ln($homebase . '/maxentResults.csv', $species_data['data_dir'] . '/output/maxentResults.csv');
+
+    // the entire original ascii dir of gz's into our new outputs dir
     ln($homebase . '/output', $species_data['data_dir'] . '/output/ascii');
     // ErrorMessage::Progress(':');
+
     /*
-    // this bit creates a real output dir, and symlinks the gz's into it.
+    // this alternative bit creates a real output dir, and symlinks the individual gz's into it.
     safemkdir($homebase . '/output');
     $dest = $homebase . '/output/';
     $source = $species_data['data_dir'] . '/output/ascii/';
