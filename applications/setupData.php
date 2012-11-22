@@ -263,7 +263,7 @@ foreach ($species_list as $species_name => $species_data) {
 file_put_contents($data_root . 'species_to_id.txt', implode("\n", $names));
 // and wrap up
 ErrorMessage::EndProgress();
-ErrorMessage::Marker(" .. done linking.");
+ErrorMessage::Marker(" .. written file.");
 
 // ==================================================================
 // all done
