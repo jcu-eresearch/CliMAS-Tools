@@ -386,7 +386,6 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
     safemkdir($sp_json_dir);
     $backone = "\033[1D";
     ErrorMessage::Progress('|');
-    ErrorMessage::Progress('|');
 
     try {
         // fill out search_result.json
