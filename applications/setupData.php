@@ -248,14 +248,14 @@ foreach ($species_list as $species_name => $species_data) {
     // make an entry for each acceptable common name
     foreach ($species_data['common_names'] as $candidate_name => $dummy) {
         if (!in_array($candidate_name, $excludes)) {
-            $names[] = "{$candidate_name} ({$species_data['species']}),{$species_data['id']}";
+            $names[] = "\"{$candidate_name} ({$species_data['species']})\",\"{$species_data['id']}\"";
             $done_one = true;
         }
     }
     // did we end up with no names?
     if (!$done_one) {
         // no acceptable common names, so juse use the scientific name
-        $names[] = "{$species_data['species']},{$species_data['id']}";
+        $names[] = "\"{$species_data['species']}\",\"{$species_data['id']}\"";
     }
     ErrorMessage::Progress();
 }
