@@ -92,14 +92,12 @@ if (file_exists($map_path)) {
 
 // start the colour banding setup
 $layer = $M->Layers()->AddLayer($grid_filename_asc);
-// $layer instanceof MapServerLayerRaster;
+//huh?? $layer instanceof MapServerLayerRaster;
 $layer->HistogramBuckets($bucket_count);
 
 // start colour ramp at zero
 // TODO: actually, should start at the suitability threshold rather than 0
 $ramp = RGB::Ramp(0, 1, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
-
-print_r($ramp);
 
 $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
 
