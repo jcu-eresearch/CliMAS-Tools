@@ -23,18 +23,18 @@ if (is_null($species_id)) {
     exit();
 }
 
-if (is_null($UserLayer)) {
-    $result['error'] = 'Userlayer not specified';
-    echo json_encode($result);    // if no user layer then return result now
-    exit();
-}
-
 // user layer (combination of Scenario_model_time)
 
 $UserLayer = array_util::Value($_POST, "UserLayer");
 
 if ($UserLayer == "CURRENT_CURRENT_1990") $UserLayer = "1990";
 $UserLayer = str_replace("_ALL_", "_all_", $UserLayer);
+
+if (is_null($UserLayer)) {
+    $result['error'] = 'Userlayer not specified';
+    echo json_encode($result);    // if no user layer then return result now
+    exit();
+}
 
 // number of buckets (colour bands)
 
