@@ -9,7 +9,7 @@ include_once 'includes.php';
 $species_id = array_util::Value($_POST, "SpeciesID");
 $UserLayer = array_util::Value($_POST, "UserLayer");  // is a combination of Scenario_model_time we need the ascii grid version
 
-$bucket_count = array_util::Value($_POST, "bucket_count",3);
+$bucket_count = array_util::Value($_POST, "bucket_count",2);
 
 $result = array();
 $result['map_path'] = '';
