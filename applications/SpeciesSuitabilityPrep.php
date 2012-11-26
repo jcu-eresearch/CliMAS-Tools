@@ -92,7 +92,7 @@ if (file_exists($map_path)) {
 
 // start the colour banding setup
 $layer = $M->Layers()->AddLayer($grid_filename_asc);
-$layer instanceof MapServerLayerRaster;
+// $layer instanceof MapServerLayerRaster;
 $layer->HistogramBuckets($bucket_count);
 
 // start colour ramp at zero
