@@ -10,7 +10,7 @@ $clazz = array_util::Value($_GET, "class");
 $taxon = array_util::Value($_GET, "taxon");
 $settings = array_util::Value($_GET, "settings");
 
-$bucket_count = array_util::Value($_GET, "bucket_count",20);
+$bucket_count = array_util::Value($_GET, "bucket_count", 20);
 
 $result = array();
 $result['map_path'] = '';
@@ -110,7 +110,6 @@ if (file_exists($map_path)) {
 
 $layer = $M->Layers()->AddLayer($grid_filename_asc);
 $layer->HistogramBuckets($bucket_count);
-
 
 // start ramp at Zero -
 $ramp = RGB::Ramp(1, 100, $bucket_count, RGB::ReverseGradient(RGB::GradientGreenBeige()));
