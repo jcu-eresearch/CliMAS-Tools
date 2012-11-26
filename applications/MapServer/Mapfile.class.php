@@ -169,7 +169,11 @@ class Mapfile extends Object{
                 $expression = "EXPRESSION ([pixel] = {$value1})";
             } else {
                 $expression_name = "NAME \"{$value1} .. {$value2}\"";
-                $expression = "EXPRESSION ([pixel] > {$value1} and [pixel] =< {$value2})";
+                if ($index + 1 == count($values)) {
+                    $expression = "EXPRESSION ([pixel] >= {$value1} and [pixel] =< {$value2})";
+                } else {
+                   $expression = "EXPRESSION ([pixel] >= {$value1} and [pixel] < {$value2})";
+                }
             }
 
 $c = <<<CLASS
