@@ -164,12 +164,7 @@ class Mapfile extends Object{
             if (is_null($rgb)) $rgb = "-1 -1 -1"; // make null transparent
 
             $expression_name = "";
-            if ($layer->ColorUniqueValues()) {
-                $expression_name = "NAME \"{$value1}\"";
-                $expression = "EXPRESSION ([pixel] = {$value1})";
-            } else {
-                $expression_name = "NAME \"{$value1} .. {$value2}\"";
-                $expression = "EXPRESSION ([pixel] > {$value1} and [pixel] =< {$value2})";
+            $expression = "EXPRESSION ([pixel] > {$value1} and [pixel] <= {$value2})";
 
 /*
                 if ($index + 1 == count($values)) {
