@@ -37,7 +37,6 @@ if (is_null($settings))
 
 // translate clazz to the version used in folder names - the plural
 // of the common name, e.g. MAMMALIA = mammals
-
 $clazz = ClazzData::clazzCommonName($clazz, true);
 
 // if ($UserLayer == "CURRENT_CURRENT_1990") $UserLayer = "1990";
@@ -55,6 +54,9 @@ if (preg_match('/current/', $settings)) {
 // if they asked for all of a class, that uses the classes' common name
 if ($clazz == ClazzData::clazzCommonName($taxon, true)) {
     $taxon = strtolower($clazz);
+} else {
+    // clean up the all caps etc. names
+    $taxon = ucfirst(strtolower($taxon));
 }
 
 // if they asked for all vertebrates, that in a different place
