@@ -171,8 +171,8 @@ class Mapfile extends Object{
             } else {
 
                 // MapServer seems to believe that pixel value 0 is greater than 0.00000.
-                if $value1 == '0.00000' $value1 = '0.00001';
-                if $value2 == '0.00000' $value2 = '0.00001';
+                if ($value1 == '0.00000') $value1 = '0.00001';
+                if ($value2 == '0.00000') $value2 = '0.00001';
 
                 $expression_name = "NAME \"{$value1} .. {$value2}\"";
                 $expression = "EXPRESSION ([pixel] > {$value1} and [pixel] <= {$value2})";
