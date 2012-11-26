@@ -233,7 +233,7 @@ $r = <<<R
         TYPE         {$layer->LayerType()}
 
         PROCESSING "SCALE={$min},{$max}"
-        PROCESSING "SCALE_BUCKETS={$layer->HistogramBuckets()}"
+#        PROCESSING "SCALE_BUCKETS={$layer->HistogramBuckets()}"
 
         PROCESSING   "BANDS=1"
         OFFSITE      -1 -1 -1
