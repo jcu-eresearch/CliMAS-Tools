@@ -135,7 +135,7 @@ $ ->
                     else
                         maptitle += "#{clazz.capped()} #{groupLevel} '#{groupName.capped()}'"
 
-                    if year isnt '1990'
+                    if year isnt 'current'
                         maptitle += " in #{year} at emission level #{scenario}"
 
                     $("""
