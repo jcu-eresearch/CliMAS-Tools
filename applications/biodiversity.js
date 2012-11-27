@@ -85,11 +85,13 @@
           settings: "" + scenario + "_" + year
         },
         success: function(data, testStatus, jqx) {
-          var map;
+          var layer_name, map;
           if (!data.map_path) {
             return alert("Sorry, data for that selection is not available.");
           } else if (output === 'view') {
-            $("<div class=\"popupwrapper\" style=\"display: none\">\n    <div class=\"toolbar north\"><button class=\"close\">close &times;</button></div>\n    <div id=\"popupmap\" class=\"popupmap\"></div>\n    <div class=\"toolbar south\"><button class=\"close\">close &times;</button></div>").appendTo('body').show('fade', 1000);
+            $("<div class=\"popupwrapper\" style=\"display: none\">\n    <div class=\"toolbar north\"><button class=\"close\">close &times;</button></div>\n    <div id=\"popupmap\" class=\"popupmap\"></div>\n    <div class=\"toolbar south\"><div id=\"legend\"></div><button class=\"close\">close &times;</button></div>").appendTo('body').show('fade', 1000);
+            layer_name = data.map_path.slice(5, -4);
+            $('#legend').load('http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
             $('.popupwrapper button.close').click(function(e) {
               return $('.popupwrapper').hide('fade', function() {
                 return $('.popupwrapper').remove();
@@ -103,7 +105,7 @@
               maxZoom: 18
             }).addTo(map);
             return data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
-              layers: data.map_path.slice(5, -4) + '&map=' + data.map_path,
+              layers: layer_name + '&map=' + data.map_path,
               format: 'image/png',
               opacity: 0.75,
               transparent: true

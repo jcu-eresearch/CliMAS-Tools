@@ -127,8 +127,12 @@ $ ->
                         <div class="popupwrapper" style="display: none">
                             <div class="toolbar north"><button class="close">close &times;</button></div>
                             <div id="popupmap" class="popupmap"></div>
-                            <div class="toolbar south"><button class="close">close &times;</button></div>
+                            <div class="toolbar south"><div id="legend"></div><button class="close">close &times;</button></div>
                     """).appendTo('body').show('fade', 1000)
+
+                    layer_name = data.map_path[5..-5]
+
+                    $('#legend').load('http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
 
                     $('.popupwrapper button.close').click (e)->
                         $('.popupwrapper').hide 'fade', ()->
@@ -145,11 +149,12 @@ $ ->
                     }).addTo map
 
                     data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
-                        layers: data.map_path[5..-5] + '&map=' + data.map_path
+                        layers: layer_name + '&map=' + data.map_path
                         format: 'image/png'
                         opacity: 0.75
                         transparent: true
                     }).addTo map
+
         }
 
         e.preventDefault();
