@@ -52,7 +52,7 @@ if (!file_exists($grid_filename_gz)) {
     $result = array();
     $result['grid_filename_gz'] = $grid_filename_gz;
     $result['error'] = "GZIPPED version of ascii grid does not exist species_id = [{$species_id}] file = [{$grid_filename_gz}]";
-    echo json_encode($result);    // we can't find asc grid file so return empty map_path
+    echo json_encode($result);    // we can't find asc grid file so return without a map_path
     exit();
 }
 // $grid_filename_asc = SpeciesFiles::species_data_folder($species_id)."{$UserLayer}.asc";
@@ -71,7 +71,7 @@ if (!file_exists($grid_filename_asc)) {
 if (!file_exists($grid_filename_asc)) {
     $result['error'] = "Still cant find ascii grid file [{$grid_filename_asc}] ";
     $result['grid_filename_asc'] = $grid_filename_asc;
-    echo json_encode($result);    // we can't find asc grid file so return empty map_path
+    echo json_encode($result);    // we can't find asc grid file so return without a map_path
     exit();
 }
 
@@ -95,10 +95,6 @@ $layer = $M->Layers()->AddLayer($grid_filename_asc);
 //huh?? $layer instanceof MapServerLayerRaster;
 $layer->HistogramBuckets($bucket_count);
 
-// start colour ramp at zero
-// TODO: actually, should start at the suitability threshold rather than 0
-$ramp = RGB::Ramp(0, 1, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
-
 $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
 
 if ($MaxentThreshold instanceof ErrorMessage)
@@ -109,8 +105,13 @@ if ($MaxentThreshold instanceof ErrorMessage)
     exit();
 }
 
+// start colour ramp at threshold
+$ramp = RGB::Ramp($MaxentThreshold, 1, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
+
+/*
 foreach (array_keys($ramp) as $key )
     if ($key < $MaxentThreshold) $ramp[$key] = null;    // chnage all values below threshold to trasparent
+*/
 
 // add the colour bands to the layer
 $layer->ColorTable($ramp);
