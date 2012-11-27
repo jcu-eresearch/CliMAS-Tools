@@ -3,38 +3,27 @@
 <style>
     .legend {
         height: 2em;
+        white-space: nowrap;
     }
-    .legend td {
-        width: 2em;
+    .legend li {
+        width: 1em;
         height: 2em;
     }
-    .legend td img {
+    .legend li img {
         width: 100%;
         height: 100%;
     }
 </style>
-<table class="legend">
+<ol class="legend">
 [/leg_header_html]
 
-[leg_layer_html order_metadata=legend_order opt_flag=5]
-<tr><th colspan="20"><pre>
-leg_layer_maxscale: [leg_layer_maxscale]
-leg_layer_minscale: [leg_layer_minscale]
-leg_layer_name: [leg_layer_name]
-</pre></th></tr>
-
-<tr>
-[/leg_layer_html]
-
-[leg_class_html]<td>
+[leg_class_html]<li>
     <img title="[leg_class_name]" alt="[leg_class_name]" src="[leg_icon width=100 height=100]">
 <!--
 leg_class_index: [leg_class_index]
 leg_class_maxscale: [leg_class_maxscale]
 leg_class_minscale: [leg_class_minscale]
 -->
-</td>[/leg_class_html]
+</li>[/leg_class_html]
 
-[leg_footer_html]
-</tr></table>
-[/leg_footer_html]
+[leg_footer_html]</ol>[/leg_footer_html]
