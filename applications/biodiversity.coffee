@@ -124,13 +124,16 @@ $ ->
                     # they want to see the map
                     #
 
+                    # monkey-patch a function into String to capitalise a word
+                    String::capped = -> @[0].toUpperCase() + @[1..-1].toLowerCase()
+
                     maptitle = 'Biodiversity of terrestrial '
                     if groupLevel is 'clazz' and clazz is 'all'
                         maptitle += 'vertebrates'
                     else if groupLevel is 'clazz'
                         maptitle += clazz
                     else
-                        maptitle += clazz + groupLevel + groupName
+                        maptitle += "#{clazz.capped()} #{groupLevel.capped()} #{groupName.capped()}"
 
                     $("""
                         <div class="popupwrapper" style="display: none">

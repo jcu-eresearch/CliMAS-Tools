@@ -89,13 +89,16 @@
           if (!data.map_path) {
             return alert("Sorry, data for that selection is not available.");
           } else if (output === 'view') {
+            String.prototype.capped = function() {
+              return this[0].toUpperCase() + this.slice(1).toLowerCase();
+            };
             maptitle = 'Biodiversity of terrestrial ';
             if (groupLevel === 'clazz' && clazz === 'all') {
               maptitle += 'vertebrates';
             } else if (groupLevel === 'clazz') {
               maptitle += clazz;
             } else {
-              maptitle += clazz + groupLevel + groupName;
+              maptitle += "" + (clazz.capped()) + " " + (groupLevel.capped()) + " " + (groupName.capped());
             }
             $("<div class=\"popupwrapper\" style=\"display: none\">\n    <div class=\"toolbar north\"><div id=\"maptitle\">" + maptitle + "</div>\n    <button class=\"close\">close &times;</button></div>\n    <div id=\"popupmap\" class=\"popupmap\"></div>\n    <div class=\"toolbar south\"><div id=\"legend\"></div><button class=\"close\">close &times;</button></div>").appendTo('body').show('fade', 1000);
             layer_name = data.map_path.slice(5, -4);
