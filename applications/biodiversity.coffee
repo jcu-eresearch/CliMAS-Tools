@@ -133,7 +133,7 @@ $ ->
                     else if groupLevel is 'clazz'
                         maptitle += clazz
                     else
-                        maptitle += "#{clazz.capped()} #{groupLevel.capped()} #{groupName.capped()}"
+                        maptitle += "#{clazz.capped()} #{groupLevel} '#{groupName.capped()}'"
 
                     $("""
                         <div class="popupwrapper" style="display: none">
