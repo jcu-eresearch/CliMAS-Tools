@@ -12,6 +12,12 @@
         height: 2em;
     }
 
+    li.legendlabel {
+        margin-right: -1em;
+        position: relative;
+        bottom: 2em;
+    }
+
     li.legendlabel1, li.legendlabel2, li.legendlabel3,
     li.legendlabel4, li.legendlabel5, li.legendlabel6,
     li.legendlabel7, li.legendlabel8, li.legendlabel9,
@@ -28,9 +34,9 @@
 <ol class="legend">
 [/leg_header_html]
 
-[leg_class_html]
-<li class="legendlabel[leg_class_index]">[leg_class_name]</li>
-<li class="legendelement[leg_class_index]">
+[leg_class_html]<li class="legendlabel legendlabel[leg_class_index]">
+    [leg_class_name]
+</li><li class="legendelement legendelement[leg_class_index]">
     <img alt="" src="[leg_icon width=100 height=100]">
 </li>[/leg_class_html]
 
