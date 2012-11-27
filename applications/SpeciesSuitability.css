@@ -65,7 +65,7 @@ input, select {
 
 #download_all.disabled {
     opacity: 0.5;
-    filter: alpha(opacity=50);
+    filter: alpha(opacity=50); /* for ie */
 }
 
 .formsection {
@@ -87,9 +87,8 @@ input, select {
 
 button[disabled], select[disabled] {
     opacity: 0.33;
-    filter: alpha(opacity=33);
+    filter: alpha(opacity=33); /* for ie */
 }
-
 
 #UserSelectionBar h2 {
     text-transform: lowercase;
@@ -131,115 +130,4 @@ button[disabled], select[disabled] {
     padding-left: 1em;
     width: 100%;
     height: 3em;
-}
-
-
-
-
-
-
-
-#XXXMapTools
-{
-    float:left;
-    height: 650px;
-    width: 40px;
-    clear:right;
-    padding: 10px;
-}
-
-#XXXCurrentSpecies
-{
-    float: left;
-    width: 200px;
-    height: 40px;
-}
-
-
-
-
-
-#XXXMapContainer
-{
-    float: left;
-    height: 670px;
-    width: 710px;
-    overflow: hidden;
-
-}
-
-#XXXColorKeyContainer
-{
-    width: 100%;
-    padding: 0px;
-    margin: 0px;
-    height: 24px;
-    overflow:hidden;
-    clear:both;
-
-}
-
-#XXXColorKey
-{
-    float: left;
-}
-
-#XXXmap_overview
-{
-    width:  200px;
-    height: 160px;
-    overflow: hidden;
-}
-
-#XXXdownload
-{
-    width:  200px;
-    height: 30px;
-    overflow: hidden;
-}
-
-
-#XXXinformation
-{
-    width:  970px;
-    height: 600px;
-    overflow: hidden;
-
-}
-
-#XXXinformation_content
-{
-    margin: 0px;
-    overflow:hidden;
-    float:none;
-    clear:both;
-    margin-left: 200px;
-
-}
-
-
-
-
-#XXXUserSelectionBar h2
-{
-    margin: 0px;
-    padding: 0px;
-    text-transform: lowercase;
-    font-weight: bold;
-
-    margin-top: 40px;
-    margin-left: 5px;
-    letter-spacing: 0.4em;
-
-
-}
-
-#XXXUserSelectionBar select
-{
-    margin: 0px;
-    padding: 0px;
-    font-weight: bold;
-    margin-left: 5px;
-
-
 }
