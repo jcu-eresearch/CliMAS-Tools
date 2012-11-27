@@ -755,7 +755,7 @@ CSS for Daniel's new UI starts here..
 }
 
 #legend { /* is inside the toolbar */
-    float; left;
+    float: left;
 }
 
 .popupwrapper, .popupwrapper .toolbar {
