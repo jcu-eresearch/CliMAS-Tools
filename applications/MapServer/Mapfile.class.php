@@ -493,11 +493,11 @@ MAP
     SYMBOLSET    "{$this->symbolset()}"
 
     LEGEND
-        TEMPLATE "{$this->templatePath()/legend_template.html"
+        TEMPLATE "{$this->templatePath()}/legend_template.html"
     END
 
     WEB
-        TEMPLATE "{$this->templatePath()/page_template.html"
+        TEMPLATE "{$this->templatePath()}/page_template.html"
         IMAGEPATH "{$this->imagePath()}"
         IMAGEURL  "{$this->imageURL()}"
         {$leaflet_extra_metadata}
