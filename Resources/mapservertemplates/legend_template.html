@@ -11,6 +11,15 @@
         width: 1em;
         height: 2em;
     }
+
+    li.legendlabel1, li.legendlabel2, li.legendlabel3,
+    li.legendlabel4, li.legendlabel5, li.legendlabel6,
+    li.legendlabel7, li.legendlabel8, li.legendlabel9,
+    li.legendlabel10, li.legendlabel11, li.legendlabel12,
+    li.legendlabel13, li.legendlabel14, li.legendlabel15,
+    li.legendlabel16, li.legendlabel17, li.legendlabel18
+    { display: none; }
+
     .legend li img {
         width: 100%;
         height: 100%;
@@ -20,9 +29,7 @@
 [/leg_header_html]
 
 [leg_class_html]
-[if name=leg_class_index oper=eq value=0]
 <li class="legendlabel[leg_class_index]">[leg_class_name]</li>
-[/if]
 <li class="legendelement[leg_class_index]">
     <img alt="" src="[leg_icon width=100 height=100]">
 </li>[/leg_class_html]
