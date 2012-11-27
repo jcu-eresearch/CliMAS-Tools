@@ -92,6 +92,11 @@ class Mapfile extends Object{
         return MapServerConfiguration::pathToMapSymbols();
     }
 
+    private function templatePath()
+    {
+        return MapServerConfiguration::pathToTemplates();
+    }
+
     private function imagePath()
     {
         return MapServerConfiguration::pathToImages();
@@ -217,10 +222,10 @@ CLASS;
 if ($this->forLeaflet())
 $leaflet_extra_projection =
 'PROJECTION
-	"proj=longlat"
-        "ellps=WGS84"
-        "datum=WGS84"
-        "no_defs"
+    "proj=longlat"
+    "ellps=WGS84"
+    "datum=WGS84"
+    "no_defs"
 END';
 
 
@@ -271,10 +276,10 @@ R;
 if ($this->forLeaflet())
 $leaflet_extra_projection =
 'PROJECTION
-	"proj=longlat"
-        "ellps=WGS84"
-        "datum=WGS84"
-        "no_defs"
+    "proj=longlat"
+    "ellps=WGS84"
+    "datum=WGS84"
+    "no_defs"
 END';
 
 
@@ -368,22 +373,22 @@ $r = <<<OUTPUT
         END
         CLASS
             STYLE
-                COLOR 0 0 250
-                SYMBOL 'circle'
-                SIZE 0
+                COLOR   0 0 250
+                SYMBOL  'circle'
+                SIZE    0
             END
             LABEL
-                COLOR		{$colour}
-                SHADOWCOLOR	0 0 0
-                SHADOWSIZE	0 0
-                TYPE		TRUETYPE
-                FONT		arial
-                SIZE		{$point_size}
-                ANTIALIAS	TRUE
-                POSITION	ur
-                PARTIALS	TRUE
-                MINDISTANCE	100
-                BUFFER		4
+                COLOR        {$colour}
+                SHADOWCOLOR  0 0 0
+                SHADOWSIZE   0 0
+                TYPE         TRUETYPE
+                FONT         arial
+                SIZE         {$point_size}
+                ANTIALIAS    TRUE
+                POSITION     ur
+                PARTIALS     TRUE
+                MINDISTANCE  100
+                BUFFER       4
             END
 
         END
@@ -466,16 +471,13 @@ $leaflet_extra_projection = <<<LEAF_PROJ
     END
 LEAF_PROJ;
 
-$exent = "";  // if we are using leaflet then we need to leav out exent
+$exent = "EXTENT -20037508.34 -20037508.34 20037508.34 20037508.34";  // if we are using leaflet then we need to leave out exent (DB, Nov 2012: I hope thats not true coz i need an extent to make the html templates work.)
 
 $units = "UNITS         METERS";  // if we are using leaflet then we need units to be set to meters
 
-$size = "";  // if we are using leaflet then we need allow URL to request sizes
+$size = "SIZE 256 256";  // if we are using leaflet then we need allow URL to request sizes
 
 }
-
-
-
 
 $output = <<<OUTPUT
 MAP
@@ -490,7 +492,12 @@ MAP
     FONTSET      "{$this->fontset()}"
     SYMBOLSET    "{$this->symbolset()}"
 
+    LEGEND
+        TEMPLATE "{$this->templatePath()/legend_template.html"
+    END
+
     WEB
+        TEMPLATE "{$this->templatePath()/page_template.html"
         IMAGEPATH "{$this->imagePath()}"
         IMAGEURL  "{$this->imageURL()}"
         {$leaflet_extra_metadata}

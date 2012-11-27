@@ -7,25 +7,26 @@
 class MapServerConfiguration {
 
     //** This folder must be configured to be accessible by the Apache
-    public static function pathToMapfiles()   
-    { 
+    public static function pathToMapfiles()
+    {
         $folder = configuration::TempFolder()."MapserverMapfiles";
         file::mkdir_safe($folder);
-        return $folder; 
+        return $folder;
     }
-    
-    public static function pathToImages()     
-    { 
+
+    public static function pathToImages()
+    {
         $folder = configuration::FilesDownloadFolder()."MapserverImages";
         file::mkdir_safe($folder);
-        return $folder;         
+        return $folder;
     }
-    
+
     public static function pathToImagesWeb()  { return configuration::WebDownloadFolder()."MapserverImages"; } // webserver4 accessible version of path for images
 
     public static function pathToMapSymbols()  { return configuration::ResourcesFolder()."symbols/symbols35.sym";}
     public static function pathToMapFonts()    { return configuration::ResourcesFolder()."fonts/fonts.list";}
-    
+
+    public static function pathToTemplates()   { return configuration::ResourcesFolder()."mapservertemplates"; }
 
     public static function mapfileExtension()  { return "map"; }
 
