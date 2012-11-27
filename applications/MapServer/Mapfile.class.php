@@ -179,7 +179,7 @@ class Mapfile extends Object{
                 if ($value1 == '0.00000') $value1 = '0.00001';
                 if ($value2 == '0.00000') $value2 = '0.00001';
 
-                $expression_name = "NAME \"{$value1.floor}\"";
+                $expression_name = "NAME \"{floor($value1)}\"";
                 $expression = "EXPRESSION ([pixel] > {$value1} and [pixel] <= {$value2})";
 /*
                 if ($index + 1 == count($values)) {
