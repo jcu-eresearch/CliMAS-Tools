@@ -752,11 +752,17 @@ CSS for Daniel's new UI starts here..
 .popupwrapper .toolbar {
     height: 3em;
     background: black;
+    color: white;
 }
 
 #legend, #maptitle { /* are both inside the toolbar */
     float: left;
     padding-left: 1em;
+}
+
+#maptitle {
+    line-height: 2em;
+    opacity: 0.8;
 }
 
 .popupwrapper, .popupwrapper .toolbar {
