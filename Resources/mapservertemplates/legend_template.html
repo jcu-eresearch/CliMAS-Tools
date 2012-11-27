@@ -19,13 +19,19 @@
         bottom: 1.25em;
     }
 
-    li.legendlabel1, li.legendlabel2, li.legendlabel3,
-    li.legendlabel4, li.legendlabel5, li.legendlabel6,
-    li.legendlabel7, li.legendlabel8, li.legendlabel9,
-    li.legendlabel10, li.legendlabel11, li.legendlabel12,
-    li.legendlabel13, li.legendlabel14, li.legendlabel15,
-    li.legendlabel16, li.legendlabel17, li.legendlabel18
-    { display: none; }
+    li.legendlabel, li.legendlabel span {
+        display: none;
+    }
+
+    li.legendlabel0, li.legendlabel19 {
+        display: inline-block;
+    }
+
+    li.legendlabel0 .start,
+    li.legendlabel19 .end
+    {
+        display: inline;
+    }
 
     .legend li img {
         width: 100%;
