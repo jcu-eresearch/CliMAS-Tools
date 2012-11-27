@@ -153,8 +153,10 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
             <input id="species" placeholder="Type in the species of interest">
     </div>
 
-    <div id="leafletmap"></div>
-    <div id="legendbar"></div>
+    <div id="mapwrapper">
+        <div id="leafletmap"></div>
+        <div id="legendbar"></div>
+    </div>
 
     <div id="UserSelectionBar" class="formsection">
 
