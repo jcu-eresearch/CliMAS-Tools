@@ -754,8 +754,9 @@ CSS for Daniel's new UI starts here..
     background: black;
 }
 
-#legend { /* is inside the toolbar */
+#legend, #maptitle { /* are both inside the toolbar */
     float: left;
+    padding-left: 1em;
 }
 
 .popupwrapper, .popupwrapper .toolbar {

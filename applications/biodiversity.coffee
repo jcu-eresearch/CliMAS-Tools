@@ -123,21 +123,30 @@ $ ->
                     #
                     # they want to see the map
                     #
+
+                    maptitle = 'Biodiversity of terrestrial '
+                    maptitle << 'mammals'
+
                     $("""
                         <div class="popupwrapper" style="display: none">
-                            <div class="toolbar north"><button class="close">close &times;</button></div>
+                            <div class="toolbar north"><div id="maptitle">#{maptitle}</div>
+                            <button class="close">close &times;</button></div>
                             <div id="popupmap" class="popupmap"></div>
                             <div class="toolbar south"><div id="legend"></div><button class="close">close &times;</button></div>
                     """).appendTo('body').show('fade', 1000)
 
+                    # pre-figure the layer name
                     layer_name = data.map_path[5..-5]
 
+                    # fetch the legend as a html template from MapServer
                     $('#legend').load('http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
 
+                    # add close behaviour to the close buttons
                     $('.popupwrapper button.close').click (e)->
                         $('.popupwrapper').hide 'fade', ()->
                             $('.popupwrapper').remove()
 
+                    # create the map
                     map = L.map('popupmap', {
                         minZoom: 3
                     }).setView([-27, 135], 4)
@@ -148,6 +157,7 @@ $ ->
                         maxZoom: 18
                     }).addTo map
 
+                    # add the selected layer to the map
                     data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
                         layers: layer_name + '&map=' + data.map_path
                         format: 'image/png'

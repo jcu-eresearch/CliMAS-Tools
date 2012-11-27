@@ -217,7 +217,7 @@ if (array_key_exists('page', $_GET)) {
                         'RCP3PD' => 'substantial reduction (RCP 2.6)',
                         'RCP45' => 'stabilising before 2100 (RCP 4.5)',
                         'RCP6'  => 'stabilising after 2100 (RCP 6)',
-                        'RCP85' => 'high - business as usual (RCP 8.5)'
+                        'RCP85' => 'high &ndash; "business as usual" (RCP 8.5)'
                     );
                     foreach ($scenarios as $name => $desc) {
                         echo "<label><input type='radio' class='scenario' name='scenario' checked='checked' value='".$name."'>".$desc."</label>";
