@@ -750,6 +750,7 @@ CSS for Daniel's new UI starts here..
 }
 
 .popupwrapper .toolbar {
+    position: relative;
     height: 3em;
     background: black;
     color: white;
@@ -773,10 +774,6 @@ CSS for Daniel's new UI starts here..
     box-shadow: 0 0 150px #000, 0 0 25px #000, 0 0 5px #000;
 }
 
-.popupwrapper .toolbar, .popupwrapper .popupmap {
-    position: relative;
-}
-
 .popupwrapper .toolbar.north {
     margin-top: -3em;
 }
@@ -796,6 +793,7 @@ CSS for Daniel's new UI starts here..
 /* popup map  - - - - - - - - - - - - - - - - - */
 
 .popupwrapper .popupmap {
+    z-index: 1; /* need this to keep the bottom toolbar from box-shadowing onto the map */
     height: 100%;
 }
 
