@@ -114,16 +114,20 @@ button[disabled], select[disabled] {
     width: 90%;
 }
 
-#leafletmap {
+#mapwrapper {
     float: right;
     width: 74%;
+    height: 29em;
+}
+
+#leafletmap {
+    width: 100%;
     height: 26em;
 }
 
 #legendbar {
-    float: right;
-    clear: right;
-    width: 74%;
+    background: pink;
+    width: 100%;
     height: 3em;
 }
 
