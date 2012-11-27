@@ -498,8 +498,8 @@ MAP
 
     WEB
         TEMPLATE "{$this->templatePath()}/page_template.html"
-        IMAGEPATH "{$this->imagePath()}"
-        IMAGEURL  "{$this->imageURL()}"
+        IMAGEPATH "{$this->imagePath()}/"
+        IMAGEURL  "{$this->imageURL()}/"
         {$leaflet_extra_metadata}
     END
 
