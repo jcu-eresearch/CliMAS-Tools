@@ -115,6 +115,7 @@ button[disabled], select[disabled] {
 }
 
 #mapwrapper {
+    position: relative;
     float: right;
     width: 74%;
     height: 29em;
