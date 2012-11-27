@@ -131,9 +131,12 @@ $ ->
                     if groupLevel is 'clazz' and clazz is 'all'
                         maptitle += 'vertebrates'
                     else if groupLevel is 'clazz'
-                        maptitle += clazz
+                        maptitle += clazz.capped()
                     else
                         maptitle += "#{clazz.capped()} #{groupLevel} '#{groupName.capped()}'"
+
+                    if year isnt '1990'
+                        maptitle += " in #{year} at emission level #{scenario}"
 
                     $("""
                         <div class="popupwrapper" style="display: none">
