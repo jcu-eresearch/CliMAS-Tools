@@ -764,6 +764,7 @@ CSS for Daniel's new UI starts here..
 #maptitle {
     padding-top: 0.5em;
     line-height: 0.9;
+    margin-right: 6em;
 }
 
 .popupwrapper, .popupwrapper .toolbar {
