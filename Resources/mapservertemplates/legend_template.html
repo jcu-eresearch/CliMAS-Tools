@@ -1,6 +1,17 @@
 <!-- mapserver template -->
 [leg_header_html]
 <style>
+    /*
+       this relies on the terrible, terrible arrangement where MapServer's
+       pixel class names are bodgied to include a couple of carefully made
+       html spans (e.g. the class that represents 10-22 is labelled with:
+       "<span class='start'>10</span><span class='end'>22</span>"), which
+       is terrible but is the only way to get pixel class range info into
+       the legend template.
+
+       Here, css hides all of the legend labels, then carefully re-displays
+       just a few to nicely label the legend.
+    */
     .legend {
         height: 2em;
         list-style: none;
