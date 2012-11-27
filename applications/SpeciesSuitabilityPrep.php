@@ -38,7 +38,7 @@ if (is_null($UserLayer)) {
 
 // number of buckets (colour bands)
 
-$bucket_count = array_util::Value($_POST, "bucket_count", 5);
+$bucket_count = array_util::Value($_POST, "bucket_count", 20);
 
 //
 // create necessary files (map file and asciigrid) and send back path to map file.

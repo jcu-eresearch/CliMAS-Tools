@@ -1,6 +1,6 @@
 <?php
 /**
- * Implementation of MAPSERVER mapping interface for use with Suitability Tool
+ * Implementation of MAPSERVER mapping interface for use with Biodiversity Tool
  *
  */
 include_once 'includes.php';

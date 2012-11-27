@@ -154,6 +154,7 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
     </div>
 
     <div id="leafletmap"></div>
+    <div id="legendbar"></div>
 
     <div id="UserSelectionBar" class="formsection">
 
