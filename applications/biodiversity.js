@@ -103,7 +103,7 @@
             if (year !== 'current') {
               maptitle += " in " + year + " at emission level " + scenario;
             }
-            $("<div class=\"popupwrapper\" style=\"display: none\">\n    <div class=\"toolbar north\"><div id=\"maptitle\">" + maptitle + "</div>\n    <button class=\"close\">close &times;</button></div>\n    <div id=\"popupmap\" class=\"popupmap\"></div>\n    <div class=\"toolbar south\"><div id=\"legend\"></div><button class=\"close\">close &times;</button></div>").appendTo('body').show('fade', 1000);
+            $("<div class=\"popupwrapper\" style=\"display: none\">\n    <div class=\"toolbar north\">\n    <button class=\"close\">close &times;</button>\n    <div id=\"maptitle\">" + maptitle + "</div>\n    </div>\n    <div id=\"popupmap\" class=\"popupmap\"></div>\n    <div class=\"toolbar south\"><button class=\"close\">close &times;</button><div id=\"legend\"></div></div>").appendTo('body').show('fade', 1000);
             layer_name = data.map_path.slice(5, -4);
             $('#legend').load('http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
             $('.popupwrapper button.close').click(function(e) {

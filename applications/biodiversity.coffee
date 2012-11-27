@@ -140,10 +140,12 @@ $ ->
 
                     $("""
                         <div class="popupwrapper" style="display: none">
-                            <div class="toolbar north"><div id="maptitle">#{maptitle}</div>
-                            <button class="close">close &times;</button></div>
+                            <div class="toolbar north">
+                            <button class="close">close &times;</button>
+                            <div id="maptitle">#{maptitle}</div>
+                            </div>
                             <div id="popupmap" class="popupmap"></div>
-                            <div class="toolbar south"><div id="legend"></div><button class="close">close &times;</button></div>
+                            <div class="toolbar south"><button class="close">close &times;</button><div id="legend"></div></div>
                     """).appendTo('body').show('fade', 1000)
 
                     # pre-figure the layer name
