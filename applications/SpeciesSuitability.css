@@ -120,6 +120,13 @@ button[disabled], select[disabled] {
     height: 26em;
 }
 
+#legendbar {
+    float: right;
+    clear: right;
+    width: 74%;
+    height: 3em;
+}
+
 
 
 
