@@ -130,7 +130,7 @@ $ ->
                     else if groupLevel is 'clazz'
                         maptitle += clazz
                     else
-                        maptitle += clazz + taxaLevel + taxa
+                        maptitle += clazz + groupLevel + groupName
 
                     $("""
                         <div class="popupwrapper" style="display: none">
