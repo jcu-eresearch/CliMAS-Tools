@@ -13,7 +13,7 @@
        just a few to nicely label the legend.
     */
     .legend {
-        padding: 1em 0 0 0;
+        padding: 1em 0 0 2em;
         list-style: none;
         white-space: nowrap;
     }
@@ -25,6 +25,8 @@
     }
 
     li.legendlabel {
+        color: #fff;
+        opacity: 0.8;
         margin-right: -1em;
         position: relative;
         bottom: 1.25em;
@@ -32,6 +34,10 @@
 
     li.legendlabel, li.legendlabel span {
         display: none;
+    }
+
+    li.legendlabel span {
+        font-size: 80%;
     }
 
     li.legendlabel0,
