@@ -125,10 +125,12 @@ $ ->
                     #
 
                     maptitle = 'Biodiversity of terrestrial '
-                    if groupLevel is 'clazz'
+                    if groupLevel is 'clazz' and clazz is 'all'
                         maptitle += 'vertebrates'
+                    else if groupLevel is 'clazz'
+                        maptitle += clazz
                     else
-                        maptitle += ' class ' + clazz + ' group ' + groupLevel + ' taxaLevel ' + taxaLevel
+                        maptitle += clazz + taxaLevel + taxa
 
                     $("""
                         <div class="popupwrapper" style="display: none">
