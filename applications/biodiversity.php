@@ -210,14 +210,14 @@ if (array_key_exists('page', $_GET)) {
 
         <div class="formsection">
             <div class="onefield scenario">
-                <h3>Select an emission scenario</h3>
+                <h3>Select a future emission level</h3>
 
                 <?php
                     $scenarios = array(
-                        'RCP3PD' => 'RCP 2.6: Emissions reduce substantially',
-                        'RCP45' => 'RCP 4.5: Emissions stabilise before 2100',
-                        'RCP6'  => 'RCP 6: Emissions stabilise after 2100',
-                        'RCP85' => 'RCP 8.5: Emissions increase, "business as usual"'
+                        'RCP3PD' => 'substantial reduction (RCP 2.6)',
+                        'RCP45' => 'stabilising before 2100 (RCP 4.5)',
+                        'RCP6'  => 'stabilising after 2100 (RCP 6)',
+                        'RCP85' => 'high - business as usual (RCP 8.5)'
                     );
                     foreach ($scenarios as $name => $desc) {
                         echo "<label><input type='radio' class='scenario' name='scenario' checked='checked' value='".$name."'>".$desc."</label>";
