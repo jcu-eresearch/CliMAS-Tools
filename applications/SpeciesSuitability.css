@@ -131,6 +131,6 @@ button[disabled], select[disabled] {
     height: 3em;
 }
 
-#legend {
+#legendbar .legend {
     margin-left: 1em;
 }
