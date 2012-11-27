@@ -19,13 +19,12 @@
 <ol class="legend">
 [/leg_header_html]
 
-[leg_class_html]<li>
-    <img title="[leg_class_name]" alt="[leg_class_name]" src="[leg_icon width=100 height=100]">
-<!--
-leg_class_index: [leg_class_index]
-leg_class_maxscale: [leg_class_maxscale]
-leg_class_minscale: [leg_class_minscale]
--->
+[leg_class_html]
+[if name=leg_class_index oper=eq value=0]
+<li class="legendlabel[leg_class_index]">[leg_class_name]</li>
+[/if]
+<li class="legendelement[leg_class_index]">
+    <img alt="" src="[leg_icon width=100 height=100]">
 </li>[/leg_class_html]
 
 [leg_footer_html]</ol>[/leg_footer_html]
