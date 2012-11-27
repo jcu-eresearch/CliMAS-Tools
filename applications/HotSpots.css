@@ -754,6 +754,10 @@ CSS for Daniel's new UI starts here..
     background: black;
 }
 
+#legend { /* is inside the toolbar */
+    float; left;
+}
+
 .popupwrapper, .popupwrapper .toolbar {
     -moz-box-shadow: 0 0 150px #000, 0 0 25px #000, 0 0 5px #000;
     -webkit-box-shadow: 0 0 150px #000, 0 0 25px #000, 0 0 5px #000;
