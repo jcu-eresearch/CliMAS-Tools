@@ -125,7 +125,7 @@ $ ->
                     #
 
                     # monkey-patch a function into String to capitalise a word
-                    String::capped = -> @[0].toUpperCase() + @[1..-1].toLowerCase()
+                    String::capped = -> @.charAt(0).toUpperCase() + @.substring(1).toLowerCase()
 
                     maptitle = 'Biodiversity of terrestrial '
                     if groupLevel is 'clazz' and clazz is 'all'

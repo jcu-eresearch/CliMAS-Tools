@@ -90,7 +90,7 @@
             return alert("Sorry, data for that selection is not available.");
           } else if (output === 'view') {
             String.prototype.capped = function() {
-              return this[0].toUpperCase() + this.slice(1).toLowerCase();
+              return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
             };
             maptitle = 'Biodiversity of terrestrial ';
             if (groupLevel === 'clazz' && clazz === 'all') {
