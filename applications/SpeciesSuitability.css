@@ -127,7 +127,10 @@ button[disabled], select[disabled] {
 
 #legendbar {
     background: black;
-    padding-left: 1em;
     width: 100%;
     height: 3em;
+}
+
+#legend {
+    margin-left: 1em;
 }
