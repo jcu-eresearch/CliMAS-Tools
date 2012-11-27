@@ -775,6 +775,7 @@ CSS for Daniel's new UI starts here..
 
 .popupwrapper .toolbar {
     position: relative;
+    z-index: 0;
 }
 
 .popupwrapper .toolbar.north {
