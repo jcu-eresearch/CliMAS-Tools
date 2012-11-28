@@ -85,7 +85,7 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
     $species[] = 'Casuarius_casuarius';
     $species[] = '19814';
 
-    for ($species as $species_id) {
+    foreach ($species as $species_id) {
         $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
         echo "MaxentThreshold for id {$species_id} is " . $MaxentThreshold;
     }
