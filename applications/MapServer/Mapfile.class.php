@@ -156,11 +156,19 @@ class Mapfile extends Object{
 
         $range = $max - $min;
 
+        $unitrange = false;
+
+        if ($range <= 1.0 && $max <= 1.0) {
+            $unitrange = true;
+        }
+
         $step = $range / $layer->HistogramBuckets();
 
         for ($index = 1; $index < count($values); $index++) {
             $proper_value1 = (($index - 1) * $step) + $min;
             $proper_value2 = ( $index      * $step) + $min;
+
+            $
 
             $value1 = number_format( $proper_value1, 5, '.', '' );
             $value2 = number_format( $proper_value2, 5, '.', '' );
@@ -175,15 +183,19 @@ class Mapfile extends Object{
                 $expression = "EXPRESSION ([pixel] = {$value1})";
             } else {
 
+                if ($unitrange) {
+                    $expression_name =
+                            'NAME "<span class=\'start\'>' . $value1 . '</span>' .
+                            '<span class=\'end\'>' . $value2 . '</span>"';
+                } else {
+                    $expression_name =
+                            'NAME "<span class=\'start\'>' . ceil($value1) . '</span>' .
+                            '<span class=\'end\'>' . floor($value2) . '</span>"';
+                }
                 // MapServer seems to believe that pixel value 0 is greater than 0.00000.
                 if ($value1 == '0.00000') $value1 = '0.00001';
                 if ($value2 == '0.00000') $value2 = '0.00001';
 
-                $expression_name = 'NAME "<span class=\'start\'>' .
-                                ceil($value1) .
-                                '</span><span class=\'end\'>' .
-                                floor($value2) .
-                                '</span>"';
 
 
 
