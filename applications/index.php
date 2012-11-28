@@ -106,8 +106,11 @@ $layer = $M->Layers()->AddLayer($grid_filename_asc);
 $layer->HistogramBuckets($bucket_count);
 $layer->ColorTable($ramp);
 
-echo "layer min: { $layer->Minimum() } \n";
-echo "layer max: { $layer->Maximum() } \n\n";
+$min = $layer->Minimum();
+$max = $layer->Maximum();
+
+echo "layer min: {$min} \n";
+echo "layer max: {$max} \n\n";
 
 // write out our completed mapfile
 $MF = new Mapfile($M);
