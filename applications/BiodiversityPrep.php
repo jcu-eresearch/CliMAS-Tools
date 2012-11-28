@@ -111,7 +111,7 @@ if (file_exists($map_path)) {
 $layer = $M->Layers()->AddLayer($grid_filename_asc);
 
 $min = $layer->Minimum();
-$max = $Layer->Maximum();
+$max = $layer->Maximum();
 $range = $max - $min + 1;
 
 $bucket_count = min($range, $bucket_count);
