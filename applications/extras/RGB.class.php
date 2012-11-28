@@ -69,9 +69,9 @@ class RGB extends Object {
     {
         $result = new RGB();
 
-          $result->Red( is_int($r) ? $r : 0 );
+        $result->Red( is_int($r) ? $r : 0 );
         $result->Green( is_int($g) ? $g : 0 );
-         $result->Blue( is_int($b) ? $b : 0 );
+        $result->Blue( is_int($b) ? $b : 0 );
 
         return $result;
     }
@@ -219,7 +219,10 @@ class RGB extends Object {
         $imax = max($min , $max);
 
         if ($imin == $imax) {
-             return array($imax => $indexed_color_gradient[ count($indexed_color_gradient) / 2 ]);
+            return array(
+                $imax - 1 => $indexed_color_gradient[ count($indexed_color_gradient) / 2 ],
+                $imax => $indexed_color_gradient[ count($indexed_color_gradient) / 2 ]
+            );
         }
 
         $istep = ($imax - $imin) / $buckets;
