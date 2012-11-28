@@ -97,7 +97,7 @@ echo "\n\n";
 
 $ramp = RGB::Ramp($MaxentThreshold, 1, $bucket_count, RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
 
-echo "Colour ramp is:"
+echo "Colour ramp is:";
 foreach ($ramp as $start => $data) {
     echo $start . "\n";
 }
