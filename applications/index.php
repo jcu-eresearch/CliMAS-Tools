@@ -94,12 +94,11 @@ echo "\n\n";
 
 $ramp = RGB::Ramp($MaxentThreshold, 1, $bucket_count, RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
 
-echo "Colour ramp is:";
+echo "Colour ramp is:\n";
 foreach ($ramp as $start => $data) {
     echo $start . "\n";
 }
 //print_r($ramp);
-
 
 $M = new MapServerWrapper();
 $layer = $M->Layers()->AddLayer($grid_filename_asc);
@@ -107,8 +106,13 @@ $layer = $M->Layers()->AddLayer($grid_filename_asc);
 $layer->HistogramBuckets($bucket_count);
 $layer->ColorTable($ramp);
 
+echo "layer min: { $layer->Minimum() } \n";
+echo "layer max: { $layer->Maximum() } \n\n";
+
 // write out our completed mapfile
 $MF = new Mapfile($M);
+
+echo
 
 echo $MF->Text();
 ?>
