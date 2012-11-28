@@ -89,7 +89,7 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
 
 echo "\n\n";
 
-$bucket_count = 3;
+$bucket_count = 20;
 $ramp = RGB::Ramp($MaxentThreshold, 1, $bucket_count, RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
 
 print_r($ramp);
