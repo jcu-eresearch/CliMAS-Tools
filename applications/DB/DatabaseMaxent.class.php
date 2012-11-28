@@ -703,8 +703,6 @@ class DatabaseMaxent extends Object
         if (!file_exists($maxentResultsFilename))
             return new ErrorMessage(__METHOD__,__LINE__,"Tried to Maxent Threshold from file but copuld not find it {$maxentResultsFilename}",true);
 
-
-
         $maxentResult = matrix::Load($maxentResultsFilename);
 
 
@@ -715,7 +713,6 @@ class DatabaseMaxent extends Object
         $threshold_from_file = array_util::Value($first, $name);
 
         return $threshold_from_file;
-
     }
 
 

@@ -77,5 +77,22 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
 
 <?php include 'ToolsFooter.php' ?>
 
+<pre style="color: white;">
+<?php
+    $species_id = '19814';
+    $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
+    echo "$MaxentThreshold for id {$species_id} is " . $MaxentThreshold;
+?>
+</pre>
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
