@@ -111,8 +111,8 @@ if (file_exists($map_path)) {
 $layer = $M->Layers()->AddLayer($grid_filename_asc);
 $layer->HistogramBuckets($bucket_count);
 
-// start ramp at Zero -
-$ramp = RGB::Ramp(0, 100, $bucket_count, RGB::ReverseGradient(RGB::GradientGreenBeige()));
+// remp fro 1 to layer max
+$ramp = RGB::Ramp(1, $layer->Maximum(), $bucket_count, RGB::ReverseGradient(RGB::GradientGreenBeige()));
 
 /*
 $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
