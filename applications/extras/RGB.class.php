@@ -217,6 +217,11 @@ class RGB extends Object {
 
         $imin = min($min , $max);  // make sure min and max are right way round
         $imax = max($min , $max);
+
+        if ($imin == $imax) {
+             return array($imax => $indexed_color_gradient[ count($indexed_color_gradient) / 2 ]);
+        }
+
         $istep = ($imax - $imin) / $buckets;
 
 
