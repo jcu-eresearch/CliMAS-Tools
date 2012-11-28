@@ -106,7 +106,7 @@ if ($MaxentThreshold instanceof ErrorMessage)
 }
 
 // start colour ramp at threshold
-$ramp = RGB::Ramp($MaxentThreshold, 1, $bucket_count,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
+$ramp = RGB::Ramp($MaxentThreshold, 1, $bucket_count, RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
 
 /*
 foreach (array_keys($ramp) as $key )

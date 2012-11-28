@@ -77,7 +77,7 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
 
 <?php include 'ToolsFooter.php' ?>
 
-<pre style="color: white; padding: 2em; font-size: 8px">
+<pre style="color: white; padding: 2em; opacity: 0.7;">
 <?php
     $species[] = '19814';
     $species[] = 'Casuarius_casuarius';
