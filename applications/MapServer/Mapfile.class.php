@@ -184,7 +184,7 @@ class Mapfile extends Object{
             $value1 = number_format( $proper_value1, 5, '.', '' );
             $value2 = number_format( $proper_value2, 5, '.', '' );
 
-            $rgb = $rgbs[$index - 1];
+            $rgb = $rgbs[$index];
             if (is_null($rgb)) $rgb = "-1 -1 -1"; // make null transparent
 
             $expression_name = "";
