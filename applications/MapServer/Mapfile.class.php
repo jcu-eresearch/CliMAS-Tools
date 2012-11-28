@@ -194,14 +194,18 @@ class Mapfile extends Object{
                 $expression = "EXPRESSION ([pixel] = {$value1})";
             } else {
 
+                $positionclass = "";
+                if ($index == 0) $positionclass .= " first";
+                if ($index == count($value)-1) $positionclass .= " last";
+
                 if ($unitrange) {
                     $expression_name =
-                            'NAME "<span class=\'start\'>' . $value1 . '</span>' .
-                            '<span class=\'end\'>' . $value2 . '</span>"';
+                            'NAME "<span class=\'start' . $positionclass . '\'>' . $value1 . '</span>' .
+                            '<span class=\'end' . $positionclass . '\'>' . $value2 . '</span>"';
                 } else {
                     $expression_name =
-                            'NAME "<span class=\'start\'>' . ceil($value1) . '</span>' .
-                            '<span class=\'end\'>' . floor($value2) . '</span>"';
+                            'NAME "<span class=\'start' . $positionclass . '\'>' . ceil($value1) . '</span>' .
+                            '<span class=\'end' . $positionclass . '\'>' . floor($value2) . '</span>"';
                 }
                 // MapServer seems to believe that pixel value 0 is greater than 0.00000.
                 if ($value1 == '0.00000') $value1 = '0.00001';

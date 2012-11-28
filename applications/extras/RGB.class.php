@@ -204,8 +204,6 @@ class RGB extends Object {
         return new RGB(0,0,255);
     }
 
-
-
     /*
      * return: Array of RGB where keys are values inside the min to max range
      */
@@ -220,7 +218,7 @@ class RGB extends Object {
 
         if ($imin == $imax) {
             return array(
-                $imax - 1 => $indexed_color_gradient[ count($indexed_color_gradient) / 2 ],
+                ($imax - 1) => $indexed_color_gradient[ count($indexed_color_gradient) / 2 ],
                 $imax => $indexed_color_gradient[ count($indexed_color_gradient) / 2 ]
             );
         }
