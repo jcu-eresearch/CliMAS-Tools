@@ -206,6 +206,7 @@ class Mapfile extends Object{
                 // MapServer seems to believe that pixel value 0 is greater than 0.00000.
                 if ($value1 == '0.00000') $value1 = '0.00001';
                 if ($value2 == '0.00000') $value2 = '0.00001';
+                if ($value1 == '1.00000') $value1 = '0.99999';
 
 
 
