@@ -77,18 +77,23 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
 
 <?php include 'ToolsFooter.php' ?>
 
-<pre style="color: white;">
-
-
-
+<pre style="color: white; padding: 2em;">
 <?php
     $species[] = 'Casuarius_casuarius';
     $species[] = '19814';
 
     foreach ($species as $species_id) {
         $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
-        echo "MaxentThreshold for id {$species_id} is " . $MaxentThreshold;
+        echo "\n\nMaxentThreshold for id {$species_id} is " . $MaxentThreshold;
     }
+
+echo "\n\n";
+
+$bucket_count = 3;
+$ramp = RGB::Ramp($MaxentThreshold, 1, $bucket_count, RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
+
+print_r($ramp);
+
 ?>
 </pre>
 
