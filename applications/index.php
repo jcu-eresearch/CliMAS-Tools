@@ -79,8 +79,8 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
 
 <pre style="color: white; padding: 2em;">
 <?php
-    $species[] = 'Casuarius_casuarius';
     $species[] = '19814';
+    $species[] = 'Casuarius_casuarius';
 
     foreach ($species as $species_id) {
         $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
