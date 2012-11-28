@@ -86,9 +86,6 @@ $UserLayer = '1990';
 
 $grid_filename_asc = "/tmp/{$UserLayer}_{$species_id}.asc";
 
-$M = new MapServerWrapper();
-$layer = $M->Layers()->AddLayer($grid_filename_asc);
-$layer->HistogramBuckets($bucket_count);
 
 $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
 echo "\n\nMaxentThreshold for id {$species_id} is " . $MaxentThreshold;
@@ -102,6 +99,13 @@ foreach ($ramp as $start => $data) {
     echo $start . "\n";
 }
 //print_r($ramp);
+
+
+$M = new MapServerWrapper();
+$layer = $M->Layers()->AddLayer($grid_filename_asc);
+
+$layer->HistogramBuckets($bucket_count);
+$layer->ColorTable($ramp);
 
 // write out our completed mapfile
 $MF = new Mapfile($M);
