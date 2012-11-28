@@ -139,8 +139,7 @@ class Mapfile extends Object{
     }
 
 
-    private function raster_color_classes(MapServerLayerRaster $layer)
-    {
+    private function raster_color_classes(MapServerLayerRaster $layer) {
 
         $result = "";
 

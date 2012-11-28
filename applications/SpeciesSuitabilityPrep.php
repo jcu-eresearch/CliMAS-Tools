@@ -97,8 +97,7 @@ $layer->HistogramBuckets($bucket_count);
 
 $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
 
-if ($MaxentThreshold instanceof ErrorMessage)
-{
+if ($MaxentThreshold instanceof ErrorMessage) {
     $result['error'] = print_r($MaxentThreshold,true);
     $result['map_path'] = "";
     echo json_encode($result);

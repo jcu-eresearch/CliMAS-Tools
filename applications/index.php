@@ -79,17 +79,21 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
 
 <pre style="color: white; padding: 2em; opacity: 0.7;">
 <?php
-    $species[] = '19814';
-    $species[] = 'Casuarius_casuarius';
 
-    foreach ($species as $species_id) {
-        $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
-        echo "\n\nMaxentThreshold for id {$species_id} is " . $MaxentThreshold;
-    }
+$species_id = '19814';
+$bucket_count = 20;
+
+$grid_filename_asc = "/tmp/{$UserLayer}_{$species_id}.asc";
+
+$M = new MapServerWrapper();
+$layer = $M->Layers()->AddLayer($grid_filename_asc);
+$layer->HistogramBuckets($bucket_count);
+
+$MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
+echo "\n\nMaxentThreshold for id {$species_id} is " . $MaxentThreshold;
 
 echo "\n\n";
 
-$bucket_count = 20;
 $ramp = RGB::Ramp($MaxentThreshold, 1, $bucket_count, RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
 
 print_r($ramp);
