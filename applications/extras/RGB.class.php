@@ -224,7 +224,6 @@ class RGB extends Object {
 
         $istep = ($imax - $imin) / $buckets;
 
-
         $result = array();
         for ($index = $imin; $index < $imax; $index += $istep)
         {
