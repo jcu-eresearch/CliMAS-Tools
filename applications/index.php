@@ -82,6 +82,7 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
 
 $species_id = '19814';
 $bucket_count = 20;
+$UserLayer = '1990';
 
 $grid_filename_asc = "/tmp/{$UserLayer}_{$species_id}.asc";
 
