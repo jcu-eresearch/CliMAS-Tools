@@ -109,9 +109,16 @@ if (file_exists($map_path)) {
 }
 
 $layer = $M->Layers()->AddLayer($grid_filename_asc);
+
+$min = $layer->Minimum();
+$max = $Layer->Maximum();
+$range = $max - $min + 1;
+
+$bucket_count = min($range, $bucket_count);
+
 $layer->HistogramBuckets($bucket_count);
 
-// remp fro 1 to layer max
+// ramp from 1 to layer-max
 $ramp = RGB::Ramp(1, $layer->Maximum(), $bucket_count, RGB::ReverseGradient(RGB::GradientGreenBeige()));
 
 /*
