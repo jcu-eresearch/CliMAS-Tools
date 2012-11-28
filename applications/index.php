@@ -106,7 +106,7 @@ foreach ($ramp as $start => $data) {
 // write out our completed mapfile
 $MF = new Mapfile($M);
 
-echo $MF->write();
+echo $MF->Text();
 ?>
 </pre>
 
