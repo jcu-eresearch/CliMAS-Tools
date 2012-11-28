@@ -196,7 +196,7 @@ class Mapfile extends Object{
 
                 $positionclass = "";
                 if ($index == 0) $positionclass .= " first";
-                if ($index == count($value)-1) $positionclass .= " last";
+                if ($index == count($value)-2) $positionclass .= " last";
 
                 if ($unitrange) {
                     $expression_name =

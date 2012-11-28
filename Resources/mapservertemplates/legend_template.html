@@ -34,17 +34,16 @@
         bottom: 1.25em;
     }
 
-    li.legendlabel, li.legendlabel span { display: none; }
+    li.legendlabel span {
+        display: none;
+        font-size: 80%;
+    }
 
-    li.legendlabel span { font-size: 80%; }
-
-    li.legendlabel0,
-    li.legendlabel19
-    { display: inline-block; }
-
-    li.legendlabel0 .start,
-    li.legendlabel19 .end
+    li.legendlabel0 .start.first,
+    li.legendlabel19 .end.last,
     { display: inline; }
+
+    li.legendlabel0 .start.first.last { display: none; }
 
     .legend li img {
         width: 100%;
