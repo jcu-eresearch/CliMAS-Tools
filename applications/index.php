@@ -112,8 +112,6 @@ echo "layer max: { $layer->Maximum() } \n\n";
 // write out our completed mapfile
 $MF = new Mapfile($M);
 
-echo
-
 echo $MF->Text();
 ?>
 </pre>
