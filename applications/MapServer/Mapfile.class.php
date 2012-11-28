@@ -168,8 +168,6 @@ class Mapfile extends Object{
             $proper_value1 = (($index - 1) * $step) + $min;
             $proper_value2 = ( $index      * $step) + $min;
 
-            $
-
             $value1 = number_format( $proper_value1, 5, '.', '' );
             $value2 = number_format( $proper_value2, 5, '.', '' );
 
