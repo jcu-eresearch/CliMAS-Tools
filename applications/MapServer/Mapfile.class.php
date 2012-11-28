@@ -176,14 +176,10 @@ class Mapfile extends Object{
             if (is_null($rgb)) $rgb = "-1 -1 -1"; // make null transparent
 */
 
-        for ($index = 0; $index < count($values); $index++) {
+        for ($index = 0; $index < count($values) - 1; $index++) {
 
             $proper_value1 = $values[$index];
-            if ($index == count($values)-1) {
-                $proper_value2 = $max;
-            } else {
-                $proper_value2 = $values[$index + 1];
-            }
+            $proper_value2 = $values[$index + 1];
 
             $value1 = number_format( $proper_value1, 5, '.', '' );
             $value2 = number_format( $proper_value2, 5, '.', '' );
