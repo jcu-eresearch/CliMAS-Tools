@@ -76,16 +76,15 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
 </div>
 
 <?php include 'ToolsFooter.php' ?>
-
-<pre style="color: white; padding: 2em; opacity: 0.7;">
 <?php
+/*
+echo '<pre style="color: white; padding: 2em; opacity: 0.7;">';
 
 $species_id = '19814';
 $bucket_count = 3;
 $UserLayer = '1990';
 
 $grid_filename_asc = "/tmp/{$UserLayer}_{$species_id}.asc";
-
 
 $MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
 echo "\n\nMaxentThreshold for id {$species_id} is " . $MaxentThreshold;
@@ -98,7 +97,7 @@ echo "Colour ramp is:\n";
 foreach ($ramp as $start => $data) {
     echo $start . "\n";
 }
-//print_r($ramp);
+// print_r($ramp);
 
 $M = new MapServerWrapper();
 $layer = $M->Layers()->AddLayer($grid_filename_asc);
@@ -116,9 +115,9 @@ echo "layer max: {$max} \n\n";
 $MF = new Mapfile($M);
 
 echo $MF->Text();
+echo '</pre>';
+*/
 ?>
-</pre>
-
 </body>
 </html>
 
