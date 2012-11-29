@@ -181,8 +181,8 @@ class Mapfile extends Object{
             $proper_value1 = $values[$index];
             $proper_value2 = $values[$index + 1];
 
-            $value1 = number_format( $proper_value1, 5, '.', '' );
-            $value2 = number_format( $proper_value2, 5, '.', '' );
+            $value1 = number_format( $proper_value1, 3, '.', '' );
+            $value2 = number_format( $proper_value2, 3, '.', '' );
 
             $rgb = $rgbs[$index];
             if (is_null($rgb)) $rgb = "-1 -1 -1"; // make null transparent

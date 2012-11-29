@@ -144,6 +144,9 @@ function userSelectedLayer() {
         currentCombination = "1990";
     }
 
+    // empty the legend bar
+    $('#legendbar').empty();
+
     $.ajax('SpeciesSuitabilityPrep.php', {
         cache: false,
         dataType: 'json',
