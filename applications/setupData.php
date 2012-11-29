@@ -152,6 +152,7 @@ foreach ($species_list as $species_name => $species_data) {
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done filling in species info.");
 
+/*
 // ==================================================================
 // symlink ALL the places!
 //
@@ -179,17 +180,6 @@ foreach ($species_list as $species_name => $species_data) {
     // the entire original ascii dir of gz's into our new outputs dir
     ln($homebase . '/output', $species_data['data_dir'] . '/output/ascii');
     // ErrorMessage::Progress(':');
-
-    /*
-    // this alternative bit creates a real output dir, and symlinks the individual gz's into it.
-    safemkdir($homebase . '/output');
-    $dest = $homebase . '/output/';
-    $source = $species_data['data_dir'] . '/output/ascii/';
-    foreach( glob($source .'*') as $asciifile) {
-        ln($dest . pathinfo($asciifile, PATHINFO_FILENAME), $asciifile);
-        ErrorMessage::Progress(':');
-    }
-    */
 
     // now there's a home base.
 
@@ -272,6 +262,29 @@ file_put_contents($data_root . 'species_to_id.txt', implode("\n", $names));
 // and wrap up
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. written file.");
+*/
+// ==================================================================
+// make the suitability downloadable files
+//
+ErrorMessage::Marker("Creating downloadable zip files..");
+
+foreach ($species_list as $species_name => $species_data) {
+
+    // discover the species home base dir
+    $homebase = $data_root . 'species/' . $species_data['name'];
+
+    // get a file list of everything in the homebase dir, plus the asciigrids in {homebase}/output
+    $files = array();
+    $files.append(glob($homebase .'/*'));
+    $files.append(glob($homebase .'/output/*'));
+
+    echo $files.inspect();
+    exit;
+
+    ErrorMessage::Progress();
+}
+ErrorMessage::EndProgress();
+ErrorMessage::Marker(" .. written file.");
 
 // ==================================================================
 // all done
@@ -293,6 +306,44 @@ function clean($string) {
         '_',
         preg_replace('/\([^\)]+\)/', '', $string)
     );
+}
+// ------------------------------------------------------------------
+// make an archive at $archive containing the filenames in the $files array.
+function zip($files, $archive) {
+    global $execute;
+    global $error_logfile;
+
+    if (!$execute) {
+        ErrorMessage::Marker("DRYRUN: Not creating archive '{$archive}' with " . count($files) . " files." );
+        return true;
+    }
+
+    if (is_array($files)) {
+
+        //create the archive
+        $zip = new ZipArchive();
+        if($zip->open($archive, ZIPARCHIVE::OVERWRITE) !== true) {
+            return false;
+        }
+
+        //add the files
+        foreach($files as $file) {
+            $zip->addFile($file,$file);
+        }
+        //debug
+        echo 'The zip archive contains ',$zip->numFiles,' files with a status of ',$zip->status;
+
+        //close the zip -- done!
+        $zip->close();
+
+        //check to make sure the file exists
+        return file_exists($archive);
+
+    } else {
+        // $files isn't an array.. bail
+        ErrorMessage::Marker("### couldn't create archive '{$archive}', file list provided wasn't a list.");
+        save_to_file($error_logfile,"couldn't create archive '{$archive}', file list provided wasn't a list.", 0, FILE_APPEND);
+    }
 }
 // ------------------------------------------------------------------
 // make a symlink called $link that points to $real.
