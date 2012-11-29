@@ -157,7 +157,7 @@ class Mapfile extends Object{
 
         $unitrange = false;
 
-        if ($range <= 1.0 && $max <= 1.0) {
+        if ($range > 0 && $range <= 1.0 && $max <= 1.0) {
             $unitrange = true;
         }
 
