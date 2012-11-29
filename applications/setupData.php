@@ -338,7 +338,7 @@ function zip($files, $archive) {
             $zip->addFile($file,$file);
         }
         //debug
-        echo 'The zip archive contains ',$zip->numFiles,' files with a status of ',$zip->status;
+        //echo 'The zip archive contains ',$zip->numFiles,' files with a status of ',$zip->status;
 
         //close the zip -- done!
         $zip->close();
