@@ -152,7 +152,6 @@ foreach ($species_list as $species_name => $species_data) {
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done filling in species info.");
 
-/*
 // ==================================================================
 // symlink ALL the places!
 //
@@ -262,7 +261,7 @@ file_put_contents($data_root . 'species_to_id.txt', implode("\n", $names));
 // and wrap up
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. written file.");
-*/
+
 // ==================================================================
 // make the suitability downloadable files
 //
@@ -278,8 +277,11 @@ foreach ($species_list as $species_name => $species_data) {
     $files = array_merge($files, glob($homebase .'/*'));
     $files = array_merge($files, glob($homebase .'/output/*'));
 
+    echo "\n":
     print_r($homebase);
+    echo "\n":
     print_r(glob($homebase .'/*'));
+    echo "\n":
     print_r($files);
     exit;
 
