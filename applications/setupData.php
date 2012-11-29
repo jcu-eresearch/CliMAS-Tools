@@ -285,7 +285,7 @@ foreach ($species_list as $species_name => $species_data) {
         if (is_file($candidate_file)) $files[] = $candidate_file;
     }
 
-    $archive = $homebase . 'suitability_data_' . $species_data['name'] . '.zip';
+    $archive = $homebase . '/suitability_data_' . $species_data['name'] . '.zip';
     zip($files, $archive);
 
     ErrorMessage::Progress();
