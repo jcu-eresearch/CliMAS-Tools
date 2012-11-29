@@ -275,8 +275,10 @@ foreach ($species_list as $species_name => $species_data) {
 
     // get a file list of everything in the homebase dir, plus the asciigrids in {homebase}/output
     $files = array();
-    $files = array_merge($files, (glob($homebase .'/*')));
-    $files = array_merge($files, (glob($homebase .'/output/*')));
+    $files = array_merge($files, glob($homebase .'/*'));
+    $files = array_merge($files, glob($homebase .'/output/*'));
+
+    print_r(glob($homebase .'/*'));
 
     print_r($files);
     exit;
