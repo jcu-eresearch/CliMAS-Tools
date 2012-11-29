@@ -278,8 +278,8 @@ foreach ($species_list as $species_name => $species_data) {
     $files = array_merge($files, glob($homebase .'/*'));
     $files = array_merge($files, glob($homebase .'/output/*'));
 
+    print_r($homebase);
     print_r(glob($homebase .'/*'));
-
     print_r($files);
     exit;
 
