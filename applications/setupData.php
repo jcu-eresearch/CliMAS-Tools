@@ -285,18 +285,13 @@ foreach ($species_list as $species_name => $species_data) {
         if (is_file($candidate_file)) $files[] = $candidate_file;
     }
 
-    echo "\n";
-    print_r($homebase);
-    echo "\n";
-    print_r(glob($homebase .'/*'));
-    echo "\n";
-    print_r($files);
-    exit;
+    $archive = $homebase . 'suitability_data_' . $species_data['name'] . '.zip';
+    zip($files, $archive);
 
     ErrorMessage::Progress();
 }
 ErrorMessage::EndProgress();
-ErrorMessage::Marker(" .. written file.");
+ErrorMessage::Marker(" .. created downloadable files.");
 
 // ==================================================================
 // all done
