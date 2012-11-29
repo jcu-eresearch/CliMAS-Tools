@@ -278,7 +278,7 @@ foreach ($species_list as $species_name => $species_data) {
     $files = array_merge($files, (glob($homebase .'/*')));
     $files = array_merge($files, (glob($homebase .'/output/*')));
 
-    echo $files.inspect();
+    print_r($files);
     exit;
 
     ErrorMessage::Progress();
