@@ -28,6 +28,20 @@ if (is_file($filename)) {
     readfile($filename);
     */
 } else {
-    echo "Well, this is embarassing.  I looked for the file you wanted, {$filename}, but it turns out that file is not available for download.  I'm really sorry.";
+    echo <<<OOPS
+    <html><head></head><body>
+    <p>
+        Well, this is embarassing.
+    </p><p>
+        I looked for the file that matches the species you wanted.  It looks like you're after this:
+    </p><ul>
+        <li><b>Species ID</b>: {$species_id}</li>
+        <li><b>Species name</b>: {$name}</li>
+        <li><b>Data file</b>: {$filename}</li>
+    </ul><p>
+        ...but it turns out that data file is not available for download.  I'm really sorry.
+    </p>
+
+OOPS;
 }
 ?>
