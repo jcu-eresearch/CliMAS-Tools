@@ -97,7 +97,7 @@ foreach ($clazz_list as $clazz_latin => $clazz_english) {
     ErrorMessage::Progress("({$clazz_english})");
 
     // get list of species-model-directories that exist for this class
-    $spp_in_class = dirList($model_root . $clazz_english . '/models/');
+    $spp_in_class = dir_list($model_root . $clazz_english . '/models/');
 
     // complain if there weren't any models there.
     if (count($spp_in_class) < 1) {
@@ -141,13 +141,13 @@ if ($testing) {
 ErrorMessage::Marker("Filling in species taxonomic info..");
 $last_clazz = '';
 foreach ($species_list as $species_name => $species_data) {
+    ErrorMessage::Progress();
     $new_data = injectSpeciesTaxaInfo($species_data, $json_root, $error_logfile);
     $species_list[$species_name] = $new_data;
     if ($new_data['clazz'] != $last_clazz) {
         ErrorMessage::Progress('(' . $new_data['clazz'] . ')');
         $last_clazz = $new_data['clazz'];
     }
-    ErrorMessage::Progress();
 }
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done filling in species info.");
@@ -158,6 +158,7 @@ ErrorMessage::Marker(" .. done filling in species info.");
 ErrorMessage::Marker("Linking..");
 $last_clazz = '';
 foreach ($species_list as $species_name => $species_data) {
+    ErrorMessage::Progress();
 
     if ($species_data['clazz'] != $last_clazz) {
         ErrorMessage::Progress('(' . $species_data['clazz'] . ')');
@@ -220,7 +221,6 @@ foreach ($species_list as $species_name => $species_data) {
     $taxapath = $data_root . 'Taxa/' . $species_data['clazz'] . '/' . $species_data['family'] . '/' . $species_data['genus'];
     safemkdir($taxapath);
     ln("{$taxapath}/{$species_data['name']}", $homebase);
-    ErrorMessage::Progress();
 }
 
 ErrorMessage::EndProgress();
@@ -240,6 +240,8 @@ if (file_exists($name_exclusion_file)) {
 // now build the species_to_id file
 $names = array("name,id");
 foreach ($species_list as $species_name => $species_data) {
+    ErrorMessage::Progress();
+
     $done_one = false;
     // make an entry for each acceptable common name
     foreach ($species_data['common_names'] as $candidate_name => $dummy) {
@@ -254,19 +256,12 @@ foreach ($species_list as $species_name => $species_data) {
         // no acceptable common names, so juse use the scientific name
         $names[] = "\"{$species_data['species']}\",\"{$species_data['id']}\"";
     }
-    ErrorMessage::Progress();
 }
 // now we've got a big list of names.  write it out to the file.
 file_put_contents($data_root . 'species_to_id.txt', implode("\n", $names));
 // and wrap up
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. written file.");
-
-
-
-
-/*
-
 
 // ==================================================================
 // make the suitability downloadable files
@@ -275,13 +270,18 @@ ErrorMessage::Marker("Creating downloadable zip files - be patient, this bit tak
 
 foreach ($species_list as $species_name => $species_data) {
 
+    ErrorMessage::Progress();
+
     // discover the species home base dir
     $homebase = $data_root . 'species/' . $species_data['name'];
 
     $zip_file_name = $homebase . '/species_data_' . $species_data['name'] . '.zip';
 
-    // DON'T rebuild zipfile if it's already there.  Comment this bit out
-    //
+    // DON'T rebuild zipfile if it's already there. Comment this bit out if you want to rebuild all the zips.
+    if (is_file($zip_file_name)) continue;
+
+    // okay so if the line above is commented out, the zip file might exist.  so delete it.
+    if (is_file($zip_file_name)) delete_file($file);
 
     // get a file list of everything in the homebase dir, plus the asciigrids in {homebase}/output
     // the file list is an associative array of realpath => path_for_zip, for example:
@@ -307,11 +307,10 @@ foreach ($species_list as $species_name => $species_data) {
 
     zip($files, $zip_file_name);
 
-    ErrorMessage::Progress();
 }
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. created downloadable files.");
-*/
+
 // ==================================================================
 // all done
 //
@@ -391,8 +390,19 @@ function ln($link, $real) {
     }
 }
 // ------------------------------------------------------------------
+// delete a file
+function delete_file($file) {
+    global $execute;
+
+    if ($execute) {
+        file::Delete($file);
+    } else {
+        ErrorMessage::Marker("(DRYRUN) not delete file " . $file);
+    }
+}
+// ------------------------------------------------------------------
 // dirList returns a list (array of strings) of file/dir names at the path specified.
-function dirList($path) {
+function dir_list($path) {
     if (!file::reallyExists($path)) return array(); // bail if no data
 
     $dircontents = file::folder_folders($path, null, true);
