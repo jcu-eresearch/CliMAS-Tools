@@ -162,7 +162,7 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 
         <div class="onefield">
             <h2>Species suitability data</h2>
-            <a id="download_all" target="_blank" href="#" class="disabled">download (600-700 Mb)</a>
+            <a id="download_all" target="_blank" href="#" class="disabled">download (6-700Mb)</a>
         </div>
 
         <div class="onefield">
