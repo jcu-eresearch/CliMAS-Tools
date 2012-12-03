@@ -79,9 +79,9 @@ function addSpecies(species_id,speciesName) {
     loadNewMapLayer();
 
     $('#download_all').attr('href', "SpeciesSuitabilityDownload.php?species_id=" + species_id);
-    $('#download_all').attr('href', "https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/species/" +
-        speciesName + "/species_data_" + speciesName + ".zip"
-    );
+//    $('#download_all').attr('href', "https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/species/" +
+//        speciesName + "/species_data_" + speciesName + ".zip"
+//    );
 }
 // --------------------------------------------------------
 function selectDataStyle(src) {

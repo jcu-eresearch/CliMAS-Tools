@@ -1,11 +1,8 @@
 <?php
+error_reporting(0);
 /**
  * Main page for Species Suitability tool
- *
- *
- *
  */
-session_start();
 include_once dirname(__FILE__).'/includes.php';
 
 $species_id = array_util::Value($_GET, "species_id",null);
@@ -23,11 +20,26 @@ if (is_file($filename)) {
     http_send_file($filename);
     */
 
+    /*
     header("X-Sendfile: {$filename}");
     header("Content-type: application/octet-stream");
     header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
     header("Content-Length: ". filesize($filename));
     readfile($filename);
+    */
+
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename='.basename($filename));
+    header('Content-Transfer-Encoding: binary');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($filename));
+    ob_clean();
+    flush();
+    readfile($filename);
+    exit;
 
 } else {
     echo <<<OOPS
