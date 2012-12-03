@@ -343,9 +343,8 @@ function zip($files, $archive) {
         }
 
         //add the files
-        foreach($files as $file) {
-            $in_zip_name = $file
-            $zip->addFile($file,$file);
+        foreach($files as $realpath => $zippath) {
+            $zip->addFile($realpath,$zippath);
         }
         //debug
         //echo 'The zip archive contains ',$zip->numFiles,' files with a status of ',$zip->status;
