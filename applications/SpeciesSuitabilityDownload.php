@@ -11,7 +11,7 @@ include_once dirname(__FILE__).'/includes.php';
 $species_id = array_util::Value($_GET, "species_id",null);
 $name = SpeciesData::SpeciesCommonNameSimple($species_id);
 
-$filename = configuration::SourceDataFolder() . 'species/{$species_id}/species_data_{$name}.zip';
+$filename = configuration::SourceDataFolder() . "species/{$species_id}/species_data_{$name}.zip";
 
 if (is_file($filename)) {
 
