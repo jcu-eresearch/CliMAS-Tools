@@ -14,8 +14,6 @@ $homebase = configuration::SourceDataFolder() . "species/{$species_id}/";
 $zipfiles = glob($homebase . "species_data_*.zip");
 $filename = $zipfiles[0];
 
-$filename = $homebase . $filename;
-
 if (is_file($filename)) {
 
     http_send_content_disposition(basename($filename), true);
