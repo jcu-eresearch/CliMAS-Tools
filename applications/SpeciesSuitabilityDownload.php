@@ -12,9 +12,9 @@ $species_id = array_util::Value($_GET, "species_id",null);
 $homebase = configuration::SourceDataFolder() . "species/{$species_id}/";
 
 $zipfiles = glob($homebase . "species_data_*.zip");
-$file = $zipfiles[0];
+$filename = $zipfiles[0];
 
-$filename = $homebase . "species_data_{$name}.zip";
+$filename = $homebase . $filename;
 
 if (is_file($filename)) {
 
