@@ -76,7 +76,7 @@ function addSpecies(species_id,speciesName) {
 
     $('#datastyle_selection').removeAttr('disabled');
 
-    userSelectedLayer();
+    loadNewMapLayer();
 
     $('#download_all').attr('href', "SpeciesSuitabilityDownload.php?species_id="+species_id);
 }
@@ -95,21 +95,21 @@ function selectDataStyle(src) {
         enableFuturePropertySelectors();
     }
     setCurrentCombination();
-    userSelectedLayer();
+    loadNewMapLayer();
 }
 // --------------------------------------------------------
 function selectScenario(src) {
     var id = src.id.toString();
     currentScenario = $('#'+ id + ' option:selected').val();
     setCurrentCombination();
-    userSelectedLayer();
+    loadNewMapLayer();
 }
 // --------------------------------------------------------
 function selectModel(src) {
     var id = src.id.toString();
     currentModel = $('#'+ id + ' option:selected').val();
     setCurrentCombination();
-    userSelectedLayer();
+    loadNewMapLayer();
 }
 // --------------------------------------------------------
 function selectTime(src) {
@@ -117,7 +117,7 @@ function selectTime(src) {
     currentTime = $('#'+ id + ' option:selected').val();
 
     setCurrentCombination();
-    userSelectedLayer();
+    loadNewMapLayer();
 }
 // --------------------------------------------------------
 function setCurrentCombination() {
@@ -139,7 +139,7 @@ function setCurrentCombination() {
     }
 }
 // --------------------------------------------------------
-function userSelectedLayer() {
+function loadNewMapLayer() {
     if (currentCombination == "CURRENT_CURRENT_1990") {
         currentCombination = "1990";
     }
