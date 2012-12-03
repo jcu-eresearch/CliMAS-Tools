@@ -281,7 +281,7 @@ foreach ($species_list as $species_name => $species_data) {
     foreach (glob($homebase .'/*') as $candidate_file) {
         // just add files, not directories
         if (is_file($candidate_file)) {
-            $in_zip_name = $species_data['name'] . '/' . pathinfo($candidate_file, PATHINFO_FILENAME);
+            $in_zip_name = $species_data['name'] . '/' . pathinfo($candidate_file, PATHINFO_BASENAME);
             $files[$candidate_file] = $in_zip_name;
         }
     }
@@ -289,12 +289,12 @@ foreach ($species_list as $species_name => $species_data) {
     foreach (glob($homebase .'/output/*') as $candidate_file) {
         // just add files, not directories
         if (is_file($candidate_file)) {
-            $in_zip_name = $species_data['name'] . '/asciigrids/' . pathinfo($candidate_file, PATHINFO_FILENAME);
+            $in_zip_name = $species_data['name'] . '/asciigrids/' . pathinfo($candidate_file, PATHINFO_BASENAME);
             $files[$candidate_file] = $in_zip_name;
         }
     }
 
-    $archive = $homebase . '/suitability_data_' . $species_data['name'] . '.zip';
+    $archive = $homebase . '/species_data_' . $species_data['name'] . '.zip';
     zip($files, $archive);
 
     ErrorMessage::Progress();
