@@ -16,18 +16,19 @@ $filename = $zipfiles[0];
 
 if (is_file($filename)) {
 
+    /*
     http_send_content_disposition(basename($filename), true);
     http_send_content_type();
     // http_throttle(0.1, 2048);
     http_send_file($filename);
+    */
 
-    /*
     header("X-Sendfile: {$filename}");
     header("Content-type: application/octet-stream");
     header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
     header("Content-Length: ". filesize($filename));
     readfile($filename);
-    */
+
 } else {
     echo <<<OOPS
     <html><head></head><body>
