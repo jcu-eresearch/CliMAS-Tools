@@ -262,15 +262,26 @@ file_put_contents($data_root . 'species_to_id.txt', implode("\n", $names));
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. written file.");
 
+
+
+
+/*
+
+
 // ==================================================================
 // make the suitability downloadable files
 //
-ErrorMessage::Marker("Creating downloadable zip files - this bit takes AGES..");
+ErrorMessage::Marker("Creating downloadable zip files - be patient, this bit takes AGES..");
 
 foreach ($species_list as $species_name => $species_data) {
 
     // discover the species home base dir
     $homebase = $data_root . 'species/' . $species_data['name'];
+
+    $zip_file_name = $homebase . '/species_data_' . $species_data['name'] . '.zip';
+
+    // DON'T rebuild zipfile if it's already there.  Comment this bit out
+    //
 
     // get a file list of everything in the homebase dir, plus the asciigrids in {homebase}/output
     // the file list is an associative array of realpath => path_for_zip, for example:
@@ -294,14 +305,13 @@ foreach ($species_list as $species_name => $species_data) {
         }
     }
 
-    $archive = $homebase . '/species_data_' . $species_data['name'] . '.zip';
-    zip($files, $archive);
+    zip($files, $zip_file_name);
 
     ErrorMessage::Progress();
 }
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. created downloadable files.");
-
+*/
 // ==================================================================
 // all done
 //
@@ -320,12 +330,13 @@ function clean($string) {
     return preg_replace(
         '/[^a-zA-Z0-9 _]+/',
         '_',
-        preg_replace('/\([^\)]+\)/', '', $string)
+        preg_replace('/\([^\)]+\) /', '', $string)
     );
 }
 // ------------------------------------------------------------------
 // make an archive at $archive containing the filenames in the $files array.
 function zip($files, $archive) {
+
     global $execute;
     global $error_logfile;
 
