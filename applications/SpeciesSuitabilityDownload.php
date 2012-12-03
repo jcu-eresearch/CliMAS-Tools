@@ -9,9 +9,12 @@ session_start();
 include_once dirname(__FILE__).'/includes.php';
 
 $species_id = array_util::Value($_GET, "species_id",null);
-$name = SpeciesData::SpeciesCommonNameSimple($species_id);
+$homebase = configuration::SourceDataFolder() . "species/{$species_id}/";
 
-$filename = configuration::SourceDataFolder() . "species/{$species_id}/species_data_{$name}.zip";
+$zipfiles = glob($homebase . "species_data_*.zip");
+$file = $zipfiles[0];
+
+$filename = $homebase . "species_data_{$name}.zip";
 
 if (is_file($filename)) {
 
@@ -36,7 +39,6 @@ if (is_file($filename)) {
         I looked for the file that matches the species you wanted.  It looks like you're after this:
     </p><ul>
         <li><b>Species ID</b>: {$species_id}</li>
-        <li><b>Species name</b>: {$name}</li>
         <li><b>Data file</b>: {$filename}</li>
     </ul><p>
         ...but it turns out that data file is not available for download.  I'm really sorry.
