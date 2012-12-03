@@ -134,8 +134,8 @@ ErrorMessage::Marker(" ..done reading species.");
 //
 
 if ($testing) {
-    // if we're testing, just do twenty species
-    $species_list = array_splice($species_list, 0, 20);
+    // if we're testing, just do five species
+    $species_list = array_splice($species_list, 0, 5);
 }
 
 ErrorMessage::Marker("Filling in species taxonomic info..");
@@ -265,7 +265,7 @@ ErrorMessage::Marker(" .. written file.");
 // ==================================================================
 // make the suitability downloadable files
 //
-ErrorMessage::Marker("Creating downloadable zip files..");
+ErrorMessage::Marker("Creating downloadable zip files - this bit takes AGES..");
 
 foreach ($species_list as $species_name => $species_data) {
 
@@ -273,16 +273,25 @@ foreach ($species_list as $species_name => $species_data) {
     $homebase = $data_root . 'species/' . $species_data['name'];
 
     // get a file list of everything in the homebase dir, plus the asciigrids in {homebase}/output
+    // the file list is an associative array of realpath => path_for_zip, for example:
+    // '/user/TDH/CliMAS/species/Ukrainian_Ironbelly/ascii/current.asc.gz' => 'Ukranian_Ironbelly/grids/current.asc.gz'
+    // ..would get the file in the asci subdir, and add it to the zip into a Urkanian_Ironbelly/grids subdir.
     $files = array();
 
     foreach (glob($homebase .'/*') as $candidate_file) {
         // just add files, not directories
-        if (is_file($candidate_file)) $files[] = $candidate_file;
+        if (is_file($candidate_file)) {
+            $in_zip_name = $species_data['name'] . '/' . pathinfo($candidate_file, PATHINFO_FILENAME);
+            $files[$candidate_file] = $in_zip_name;
+        }
     }
 
     foreach (glob($homebase .'/output/*') as $candidate_file) {
         // just add files, not directories
-        if (is_file($candidate_file)) $files[] = $candidate_file;
+        if (is_file($candidate_file)) {
+            $in_zip_name = $species_data['name'] . '/asciigrids/' . pathinfo($candidate_file, PATHINFO_FILENAME);
+            $files[$candidate_file] = $in_zip_name;
+        }
     }
 
     $archive = $homebase . '/suitability_data_' . $species_data['name'] . '.zip';
@@ -335,6 +344,7 @@ function zip($files, $archive) {
 
         //add the files
         foreach($files as $file) {
+            $in_zip_name = $file
             $zip->addFile($file,$file);
         }
         //debug
