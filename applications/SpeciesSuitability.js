@@ -80,7 +80,7 @@ function addSpecies(species_id,speciesName) {
 
     $('#download_all').attr('href', "SpeciesSuitabilityDownload.php?species_id=" + species_id);
     $('#download_all').attr('href', "https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/species/" +
-        species_name + "/species_data_" + species_name + ".zip"
+        speciesName + "/species_data_" + speciesName + ".zip"
     );
 }
 // --------------------------------------------------------
