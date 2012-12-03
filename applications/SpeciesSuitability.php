@@ -161,8 +161,8 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
     <div id="UserSelectionBar" class="formsection">
 
         <div class="onefield">
-            <h2>Species data</h2>
-            <a id="download_all" target="_blank" href="#" class="disabled">download species data</a>
+            <h2>Species suitability data</h2>
+            <a id="download_all" target="_blank" href="#" class="disabled">download (600-700 Mb)</a>
         </div>
 
         <div class="onefield">
