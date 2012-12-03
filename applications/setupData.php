@@ -135,7 +135,7 @@ ErrorMessage::Marker(" ..done reading species.");
 
 if ($testing) {
     // if we're testing, just do five species
-    $species_list = array_splice($species_list, 0, 5);
+    $species_list = array_splice($species_list, 0, 15);
 }
 
 ErrorMessage::Marker("Filling in species taxonomic info..");
