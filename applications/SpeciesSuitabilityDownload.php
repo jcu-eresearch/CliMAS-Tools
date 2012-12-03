@@ -42,7 +42,6 @@ if (is_file($filename)) {
     </ul><p>
         ...but it turns out that data file is not available for download.  I'm really sorry.
     </p>
-
 OOPS;
 }
 ?>
