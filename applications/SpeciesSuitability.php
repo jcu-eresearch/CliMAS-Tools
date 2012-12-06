@@ -1,9 +1,9 @@
 <?php
 /**
  * Main page for Species Suitability tool
- * 
- * 
- *  
+ *
+ *
+ *
  */
 session_start();
 include_once dirname(__FILE__).'/includes.php';
@@ -11,11 +11,9 @@ include_once dirname(__FILE__).'/includes.php';
 unset($_SESSION['map_path']);
 Session::ClearLayers();
 
-
 $scenarios = DatabaseClimate::GetScenarios();
 $models    = DatabaseClimate::GetModels();
 $times     = DatabaseClimate::GetTimes();
-
 
 $scenarios = array_flip($scenarios);
 $models    = array_flip($models);
@@ -41,15 +39,22 @@ sort($scenarios);
 sort($models);
 sort($times);
 
+if (array_key_exists('page', $_GET)) {
+    $page = $_GET['page'];
+} else {
+    $page = null;
+}
 
+$pagetitle = "CliMAS Suitability";
+$pagesubtitle = "Vertebrate distributions based on climate suitability";
 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Species Suitability</title>
-
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="shortcut icon" href="<?php echo configuration::IconSource(); ?>favicon-trans.png" />
+    <title><?php echo $pagetitle; ?></title>
 <script>
 // GLOBAL VARIABLES
 <?php
@@ -68,111 +73,147 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
 ?>
 </script>
 
-<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
-<script type="text/javascript" src="js/selectMenu.js"></script>
-<script type="text/javascript" src="js/Utilities.js"></script>
-<script type="text/javascript" src="SpeciesSuitability.js"></script>
 <link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
 <link type="text/css" href="css/selectMenu.css"     rel="stylesheet" />
 <link type="text/css" href="SpeciesSuitability.css" rel="stylesheet" />
 
 <link href="styles.css" rel="stylesheet" type="text/css">
 
-<style>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
+<![endif]-->
+<script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
 
-</style>
+<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
+<script type="text/javascript" src="js/selectMenu.js"></script>
+<script type="text/javascript" src="js/Utilities.js"></script>
+<script type="text/javascript" src="SpeciesSuitability.js"></script>
 
 </head>
 <body>
-    <h1 class="pagehead"><a href="index.php"><img src="<?php echo configuration::IconSource()."Suitability.png" ?>" border="0" /></a></h1>
+<div class="header clearfix">
+    <a href="http://tropicaldatahub.org/"><img class="logo"
+        src="../images/TDH_logo_medium.png"></a>
+    <h1><?php echo $pagetitle; ?></h1>
+    <h2><?php echo $pagesubtitle; ?></h2>
+</div>
+
+<?php
+    $navSetup = array(
+        'tabs' => array(
+            '&laquo; CliMAS tools' => 'index.php',
+            'suitability map' => 'SpeciesSuitability.php',
+            'about the map tool' => 'SpeciesSuitability.php?page=about',
+            'using the tool' => 'SpeciesSuitability.php?page=using',
+            'the science' => 'SpeciesSuitability.php?page=science',
+            'credits' => 'SpeciesSuitability.php?page=credits'
+        ),
+        'current' => 'SpeciesSuitability.php' . ( ($page) ? ('?page=' . $page) : '' )
+    );
+    include 'NavBar.php';
+?>
+
+<?php if ($page == 'about') { // ============================================== ?>
+
+<div class="maincontent">
+    <?php include 'SpeciesSuitability-about.html'; ?>
+</div>
+
+<?php } else if ($page == 'using') { // ======================================= ?>
+
+<div class="maincontent">
+    <?php include 'SpeciesSuitability-using.html'; ?>
+</div>
+
+
+<?php } else if ($page == 'science') { // ===================================== ?>
+
+<div class="maincontent">
+    <?php include 'SpeciesSuitability-science.html'; ?>
+</div>
+
+
+<?php } else if ($page == 'credits') { // ===================================== ?>
+
+<div class="maincontent">
+    <?php include 'SpeciesSuitability-credits.html'; ?>
+</div>
+
+<?php } else { // ============================================================= ?>
 
 <div class="maincontent">
 
+    <p class="toolintro">
+        Examine climate space available to land-based Australian birds, mammals, reptiles and amphibians, and projections of how suitable space will change in the future.
+    </p>
 
-    <div id="ToolBar" class="ui-widget-header ui-corner-all" >
-            <input id="species" value="Type in the species of interest">
+    <div id="ToolBar">
+            <input id="species" placeholder="Type in the species of interest">
     </div>
 
+    <div id="mapwrapper">
+        <div id="leafletmap"></div>
+        <div id="legendbar"></div>
+    </div>
 
-    <div id="UserSelectionBar" class="ui-widget-content ui-corner-all" >
-        
-        <h2 style="">DATA</h2>
-        <select id="datastyle_selection" onchange="selectDataStyle(this)">
-            <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_current" value="CURRENT" checked/>CURRENT</option>
-            <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_future"  value="FUTURE" />FUTURE</option>
-        </select>
-        
-        
-        <h2 style="">SCENARIO</h2>
-        <select id="scenario_selection" onchange="selectScenario(this)">
-        <?php
-            foreach ($scenarios as $scenario)
-            echo '<option  class="select_scenario_input" name="ScenarioTools" id="select_scenario_'.$scenario.'" value="'.$scenario.'" />'.$scenario.'</option>';
-        ?>            
-        </select>
+    <div id="UserSelectionBar" class="formsection">
 
-        <h2 style="">MODEL</h2>
-        <select id="model_selection" onchange="selectModel(this)">
-        <?php
-            foreach ($models as $model)
-            {
-                $modelname = $model;
-                if ($model == "all") $modelname  = "Median";
-                
-                echo '<option  class="select_model_input" name="ModelTools" id="select_model_'.$model.'" value="'.$model.'" />'.$modelname.'</option>';
-            }
-                
-        ?>            
-        </select>
-        
-        <h2 style="">TIME</h2>
-        <select id="time_selection" onchange="selectTime(this)">
-        <?php
-            foreach ($times as $time)
-                echo '<option  class="select_time_input" name="TimeTools" id="select_time_'.$time.'" value="'.$time.'" />'.$time.'</option>';
-        ?>            
-        </select>
-        
-        <div id="download_all">
+        <div class="onefield">
+            <h2>Species suitability data</h2>
+            <a id="download_all" target="_blank" href="#" class="disabled">download (6-700Mb)</a>
         </div>
-        
+
+        <div class="onefield">
+            <h2>View on map</h2>
+            <select id="datastyle_selection" onchange="selectDataStyle(this)">
+                <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_current" value="CURRENT" checked/>current</option>
+                <option  class="select_datastyle_input" name="DataStyleTools" id="select_datastyle_future"  value="FUTURE" />future</option>
+            </select>
+        </div>
+
+        <div class="onefield">
+            <h2>Scenario</h2>
+            <select id="scenario_selection" onchange="selectScenario(this)">
+            <?php
+                foreach ($scenarios as $scenario)
+                echo '<option selected="selected" class="select_scenario_input" name="ScenarioTools" id="select_scenario_'.$scenario.'" value="'.$scenario.'" />'.$scenario.'</option>';
+            ?>
+            </select>
+        </div>
+
+        <div class="onefield">
+            <h2>Model</h2>
+            <select id="model_selection" onchange="selectModel(this)">
+            <?php
+                foreach ($models as $model)
+                {
+                    $modelname = $model;
+                    if ($model == "all") $modelname  = "best estimate";
+
+                    echo '<option  class="select_model_input" name="ModelTools" id="select_model_'.$model.'" value="'.$model.'" />'.$modelname.'</option>';
+                }
+
+            ?>
+            </select>
+        </div>
+
+        <div class="onefield">
+            <h2>Time</h2>
+            <select id="time_selection" onchange="selectTime(this)">
+            <?php
+                foreach ($times as $time)
+                    echo '<option selected="selected" class="select_time_input" name="TimeTools" id="select_time_'.$time.'" value="'.$time.'" />'.$time.'</option>';
+            ?>
+            </select>
+        </div>
+
     </div>
 
-    <div id="MapContainer" class="ui-widget-content" >
+    <br style="clear: both;"><br><br><hr>
 
-        <iframe class="ui-widget-content ui-corner-all"s
-                   ID="GUI"
-                  src="SpeciesSuitabilityMap.php"
-                width="730"
-               height="660"
-          frameBorder="0"
-               border="0"
-                 style="margin: 0px; overflow:hidden; float:none; clear:both;"
-                onload="map_gui_loaded()"
-                 >
-        </iframe>
-
-
-        <FORM METHOD=POST ACTION="<?php echo $_SERVER['PHP_SELF']?>">
-            <INPUT TYPE="HIDDEN" ID="ZoomFactor" NAME="ZoomFactor" VALUE="2">
-            <INPUT TYPE="HIDDEN" ID="UserLayer"  NAME="UserLayer"  VALUE="">
-            <INPUT TYPE="HIDDEN" ID="SpeciesID"  NAME="SpeciesID"  VALUE="">
-            <INPUT TYPE="HIDDEN" ID="MaxentThreshold"  NAME="MaxentThreshold"  VALUE="">
-        </FORM>
-
-    </div>
-
-    <div id="MapTools" class="ui-widget-content ui-corner-all">
-        <button class="MapTool" id="ToolFullExtent" onclick="SetFullExtent();" >Reset Map</button>
-        <input  class="MapTool" name="MapsTools" type="radio" id="ToolZoomOut"  onclick="SetZoom(this,-2.0);"                   /><label for="ToolZoomOut">Zoom Out</label>
-        <input  class="MapTool" name="MapsTools" type="radio" id="ToolCentre"   onclick="SetZoom(this,1.0)"                     /><label for="ToolCentre" >Centre</label>
-        <input  class="MapTool" name="MapsTools" type="radio" id="ToolZoomIn"   onclick="SetZoom(this,2.0)"   checked="checked" /><label for="ToolZoomIn" >Zoom In</label>
-    </div>
-    
-    <br style="clear: both; float:none;">
-    
-    <div id="information" class="ui-widget-content ui-corner-all" >
+    <div id="information">
 
         <iframe  class=""
                     ID="information_content"
@@ -182,42 +223,17 @@ echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSourc
            frameBorder="0"
                 border="0"
                 onload="map_gui_loaded()"
-                >
+               >
         </iframe>
 
+    </div>
 
-    </div>        
-    
-    
-
-
-</div>
-
-<div class="credits">
-    <a href="http://www.jcu.edu.au/ctbcc/">
-        <img src="../images/ctbcc_sm.png" alt="Centre for Tropical Biodiversity and Climate Change">
-    </a>
-    <a href="http://www.tyndall.ac.uk/">
-        <img src="../images/themenews_logo.jpg" alt="Tyndall Centre for Climate Change Research">
-    </a>
-    <a href="http://www.jcu.edu.au">
-        <img src="../images/jcu_logo_sm.png" alt="JCU Logo">
-    </a>
-    <a href="http://eresearch.jcu.edu.au/">
-        <img src="../images/eresearch.png" alt="eResearch Centre, JCU">
-    </a>
-</div>
-
-
-<div class="footer">
-    <p class="contact">
-        please contact Jeremy VanDerWal
-        (<a href="mailto:jeremy.vanderwal@jcu.edu.au">jeremy.vanderwal@jcu.edu.au</a>)
-        with any queries.
-    </p>
 </div>
 
 <div id="messages_container" style="height:0px; width:0px;"></div>
+
+<?php } // ==================================================================== ?>
+<?php include 'ToolsFooter.php' ?>
 
 </body>
 </html>

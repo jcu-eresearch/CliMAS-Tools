@@ -1137,6 +1137,11 @@ class array_util
     }
 
 
+    public static function RemoveElements($from,$exclude_list) {
+        
+    }
+    
+    
 
 }
 ?>

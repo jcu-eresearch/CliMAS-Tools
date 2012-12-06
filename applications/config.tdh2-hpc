@@ -3,48 +3,57 @@
  *
  *  Develpopment values from  "tdh2 HPC side"
  *  This will be the config is uses when it's running on the HPC in the /scratch/jc166922/tdh2 folder
- * 
- *  
+ *
+ *
  */
-if (stripos( $hostname, ".default.domain") !== FALSE) 
+if (   stripos( $hostname, ".default.domain") !== FALSE)
 {
 
-    if (stripos( __FILE__, "tdh2/tdhtools") !== FALSE)
+    if (stripos( __FILE__, "/home/TDH/apps/Gilbert/tools/applications") !== FALSE)
     {
 
-        $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." tdh2/TDH-Tools  default.domain";        
+        $conf[Parameter::$CONFIGURATION_SOURCE ] = __FILE__." HPC TDH Home folder";
 
-        $conf[Parameter::$TempFolder]    = "/scratch/jc166922/tdh2/tmp/";
-        $conf[Parameter::$TempFolderWeb]  = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/tdhtools/tmp/";
+        $conf[Parameter::$TempFolder]                = "/home/TDH/data/Gilbert/source/tmp/";
+        $conf[Parameter::$TempFolderWeb]             = "https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/tmp/";
 
-        $conf[Parameter::$APPLICATION_FOLDER]        = "/scratch/jc166922/tdh2/tdhtools/";
-        $conf[Parameter::$APPLICATION_FOLDER_WEB]    = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/tdhtools/";    
+        $conf[Parameter::$APPLICATION_FOLDER]        = "/home/TDH/apps/Gilbert/tools/";
+        $conf[Parameter::$APPLICATION_FOLDER_WEB]    = "http://tdh-tools-2.hpc.jcu.edu.au:81/tools/";
 
-        $conf[Parameter::$UTILITIES_CLASSES]     = "/scratch/jc166922/tdh2/tdhtools/Utilities/includes.php";
+        $conf[Parameter::$UTILITIES_CLASSES]         = "/home/TDH/apps/Gilbert/tools/Utilities/includes.php";
 
-        $conf[Parameter::$DOWNLOAD_FOLDER_REAL]  = "/scratch/jc166922/tdh2/output/";
-        $conf[Parameter::$DOWNLOAD_FOLDER_WEB]   = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/output/";
+        $conf[Parameter::$DOWNLOAD_FOLDER_REAL]      = "/home/TDH/data/Gilbert/source/download/";
+        $conf[Parameter::$DOWNLOAD_FOLDER_WEB]       = "https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/output/";
 
-        $conf[Parameter::$RESOURCES_FOLDER]      = "/scratch/jc166922/tdh2/tdhtools/Resources/";
-        $conf[Parameter::$SOURCE_DATA_FOLDER]    = "/scratch/jc166922/tdh1/source/";
+        $conf[Parameter::$RESOURCES_FOLDER]          = "/home/TDH/apps/Gilbert/tools/Resources/";
 
-        $conf[Parameter::$ICONS_FOLDER]          = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/tdhtools/Resources/icons/";
+        $conf[Parameter::$SOURCE_DATA_FOLDER]        = "/home/TDH/data/Gilbert/source/";
 
-        $conf[Parameter::$COMMAND_QUEUE_ID       ]= "tdh";
-        $conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/scratch/jc166922/tdh2/logs/queue.log";
-        $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/scratch/jc166922/tdh2/scripts/";
-        $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = "/scratch/jc166922/tdh2/tdhtools/applications/CommandActionExecute.php";
+        $conf[Parameter::$ICONS_FOLDER]              = "http://tdh-tools-2.hpc.jcu.edu.au:81/tools/Resources/icons/";
 
-        $conf[Parameter::$MaxentJar ] = "/scratch/jc166922/tdh2/tdhtools/applications/Finder/Species/maxent.jar";
 
+        $conf[Parameter::$Maxent_Species_Data_folder]             = "/home/TDH/data/Gilbert/source/species/";
+        $conf[Parameter::$Maxent_Species_Data_folder_web]         = "https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/species/";
+        $conf[Parameter::$Maxent_Species_Data_Output_Subfolder]   = "output";
+        $conf[Parameter::$Maxent_Species_Data_Occurance_Filename] = "occur.csv";
+
+
+
+        // OBSOLETE 2012-10-26 Adam Fakes - I have set the appropriate folder names bur these are obselete now
+        // -----------------------------------------------------------------------------
+        $conf[Parameter::$COMMAND_QUEUE_ID       ] = "tdh";
+        $conf[Parameter::$COMMAND_QUEUE_LOG      ] = "/home/TDH/apps/Gilbert/logs/queue.log";
+        $conf[Parameter::$COMMAND_SCRIPTS_FOLDER ] = "/home/TDH/apps/Gilbert/scripts/";
+        $conf[Parameter::$COMMAND_SCRIPTS_EXE    ] = "/home/TDH/apps/Gilbert/tools/applications/CommandActionExecute.php";
+
+        $conf[Parameter::$MaxentJar ]              = "/home/TDH/apps/Gilbert/tools/applications/Finder/Species/maxent.jar";
+
+
+
+        // ISSUE:: Pointing to "personal" home folders - May not be an issue as these are obselete as well
         $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
         $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
-        $conf[Parameter::$Maxent_Species_Data_folder ]            = "/scratch/jc166922/tdh2/source/species/";
-        $conf[Parameter::$Maxent_Species_Data_folder_web ]        = "http://tdh-tools-2.hpc.jcu.edu.au:81/eresearch/source/species/";
-        $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
-        $conf[Parameter::$Maxent_Species_Data_Occurance_Filename ] = "occur.csv";
-    
+        // -----------------------------------------------------------------------------
     }
-
-}        
+}
 ?>

@@ -15,42 +15,38 @@ $map_path = array_util::Value($_SESSION,'map_path');
 
 if (is_null($map_path) || $UserLayer != "")
 {
-    
+
     $M = new MapServerWrapper();
-    
+
     $M->OutputImageHeight(array_util::Value($_GET, "h"));
     $M->OutputImageWidth(array_util::Value($_GET, "w"));
-    
-    
+
+
     foreach (Session::MapableResults() as $MapableResult)
         $M->Layers()->AddLayer($MapableResult);
-    
+
     if ($UserLayer != "")
     {
         $layer = $M->Layers()->AddLayer(DatabaseFile::ReadFile2Filesystem($UserLayer,configuration::TempFolder().$UserLayer.".asc",false,true) );
         $layer instanceof MapServerLayerRaster;
         $layer->HistogramBuckets(100);
 
-        
-        // this bit here needs to be moved - and only called if we want maxent 
+        // this bit here needs to be moved - and only called if we want maxent
         $ramp = RGB::Ramp(0, 1, 100,RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
 
-        $display_threshold = DatabaseMaxent::GetMaxentResult($SpeciesID, DatabaseMaxent::$DisplayThresholdFieldName);
+//        $display_threshold = DatabaseMaxent::GetMaxentResult($SpeciesID, DatabaseMaxent::$DisplayThresholdFieldName);
 
         // remove under threshold
-        foreach ($ramp as $key => $rgb) 
-            if ($key < $display_threshold) $ramp[$key] = RGB::ColorBlack();        
+//        foreach ($ramp as $key => $rgb)
+//           if ($key < $display_threshold) $ramp[$key] = RGB::ColorBlack();
 
-
-        $layer->ColorTable($ramp);
-        
+//        $layer->ColorTable($ramp);
     }
- 
-    
+
     // only recreate mapfile if we have added / chnaged a user layer
     $MF = Mapfile::create($M);
     $_SESSION['map_path'] = $MF->save($M);
-    
+
 }
 $GUI = MapserverGUI::create($_SESSION['map_path']);
 if (is_null($GUI)) die ("Map Server GUI failed");
@@ -61,8 +57,8 @@ if ($GUI->hasInteractive()) $GUI->ZoomAndPan();
 <script type="text/javascript">
 function GetZoom() {
     document.getElementById('ZoomFactor').value = parent.document.getElementById('ZoomFactor').value;
-    document.getElementById('UserLayer').value  = parent.document.getElementById('UserLayer').value;        
-    document.getElementById('SpeciesID').value  = parent.document.getElementById('SpeciesID').value;        
+    document.getElementById('UserLayer').value  = parent.document.getElementById('UserLayer').value;
+    document.getElementById('SpeciesID').value  = parent.document.getElementById('SpeciesID').value;
 }
 </script>
 </HEAD>

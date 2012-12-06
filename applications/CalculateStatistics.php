@@ -1,5 +1,6 @@
 <?php
 include_once 'includes.php';
+if (php_sapi_name() != "cli") return;
 
 $species_id = util::CommandScriptsFoldermandLineOptionValue($argv, 'species', null);
 $folder = util::CommandScriptsFoldermandLineOptionValue($argv, 'folder', null);

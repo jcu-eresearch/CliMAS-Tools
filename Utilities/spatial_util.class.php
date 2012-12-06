@@ -85,19 +85,19 @@ class spatial_util
     public static function ArrayRasterStatistics($filenames,$band = "1",$recalculate = false,$leave_out_invalid_files = false)
     {
         
-        ErrorMessage::Marker(__METHOD__);
+        //ErrorMessage::Marker(__METHOD__);
         
         $result = array();
         foreach ($filenames as $key => $filename) 
         { 
             if (!file_exists($filename)) continue;
         
-            ErrorMessage::Marker(__METHOD__." filename = $filename ");
+            //ErrorMessage::Marker(__METHOD__." filename = $filename ");
             
             $stats = self::RasterStatisticsBasic($filename,$band = "1",$recalculate);
             
-            ErrorMessage::Marker(__METHOD__." STATS ");
-            ErrorMessage::Marker($stats);
+            //ErrorMessage::Marker(__METHOD__." STATS ");
+            //ErrorMessage::Marker($stats);
             
             if (is_null($stats))
             {
@@ -107,18 +107,18 @@ class spatial_util
             
             if ($leave_out_invalid_files)
             {
-                ErrorMessage::Marker(__METHOD__." leave_out_invalid_files");
+                //ErrorMessage::Marker(__METHOD__." leave_out_invalid_files");
                 
                 if (!is_null($stats))
                 {
-                    ErrorMessage::Marker(__METHOD__." added $key");
+                    //ErrorMessage::Marker(__METHOD__." added $key");
                     $result[$key] = $stats; 
                 }
                     
             }
             else
             {
-                ErrorMessage::Marker(__METHOD__." DON'T  leave_out_invalid_files");
+                //ErrorMessage::Marker(__METHOD__." DON'T  leave_out_invalid_files");
                 $result[$key] = $stats;     
             }
             
@@ -185,7 +185,7 @@ class spatial_util
 
         if (util::contains(strtolower($filename), "shp")) return null;
 
-        ErrorMessage::Marker(__METHOD__." filename = $filename ");
+        //ErrorMessage::Marker(__METHOD__." filename = $filename ");
         
         
         if (is_null($filename)) return new Exception("Filename passed as null");
@@ -207,8 +207,8 @@ class spatial_util
         $precision = self::RasterStatisticsPrecision($filename,$band);
         
         
-        ErrorMessage::Marker(__METHOD__." from precision ");
-        ErrorMessage::Marker($precision);
+        //ErrorMessage::Marker(__METHOD__." from precision ");
+        //ErrorMessage::Marker($precision);
         
         if (!is_null($precision)) return $precision;
 
@@ -220,8 +220,8 @@ class spatial_util
         if (count($result) == 0 ) return null;
 
         
-        ErrorMessage::Marker(__METHOD__." from basic ");
-        ErrorMessage::Marker($precision);
+        //ErrorMessage::Marker(__METHOD__." from basic ");
+        //ErrorMessage::Marker($precision);
         
         
         // Minimum=0.000, Maximum=255.000, Mean=65.600, StdDev=99.236
@@ -538,22 +538,54 @@ class spatial_util
     
     
     
-    
-    public static function CreateImage($src_grid_filename,$output_image_filename = null ,$transparency = 255,$background_colour = "0 0 0 255")
+    /**
+     *
+     * @param type $src_grid_filename
+     * @param type $output_image_filename
+     * @param type $transparency          
+     * @param type $background_colour
+     * @param type $color_gradient        
+     * @return null|string 
+     */
+    /**
+     *
+     * @param type $src_grid_filename
+     * @param type $output_image_filename
+     * @param int $transparency
+     * @param string $background_colour
+     * @param type $histogram_buckets
+     * @param type $color_gradient
+     * @param type $min
+     * @param type $max
+     * @return null|string 
+     */
+    public static function CreateImage($src_grid_filename,$output_image_filename = null ,$transparency = 255,$background_colour = "0 0 0 255",$histogram_buckets = 100,$color_gradient = null,$min = null,$max = null,$title = "")
     {
+        
+        if(is_null($transparency)) $transparency = 255;
+        if(is_null($background_colour)) $background_colour = "0 0 0 255";
+        if(is_null($histogram_buckets)) $histogram_buckets = 100;
+        
+        if(is_null($color_gradient)) $color_gradient = RGB::ReverseGradient(RGB::GradientYellowOrangeRed());
+        
         
         if (is_null($output_image_filename)) $output_image_filename = str_replace("asc","png",$src_grid_filename);
         
         if (file_exists($output_image_filename)) return $output_image_filename;
-
-        $stats = self::RasterStatisticsBasic($src_grid_filename);
         
-        $min = $stats[self::$STAT_MINIMUM];
-        $max = $stats[self::$STAT_MAXIMUM];
         
-        $histogram_buckets = 100;
+        // ErrorMessage::Marker("CreateImage $src_grid_filename, $output_image_filename ,$transparency $background_colour ,$histogram_buckets ,$color_gradient ,$min ,$max ");        
         
-        $ramp = RGB::Ramp($min, $max, $histogram_buckets,RGB::ReverseGradient(RGB::GradientYellowOrangeRed())); 
+        if (is_null($max) || is_null($min))
+        {
+            $stats = self::RasterStatisticsBasic($src_grid_filename);
+        
+            if (is_null($min)) $min = $stats[self::$STAT_MINIMUM];
+            if (is_null($max)) $max = $stats[self::$STAT_MAXIMUM];
+        }
+        
+        
+        $ramp = RGB::Ramp($min, $max, $histogram_buckets,$color_gradient); 
 
         $colour_txt = file::random_filename().".txt"; // list of colours to use - will bne generated
         file::Delete($colour_txt);
@@ -618,7 +650,7 @@ class spatial_util
 $header = <<<HEADER
 convert \
 -size  {$width}x60 xc:white -font DejaVu-Sans-Book -fill black \
--draw 'text  10,20 "{$src_grid_filename}"' \
+-draw 'text  10,20 "{$title}"' \
 {$header_png};
 HEADER;
 

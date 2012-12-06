@@ -1,0 +1,230 @@
+MAP
+    NAME          "WMS-TDH-TOOLS"
+    STATUS        ON
+    IMAGETYPE     PNG24
+    UNITS         METERS
+    SHAPEPATH     ""
+    IMAGECOLOR    -1 -1 -1
+
+
+    WEB
+        # IMAGEPATH "/www/html/eresearch/output/MapserverImages"
+        IMAGEPATH "/home/jc166922/projects/tdh_mapfiles/images"
+        # IMAGEURL  "http://tdh-tools-1.hpc.jcu.edu.au:81/eresearch/output/MapserverImages"
+        IMAGEURL   "http://localhost/jc166922/projects/tdh_mapfiles/images/"
+        METADATA
+          "wms_title"          "WMS TDH Tools Server"  ##required
+          "wms_onlineresource" "http://localhost/cgi-bin/mapserv?"  ##required
+          "wms_enable_request" "*"   ##necessary
+        END
+    END
+
+
+    PROJECTION
+      "init=epsg:3857"
+    END
+
+
+    LAYER
+        NAME         "maplayer"
+        ## DATA         "RCP3PD_2015.asc"
+        STATUS       ON
+        TYPE         RASTER
+
+        PROCESSING "SCALE=0.000000000,25.000000000"
+        PROCESSING "SCALE_BUCKETS=25"
+
+        PROCESSING   "BANDS=1"
+        OFFSITE      -1 -1 -1
+
+        CLASSITEM "[pixel]"
+
+        PROJECTION
+            "proj=longlat"
+            "ellps=WGS84"
+            "datum=WGS84"
+            "no_defs"
+        END
+
+
+        CLASS
+            NAME "0.00000 .. 1.00000"
+            EXPRESSION ([pixel] >= 0.00000 and [pixel] < 1.00000)
+            STYLE
+              COLOR 255 0 0
+            END
+        END
+        CLASS
+            NAME "1.00000 .. 2.00000"
+            EXPRESSION ([pixel] >= 1.00000 and [pixel] < 2.00000)
+            STYLE
+              COLOR 249 220 169
+            END
+        END
+        CLASS
+            NAME "2.00000 .. 3.00000"
+            EXPRESSION ([pixel] >= 2.00000 and [pixel] < 3.00000)
+            STYLE
+              COLOR 249 220 168
+            END
+        END
+        CLASS
+            NAME "3.00000 .. 4.00000"
+            EXPRESSION ([pixel] >= 3.00000 and [pixel] < 4.00000)
+            STYLE
+              COLOR 248 220 167
+            END
+        END
+        CLASS
+            NAME "4.00000 .. 5.00000"
+            EXPRESSION ([pixel] >= 4.00000 and [pixel] < 5.00000)
+            STYLE
+              COLOR 248 220 166
+            END
+        END
+        CLASS
+            NAME "5.00000 .. 6.00000"
+            EXPRESSION ([pixel] >= 5.00000 and [pixel] < 6.00000)
+            STYLE
+              COLOR 248 220 165
+            END
+        END
+        CLASS
+            NAME "6.00000 .. 7.00000"
+            EXPRESSION ([pixel] >= 6.00000 and [pixel] < 7.00000)
+            STYLE
+              COLOR 247 220 164
+            END
+        END
+        CLASS
+            NAME "7.00000 .. 8.00000"
+            EXPRESSION ([pixel] >= 7.00000 and [pixel] < 8.00000)
+            STYLE
+              COLOR 247 220 163
+            END
+        END
+        CLASS
+            NAME "8.00000 .. 9.00000"
+            EXPRESSION ([pixel] >= 8.00000 and [pixel] < 9.00000)
+            STYLE
+              COLOR 246 220 162
+            END
+        END
+        CLASS
+            NAME "9.00000 .. 10.00000"
+            EXPRESSION ([pixel] >= 9.00000 and [pixel] < 10.00000)
+            STYLE
+              COLOR 246 220 161
+            END
+        END
+        CLASS
+            NAME "10.00000 .. 11.00000"
+            EXPRESSION ([pixel] >= 10.00000 and [pixel] < 11.00000)
+            STYLE
+              COLOR 246 220 160
+            END
+        END
+        CLASS
+            NAME "11.00000 .. 12.00000"
+            EXPRESSION ([pixel] >= 11.00000 and [pixel] < 12.00000)
+            STYLE
+              COLOR 245 220 159
+            END
+        END
+        CLASS
+            NAME "12.00000 .. 13.00000"
+            EXPRESSION ([pixel] >= 12.00000 and [pixel] < 13.00000)
+            STYLE
+              COLOR 245 220 158
+            END
+        END
+        CLASS
+            NAME "13.00000 .. 14.00000"
+            EXPRESSION ([pixel] >= 13.00000 and [pixel] < 14.00000)
+            STYLE
+              COLOR 244 220 157
+            END
+        END
+        CLASS
+            NAME "14.00000 .. 15.00000"
+            EXPRESSION ([pixel] >= 14.00000 and [pixel] < 15.00000)
+            STYLE
+              COLOR 244 220 156
+            END
+        END
+        CLASS
+            NAME "15.00000 .. 16.00000"
+            EXPRESSION ([pixel] >= 15.00000 and [pixel] < 16.00000)
+            STYLE
+              COLOR 244 220 155
+            END
+        END
+        CLASS
+            NAME "16.00000 .. 17.00000"
+            EXPRESSION ([pixel] >= 16.00000 and [pixel] < 17.00000)
+            STYLE
+              COLOR 243 220 154
+            END
+        END
+        CLASS
+            NAME "17.00000 .. 18.00000"
+            EXPRESSION ([pixel] >= 17.00000 and [pixel] < 18.00000)
+            STYLE
+              COLOR 243 220 153
+            END
+        END
+        CLASS
+            NAME "18.00000 .. 19.00000"
+            EXPRESSION ([pixel] >= 18.00000 and [pixel] < 19.00000)
+            STYLE
+              COLOR 242 220 152
+            END
+        END
+        CLASS
+            NAME "19.00000 .. 20.00000"
+            EXPRESSION ([pixel] >= 19.00000 and [pixel] < 20.00000)
+            STYLE
+              COLOR 242 220 151
+            END
+        END
+        CLASS
+            NAME "20.00000 .. 21.00000"
+            EXPRESSION ([pixel] >= 20.00000 and [pixel] < 21.00000)
+            STYLE
+              COLOR 242 220 150
+            END
+        END
+        CLASS
+            NAME "21.00000 .. 22.00000"
+            EXPRESSION ([pixel] >= 21.00000 and [pixel] < 22.00000)
+            STYLE
+              COLOR 241 220 150
+            END
+        END
+        CLASS
+            NAME "22.00000 .. 23.00000"
+            EXPRESSION ([pixel] >= 22.00000 and [pixel] < 23.00000)
+            STYLE
+              COLOR 241 220 149
+            END
+        END
+        CLASS
+            NAME "23.00000 .. 24.00000"
+            EXPRESSION ([pixel] >= 23.00000 and [pixel] < 24.00000)
+            STYLE
+              COLOR 240 220 148
+            END
+        END
+        CLASS
+            NAME "24.00000 .. 25.00000"
+            EXPRESSION ([pixel] >= 24.00000 and [pixel] < 25.00000)
+            STYLE
+              COLOR 240 220 147
+            END
+        END
+
+
+    END # end raster layer - richness
+
+
+END # end of mapfile

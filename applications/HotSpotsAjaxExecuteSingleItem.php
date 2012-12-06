@@ -7,11 +7,9 @@
     // so here it will be ByGenus/GenusName/(Scenario)_(Time).asc
     // expects to be PNG quick look image here as well available as    ByGenus/GenusName/(Scenario)_(Time).png
     //
-
-
 session_start();
 include_once dirname(__FILE__).'/includes.php';
-
+if (php_sapi_name() == "cli") return;
 
 $result = array();
 $result['dataType'] = htmlutil::ValueFromPost('dataType');

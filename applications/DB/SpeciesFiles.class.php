@@ -11,7 +11,6 @@
 class SpeciesFiles {
     
     
-    
     /**
      * Interaction between file system and Database - use file system - folder to find species - id's
      * and then use database to return Name 
@@ -145,8 +144,6 @@ class SpeciesFiles {
     }
     
     
-    
-    
     public static function species_data_folder($species_id)
     {
         $folder = configuration::Maxent_Species_Data_folder()
@@ -172,6 +169,7 @@ class SpeciesFiles {
         return $folder;
         
     }
+    
     
     
     

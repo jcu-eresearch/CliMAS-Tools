@@ -1,5 +1,6 @@
 <?php
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
+if (php_sapi_name() != "cli") return;
 
 include_once 'includes.php';
 

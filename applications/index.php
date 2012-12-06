@@ -2,109 +2,130 @@
 include_once dirname(__FILE__).'/includes.php';
 /**
  * Basic Menu to select between AP02- Tools
- * 
- *  
+ *
+ *
  */
 
-if (array_util::Value($_GET, "clean") == 'xyz123') DatabaseFile::RemoveUsedFiles(); 
+if (array_util::Value($_GET, "clean") == 'xyz123') DatabaseFile::RemoveUsedFiles();
 
+$pagetitle = "CliMAS tools";
+$pagesubtitle = "Tools related to modelling climate change, climate suitability and biodiversity";
 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Tropical Data Hub Tools</title>
-<link type="text/css" href="css/start/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
- <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
- <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
- <script type="text/javascript" src="js/jquery.pulse.min.js"></script>
- <script type="text/javascript" src="js/Utilities.js"></script>
-
-<link href="styles.css" rel="stylesheet" type="text/css">
-    
-    <script type="text/javascript" >
-    <?php     
-     ?>
-         
-    </script>
-    
-    <script type="text/javascript" src="SpeciesScenarioTimeline.js"></script>
-
-
-
-<style>
-
-.maincontent
-{
-        height: 200px;
-}
-    
-.maincontent div{
-
-    border-top: 10px solid transparent;
-    float:left;
-    height: 120px;
-    margin-left: 100px; 
-}
-
-.maincontent div:hover
-{
-
-    border-top: 10px solid maroon;
-    
-    margin-left: 100px; 
-}
-
-
-</style>
-<script>
-
-$(document).ready(function(){
-
-});
-    
-</script>
-    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title><?php echo $pagetitle; ?></title>
+    <link href="styles.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<h1 class="pagehead"><a href="index.php"><img src="<?php echo configuration::IconSource()."CIT.png" ?>" border="0" /></a></h1>
+
+<div class="header clearfix">
+    <a href="http://tropicaldatahub.org/"><img class="logo"
+        src="../images/TDH_logo_medium.png"></a>
+    <h1><?php echo $pagetitle; ?></h1>
+    <h2><?php echo $pagesubtitle; ?></h2>
+</div>
+
+<?php
+    $navSetup = array(
+        'tabs' => array(
+            'tool index' => 'index.php',
+            'Suitability' => 'SpeciesSuitability.php',
+            'Biodiversity' => 'biodiversity.php',
+            'Reports' => '/bifocal',
+        ),
+        'current' => 'index.php'
+    );
+    include 'NavBar.php';
+?>
 
 <div class="maincontent">
-    <div id="Suitability"><a href="SpeciesSuitability.php">
-        <img src="<?php echo configuration::IconSource()."Suitability.png" ?>" border="0" /></a>
+
+    <div style="display: inline-block; vertical-align: top; width: 28%; margin-right: 5%">
+        <h2><a href="SpeciesSuitability.php">
+            CliMAS Suitability
+        </a></h2><p>
+            See climate suitability maps for individual species, now and in the future.
+        </p><p>
+            <a href="SpeciesSuitability.php">go to tool &raquo;</a>
+        </p>
     </div>
-    
-    <div id="SpeciesScenarioTimeline">
-        <a href="SpeciesScenarioTimeline.php">
-            <img src="<?php echo configuration::IconSource()."SpeciesScenarioTimeline.png" ?>" border="0" />
-        </a>
+
+    <div style="display: inline-block; vertical-align: top; width: 28%; margin-right: 5%">
+        <h2><a href="biodiversity.php">
+            CliMAS Biodiversity
+        </a></h2><p>
+            See biodiversity (count of species suitable to an area) maps, now and in the future.
+        </p><p>
+            <a href="biodiversity.php">go to tool &raquo;</a>
+        </p>
     </div>
-    <div id="Hotspots">
-        <a href="HotSpots.php">
-            <img src="<?php echo configuration::IconSource()."Hotspots.png" ?>" border="0" />
-        </a>
+
+    <div style="display: inline-block; vertical-align: top; width: 28%">
+        <h2><a href="/bifocal">
+            CliMAS Reports
+        </a></h2><p>
+            Create regionally-focussed reports on the future of climate change and biodiversity.
+        </p><p>
+            <a href="/bifocal">go to tool &raquo;</a>
+        </p>
     </div>
-                    
-    <div id="EIS">
-        <a href="EnvironmentalImpact.php">
-            <img src="<?php echo configuration::IconSource()."Impact.png" ?>" border="0" />
-        </a>
-    </div>
-    
+
 </div>
 
-<div class="credits">
-    <a href="http://www.jcu.edu.au/ctbcc/"><img src="../images/ctbcc_sm.png" alt="Centre for Tropical Biodiversity and Climate Change"></a>
-    <a href="http://www.tyndall.ac.uk/"><img src="../images/themenews_logo.jpg" alt="Tyndall Centre for Climate Change Research"></a>
-    <a href="http://www.jcu.edu.au"><img src="../images/jcu_logo_sm.png" alt="JCU Logo"></a>
-    <a href="http://eresearch.jcu.edu.au/"><img src="../images/eresearch.png" alt="eResearch Centre, JCU"></a>
-</div>
+<?php include 'ToolsFooter.php' ?>
+<?php
+/*
+echo '<pre style="color: white; padding: 2em; opacity: 0.7;">';
 
+$species_id = '19814';
+$bucket_count = 3;
+$UserLayer = '1990';
 
-<div class="footer">
-<p class="contact"> please contact Jeremy VanDerWal (<a href="mailto:jeremy.vanderwal@jcu.edu.au">jeremy.vanderwal@jcu.edu.au</a>) with any queries.</p>
-</div>
+$grid_filename_asc = "/tmp/{$UserLayer}_{$species_id}.asc";
 
+$MaxentThreshold = DatabaseMaxent::GetMaxentThresholdForSpeciesFromFile($species_id);
+echo "\n\nMaxentThreshold for id {$species_id} is " . $MaxentThreshold;
+
+echo "\n\n";
+
+$ramp = RGB::Ramp($MaxentThreshold, 1, $bucket_count, RGB::ReverseGradient(RGB::GradientYellowOrangeRed()));
+
+echo "Colour ramp is:\n";
+foreach ($ramp as $start => $data) {
+    echo $start . "\n";
+}
+// print_r($ramp);
+
+$M = new MapServerWrapper();
+$layer = $M->Layers()->AddLayer($grid_filename_asc);
+
+$layer->HistogramBuckets($bucket_count);
+$layer->ColorTable($ramp);
+
+$min = $layer->Minimum();
+$max = $layer->Maximum();
+
+echo "layer min: {$min} \n";
+echo "layer max: {$max} \n\n";
+
+// write out our completed mapfile
+$MF = new Mapfile($M);
+
+echo $MF->Text();
+echo '</pre>';
+*/
+?>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
