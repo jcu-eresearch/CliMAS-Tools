@@ -20,7 +20,7 @@ $hostname = trim(exec("hostname --fqdn"));
 // include configuration file, with fallback to the default one.
 
 if (file_exists("{$af}CONFIGURATION.cfg")) {
-	include_once "{$af}CONFIGURATION.cfg"
+	include_once "{$af}CONFIGURATION.cfg";
 } else {
 	include_once "{$af}CONFIGURATION.cfg.default";
 }
