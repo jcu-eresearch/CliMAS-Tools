@@ -17,18 +17,13 @@ $conf = array();
 
 $hostname = trim(exec("hostname --fqdn"));
 
+// include configuration file, with fallback to the default one.
 
-// Host (and other criteria) based configuration files
-
-
-if (file_exists("{$af}config.default"))  include_once $af.'config.default';
-
-if (file_exists("{$af}config.daniel"))   include_once $af.'config.daniel';
-if (file_exists("{$af}config.afakes"))   include_once $af.'config.afakes';
-if (file_exists("{$af}config.tdh1"))     include_once $af.'config.tdh1';
-if (file_exists("{$af}config.tdh1-hpc")) include_once $af.'config.tdh1-hpc';
-if (file_exists("{$af}config.tdh2"))     include_once $af.'config.tdh2';
-if (file_exists("{$af}config.tdh2-hpc")) include_once $af.'config.tdh2-hpc';
+if (file_exists("{$af}CONFIGURATION.cfg")) {
+	include_once "{$af}CONFIGURATION.cfg"
+} else {
+	include_once "{$af}CONFIGURATION.cfg.default";
+}
 
 include_once dirname(__FILE__).'/configuration.class.php';
 
