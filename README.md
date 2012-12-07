@@ -5,7 +5,8 @@ The CliMAS website allows visitors to view potential impact from climate change 
 
 This repository contains the code base for the CliMAS Suitability and CliMAS Biodiversity tools. The code for the CliMAS Report tool can be found at http://github.com/jcu-eresearch/CliMAS-Reports.
 
-The CliMAS website can be found at: http://tropicaldatahub.org/goto/climas
+The CliMAS website can be found at: http://tropicaldatahub.org/goto/climas. 
+The code for running CliMAS is [available from github](https://github.com/jcu-eresearch/TDH-Tools) and the instructions for installing the code are in the [github wiki](https://github.com/jcu-eresearch/TDH-Tools/wiki/Installation-and-setup-guide).
 
 Structure
 ---------
