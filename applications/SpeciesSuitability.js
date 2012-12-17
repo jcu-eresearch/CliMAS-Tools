@@ -165,7 +165,7 @@ function loadNewMapLayer() {
 
             var layer_name = currentCombination + '_' + currentSpeciesID;
 
-            window.speciesLayer = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
+            window.speciesLayer = new L.TileLayer.WMS("/cgi-bin/mapserv", {
                 layers: layer_name + '&map=' + data.map_path,
                 format: 'image/png',
                 opacity: 0.75,
@@ -173,7 +173,7 @@ function loadNewMapLayer() {
             });
             window.speciesLayer.addTo(window.map);
 
-            $('#legendbar').load('http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
+            $('#legendbar').load('/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
         }
     });
 }
