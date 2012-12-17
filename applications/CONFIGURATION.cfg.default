@@ -23,7 +23,7 @@ $conf[Parameter::$RESOURCES_FOLDER]       = "/climas/source/Resources/";
 $conf[Parameter::$SOURCE_DATA_FOLDER]     = "/climas/data/";
 $conf[Parameter::$SDM_FOLDER]             = "/climas/sdm/";
 
-$conf[Parameter::$ICONS_FOLDER]           = "{$webserver}/tools/Resources/icons/";
+$conf[Parameter::$ICONS_FOLDER]           = "{$webserver}/icons/";
 
 $conf[Parameter::$COMMAND_QUEUE_ID       ]= "climas";
 // $conf[Parameter::$COMMAND_QUEUE_LOG]      = "/home/TDH/apps/Gilbert/logs/queue.log";
@@ -37,7 +37,7 @@ $conf[Parameter::$ExtensionDelimiter] = '.';
 // $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
 // $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
 $conf[Parameter::$Maxent_Species_Data_folder ]            = "/climas/data/species/";
-// $conf[Parameter::$Maxent_Species_Data_folder_web ]        = "https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/species/";
+$conf[Parameter::$Maxent_Species_Data_folder_web ]        = $webserver . "/datasets/Gilbert/source/species/";
 $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
 // $conf[Parameter::$Maxent_Species_Data_Occurance_Filename] = "occur.csv";
 
