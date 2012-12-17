@@ -475,10 +475,14 @@ function fetchIfRequired($filename, $url) {
         }
     }
 
-    if (!file_exists($filename)) {
+    if (!file_exists($filename) && $execute) {
         ErrorMessage::EndProgress();
         ErrorMessage::Marker("### File {$filename} not updated with data from URL " . $url);
         save_to_file($error_logfile,"ERROR SAVING ALA DATA INTO FILE " . $filename, 0, FILE_APPEND);
+        return false;
+    } else if (!file_exists($filename) && !$execute) {
+        ErrorMessage::EndProgress();
+        ErrorMessage::Marker("DRYRUN: No previously saved data for this species -- skipping.");
         return false;
     } else {
         return true;
