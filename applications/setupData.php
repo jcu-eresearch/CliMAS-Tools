@@ -145,8 +145,10 @@ foreach ($species_list as $species_name => $species_data) {
     $new_data = injectSpeciesTaxaInfo($species_data, $json_root, $error_logfile);
     if ($new_data === false) {
         unset($species_list[$species_name]);
+    } else {
+        $species_list[$species_name] = $new_data;
     }
-    $species_list[$species_name] = $new_data;
+
     if ($new_data['clazz'] != $last_clazz) {
         ErrorMessage::Progress('(' . $new_data['clazz'] . ')');
         $last_clazz = $new_data['clazz'];
