@@ -102,7 +102,7 @@ foreach ($clazz_list as $clazz_latin => $clazz_english) {
     // complain if there weren't any models there.
     if (count($spp_in_class) < 1) {
         ErrorMessage::EndProgress();
-        ErrorMessage::Marker("### No {$clazz_english} models found.  That seems odd.");
+        ErrorMessage::Marker("### No {$clazz_english} found.  That seems odd.");
     }
 
     // go through the species we found
