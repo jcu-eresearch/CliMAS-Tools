@@ -32,9 +32,11 @@ $conf[Parameter::$COMMAND_QUEUE_ID       ]= "climas";
 
 $conf[Parameter::$MaxentJar]              = "/climas/source/applications/Finder/Species/maxent.jar";
 
+$conf[Parameter::$PathDelimiter] = '/';
+$conf[Parameter::$ExtensionDelimiter] = '.';
 // $conf[Parameter::$Maxent_Taining_Data_folder ]            = "/home/jc165798/Climate/PCMDI/01.Oz.5km.61.90/mxe/1975";
 // $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
-// $conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/TDH/data/Gilbert/source/species/";
+$conf[Parameter::$Maxent_Species_Data_folder ]            = "/climas/data/species/";
 // $conf[Parameter::$Maxent_Species_Data_folder_web ]        = "https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/species/";
 $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
 // $conf[Parameter::$Maxent_Species_Data_Occurance_Filename] = "occur.csv";
