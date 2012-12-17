@@ -143,6 +143,9 @@ $last_clazz = '';
 foreach ($species_list as $species_name => $species_data) {
     ErrorMessage::Progress();
     $new_data = injectSpeciesTaxaInfo($species_data, $json_root, $error_logfile);
+    if ($new_data === false) {
+        unset($species_list[$species_name]);
+    }
     $species_list[$species_name] = $new_data;
     if ($new_data['clazz'] != $last_clazz) {
         ErrorMessage::Progress('(' . $new_data['clazz'] . ')');
@@ -450,13 +453,20 @@ function fetchIfRequired($filename, $url) {
                 ErrorMessage::Progress("({$delay}s wait)");
             }
             sleep($delay);
-            $content = file_get_contents($url);
+            $content = @file_get_contents($url);
             $attempts++;
         }
+
+        if ($content === false) {
+            ErrorMessage::EndProgress();            
+            ErrorMessage::Marker("Having trouble getting data from ALA at URL " . $url);
+            ErrorMessage::Marker("Here's what happens when I try:");
+            $content = file_get_contents($url);
+        }
+
         if ($content) {
             save_to_file( $filename, $content );
         } else {
-            ErrorMessage::EndProgress();
             ErrorMessage::Marker("### Error getting data from ALA at URL " . $url);
             save_to_file($error_logfile,"ERROR GETTING ALA DATA FROM URL " . $url, 0, FILE_APPEND);
             return false;
@@ -497,7 +507,7 @@ function injectSpeciesTaxaInfo($species_info, $json_dir, $errlog) {
         } else {
             ErrorMessage::EndProgress();
             ErrorMessage::Marker("Couldn't get identifying data for {$species_name}.");
-            return $species_info;
+            return false;
         }
 
         $data = json_decode(file_get_contents($file));
