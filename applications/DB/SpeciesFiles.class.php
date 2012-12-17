@@ -148,13 +148,11 @@ class SpeciesFiles {
     {
         $folder = configuration::Maxent_Species_Data_folder()
                     .$species_id
-                    .configuration::osPathDelimiter()
+                    .'/'
                     .configuration::Maxent_Species_Data_Output_Subfolder()
-                    .configuration::osPathDelimiter()
+                    .'/'
                     ;
 
-        echo("<pre>species_data_folder is " .$folder . "</pre>");
-        
         return $folder;
     }
     
