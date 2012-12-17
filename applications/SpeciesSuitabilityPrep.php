@@ -47,7 +47,7 @@ $bucket_count = array_util::Value($_POST, "bucket_count", 20);
 $M = new MapServerWrapper();
 
 // find the gzipped asciigrid
-$grid_filename_gz  = SpeciesFiles::species_data_folder($species_id)."/{$UserLayer}.asc.gz";
+$grid_filename_gz  = SpeciesFiles::species_data_folder($species_id)."{$UserLayer}.asc.gz";
 if (!file_exists($grid_filename_gz)) {
     $result = array();
     $result['grid_filename_gz'] = $grid_filename_gz;
