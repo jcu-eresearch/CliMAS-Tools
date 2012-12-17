@@ -36,7 +36,7 @@ $conf[Parameter::$MaxentJar]              = "/climas/source/applications/Finder/
 // $conf[Parameter::$Maxent_Future_Projection_Data_folder ]  = "/home/jc165798/Climate/CIAS/Australia/5km/bioclim_mxe";
 // $conf[Parameter::$Maxent_Species_Data_folder ]            = "/home/TDH/data/Gilbert/source/species/";
 // $conf[Parameter::$Maxent_Species_Data_folder_web ]        = "https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/species/";
-// $conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
+$conf[Parameter::$Maxent_Species_Data_Output_Subfolder ]  = "output";
 // $conf[Parameter::$Maxent_Species_Data_Occurance_Filename] = "occur.csv";
 
 ?>
