@@ -58,7 +58,7 @@ if (!file_exists($grid_filename_gz)) {
 // $grid_filename_asc = SpeciesFiles::species_data_folder($species_id)."{$UserLayer}.asc";
 
 // find the unzipped version of the asciigrid
-$grid_filename_asc = configuration::tempFolder() . "/{$UserLayer}_{$species_id}.asc";
+$grid_filename_asc = configuration::tempFolder() . "{$UserLayer}_{$species_id}.asc";
 // unzip a fresh new asciigrid if there isn't one there already
 if (!file_exists($grid_filename_asc)) {
     // if the ascii is not there, create it by unzipping the gz into the temp folder
@@ -76,7 +76,7 @@ if (!file_exists($grid_filename_asc)) {
 }
 
 // now locate the mapfile
-$map_path =  configuration::tempFolder() . "/{$UserLayer}_{$species_id}.map";
+$map_path =  configuration::tempFolder() . "{$UserLayer}_{$species_id}.map";
 $result['map_path'] = $map_path;
 
 // check if we already have a mapfile
