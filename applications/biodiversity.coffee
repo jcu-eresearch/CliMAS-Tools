@@ -171,13 +171,12 @@ $ ->
                     }).addTo map
 
                     # add the selected layer to the map
-                    data = new L.TileLayer.WMS("http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv", {
+                    data = new L.TileLayer.WMS("/cgi-bin/mapserv", {
                         layers: layer_name + '&map=' + data.map_path
                         format: 'image/png'
                         opacity: 0.75
                         transparent: true
                     }).addTo map
-
         }
 
         e.preventDefault();
