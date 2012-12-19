@@ -152,7 +152,7 @@ $ ->
                     layer_name = data.map_path[5..-5]
 
                     # fetch the legend as a html template from MapServer
-                    $('#legend').load('http://tdh-tools-2.hpc.jcu.edu.au/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
+                    $('#legend').load('/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
 
                     # add close behaviour to the close buttons
                     $('.popupwrapper button.close').click (e)->
