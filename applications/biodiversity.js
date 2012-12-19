@@ -104,7 +104,7 @@
               maptitle += " in " + year + " at emission level " + scenario;
             }
             $("<div class=\"popupwrapper\" style=\"display: none\">\n    <div class=\"toolbar north\">\n    <button class=\"close\">close &times;</button>\n    <div id=\"maptitle\">" + maptitle + "</div>\n    </div>\n    <div id=\"popupmap\" class=\"popupmap\"></div>\n    <div class=\"toolbar south\"><button class=\"close\">close &times;</button><div id=\"legend\"></div></div>").appendTo('body').show('fade', 1000);
-            layer_name = data.map_path.slice(5, -4);
+            layer_name = data.map_path.replace(/.*\//, '').replace(/\.map$/, '');
             $('#legend').load('/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
             $('.popupwrapper button.close').click(function(e) {
               return $('.popupwrapper').hide('fade', function() {

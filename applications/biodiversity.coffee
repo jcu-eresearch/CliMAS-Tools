@@ -148,8 +148,9 @@ $ ->
                             <div class="toolbar south"><button class="close">close &times;</button><div id="legend"></div></div>
                     """).appendTo('body').show('fade', 1000)
 
-                    # pre-figure the layer name
-                    layer_name = data.map_path[5..-5]
+                    # pre-figure the layer name - it's the filename portion of the
+                    # map_path, without the .map extension.
+                    layer_name = data.map_path.replace(/.*\//, '').replace(/\.map$/, '')
 
                     # fetch the legend as a html template from MapServer
                     $('#legend').load('/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
