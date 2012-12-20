@@ -9,8 +9,8 @@ class ToolsDataConfiguration {
 
     public static function Species_DB_Server()   { return "localhost"; }
     public static function Species_DB_Port()     { return "5432"; }
-    public static function Species_DB_Username() { return "ap02"; }
-    public static function Species_DB_Password() { return "71a6e5db6b9cfda9f0af062254b5bfbe"; }
+    public static function Species_DB_Username() { return "climas"; }
+    public static function Species_DB_Password() { return "asdf"; }
     public static function Species_DB_Database() { return "climas_production"; }
 
 }
