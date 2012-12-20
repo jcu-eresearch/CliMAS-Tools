@@ -81,7 +81,7 @@ if (array_key_exists('page', $_GET)) {
     $navSetup = array(
         'tabs' => array(
             '&laquo; CliMAS tools' => 'index.php',
-            'quick map' => 'biodiversity.php',
+            'biodiversity map' => 'biodiversity.php',
 //            'custom map' => 'HotSpots.php',
             'about the map tool' => 'biodiversity.php?page=about',
             'using the tool' => 'biodiversity.php?page=using',
