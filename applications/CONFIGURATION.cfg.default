@@ -17,8 +17,8 @@ $conf[Parameter::$APPLICATION_FOLDER_WEB] = "{$webserver}/climas/";
 
 $conf[Parameter::$UTILITIES_CLASSES]      = "/climas/source/Utilities/includes.php";
 
-// $conf[Parameter::$DOWNLOAD_FOLDER_REAL]   = "/climas/source/output/";
-// $conf[Parameter::$DOWNLOAD_FOLDER_WEB]    = "http://tdh-tools-2.hpc.jcu.edu.au/tools/output/";
+$conf[Parameter::$DOWNLOAD_FOLDER_REAL]   = "/climas/source/output/";
+$conf[Parameter::$DOWNLOAD_FOLDER_WEB]    = "{$webserver}/climas/output/";
 $conf[Parameter::$RESOURCES_FOLDER]       = "/climas/source/Resources/";
 $conf[Parameter::$SOURCE_DATA_FOLDER]     = "/climas/data/";
 $conf[Parameter::$SDM_FOLDER]             = "/climas/sdm/";
