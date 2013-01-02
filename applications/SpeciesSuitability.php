@@ -60,7 +60,7 @@ $pagesubtitle = "Vertebrate distributions based on climate suitability";
 <?php
 echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),'ApplicationFolderWeb');
 
-echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web(),'Maxent_Species_Data_folder_web');
+//echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web(),'Maxent_Species_Data_folder_web');
 
 
         $species_taxa_data = matrix::Load(configuration::SourceDataFolder()."species_to_id.txt", ",");
