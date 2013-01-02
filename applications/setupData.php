@@ -134,8 +134,8 @@ ErrorMessage::Marker(" ..done reading species.");
 //
 
 if ($testing) {
-    // if we're testing, just do five species
-    $species_list = array_splice($species_list, 0, 15);
+    // if we're testing, just do a few species
+    $species_list = array_splice($species_list, 0, 5);
 }
 
 ErrorMessage::Marker("Filling in species taxonomic info..");
@@ -171,7 +171,11 @@ foreach ($species_list as $species_name => $species_data) {
     }
 
     // first make a home base dir at .../species/{Species_name}/
-    $homebase = $data_root . 'species/' . $species_data['name'];
+
+    // homebase path relative to $data_root
+    $rel_homebase = 'species/' . $species_data['name'];
+    // full homebase path
+    $homebase = $data_root . $rel_homebase;
     safemkdir($homebase);
 
     // symlink data into the home base dir
@@ -196,36 +200,37 @@ foreach ($species_list as $species_name => $species_data) {
     $species_list[$species_name] = $species_data;
 
     // link /species/{speciesid} to homebase
-    ln($data_root . 'species/' . $species_id, $data_root . 'species/' . $species_data['name']);
+    // ln($data_root . 'species/' . $species_id, $data_root . 'species/' . $species_data['name']);
+    ln($data_root . 'species/' . $species_id, './' . $species_data['name']);
 
     // link /ByClazz/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
     $clazzpath = $data_root . 'ByClazz/' . $species_data['clazz'];
     safemkdir($clazzpath . '/ByID');
     safemkdir($clazzpath . '/ByName');
-    ln("{$clazzpath}/ByID/{$species_data['id']}",     $homebase);
-    ln("{$clazzpath}/ByName/{$species_data['name']}", $homebase);
+    ln("{$clazzpath}/ByID/{$species_data['id']}",     '../../' . $rel_homebase);
+    ln("{$clazzpath}/ByName/{$species_data['name']}", '../../' . $rel_homebase);
     // ErrorMessage::Progress();
 
     // link /ByFamily/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
     $familypath = $data_root . 'ByFamily/' . $species_data['family'];
     safemkdir($familypath . '/ByID');
     safemkdir($familypath . '/ByName');
-    ln("{$familypath}/ByID/{$species_data['id']}",     $homebase);
-    ln("{$familypath}/ByName/{$species_data['name']}", $homebase);
+    ln("{$familypath}/ByID/{$species_data['id']}",     '../../' . $rel_homebase);
+    ln("{$familypath}/ByName/{$species_data['name']}", '../../' . $rel_homebase);
     // ErrorMessage::Progress();
 
     // link /ByGenus/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
     $genuspath = $data_root . 'ByGenus/' . $species_data['genus'];
     safemkdir($genuspath . '/ByID');
     safemkdir($genuspath . '/ByName');
-    ln("{$genuspath}/ByID/{$species_data['id']}",     $homebase);
-    ln("{$genuspath}/ByName/{$species_data['name']}", $homebase);
+    ln("{$genuspath}/ByID/{$species_data['id']}",     '../../' . $rel_homebase);
+    ln("{$genuspath}/ByName/{$species_data['name']}", '../../' . $rel_homebase);
     // ErrorMessage::Progress();
 
     // link /Taxa/{classname}/{familyname}/{genusname}/{sp} back to homebase
     $taxapath = $data_root . 'Taxa/' . $species_data['clazz'] . '/' . $species_data['family'] . '/' . $species_data['genus'];
     safemkdir($taxapath);
-    ln("{$taxapath}/{$species_data['name']}", $homebase);
+    ln("{$taxapath}/{$species_data['name']}", '../' . $rel_homebase);
 }
 
 ErrorMessage::EndProgress();
