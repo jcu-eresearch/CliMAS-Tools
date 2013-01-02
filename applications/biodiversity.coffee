@@ -119,6 +119,12 @@ $ ->
                 if not data.map_path
                     alert "Sorry, data for that selection is not available."
 
+                else if output == 'download'
+                    #
+                    # they want ascii grid and metadata
+                    #
+                    
+
                 else if output == 'view'
                     #
                     # they want to see the map

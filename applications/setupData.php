@@ -385,7 +385,16 @@ function ln($link, $real) {
     if (!$execute) return true;
     if ( file_exists($link) ) return true;
 
-    if (symlink($real, $link)) {
+    // try linking.
+    // identify dirs so we can make relative links
+    $olddir = getcwd();
+    $newdir = dirname($link);
+    // change to the destionation dir to make the new link
+    chdir($newdir);
+    $success = symlink($real, $link);
+    chdir($olddir);
+
+    if ($success) {
         return true;
     } else {
         ErrorMessage::EndProgress();
