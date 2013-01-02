@@ -73,25 +73,25 @@ class configuration {
 
 
 
-    // /**
-    //  * Path to Downloads folder accessable from the web
-    //  * @return string|null Filepath
-    //  */
-    // public static function WebDownloadFolder()
-    // {
-    //     global $conf;
-    //     return $conf[Parameter::$DOWNLOAD_FOLDER_WEB];
-    // }
+    /**
+     * Path to Downloads folder accessable from the web
+     * @return string|null Filepath
+     */
+    public static function WebDownloadFolder()
+    {
+        global $conf;
+        return $conf[Parameter::$DOWNLOAD_FOLDER_WEB];
+    }
 
-    // /**
-    //  * Filesystem  buddy to WebDownloadFolder
-    //  * @return string|null  Filepath
-    //  */
-    // public static function FilesDownloadFolder()
-    // {
-    //     global $conf;
-    //     return $conf[Parameter::$DOWNLOAD_FOLDER_REAL];
-    // }
+    /**
+     * Filesystem  buddy to WebDownloadFolder
+     * @return string|null  Filepath
+     */
+    public static function FilesDownloadFolder()
+    {
+        global $conf;
+        return $conf[Parameter::$DOWNLOAD_FOLDER_REAL];
+    }
 
 
     public static function ResourcesFolder()
