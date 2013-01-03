@@ -264,6 +264,7 @@ ErrorMessage::Marker("Creating taxa species lists..");
 // need to make all, class, family, and genus lists.
 
 // Do the 'all' list first - - - - - - - - - - - - - - - - - -
+
 ErrorMessage::Progress('(all vertebrates)');
 $species_list_dir = $data_root . 'species/';
 $species_web_dir = $http_data_root . 'species/';
@@ -279,59 +280,39 @@ foreach (glob($species_list_dir . '*_*') as $spdir) {
 }
 write_file($data_root . 'all_vertebrates.csv', implode("\n", $spp_list));
 
+// Do the other three groups next - - - - - - - - - - - - - - 
 
-// Do the 'class' groups next - - - - - - - - - - - - - - - - - -
+foreach (['Clazz', 'Family', 'Genus'] as $group) {
 
-$classes_list_dir = $data_root . 'ByClazz/';
-$classes_web_dir = $http_data_root . 'ByClazz/';
+    $meta_list_dir = $data_root . 'By' . $group;
+    $web_dir = $http_data_root . 'By' . $group;
 
-foreach (glob($classes_list_dir . '*') as $class_list_dir) {
-    if (is_dir($class_list_dir)) {
+    foreach (glob($meta_list_dir . '*') as $list_dir) {
+        if (is_dir($list_dir)) {
 
-        $classname = basename($class_list_dir);
-        ErrorMessage::Progress("(class {$classname})");
+            $groupname = basename($list_dir);
+            ErrorMessage::Progress("({$groupname})");
 
-        $spp_list = array();
-        $spp_list[] = "Species Name,Species Data URL";
+            $spp_list = array();
+            $spp_list[] = "Species Name,Species Data URL";
 
-        foreach (glob($class_list_dir . '/ByName/*_*') as $spdir) {
-            if (is_dir($spdir)) {
-                ErrorMessage::Progress();
-                $spname = basename($spdir);
-                $nicename = str_replace('_', ' ', $spname);
-                $spp_list[] = "{$nicename},{$classes_web_dir}{$classname}/ByName/{$spname}/species_data_{$spname}.zip";
+            foreach (glob($list_dir . '/ByName/*_*') as $spdir) {
+                if (is_dir($spdir)) {
+                    ErrorMessage::Progress();
+                    $spname = basename($spdir);
+                    $nicename = str_replace('_', ' ', $spname);
+                    $spp_list[] = "{$nicename},{$web_dir}{$groupname}/ByName/{$spname}/species_data_{$spname}.zip";
+                }
             }
+            write_file($list_dir . "/all_{$groupname}.csv", implode("\n", $spp_list));
         }
-        write_file($class_list_dir . "/all_{$classname}.csv", implode("\n", $spp_list));
     }
+
 }
-
-
 
 
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done listing taxa.");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
