@@ -277,7 +277,7 @@ foreach ($species_list as $species_name => $species_data) {
             $all_list[] = "{$species_web_dir}species/species_data_{$spname}.zip";
         }
     }
-    write_file($data_root . '', implode("\n", $all_list));
+    write_file($data_root . 'all_vertebrates.txt', implode("\n", $all_list));
 }
 
 ErrorMessage::EndProgress();
