@@ -232,7 +232,7 @@ foreach ($species_list as $species_name => $species_data) {
     // link /Taxa/{classname}/{familyname}/{genusname}/{sp} back to homebase
     $taxapath = $data_root . 'Taxa/' . $species_data['clazz'] . '/' . $species_data['family'] . '/' . $species_data['genus'];
     safemkdir($taxapath);
-    ln("{$taxapath}/{$species_data['name']}", '../../' . $rel_homebase);
+    ln("{$taxapath}/{$species_data['name']}", '../../../../' . $rel_homebase);
 }
 
 ErrorMessage::EndProgress();
