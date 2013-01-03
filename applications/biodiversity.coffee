@@ -123,7 +123,7 @@ $ ->
                     #
                     # they want ascii grid and metadata
                     #
-                        
+                    
 
                 else if output == 'view'
                     #

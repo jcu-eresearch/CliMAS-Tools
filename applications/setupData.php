@@ -305,6 +305,77 @@ ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done listing taxa.");
 
 
+
+
+
+
+
+
+
+
+
+
+// ==================================================================
+// make the biodiversity downloadable files
+//
+ErrorMessage::Marker("Creating downloadable biodiversity zip files - be patient, this bit takes AGES..");
+
+// make a list of arrays of all the ascii files available, indexed by its taxa name
+// do this by finding via glob all the "*_(Taxa).asc.gz" files.
+// this a terrible glob technique but I can't think of a quicker way to do it.
+$taxalist = array();
+foreach(glob("{$model_root}/*/richness/*_*,{$model_root}/vertebrate_richness/*_*.asc.gz") as $biodiv) {
+    // now $biodiv is one of our many biodiversity maps.
+    // identify the taxa this maps belongs to
+    $filebits = explode('_', $biodiv);
+    $taxaname = str_replace('.asc.gz', '', end($filebits));
+    // make sure that taxa exists in the list 
+    if (!array_key_exists($taxaname, $taxalist)) {
+        $taxalist[$taxaname] = array();
+    }
+    // add this biodiv map to that taxa
+    $taxalist[$taxaname][] = $biodiv;
+}
+// now, $taxalist is an array with taxa name keys and values that are arrays of biodiv ascii grid files.
+
+foreach ($grouplist as $grouptype) {
+
+    ErrorMessage::Progress($grouptype);
+
+    $meta_list_dir = $data_root . 'By' . $grouptype;
+
+    foreach (glob($meta_list_dir . '/*') as $taxa_dir) {
+        if (is_dir($taxa_dir)) {
+
+            $groupname = basename($taxa_dir);
+
+            if (in_array($groupname, $taxalist)) {
+                $zip_dir = $taxa_dir + '/biodiversity/';
+                safemkdir($zip_dir);
+
+                foreach($taxalist[$groupname] as $biodiv) {
+                    zip(array($biodiv), $zip_dir);
+                }
+            }
+
+            ErrorMessage::Progress();
+        }
+    }
+}
+
+ErrorMessage::EndProgress();
+ErrorMessage::Marker(" .. done zipping biodiversity downloads.");
+
+
+
+
+
+
+
+
+
+
+
 // ==================================================================
 // make the species_to_id.txt file
 //
@@ -345,7 +416,7 @@ ErrorMessage::Marker(" .. written file.");
 // ==================================================================
 // make the suitability downloadable files
 //
-ErrorMessage::Marker("Creating downloadable zip files - be patient, this bit takes AGES..");
+ErrorMessage::Marker("Creating downloadable species zip files - be patient, this bit takes AGES..");
 
 foreach ($species_list as $species_name => $species_data) {
 
