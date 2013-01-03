@@ -279,7 +279,7 @@ foreach ($grouplist as $grouptype) {
         if (is_dir($list_dir)) {
 
             $groupname = basename($list_dir);
-            ErrorMessage::Progress("({$grouptype} {$groupname})");
+            ErrorMessage::Progress($grouptype[0]);
 
             $spp_list = array();
             $spp_list[] = "Species Name,Species Data URL";
