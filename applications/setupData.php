@@ -341,7 +341,7 @@ foreach(glob("{$model_root}/*/richness/*_*,{$model_root}/vertebrate_richness/*_*
 
 
 if ($testing) {
-    print_r(reset($taxalist)); // reset returns the first array element
+    print_r($taxalist);
 }
 
 
