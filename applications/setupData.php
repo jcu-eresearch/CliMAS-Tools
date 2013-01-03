@@ -267,7 +267,7 @@ foreach ($species_list as $species_name => $species_data) {
     // Do the all list first
     $species_list_dir = $data_root . 'species/';
     $all_list = array();
-    foreach( glob($species_list_dir . '*_*') as $spdir) ) {
+    foreach(glob($species_list_dir . '*_*') as $spdir) {
         if (is_dir($spdir)) {
             ErrorMessage::Progress();
             $spname = split($spdir, '/')[-1];
