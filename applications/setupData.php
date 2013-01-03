@@ -292,7 +292,7 @@ foreach ($grouplist as $grouptype) {
     $meta_list_dir = $data_root . 'By' . $grouptype;
     $web_dir = $http_data_root . 'By' . $grouptype;
 
-    foreach (glob($meta_list_dir . '*') as $list_dir) {
+    foreach (glob($meta_list_dir . '/*') as $list_dir) {
         if (is_dir($list_dir)) {
 
             $groupname = basename($list_dir);
