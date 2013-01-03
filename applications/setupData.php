@@ -245,10 +245,11 @@ ErrorMessage::Marker(" .. done linking.");
 ErrorMessage::Marker("Creating taxa species lists..");
 
 // need to make all, class, family, and genus lists.
+ErrorMessage::Marker("V = vertebrates, C = class, F = family, G = genus.");
 
 // Do the 'all' list first - - - - - - - - - - - - - - - - - -
 
-ErrorMessage::Progress('(all vertebrates)');
+ErrorMessage::Progress('V');
 $species_list_dir = $data_root . 'species/';
 $species_web_dir = $http_data_root . 'species/';
 $spp_list = array();
