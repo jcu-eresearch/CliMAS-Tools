@@ -302,7 +302,7 @@ foreach (glob($classes_list_dir . '*') as $class_list_dir) {
                 $spp_list[] = "{$nicename},\t{$classes_web_dir}/{$classname}/ByName/{$spname}/species_data_{$spname}.zip";
             }
         }
-        write_file($class_list_dir . "all_{$classname}.csv", implode("\n", $spp_list));
+        write_file($class_list_dir . "/all_{$classname}.csv", implode("\n", $spp_list));
     }
 }
 
