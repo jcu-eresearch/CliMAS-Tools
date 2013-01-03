@@ -239,23 +239,6 @@ ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done linking.");
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ==================================================================
 // write the biodiversity list files
 //
@@ -306,7 +289,7 @@ foreach ($grouplist as $grouptype) {
                     ErrorMessage::Progress();
                     $spname = basename($spdir);
                     $nicename = str_replace('_', ' ', $spname);
-                    $spp_list[] = "{$nicename},{$web_dir}By{$groupname}/ByName/{$spname}/species_data_{$spname}.zip";
+                    $spp_list[] = "{$nicename},{$web_dir}/By{$groupname}/ByName/{$spname}/species_data_{$spname}.zip";
                 }
             }
             write_file($list_dir . "/all_{$groupname}.csv", implode("\n", $spp_list));
@@ -315,15 +298,8 @@ foreach ($grouplist as $grouptype) {
 
 }
 
-
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done listing taxa.");
-
-
-
-
-
-
 
 
 // ==================================================================
