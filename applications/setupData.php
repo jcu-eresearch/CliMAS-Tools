@@ -232,7 +232,7 @@ foreach ($species_list as $species_name => $species_data) {
     // link /Taxa/{classname}/{familyname}/{genusname}/{sp} back to homebase
     $taxapath = $data_root . 'Taxa/' . $species_data['clazz'] . '/' . $species_data['family'] . '/' . $species_data['genus'];
     safemkdir($taxapath);
-    ln("{$taxapath}/{$species_data['name']}", '../../../../' . $rel_homebase);
+    ln("{$taxapath}/{$species_data['name']}", '../../../' . $rel_homebase);
 }
 
 ErrorMessage::EndProgress();
@@ -269,16 +269,16 @@ ErrorMessage::Progress('(all vertebrates)');
 $species_list_dir = $data_root . 'species/';
 $species_web_dir = $http_data_root . 'species/';
 $all_list = array();
-$all_list[] = "Species Name\tSpecies Data URL";
+$all_list[] = "Species Name,\tSpecies Data URL";
 foreach(glob($species_list_dir . '*_*') as $spdir) {
     if (is_dir($spdir)) {
         ErrorMessage::Progress();
         $spname = basename($spdir);
         $nicename = str_replace('_', ' ', $spname);
-        $all_list[] = "{$nicename}\t{$species_web_dir}{$spname}/species_data_{$spname}.zip";
+        $all_list[] = "{$nicename},\t{$species_web_dir}{$spname}/species_data_{$spname}.zip";
     }
 }
-write_file($data_root . 'all_vertebrates.tabseparated.csv', implode("\n", $all_list));
+write_file($data_root . 'all_vertebrates.csv', implode("\n", $all_list));
 
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done listing taxa.");
