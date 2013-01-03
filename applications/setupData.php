@@ -26,6 +26,8 @@ $clazz_list = array(
 //        and: $info_root / ByFamily / [FAMILY} / [Species_name]
 //        etc etc etc
 $data_root = "/home/TDH/data/Gilbert/source/";
+// where that data is accessible by http / web
+$http_data_root = "https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/";
 
 // where to find json info for species
 //    at path: $json_root / [Species_name]
@@ -266,17 +268,16 @@ foreach ($species_list as $species_name => $species_data) {
 
     // Do the all list first
     $species_list_dir = $data_root . 'species/';
+    $species_web_dir = $http_data_root . 'species/';
     $all_list = array();
     foreach(glob($species_list_dir . '*_*') as $spdir) {
         if (is_dir($spdir)) {
             ErrorMessage::Progress();
             $spname = basename($spdir);
-            echo 'spdir is ' . $spdir;
-            echo 'spname is ' . $spname;
-            $all_list[] = "{$spdir}";
+            $all_list[] = "{$species_web_dir}species/species_data_{$spname}.zip";
         }
     }
-
+    write_file($data_root . '', implode("\n", $all_list));
 }
 
 ErrorMessage::EndProgress();
@@ -342,7 +343,7 @@ foreach ($species_list as $species_name => $species_data) {
     }
 }
 // now we've got a big list of names.  write it out to the file.
-file_put_contents($data_root . 'species_to_id.txt', implode("\n", $names));
+write_file($data_root . 'species_to_id.txt', implode("\n", $names));
 // and wrap up
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. written file.");
@@ -415,6 +416,18 @@ function clean($string) {
         '_',
         preg_replace('/\([^\)]+\) /', '', $string)
     );
+}
+// ------------------------------------------------------------------
+// writes content to a file.
+function write_file($file, $content) {
+    global $execute;
+
+    if ($execute) {
+        return file_put_contents($file, $content);
+    } else {
+        ErrorMessage::Marker("(DRYRUN) not writing out file " . $file);
+        return true;
+    }
 }
 // ------------------------------------------------------------------
 // make an archive at $archive containing the filenames in the $files array.
