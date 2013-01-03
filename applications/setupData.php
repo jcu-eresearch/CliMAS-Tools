@@ -282,7 +282,12 @@ write_file($data_root . 'all_vertebrates.csv', implode("\n", $spp_list));
 
 // Do the other three groups next - - - - - - - - - - - - - - 
 
-foreach (['Clazz', 'Family', 'Genus'] as $group) {
+$grouplist = array();
+$grouplist[] = 'Clazz';
+$grouplist[] = 'Family';
+$grouplist[] = 'Genus';
+
+foreach ($grouplist as $group) {
 
     $meta_list_dir = $data_root . 'By' . $group;
     $web_dir = $http_data_root . 'By' . $group;
