@@ -324,13 +324,14 @@ ErrorMessage::Marker("Creating downloadable biodiversity zip files - be patient,
 // do this by finding via glob all the "*_(Taxa).asc.gz" files.
 // this a terrible glob technique but I can't think of a quicker way to do it.
 $taxalist = array();
-foreach(glob("{$model_root}/*/richness/*_*,{$model_root}/vertebrate_richness/*_*.asc.gz") as $biodiv) {
+foreach(glob("{$model_root}/*/richness/*_*.asc.gz,{$model_root}/vertebrate_richness/*_*.asc.gz") as $biodiv) {
+
+echo $biodiv;
+
     // now $biodiv is one of our many biodiversity maps.
     // identify the taxa this maps belongs to
     $filebits = explode('_', $biodiv);
     $taxaname = str_replace('.asc.gz', '', end($filebits));
-
-echo $taxaname;
 
     // make sure that taxa exists in the list 
     if (!array_key_exists($taxaname, $taxalist)) {
