@@ -329,6 +329,9 @@ foreach(glob("{$model_root}/*/richness/*_*,{$model_root}/vertebrate_richness/*_*
     // identify the taxa this maps belongs to
     $filebits = explode('_', $biodiv);
     $taxaname = str_replace('.asc.gz', '', end($filebits));
+
+echo $taxaname;
+
     // make sure that taxa exists in the list 
     if (!array_key_exists($taxaname, $taxalist)) {
         $taxalist[$taxaname] = array();
