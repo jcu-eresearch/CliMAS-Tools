@@ -245,7 +245,6 @@ ErrorMessage::Marker(" .. done linking.");
 ErrorMessage::Marker("Creating taxa species lists..");
 
 // need to make all, class, family, and genus lists.
-ErrorMessage::Marker("V = vertebrates, C = class, F = family, G = genus.");
 
 // Do the 'all' list first - - - - - - - - - - - - - - - - - -
 
@@ -274,6 +273,7 @@ $grouplist[] = 'Genus';
 
 foreach ($grouplist as $grouptype) {
 
+    ErrorMessage::EndProgress();
     ErrorMessage::Marker($grouptype);
 
     $meta_list_dir = $data_root . 'By' . $grouptype;
