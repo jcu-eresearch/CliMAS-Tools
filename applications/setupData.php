@@ -326,6 +326,7 @@ ErrorMessage::Marker("Creating downloadable biodiversity zip files - be patient,
 $taxalist = array();
 
 print_r(glob("{$model_root}*"));
+print_r(glob("{$model_root}vertebrate_richness/*"));
 
 foreach(glob("{$model_root}*/richness/*_*.asc.gz,{$model_root}vertebrate_richness/*_*.asc.gz") as $biodiv) {
 
