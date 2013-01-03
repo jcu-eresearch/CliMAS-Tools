@@ -236,6 +236,80 @@ foreach ($species_list as $species_name => $species_data) {
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done linking.");
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ==================================================================
+// write the biodiversity list files
+//
+ErrorMessage::Marker("Creating taxa species lists..");
+
+foreach ($species_list as $species_name => $species_data) {
+    ErrorMessage::Progress('(all vertebrates)');
+
+    // need to make all, class, family, and genus lists.
+
+    // Do the all list first
+    $species_list_dir = $data_root . 'species/';
+    $all_list = array();
+    foreach( glob($species_list_dir . '*_*' as $spdir) ) {
+        if (is_dir($spdir)) {
+            ErrorMessage::Progress();
+            $spname = split($spdir, '/')[-1];
+            echo 'spdir is ' . $spdir;
+            echo 'spname is ' . $spname;
+            $all_list[] = $spdir;
+        }
+    }
+
+}
+
+ErrorMessage::EndProgress();
+ErrorMessage::Marker(" .. done listing taxa.");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ==================================================================
 // make the species_to_id.txt file
 //
