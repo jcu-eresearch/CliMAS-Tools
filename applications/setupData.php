@@ -249,7 +249,8 @@ ErrorMessage::Marker("V = vertebrates, C = class, F = family, G = genus.");
 
 // Do the 'all' list first - - - - - - - - - - - - - - - - - -
 
-ErrorMessage::Progress('V');
+ErrorMessage::Marker("All vertebrates");
+
 $species_list_dir = $data_root . 'species/';
 $species_web_dir = $http_data_root . 'species/';
 $spp_list = array();
@@ -273,6 +274,8 @@ $grouplist[] = 'Genus';
 
 foreach ($grouplist as $grouptype) {
 
+    ErrorMessage::Marker($grouptype);
+
     $meta_list_dir = $data_root . 'By' . $grouptype;
     $web_dir = $http_data_root . 'By' . $grouptype;
 
@@ -280,7 +283,6 @@ foreach ($grouplist as $grouptype) {
         if (is_dir($list_dir)) {
 
             $groupname = basename($list_dir);
-            ErrorMessage::Progress($grouptype[0]);
 
             $spp_list = array();
             $spp_list[] = "Species Name,Species Data URL";
