@@ -207,30 +207,30 @@ foreach ($species_list as $species_name => $species_data) {
     $clazzpath = $data_root . 'ByClazz/' . $species_data['clazz'];
     safemkdir($clazzpath . '/ByID');
     safemkdir($clazzpath . '/ByName');
-    ln("{$clazzpath}/ByID/{$species_data['id']}",     '../../' . $rel_homebase);
-    ln("{$clazzpath}/ByName/{$species_data['name']}", '../../' . $rel_homebase);
+    ln("{$clazzpath}/ByID/{$species_data['id']}",     '../../../' . $rel_homebase);
+    ln("{$clazzpath}/ByName/{$species_data['name']}", '../../../' . $rel_homebase);
     // ErrorMessage::Progress();
 
     // link /ByFamily/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
     $familypath = $data_root . 'ByFamily/' . $species_data['family'];
     safemkdir($familypath . '/ByID');
     safemkdir($familypath . '/ByName');
-    ln("{$familypath}/ByID/{$species_data['id']}",     '../../' . $rel_homebase);
-    ln("{$familypath}/ByName/{$species_data['name']}", '../../' . $rel_homebase);
+    ln("{$familypath}/ByID/{$species_data['id']}",     '../../../' . $rel_homebase);
+    ln("{$familypath}/ByName/{$species_data['name']}", '../../../' . $rel_homebase);
     // ErrorMessage::Progress();
 
     // link /ByGenus/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
     $genuspath = $data_root . 'ByGenus/' . $species_data['genus'];
     safemkdir($genuspath . '/ByID');
     safemkdir($genuspath . '/ByName');
-    ln("{$genuspath}/ByID/{$species_data['id']}",     '../../' . $rel_homebase);
-    ln("{$genuspath}/ByName/{$species_data['name']}", '../../' . $rel_homebase);
+    ln("{$genuspath}/ByID/{$species_data['id']}",     '../../../' . $rel_homebase);
+    ln("{$genuspath}/ByName/{$species_data['name']}", '../../../' . $rel_homebase);
     // ErrorMessage::Progress();
 
     // link /Taxa/{classname}/{familyname}/{genusname}/{sp} back to homebase
     $taxapath = $data_root . 'Taxa/' . $species_data['clazz'] . '/' . $species_data['family'] . '/' . $species_data['genus'];
     safemkdir($taxapath);
-    ln("{$taxapath}/{$species_data['name']}", '../' . $rel_homebase);
+    ln("{$taxapath}/{$species_data['name']}", '../../' . $rel_homebase);
 }
 
 ErrorMessage::EndProgress();
