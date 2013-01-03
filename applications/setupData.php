@@ -299,14 +299,12 @@ foreach (glob($classes_list_dir . '*') as $class_list_dir) {
                 ErrorMessage::Progress();
                 $spname = basename($spdir);
                 $nicename = str_replace('_', ' ', $spname);
-                $spp_list[] = "{$nicename},{$classes_web_dir}/{$classname}/ByName/{$spname}/species_data_{$spname}.zip";
+                $spp_list[] = "{$nicename},{$classes_web_dir}{$classname}/ByName/{$spname}/species_data_{$spname}.zip";
             }
         }
         write_file($class_list_dir . "/all_{$classname}.csv", implode("\n", $spp_list));
     }
 }
-
-
 
 
 
