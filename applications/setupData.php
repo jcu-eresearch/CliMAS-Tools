@@ -338,6 +338,14 @@ foreach(glob("{$model_root}/*/richness/*_*,{$model_root}/vertebrate_richness/*_*
 }
 // now, $taxalist is an array with taxa name keys and values that are arrays of biodiv ascii grid files.
 
+
+
+if ($testing) {
+    print_r(reset($taxalist)); // reset returns the first array element
+}
+
+
+
 foreach ($grouplist as $grouptype) {
 
     ErrorMessage::Progress($grouptype);
