@@ -268,13 +268,13 @@ ErrorMessage::Progress('(all vertebrates)');
 $species_list_dir = $data_root . 'species/';
 $species_web_dir = $http_data_root . 'species/';
 $spp_list = array();
-$spp_list[] = "Species Name,\tSpecies Data URL";
+$spp_list[] = "Species Name,Species Data URL";
 foreach (glob($species_list_dir . '*_*') as $spdir) {
     if (is_dir($spdir)) {
         ErrorMessage::Progress();
         $spname = basename($spdir);
         $nicename = str_replace('_', ' ', $spname);
-        $spp_list[] = "{$nicename},\t{$species_web_dir}{$spname}/species_data_{$spname}.zip";
+        $spp_list[] = "{$nicename},{$species_web_dir}{$spname}/species_data_{$spname}.zip";
     }
 }
 write_file($data_root . 'all_vertebrates.csv', implode("\n", $spp_list));
@@ -292,14 +292,14 @@ foreach (glob($classes_list_dir . '*') as $class_list_dir) {
         ErrorMessage::Progress("(class {$classname})");
 
         $spp_list = array();
-        $spp_list[] = "Species Name,\tSpecies Data URL";
+        $spp_list[] = "Species Name,Species Data URL";
 
         foreach (glob($class_list_dir . '/ByName/*_*') as $spdir) {
             if (is_dir($spdir)) {
                 ErrorMessage::Progress();
                 $spname = basename($spdir);
                 $nicename = str_replace('_', ' ', $spname);
-                $spp_list[] = "{$nicename},\t{$classes_web_dir}/{$classname}/ByName/{$spname}/species_data_{$spname}.zip";
+                $spp_list[] = "{$nicename},{$classes_web_dir}/{$classname}/ByName/{$spname}/species_data_{$spname}.zip";
             }
         }
         write_file($class_list_dir . "/all_{$classname}.csv", implode("\n", $spp_list));
