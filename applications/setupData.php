@@ -274,7 +274,7 @@ foreach ($species_list as $species_name => $species_data) {
         if (is_dir($spdir)) {
             ErrorMessage::Progress();
             $spname = basename($spdir);
-            $all_list[] = "{$species_web_dir}species/species_data_{$spname}.zip";
+            $all_list[] = "{$species_web_dir}{$spname}/species_data_{$spname}.zip";
         }
     }
     write_file($data_root . 'all_vertebrates.txt', implode("\n", $all_list));
