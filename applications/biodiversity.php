@@ -210,7 +210,7 @@ if (array_key_exists('page', $_GET)) {
 
         <div class="formsection">
             <div class="onefield scenario">
-                <h3>Select a future greenhouse gas emission level</h3>
+                <h3>Select future greenhouse gas emissions</h3>
 
                 <?php
                     $scenarios = array(
