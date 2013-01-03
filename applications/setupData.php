@@ -325,6 +325,8 @@ ErrorMessage::Marker("Creating downloadable biodiversity zip files - be patient,
 // this a terrible glob technique but I can't think of a quicker way to do it.
 $taxalist = array();
 
+print_r( glob("{{$model_root}*/richness/*_*.asc.gz") );
+
 foreach(glob("{{$model_root}*/richness/*_*.asc.gz,{$model_root}vertebrate_richness/*_*.asc.gz}") as $biodiv) {
 
 echo $biodiv;
