@@ -201,7 +201,7 @@ foreach ($species_list as $species_name => $species_data) {
 
     // link /species/{speciesid} to homebase
     // ln($data_root . 'species/' . $species_id, $data_root . 'species/' . $species_data['name']);
-    ln($data_root . 'species/' . $species_id, './' . $species_data['name']);
+    ln($data_root . 'species/' . $species_id, '../' . $species_data['name']);
 
     // link /ByClazz/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
     $clazzpath = $data_root . 'ByClazz/' . $species_data['clazz'];
