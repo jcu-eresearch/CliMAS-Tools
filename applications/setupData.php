@@ -270,11 +270,10 @@ foreach ($species_list as $species_name => $species_data) {
     foreach(glob($species_list_dir . '*_*') as $spdir) {
         if (is_dir($spdir)) {
             ErrorMessage::Progress();
-            $pathbits = split($spdir, '/');
-            $spname = $pathbits[-1];
+            $spname = basename($spdir);
             echo 'spdir is ' . $spdir;
             echo 'spname is ' . $spname;
-            $all_list[] = $spdir;
+            $all_list[] = "{$spdir}";
         }
     }
 
