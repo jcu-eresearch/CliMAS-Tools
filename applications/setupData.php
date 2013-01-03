@@ -287,16 +287,16 @@ $grouplist[] = 'Clazz';
 $grouplist[] = 'Family';
 $grouplist[] = 'Genus';
 
-foreach ($grouplist as $group) {
+foreach ($grouplist as $grouptype) {
 
-    $meta_list_dir = $data_root . 'By' . $group;
-    $web_dir = $http_data_root . 'By' . $group;
+    $meta_list_dir = $data_root . 'By' . $grouptype;
+    $web_dir = $http_data_root . 'By' . $grouptype;
 
     foreach (glob($meta_list_dir . '*') as $list_dir) {
         if (is_dir($list_dir)) {
 
             $groupname = basename($list_dir);
-            ErrorMessage::Progress("({$groupname})");
+            ErrorMessage::Progress("({$grouptype} {$groupname})");
 
             $spp_list = array();
             $spp_list[] = "Species Name,Species Data URL";
@@ -306,7 +306,7 @@ foreach ($grouplist as $group) {
                     ErrorMessage::Progress();
                     $spname = basename($spdir);
                     $nicename = str_replace('_', ' ', $spname);
-                    $spp_list[] = "{$nicename},{$web_dir}{$groupname}/ByName/{$spname}/species_data_{$spname}.zip";
+                    $spp_list[] = "{$nicename},{$web_dir}By{$groupname}/ByName/{$spname}/species_data_{$spname}.zip";
                 }
             }
             write_file($list_dir . "/all_{$groupname}.csv", implode("\n", $spp_list));
