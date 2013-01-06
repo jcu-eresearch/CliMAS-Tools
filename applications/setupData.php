@@ -332,7 +332,7 @@ foreach(glob('{'.$model_root.'*/richness/*_*.asc.gz,'.$model_root.'vertebrate_ri
     $filebits = explode('_', $biodiv);
     $taxaname = str_replace('.asc.gz', '', end($filebits));
 
-    // make sure that taxa exists in the list 
+    // make sure that taxa exists in the list
     if (!array_key_exists($taxaname, $taxalist)) {
         $taxalist[$taxaname] = array();
     }
@@ -352,7 +352,7 @@ foreach ($grouplist as $grouptype) {
         if (is_dir($taxa_dir)) {
 
             $taxaname = basename($taxa_dir);
-            echo ("doing taxa " . $taxaname);
+            echo ("\ndoing taxa " . $taxaname);
 
             if (in_array($taxaname, $taxalist)) {
                 $zip_dir = $taxa_dir + '/biodiversity/';
@@ -361,6 +361,8 @@ foreach ($grouplist as $grouptype) {
                 foreach($taxalist[$taxaname] as $biodiv) {
                     zip(array($biodiv), $zip_dir);
                 }
+            } else {
+                echo "\n" . $taxaname . " not in list."
             }
 
             ErrorMessage::Progress();
