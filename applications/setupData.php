@@ -327,8 +327,6 @@ $taxalist = array();
 
 foreach(glob('{'.$model_root.'*/richness/*_*.asc.gz,'.$model_root.'vertebrate_richness/*_*.asc.gz}',GLOB_BRACE) as $biodiv) {
 
-echo $biodiv;
-
     // now $biodiv is one of our many biodiversity maps.
     // identify the taxa this maps belongs to
     $filebits = explode('_', $biodiv);
@@ -344,13 +342,6 @@ echo $biodiv;
 // now, $taxalist is an array with taxa name keys and values that are arrays of biodiv ascii grid files.
 
 
-
-if ($testing) {
-    print_r($taxalist);
-}
-
-
-
 foreach ($grouplist as $grouptype) {
 
     ErrorMessage::Progress($grouptype);
@@ -360,13 +351,14 @@ foreach ($grouplist as $grouptype) {
     foreach (glob($meta_list_dir . '/*') as $taxa_dir) {
         if (is_dir($taxa_dir)) {
 
-            $groupname = basename($taxa_dir);
+            $taxaname = basename($taxa_dir);
+            echo ("doing taxa " . $taxa_dir);
 
-            if (in_array($groupname, $taxalist)) {
+            if (in_array($taxaname, $taxalist)) {
                 $zip_dir = $taxa_dir + '/biodiversity/';
                 safemkdir($zip_dir);
 
-                foreach($taxalist[$groupname] as $biodiv) {
+                foreach($taxalist[$taxaname] as $biodiv) {
                     zip(array($biodiv), $zip_dir);
                 }
             }
