@@ -352,7 +352,7 @@ foreach ($grouplist as $grouptype) {
         if (is_dir($taxa_dir)) {
 
             $taxaname = basename($taxa_dir);
-            echo ("doing taxa " . $taxa_dir);
+            echo ("doing taxa " . $taxaname);
 
             if (in_array($taxaname, $taxalist)) {
                 $zip_dir = $taxa_dir + '/biodiversity/';
