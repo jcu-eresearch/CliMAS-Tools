@@ -237,9 +237,9 @@ if (array_key_exists('page', $_GET)) {
                     );
                     foreach ($outputs as $name => $desc) {
                         echo "<label ";
-                        if ($name == 'download') echo " class='disabled' ";
+                        # if ($name == 'download') echo " class='disabled' ";
                         echo "><input type='radio' class='ouput' name='output' checked='checked' ";
-                        if ($name == 'download') echo " disabled='disabled' ";
+                        # if ($name == 'download') echo " disabled='disabled' ";
                         echo " value='".$name."'>".$desc."</label>";
                     }
                 ?>
