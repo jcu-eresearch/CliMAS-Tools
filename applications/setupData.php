@@ -365,7 +365,19 @@ foreach ($grouplist as $grouptype) {
                     $zip_file = explode('.', basename($biodiv), 2);
                     $zip_file = $zip_dir . $zip_file[0] . ".zip";
 
-                    if (zip(array($biodiv => basename($biodiv)), $zip_file)) {
+                    $files = array();
+                    $files[$biodiv] = basename($biodiv);
+
+                    // we'll zip up the asciigrid along with any non-zip files we find in the biodiversity dir
+                    foreach (glob($zip_dir .'/*') as $candidate_file) {
+                        // just add files, not directories
+                        if (is_file($candidate_file) && pathinfo($candidate_file, PATHINFO_EXTENSION) != 'zip') {
+                            $in_zip_name = pathinfo($candidate_file, PATHINFO_BASENAME);
+                            $files[$candidate_file] = $in_zip_name;
+                        }
+                    }
+
+                    if (zip($files, $zip_file)) {
                         // then it worked!
                     } else {
                         ErrorMessage::Marker("Failed to create {$zip_file}");
