@@ -341,6 +341,7 @@ foreach(glob('{'.$model_root.'*/richness/*_*.asc.gz,'.$model_root.'vertebrate_ri
 }
 // now, $taxalist is an array with taxa name keys and values that are arrays of biodiv ascii grid files.
 
+print_r($taxalist);
 
 foreach ($grouplist as $grouptype) {
 
