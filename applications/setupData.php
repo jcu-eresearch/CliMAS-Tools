@@ -366,6 +366,7 @@ foreach ($grouplist as $grouptype) {
 
                 foreach($taxalist[$taxaname_lc] as $biodiv) {
                     $zip_file = $zip_dir . basename($biodiv) . '.zip';
+                    echo "\nabout to zip [{$biodiv}] into {$zip_file}\n";
                     zip(array($biodiv), $zip_file);
                 }
             } else {
