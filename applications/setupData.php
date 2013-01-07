@@ -365,7 +365,8 @@ foreach ($grouplist as $grouptype) {
                 safemkdir($zip_dir);
 
                 foreach($taxalist[$taxaname_lc] as $biodiv) {
-                    zip($biodiv, $zip_dir);
+                    print_r($biodiv);
+                    //zip($biodiv, $zip_dir);
                 }
             } else {
                 echo "\n" . $taxaname . " not in list.";
