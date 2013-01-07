@@ -105,86 +105,97 @@ $ ->
                 groupLevel = taxaLevel
                 groupName = $("#prebakeform select[name='chosen_#{taxaLevel}_#{clazz}']").val()
 
-        # hit the prep url to unzip the asciigrid
-        $.ajax 'BiodiversityPrep.php', {
-            cache: false
-            dataType: 'json'
-            data: {
-                class: clazz
-                taxon: groupName
-                settings: "#{scenario}_#{year}"
+
+        if output == 'download'
+            #
+            # they want ascii grid and metadata
+            #
+            # figure out the file name
+            console.log {
+                year: year
+                scenario: scenario
+                output: output
+                clazz: clazz
+                groupLevel: groupLevel
+                groupName: groupName
             }
-            success: (data, testStatus, jqx) ->
 
-                if not data.map_path
-                    alert "Sorry, data for that selection is not available."
 
-                else if output == 'download'
-                    #
-                    # they want ascii grid and metadata
-                    #
-                    
+        else if output == 'view'
+            #
+            # they want to see the map
+            #
 
-                else if output == 'view'
-                    #
-                    # they want to see the map
-                    #
+            # hit the prep url to unzip the asciigrid
+            $.ajax 'BiodiversityPrep.php', {
+                cache: false
+                dataType: 'json'
+                data: {
+                    class: clazz
+                    taxon: groupName
+                    settings: "#{scenario}_#{year}"
+                }
+                success: (data, testStatus, jqx) ->
 
-                    # monkey-patch a function into String to capitalise a word
-                    String::capped = -> @.charAt(0).toUpperCase() + @.substring(1).toLowerCase()
+                    if not data.map_path
+                        alert "Sorry, data for that selection is not available."
 
-                    maptitle = 'Biodiversity of terrestrial '
-                    if groupLevel is 'clazz' and clazz is 'all'
-                        maptitle += 'vertebrates'
-                    else if groupLevel is 'clazz'
-                        maptitle += clazz.capped()
                     else
-                        maptitle += "#{clazz.capped()} #{groupLevel} '#{groupName.capped()}'"
+                        # monkey-patch a function into String to capitalise a word
+                        String::capped = -> @.charAt(0).toUpperCase() + @.substring(1).toLowerCase()
 
-                    if year isnt 'current'
-                        maptitle += " in #{year} at emission level #{scenario}"
+                        maptitle = 'Biodiversity of terrestrial '
+                        if groupLevel is 'clazz' and clazz is 'all'
+                            maptitle += 'vertebrates'
+                        else if groupLevel is 'clazz'
+                            maptitle += clazz.capped()
+                        else
+                            maptitle += "#{clazz.capped()} #{groupLevel} '#{groupName.capped()}'"
 
-                    $("""
-                        <div class="popupwrapper" style="display: none">
-                            <div class="toolbar north">
-                            <button class="close">close &times;</button>
-                            <div id="maptitle">#{maptitle}</div>
-                            </div>
-                            <div id="popupmap" class="popupmap"></div>
-                            <div class="toolbar south"><button class="close">close &times;</button><div id="legend"></div></div>
-                    """).appendTo('body').show('fade', 1000)
+                        if year isnt 'current'
+                            maptitle += " in #{year} at emission level #{scenario}"
 
-                    # pre-figure the layer name - it's the filename portion of the
-                    # map_path, without the .map extension.
-                    layer_name = data.map_path.replace(/.*\//, '').replace(/\.map$/, '')
+                        $("""
+                            <div class="popupwrapper" style="display: none">
+                                <div class="toolbar north">
+                                <button class="close">close &times;</button>
+                                <div id="maptitle">#{maptitle}</div>
+                                </div>
+                                <div id="popupmap" class="popupmap"></div>
+                                <div class="toolbar south"><button class="close">close &times;</button><div id="legend"></div></div>
+                        """).appendTo('body').show('fade', 1000)
 
-                    # fetch the legend as a html template from MapServer
-                    $('#legend').load('/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
+                        # pre-figure the layer name - it's the filename portion of the
+                        # map_path, without the .map extension.
+                        layer_name = data.map_path.replace(/.*\//, '').replace(/\.map$/, '')
 
-                    # add close behaviour to the close buttons
-                    $('.popupwrapper button.close').click (e)->
-                        $('.popupwrapper').hide 'fade', ()->
-                            $('.popupwrapper').remove()
+                        # fetch the legend as a html template from MapServer
+                        $('#legend').load('/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
 
-                    # create the map
-                    map = L.map('popupmap', {
-                        minZoom: 3
-                    }).setView([-27, 135], 4)
+                        # add close behaviour to the close buttons
+                        $('.popupwrapper button.close').click (e)->
+                            $('.popupwrapper').hide 'fade', ()->
+                                $('.popupwrapper').remove()
 
-                    # 831e24daed21488e8205aa95e2a14787 is Daniel's CloudMade API key
-                    L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
-                        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
-                        maxZoom: 18
-                    }).addTo map
+                        # create the map
+                        map = L.map('popupmap', {
+                            minZoom: 3
+                        }).setView([-27, 135], 4)
 
-                    # add the selected layer to the map
-                    data = new L.TileLayer.WMS("/cgi-bin/mapserv", {
-                        layers: layer_name + '&map=' + data.map_path
-                        format: 'image/png'
-                        opacity: 0.75
-                        transparent: true
-                    }).addTo map
-        }
+                        # 831e24daed21488e8205aa95e2a14787 is Daniel's CloudMade API key
+                        L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
+                            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
+                            maxZoom: 18
+                        }).addTo map
+
+                        # add the selected layer to the map
+                        data = new L.TileLayer.WMS("/cgi-bin/mapserv", {
+                            layers: layer_name + '&map=' + data.map_path
+                            format: 'image/png'
+                            opacity: 0.75
+                            transparent: true
+                        }).addTo map
+            }
 
         e.preventDefault();
 
