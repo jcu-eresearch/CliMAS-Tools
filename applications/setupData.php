@@ -358,8 +358,6 @@ foreach ($grouplist as $grouptype) {
             // use lower case for indexing into the file lists
             $taxaname_lc = strtolower($taxaname);
 
-            echo ("\ndoing taxa " . $taxaname);
-
             if (array_key_exists($taxaname_lc, $taxalist)) {
                 $zip_dir = $taxa_dir . '/biodiversity/';
                 safemkdir($zip_dir);
@@ -367,8 +365,6 @@ foreach ($grouplist as $grouptype) {
                 foreach($taxalist[$taxaname_lc] as $biodiv) {
                     $zip_file = explode('.', basename($biodiv), 2);
                     $zip_file = $zip_dir . $zip_file[0] . ".zip";
-
-                    echo "\nabout to zip [{$biodiv}] into {$zip_file}\n";
 
                     if (zip(array($biodiv => basename($biodiv)), $zip_file)) {
                         // then it worked!
