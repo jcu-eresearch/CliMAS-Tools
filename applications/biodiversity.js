@@ -76,57 +76,68 @@
           groupName = $("#prebakeform select[name='chosen_" + taxaLevel + "_" + clazz + "']").val();
         }
       }
-      $.ajax('BiodiversityPrep.php', {
-        cache: false,
-        dataType: 'json',
-        data: {
-          "class": clazz,
-          taxon: groupName,
-          settings: "" + scenario + "_" + year
-        },
-        success: function(data, testStatus, jqx) {
-          var layer_name, map, maptitle;
-          if (!data.map_path) {
-            return alert("Sorry, data for that selection is not available.");
-          } else if (output === 'view') {
-            String.prototype.capped = function() {
-              return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
-            };
-            maptitle = 'Biodiversity of terrestrial ';
-            if (groupLevel === 'clazz' && clazz === 'all') {
-              maptitle += 'vertebrates';
-            } else if (groupLevel === 'clazz') {
-              maptitle += clazz.capped();
+      if (output === 'download') {
+        console.log({
+          year: year,
+          scenario: scenario,
+          output: output,
+          clazz: clazz,
+          groupLevel: groupLevel,
+          groupName: groupName
+        });
+      } else if (output === 'view') {
+        $.ajax('BiodiversityPrep.php', {
+          cache: false,
+          dataType: 'json',
+          data: {
+            "class": clazz,
+            taxon: groupName,
+            settings: "" + scenario + "_" + year
+          },
+          success: function(data, testStatus, jqx) {
+            var layer_name, map, maptitle;
+            if (!data.map_path) {
+              return alert("Sorry, data for that selection is not available.");
             } else {
-              maptitle += "" + (clazz.capped()) + " " + groupLevel + " '" + (groupName.capped()) + "'";
-            }
-            if (year !== 'current') {
-              maptitle += " in " + year + " at emission level " + scenario;
-            }
-            $("<div class=\"popupwrapper\" style=\"display: none\">\n    <div class=\"toolbar north\">\n    <button class=\"close\">close &times;</button>\n    <div id=\"maptitle\">" + maptitle + "</div>\n    </div>\n    <div id=\"popupmap\" class=\"popupmap\"></div>\n    <div class=\"toolbar south\"><button class=\"close\">close &times;</button><div id=\"legend\"></div></div>").appendTo('body').show('fade', 1000);
-            layer_name = data.map_path.replace(/.*\//, '').replace(/\.map$/, '');
-            $('#legend').load('/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
-            $('.popupwrapper button.close').click(function(e) {
-              return $('.popupwrapper').hide('fade', function() {
-                return $('.popupwrapper').remove();
+              String.prototype.capped = function() {
+                return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
+              };
+              maptitle = 'Biodiversity of terrestrial ';
+              if (groupLevel === 'clazz' && clazz === 'all') {
+                maptitle += 'vertebrates';
+              } else if (groupLevel === 'clazz') {
+                maptitle += clazz.capped();
+              } else {
+                maptitle += "" + (clazz.capped()) + " " + groupLevel + " '" + (groupName.capped()) + "'";
+              }
+              if (year !== 'current') {
+                maptitle += " in " + year + " at emission level " + scenario;
+              }
+              $("<div class=\"popupwrapper\" style=\"display: none\">\n    <div class=\"toolbar north\">\n    <button class=\"close\">close &times;</button>\n    <div id=\"maptitle\">" + maptitle + "</div>\n    </div>\n    <div id=\"popupmap\" class=\"popupmap\"></div>\n    <div class=\"toolbar south\"><button class=\"close\">close &times;</button><div id=\"legend\"></div></div>").appendTo('body').show('fade', 1000);
+              layer_name = data.map_path.replace(/.*\//, '').replace(/\.map$/, '');
+              $('#legend').load('/cgi-bin/mapserv?mode=browse&layer=' + layer_name + '&map=' + data.map_path);
+              $('.popupwrapper button.close').click(function(e) {
+                return $('.popupwrapper').hide('fade', function() {
+                  return $('.popupwrapper').remove();
+                });
               });
-            });
-            map = L.map('popupmap', {
-              minZoom: 3
-            }).setView([-27, 135], 4);
-            L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
-              attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
-              maxZoom: 18
-            }).addTo(map);
-            return data = new L.TileLayer.WMS("/cgi-bin/mapserv", {
-              layers: layer_name + '&map=' + data.map_path,
-              format: 'image/png',
-              opacity: 0.75,
-              transparent: true
-            }).addTo(map);
+              map = L.map('popupmap', {
+                minZoom: 3
+              }).setView([-27, 135], 4);
+              L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
+                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+                maxZoom: 18
+              }).addTo(map);
+              return data = new L.TileLayer.WMS("/cgi-bin/mapserv", {
+                layers: layer_name + '&map=' + data.map_path,
+                format: 'image/png',
+                opacity: 0.75,
+                transparent: true
+              }).addTo(map);
+            }
           }
-        }
-      });
+        });
+      }
       return e.preventDefault();
     });
   });
