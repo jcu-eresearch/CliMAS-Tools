@@ -66,6 +66,8 @@ if (array_key_exists('page', $_GET)) {
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web(),'Maxent_Species_Data_folder_web');
 
         // put our class names transations into a js data object
+        $clazzes = ClazzData::GetList();
+
         echo 'window.clazzinfo = {};';
 
         foreach ($clazzes as $clazz) {
@@ -144,8 +146,6 @@ if (array_key_exists('page', $_GET)) {
             <div class="onefield">
                 <h3>Select a class</h3>
                     <?php
-
-                        $clazzes = ClazzData::GetList();
                         $clazzesPlusAll = array_merge(array('all'), $clazzes);
 
                         foreach ($clazzesPlusAll as $clazz) {
