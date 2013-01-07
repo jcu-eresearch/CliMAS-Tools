@@ -82,7 +82,11 @@
       if (output === 'download') {
         path = 'https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/';
         path += "By" + (groupLevel.capped()) + "/" + groupName + "/biodiversity/";
-        path += "" + scenario + "_" + year + "_" + (groupName.toLowerCase().capped()) + ".zip";
+        if (groupLevel === 'clazz') {
+          path += "" + scenario + "_" + year + "_" + (groupName.toLowerCase().capped()) + ".zip";
+        } else {
+          path += "" + scenario + "_" + year + "_" + (groupName.toLowerCase().capped()) + ".zip";
+        }
         window.location.href = path;
       } else if (output === 'view') {
         $.ajax('BiodiversityPrep.php', {

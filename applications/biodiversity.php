@@ -64,7 +64,18 @@ if (array_key_exists('page', $_GET)) {
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::IconSource(),'IconSource');
         echo htmlutil::AsJavaScriptSimpleVariable($cmd,'cmd');
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web(),'Maxent_Species_Data_folder_web');
-     ?>
+
+        // put our class names transations into a js data object
+        echo 'window.clazzinfo = {};';
+
+        foreach ($clazzes as $clazz) {
+            echo 'window.clazzinfo["' + $clazz + '"] = { ' + "\n";
+            echo 'singular: "' + ClazzData::clazzCommonName($clazz, false) + '", + "\n"';
+            echo ' plural: "' + ClazzData::clazzCommonName($clazz, true) + '"';
+            echo '}; + "\n"';
+        }
+    ?>
+
     </script>
     <script type="text/javascript" src="biodiversity.js"></script>
 </head>
