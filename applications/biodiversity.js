@@ -83,15 +83,7 @@
         path = 'https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/';
         path += "By" + (groupLevel.capped()) + "/" + groupName + "/biodiversity/";
         path += "" + scenario + "_" + year + "_" + (groupName.toLowerCase().capped()) + ".zip";
-        console.log({
-          path: path,
-          year: year,
-          scenario: scenario,
-          output: output,
-          clazz: clazz,
-          groupLevel: groupLevel,
-          groupName: groupName
-        });
+        window.location.href = path;
       } else if (output === 'view') {
         $.ajax('BiodiversityPrep.php', {
           cache: false,
