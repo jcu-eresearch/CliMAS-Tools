@@ -114,26 +114,30 @@ $ ->
             #
             # they want ascii grid and metadata
             #
+
             # figure out the file name
 
-            # .../ByFamily/COLUMBIDAE/biodiversity/RCP3PD_2015_Columbidae.zip
+            prefix = "#{scenario}_#{year}"        # normal filename prefix 
+            prefix = '1990' if year is 'current'  # special case for "current" year
 
+            # all paths start with this..
             path = 'https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/'
 
-            prefix = "#{scenario}_#{year}"
-            prefix = '1990' if year is 'current'
-
             if groupLevel is 'clazz' and clazz is 'all'
+                # special case for "all vertebrates"
                 path += "biodiversity/#{prefix}_vertebrates.zip"
 
             else if groupLevel is 'clazz'
+                # class names need to be translated from Sindarin (eg AVES) to Common Tongue (eg birds)
                 path += "By#{groupLevel.capped()}/#{groupName}/biodiversity/"
                 path += "#{prefix}_#{window.clazzinfo[groupName].plural}.zip"
 
             else
+                # other group names just need capitalisation fixed.
                 path += "By#{groupLevel.capped()}/#{groupName}/biodiversity/"
-                path += "#{prefix}_#{groupName.toLowerCase().capped()}.zip"                                
+                path += "#{prefix}_#{groupName.toLowerCase().capped()}.zip"
 
+            # finally we have the path to the downloadable file.
             window.location.href = path
 
 
