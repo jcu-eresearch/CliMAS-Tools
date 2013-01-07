@@ -370,7 +370,11 @@ foreach ($grouplist as $grouptype) {
 
                     echo "\nabout to zip [{$biodiv}] into {$zip_file}\n";
 
-                    zip(array($biodiv), $zip_file);
+                    if (zip(array($biodiv), $zip_file)) {
+                        echo " worked!\n"
+                    } else {
+                        echo " DIDN'T WORK!\n"
+                    }
                 }
             } else {
                 echo "\n" . $taxaname . " not in list.";
