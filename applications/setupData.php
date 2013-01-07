@@ -282,15 +282,15 @@ foreach ($grouplist as $grouptype) {
     $meta_list_dir = $data_root . 'By' . $grouptype;
     $web_dir = $http_data_root . 'By' . $grouptype;
 
-    foreach (glob($meta_list_dir . '/*') as $list_dir) {
-        if (is_dir($list_dir)) {
+    foreach (glob($meta_list_dir . '/*') as $taxa_dir) {
+        if (is_dir($taxa_dir)) {
 
-            $groupname = basename($list_dir);
+            $groupname = basename($taxa_dir);
 
             $spp_list = array();
             $spp_list[] = "Species Name,Species Data URL";
 
-            foreach (glob($list_dir . '/ByName/*_*') as $spdir) {
+            foreach (glob($taxa_dir . '/ByName/*_*') as $spdir) {
                 if (is_dir($spdir)) {
                     ErrorMessage::Progress();
                     $spname = basename($spdir);
@@ -298,7 +298,7 @@ foreach ($grouplist as $grouptype) {
                     $spp_list[] = "{$nicename},{$web_dir}/{$groupname}/ByName/{$spname}/species_data_{$spname}.zip";
                 }
             }
-            $biodiversity_dir = $list_dir . '/biodiversity/';
+            $biodiversity_dir = $taxa_dir . '/biodiversity/';
             safemkdir($biodiversity_dir);
             write_file($biodiversity_dir . "/all_{$groupname}.csv", implode("\n", $spp_list));
         }
@@ -308,11 +308,6 @@ foreach ($grouplist as $grouptype) {
 
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done listing taxa.");
-
-
-
-
-
 
 // ==================================================================
 // make the biodiversity downloadable files
@@ -342,15 +337,15 @@ foreach(glob('{'.$model_root.'*/richness/*_*.asc.gz,'.$model_root.'vertebrate_ri
 }
 // now, $taxalist is an array with taxa name keys and values that are arrays of biodiv ascii grid files.
 
-echo array_keys($taxalist);
+print_r(array_keys($taxalist));
 
 foreach ($grouplist as $grouptype) {
 
     ErrorMessage::Progress($grouptype);
 
-    $meta_list_dir = $data_root . 'By' . $grouptype;
+    $taxa_dir_list = glob($data_root . 'By' . $grouptype . '/*');
 
-    foreach (glob($meta_list_dir . '/*') as $taxa_dir) {
+    foreach ($taxa_dir_list as $taxa_dir) {
         if (is_dir($taxa_dir)) {
 
             $taxaname = basename($taxa_dir);
@@ -394,16 +389,6 @@ foreach ($grouplist as $grouptype) {
 
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done zipping biodiversity downloads.");
-
-
-
-
-
-
-
-
-
-
 
 // ==================================================================
 // make the species_to_id.txt file
