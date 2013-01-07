@@ -371,9 +371,9 @@ foreach ($grouplist as $grouptype) {
                     echo "\nabout to zip [{$biodiv}] into {$zip_file}\n";
 
                     if (zip(array($biodiv), $zip_file)) {
-                        echo " worked!\n"
+                        echo " worked!\n";
                     } else {
-                        echo " DIDN'T WORK!\n"
+                        echo " DIDN'T WORK!\n";
                     }
                 }
             } else {
