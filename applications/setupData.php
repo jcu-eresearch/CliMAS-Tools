@@ -388,7 +388,11 @@ foreach ($grouplist as $grouptype) {
 
             $taxaname = basename($taxa_dir);
             // use lower case for indexing into the file lists
-            $taxaname_lc = strtolower($taxaname);
+            if (array_key_exists($taxaname, $clazz_list)) {
+                $taxaname_lc = strtolower( $clazz_list[$taxaname] );
+            } else {
+                $taxaname_lc = strtolower( $taxaname );
+            }
 
             if (array_key_exists($taxaname_lc, $taxalist)) {
                 $zip_dir = $taxa_dir . '/biodiversity/';
@@ -417,7 +421,7 @@ foreach ($grouplist as $grouptype) {
                     }
                 }
             } else {
-                echo "\n" . $taxaname . " not in list.";
+                echo "\n" . $taxaname_lc . " not in list.";
             }
 
             ErrorMessage::Progress();
