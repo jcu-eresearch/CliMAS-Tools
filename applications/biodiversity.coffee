@@ -120,10 +120,12 @@ $ ->
 
             path = 'https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/'
             path += "By#{groupLevel.capped()}/#{groupName}/biodiversity/"
-            if (groupLevel == 'clazz')
-                path += "#{scenario}_#{year}_#{groupName.toLowerCase().capped()}.zip"                
+
+            if groupLevel is 'clazz'
+                path += "#{scenario}_#{year}_#{window.clazzinfo[groupName].plural}.zip"
             else
                 path += "#{scenario}_#{year}_#{groupName.toLowerCase().capped()}.zip"                                
+
             window.location.href = path
 
 

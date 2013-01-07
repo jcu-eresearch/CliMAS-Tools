@@ -68,7 +68,7 @@ if (array_key_exists('page', $_GET)) {
         // put our class names transations into a js data object
         $clazzes = ClazzData::GetList();
 
-        echo 'window.clazzinfo = {};';
+        echo 'window.clazzinfo = {};' . "\n";
 
         foreach ($clazzes as $clazz) {
             echo 'window.clazzinfo["' . $clazz . '"] = { ' . "\n";
