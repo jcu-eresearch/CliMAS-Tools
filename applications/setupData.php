@@ -365,8 +365,11 @@ foreach ($grouplist as $grouptype) {
                 safemkdir($zip_dir);
 
                 foreach($taxalist[$taxaname_lc] as $biodiv) {
-                    $zip_file = $zip_dir . basename($biodiv) . '.zip';
+                    $zip_file = explode('.', basename($biodiv), 2);
+                    $zip_file = $zip_path . $zip_file[0] . ".zip";
+
                     echo "\nabout to zip [{$biodiv}] into {$zip_file}\n";
+
                     zip(array($biodiv), $zip_file);
                 }
             } else {
@@ -526,6 +529,7 @@ function zip($files, $archive) {
         //create the archive
         $zip = new ZipArchive();
         if($zip->open($archive, ZIPARCHIVE::OVERWRITE) !== true) {
+            echo "couln't open zip file at {$archive}";
             return false;
         }
 
