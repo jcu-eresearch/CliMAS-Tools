@@ -5,6 +5,10 @@
 #
 #
 $ ->
+
+    # monkey-patch a function into String to capitalise a word. We'll use this later.
+    String::capped = -> @.charAt(0).toUpperCase() + @.substring(1).toLowerCase()
+
     $clazzRadios = $ '#selectionpanel .clazz_selection'
     $taxaSelectors = $ '#selectionpanel .taxa_selector'
 
@@ -111,7 +115,14 @@ $ ->
             # they want ascii grid and metadata
             #
             # figure out the file name
+
+            # .../ByFamily/COLUMBIDAE/biodiversity/RCP3PD_2015_Columbidae.zip
+
+            path = 'https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/'
+            path += "By#{groupLevel.capped()}/#{groupName}/biodiversity/"
+            path += "#{scenario}_#{year}_#{groupName.toLowerCase().capped()}.zip"
             console.log {
+                path: path
                 year: year
                 scenario: scenario
                 output: output
@@ -119,7 +130,6 @@ $ ->
                 groupLevel: groupLevel
                 groupName: groupName
             }
-
 
         else if output == 'view'
             #
@@ -141,9 +151,6 @@ $ ->
                         alert "Sorry, data for that selection is not available."
 
                     else
-                        # monkey-patch a function into String to capitalise a word
-                        String::capped = -> @.charAt(0).toUpperCase() + @.substring(1).toLowerCase()
-
                         maptitle = 'Biodiversity of terrestrial '
                         if groupLevel is 'clazz' and clazz is 'all'
                             maptitle += 'vertebrates'

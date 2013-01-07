@@ -3,6 +3,9 @@
 
   $(function() {
     var $clazzRadios, $generate, $taxaSelectors;
+    String.prototype.capped = function() {
+      return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
+    };
     $clazzRadios = $('#selectionpanel .clazz_selection');
     $taxaSelectors = $('#selectionpanel .taxa_selector');
     $taxaSelectors.hide();
@@ -60,7 +63,7 @@
       return $('#prebakeform .generate').attr('disabled', formIncomplete);
     });
     return $generate.click(function(e) {
-      var clazz, groupLevel, groupName, output, scenario, taxaLevel, year;
+      var clazz, groupLevel, groupName, output, path, scenario, taxaLevel, year;
       year = $('#prebakeform input:radio[name="year"]:checked').val();
       scenario = $('#prebakeform input:radio[name="scenario"]:checked').val();
       output = $('#prebakeform input:radio[name="output"]:checked').val();
@@ -77,7 +80,11 @@
         }
       }
       if (output === 'download') {
+        path = 'https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/';
+        path += "By" + (groupLevel.capped()) + "/" + groupName + "/biodiversity/";
+        path += "" + scenario + "_" + year + "_" + (groupName.toLowerCase().capped()) + ".zip";
         console.log({
+          path: path,
           year: year,
           scenario: scenario,
           output: output,
@@ -99,9 +106,6 @@
             if (!data.map_path) {
               return alert("Sorry, data for that selection is not available.");
             } else {
-              String.prototype.capped = function() {
-                return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
-              };
               maptitle = 'Biodiversity of terrestrial ';
               if (groupLevel === 'clazz' && clazz === 'all') {
                 maptitle += 'vertebrates';
