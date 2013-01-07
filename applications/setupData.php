@@ -331,13 +331,14 @@ foreach(glob('{'.$model_root.'*/richness/*_*.asc.gz,'.$model_root.'vertebrate_ri
     // identify the taxa this maps belongs to
     $filebits = explode('_', $biodiv);
     $taxaname = str_replace('.asc.gz', '', end($filebits));
+    $taxaname_lc = strtolower($taxaname);
 
     // make sure that taxa exists in the list
-    if (!array_key_exists($taxaname, $taxalist)) {
-        $taxalist[$taxaname] = array();
+    if (!array_key_exists($taxaname_lc, $taxalist)) {
+        $taxalist[$taxaname_lc] = array();
     }
     // add this biodiv map to that taxa
-    $taxalist[$taxaname][] = $biodiv;
+    $taxalist[$taxaname_lc][] = $biodiv;
 }
 // now, $taxalist is an array with taxa name keys and values that are arrays of biodiv ascii grid files.
 
@@ -353,13 +354,16 @@ foreach ($grouplist as $grouptype) {
         if (is_dir($taxa_dir)) {
 
             $taxaname = basename($taxa_dir);
+            $taxaname_lc = strtolower($taxaname);
             echo ("\ndoing taxa " . $taxaname);
 
-            if (array_key_exists($taxaname, $taxalist)) {
+
+
+            if (array_key_exists($taxaname_lc, $taxalist)) {
                 $zip_dir = $taxa_dir . '/biodiversity/';
                 safemkdir($zip_dir);
 
-                foreach($taxalist[$taxaname] as $biodiv) {
+                foreach($taxalist[$taxaname_lc] as $biodiv) {
                     zip(array($biodiv), $zip_dir);
                 }
             } else {
