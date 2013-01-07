@@ -262,7 +262,10 @@ foreach (glob($species_list_dir . '*_*') as $spdir) {
         $spp_list[] = "{$nicename},{$species_web_dir}{$spname}/species_data_{$spname}.zip";
     }
 }
-write_file($data_root . 'all_vertebrates.csv', implode("\n", $spp_list));
+
+$biodiversity_dir = $data_root . 'biodiversity/';
+safemkdir($biodiversity_dir);
+write_file($biodiversity_dir . 'all_vertebrates.csv', implode("\n", $spp_list));
 
 // Do the other three groups next - - - - - - - - - - - - - - 
 
@@ -295,7 +298,9 @@ foreach ($grouplist as $grouptype) {
                     $spp_list[] = "{$nicename},{$web_dir}/{$groupname}/ByName/{$spname}/species_data_{$spname}.zip";
                 }
             }
-            write_file($list_dir . "/all_{$groupname}.csv", implode("\n", $spp_list));
+            $biodiversity_dir = $list_dir . '/biodiversity/';
+            safemkdir($biodiversity_dir);
+            write_file($biodiversity_dir . "/all_{$groupname}.csv", implode("\n", $spp_list));
         }
     }
 
@@ -303,12 +308,6 @@ foreach ($grouplist as $grouptype) {
 
 ErrorMessage::EndProgress();
 ErrorMessage::Marker(" .. done listing taxa.");
-
-
-
-
-
-
 
 
 
