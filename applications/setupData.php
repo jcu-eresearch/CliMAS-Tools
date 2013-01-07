@@ -335,9 +335,47 @@ foreach(glob('{'.$model_root.'*/richness/*_*.asc.gz,'.$model_root.'vertebrate_ri
     // add this biodiv map to that taxa
     $taxalist[$taxaname_lc][] = $biodiv;
 }
-// now, $taxalist is an array with taxa name keys and values that are arrays of biodiv ascii grid files.
 
-print_r(array_keys($taxalist));
+// now, $taxalist is an array with taxa name keys and values that are arrays of biodiv ascii grid files.
+// need to make a set of zips for all, class, family, and genus.
+
+// Do the 'all' list first - - - - - - - - - - - - - - - - - -
+
+ErrorMessage::Progress('"All" vertebrates');
+
+if (array_key_exists('vertebrates', $taxalist)) {
+    $zip_dir = $data_root . 'biodiversity/';
+    safemkdir($zip_dir);
+
+    foreach($taxalist['vertebrates'] as $biodiv) {
+        $zip_file = explode('.', basename($biodiv), 2);
+        $zip_file = $zip_dir . $zip_file[0] . ".zip";
+
+        $files = array();
+        $files[$biodiv] = basename($biodiv);
+
+        // we'll zip up the asciigrid along with any non-zip files we find in the biodiversity dir
+        foreach (glob($zip_dir .'/*') as $candidate_file) {
+            // just add files, not directories
+            if (is_file($candidate_file) && pathinfo($candidate_file, PATHINFO_EXTENSION) != 'zip') {
+                $in_zip_name = pathinfo($candidate_file, PATHINFO_BASENAME);
+                $files[$candidate_file] = $in_zip_name;
+            }
+        }
+
+        if (zip($files, $zip_file)) {
+            // then it worked!
+        } else {
+            ErrorMessage::Marker("Failed to create {$zip_file}");
+        }
+    }
+} else {
+    echo "\nVertebrates not in list.";
+}
+
+ErrorMessage::Progress();
+
+// Do the other three groups next - - - - - - - - - - - - - - 
 
 foreach ($grouplist as $grouptype) {
 
