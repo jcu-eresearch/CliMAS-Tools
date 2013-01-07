@@ -71,10 +71,10 @@ if (array_key_exists('page', $_GET)) {
         echo 'window.clazzinfo = {};';
 
         foreach ($clazzes as $clazz) {
-            echo 'window.clazzinfo["' + $clazz + '"] = { ' + "\n";
-            echo 'singular: "' + ClazzData::clazzCommonName($clazz, false) + '", + "\n"';
-            echo ' plural: "' + ClazzData::clazzCommonName($clazz, true) + '"';
-            echo '}; + "\n"';
+            echo 'window.clazzinfo["' + $clazz + '"] = { ' . "\n";
+            echo 'singular: "' . ClazzData::clazzCommonName($clazz, false) . '", . "\n"';
+            echo ' plural: "' . ClazzData::clazzCommonName($clazz, true) . '"';
+            echo '}; . "\n"';
         }
     ?>
 
