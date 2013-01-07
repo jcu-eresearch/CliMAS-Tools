@@ -355,7 +355,7 @@ foreach ($grouplist as $grouptype) {
             echo ("\ndoing taxa " . $taxaname);
 
             if (in_array($taxaname, $taxalist)) {
-                $zip_dir = $taxa_dir + '/biodiversity/';
+                $zip_dir = $taxa_dir . '/biodiversity/';
                 safemkdir($zip_dir);
 
                 foreach($taxalist[$taxaname] as $biodiv) {
