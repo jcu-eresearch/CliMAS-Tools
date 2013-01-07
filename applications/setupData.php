@@ -331,6 +331,7 @@ foreach(glob('{'.$model_root.'*/richness/*_*.asc.gz,'.$model_root.'vertebrate_ri
     // identify the taxa this maps belongs to
     $filebits = explode('_', $biodiv);
     $taxaname = str_replace('.asc.gz', '', end($filebits));
+    // use lower case for indexing into the file lists
     $taxaname_lc = strtolower($taxaname);
 
     // make sure that taxa exists in the list
@@ -354,17 +355,17 @@ foreach ($grouplist as $grouptype) {
         if (is_dir($taxa_dir)) {
 
             $taxaname = basename($taxa_dir);
+            // use lower case for indexing into the file lists
             $taxaname_lc = strtolower($taxaname);
+
             echo ("\ndoing taxa " . $taxaname);
-
-
 
             if (array_key_exists($taxaname_lc, $taxalist)) {
                 $zip_dir = $taxa_dir . '/biodiversity/';
                 safemkdir($zip_dir);
 
                 foreach($taxalist[$taxaname_lc] as $biodiv) {
-                    zip(array($biodiv), $zip_dir);
+                    zip($biodiv, $zip_dir);
                 }
             } else {
                 echo "\n" . $taxaname . " not in list.";
