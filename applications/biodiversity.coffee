@@ -119,12 +119,20 @@ $ ->
             # .../ByFamily/COLUMBIDAE/biodiversity/RCP3PD_2015_Columbidae.zip
 
             path = 'https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/'
-            path += "By#{groupLevel.capped()}/#{groupName}/biodiversity/"
 
-            if groupLevel is 'clazz'
-                path += "#{scenario}_#{year}_#{window.clazzinfo[groupName].plural}.zip"
+            prefix = "#{scenario}_#{year}"
+            prefix = '1990' if year is 'current'
+
+            if groupLevel is 'clazz' and clazz is 'all'
+                path += "biodiversity/#{prefix}_vertebrates.zip"
+
+            else if groupLevel is 'clazz'
+                path += "By#{groupLevel.capped()}/#{groupName}/biodiversity/"
+                path += "#{prefix}_#{window.clazzinfo[groupName].plural}.zip"
+
             else
-                path += "#{scenario}_#{year}_#{groupName.toLowerCase().capped()}.zip"                                
+                path += "By#{groupLevel.capped()}/#{groupName}/biodiversity/"
+                path += "#{prefix}_#{groupName.toLowerCase().capped()}.zip"                                
 
             window.location.href = path
 

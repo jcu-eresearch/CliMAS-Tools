@@ -63,7 +63,7 @@
       return $('#prebakeform .generate').attr('disabled', formIncomplete);
     });
     return $generate.click(function(e) {
-      var clazz, groupLevel, groupName, output, path, scenario, taxaLevel, year;
+      var clazz, groupLevel, groupName, output, path, prefix, scenario, taxaLevel, year;
       year = $('#prebakeform input:radio[name="year"]:checked').val();
       scenario = $('#prebakeform input:radio[name="scenario"]:checked').val();
       output = $('#prebakeform input:radio[name="output"]:checked').val();
@@ -81,11 +81,18 @@
       }
       if (output === 'download') {
         path = 'https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/';
-        path += "By" + (groupLevel.capped()) + "/" + groupName + "/biodiversity/";
-        if (groupLevel === 'clazz') {
-          path += "" + scenario + "_" + year + "_" + window.clazzinfo[groupName].plural + ".zip";
+        prefix = "" + scenario + "_" + year;
+        if (year === 'current') {
+          prefix = '1990';
+        }
+        if (groupLevel === 'clazz' && clazz === 'all') {
+          path += "biodiversity/" + prefix + "_vertebrates.zip";
+        } else if (groupLevel === 'clazz') {
+          path += "By" + (groupLevel.capped()) + "/" + groupName + "/biodiversity/";
+          path += "" + prefix + "_" + window.clazzinfo[groupName].plural + ".zip";
         } else {
-          path += "" + scenario + "_" + year + "_" + (groupName.toLowerCase().capped()) + ".zip";
+          path += "By" + (groupLevel.capped()) + "/" + groupName + "/biodiversity/";
+          path += "" + prefix + "_" + (groupName.toLowerCase().capped()) + ".zip";
         }
         window.location.href = path;
       } else if (output === 'view') {
