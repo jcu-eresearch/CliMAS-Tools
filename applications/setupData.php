@@ -362,7 +362,7 @@ foreach ($grouplist as $grouptype) {
                     zip(array($biodiv), $zip_dir);
                 }
             } else {
-                echo "\n" . $taxaname . " not in list."
+                echo "\n" . $taxaname . " not in list.";
             }
 
             ErrorMessage::Progress();
