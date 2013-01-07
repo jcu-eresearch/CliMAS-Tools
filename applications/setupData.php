@@ -370,10 +370,10 @@ foreach ($grouplist as $grouptype) {
 
                     echo "\nabout to zip [{$biodiv}] into {$zip_file}\n";
 
-                    if (zip(array($biodiv), $zip_file)) {
-                        echo " worked!\n";
+                    if (zip(array($biodiv => basename($biodiv)), $zip_file)) {
+                        // then it worked!
                     } else {
-                        echo " DIDN'T WORK!\n";
+                        ErrorMessage::Marker("Failed to create {$zip_file}");
                     }
                 }
             } else {
