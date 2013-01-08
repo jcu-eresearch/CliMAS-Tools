@@ -2,11 +2,7 @@
 /**
  *  default config for PHP-backed CliMAS tools.
  *
- *  Make a copy of this file, call it "climas_config.cfg", and change the values.
- *
  */
-// $conf[Parameter::$CONFIGURATION_SOURCE ]  = __FILE__." tdh-tools-2";
-
 $webserver = "http://localhost";
 
 $conf[Parameter::$TempFolder ]            = "/climas/tmp/";
@@ -17,13 +13,14 @@ $conf[Parameter::$APPLICATION_FOLDER_WEB] = "{$webserver}/climas/";
 
 $conf[Parameter::$UTILITIES_CLASSES]      = "/climas/source/Utilities/includes.php";
 
-$conf[Parameter::$SOURCE_DATA_FOLDER]     = "/climas/data/";
-$conf[Parameter::$RESOURCES_FOLDER]       = "/climas/source/Resources/";
-$conf[Parameter::$SDM_FOLDER]             = "/climas/sdm/";
-$conf[Parameter::$ICONS_FOLDER]           = "{$webserver}/icons/";
-
-$conf[Parameter::$DOWNLOAD_FOLDER_WEB]    = "{$webserver}/data/";
 $conf[Parameter::$DOWNLOAD_FOLDER_REAL]   = "/climas/source/output/";
+$conf[Parameter::$DOWNLOAD_FOLDER_WEB]    = "{$webserver}/climas/output/";
+$conf[Parameter::$RESOURCES_FOLDER]       = "/climas/source/Resources/";
+$conf[Parameter::$SOURCE_DATA_FOLDER]     = "/climas/data/";
+$conf[Parameter::$SOURCE_DATA_URL]        = "{$webserver}/data/";
+$conf[Parameter::$SDM_FOLDER]             = "/climas/sdm/";
+
+$conf[Parameter::$ICONS_FOLDER]           = "{$webserver}/icons/";
 
 $conf[Parameter::$COMMAND_QUEUE_ID       ]= "climas";
 // $conf[Parameter::$COMMAND_QUEUE_LOG]      = "/home/TDH/apps/Gilbert/logs/queue.log";

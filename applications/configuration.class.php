@@ -16,8 +16,7 @@ class configuration {
 
     // TDDO: REads password from file on web server /var/www/.ssh/1234567890
     // this use SSH keys stored in /var/www/.ssh   - connected with this useid: jc166922@login.hpc.jcu.edu.au
-    public static function hpc_phpexecute($script,$parameters = "")
-    {
+    public static function hpc_phpexecute($script,$parameters = "")  {
 
         // this folder must match the tdh1-hpc configuration.
         $script = "/scratch/jc166922/tdh1/tdhtools/applications/".$script.'.php';
@@ -31,42 +30,36 @@ class configuration {
     }
 
 
-    public static function hpc_execute_command($command_id)
-    {
+    public static function hpc_execute_command($command_id)  {
         $result = self::hpc_phpexecute('CommandActionExecute',"--command_id={$command_id}");
         return $result;
     }
 
-    public static function hpc_execute_command_qsub($command_id)
-    {
+    public static function hpc_execute_command_qsub($command_id)  {
         $result = self::hpc_phpexecute('CommandActionExecute',"--command_id={$command_id} --qsub=true");
         return $result;
     }
 
 
 
-    public static function ApplicationName()
-    {
+    public static function ApplicationName()  {
         global $conf;
         return $conf[Parameter::$APPLICATION_NAME];
     }
 
 
-    public static function ApplicationFolder()
-    {
+    public static function ApplicationFolder()  {
         global $conf;
         return $conf[Parameter::$APPLICATION_FOLDER];
     }
 
-    public static function ApplicationFolderWeb()
-    {
+    public static function ApplicationFolderWeb()  {
         global $conf;
         return $conf[Parameter::$APPLICATION_FOLDER_WEB];
     }
 
 
-    public static function UtilityClasses()
-    {
+    public static function UtilityClasses()  {
         global $conf;
         return $conf[Parameter::$UTILITIES_CLASSES];
     }
@@ -77,8 +70,7 @@ class configuration {
      * Path to Downloads folder accessable from the web
      * @return string|null Filepath
      */
-    public static function WebDownloadFolder()
-    {
+    public static function WebDownloadFolder()  {
         global $conf;
         return $conf[Parameter::$DOWNLOAD_FOLDER_WEB];
     }
@@ -88,14 +80,12 @@ class configuration {
      * Filesystem  buddy to WebDownloadFolder
      * @return string|null  Filepath
      */
-    public static function FilesDownloadFolder()
-    {
+    public static function FilesDownloadFolder()  {
         global $conf;
         return $conf[Parameter::$DOWNLOAD_FOLDER_REAL];
     }
 
-    public static function ResourcesFolder()
-    {
+    public static function ResourcesFolder()  {
         global $conf;
         return $conf[Parameter::$RESOURCES_FOLDER];
     }
@@ -115,13 +105,19 @@ class configuration {
         return $df;
     }
 
+    public static function SourceDataUrl() {
+        global $conf;
+
+        $df = $conf[Parameter::$SOURCE_DATA_URL];
+        return $df;
+    }
+
     public static function SDMFolder() {
         global $conf;
         return $conf[Parameter::$SDM_FOLDER];
     }
 
-    public static function ContextSpatialLayersFolder()
-    {
+    public static function ContextSpatialLayersFolder()  {
         return self::SourceDataFolder() . "context" . self::osPathDelimiter();
     }
 
