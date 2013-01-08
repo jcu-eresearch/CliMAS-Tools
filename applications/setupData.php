@@ -487,12 +487,12 @@ foreach ($species_list as $species_name => $species_data) {
     if (is_file($zip_file_name)) continue;
 
     // okay so if the line above is commented out, the zip file might exist.  so delete it.
-    if (is_file($zip_file_name)) delete_file($file);
+    if (is_file($zip_file_name)) delete_file($zip_file_name);
 
     // get a file list of everything in the homebase dir, plus the asciigrids in {homebase}/output
     // the file list is an associative array of realpath => path_for_zip, for example:
     // '/user/TDH/CliMAS/species/Ukrainian_Ironbelly/ascii/current.asc.gz' => 'Ukranian_Ironbelly/grids/current.asc.gz'
-    // ..would get the file in the asci subdir, and add it to the zip into a Urkanian_Ironbelly/grids subdir.
+    // ..would get the file in the asci subdir, and add it to the zip into a Ukranian_Ironbelly/grids subdir.
     $files = array();
 
     foreach (glob($homebase .'/*') as $candidate_file) {
