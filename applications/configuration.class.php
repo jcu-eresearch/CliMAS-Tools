@@ -88,13 +88,11 @@ class configuration {
      * Filesystem  buddy to WebDownloadFolder
      * @return string|null  Filepath
      */
-    /*
     public static function FilesDownloadFolder()
     {
         global $conf;
         return $conf[Parameter::$DOWNLOAD_FOLDER_REAL];
     }
-    */
 
     public static function ResourcesFolder()
     {

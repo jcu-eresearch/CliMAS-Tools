@@ -23,7 +23,7 @@ $conf[Parameter::$SDM_FOLDER]             = "/climas/sdm/";
 $conf[Parameter::$ICONS_FOLDER]           = "{$webserver}/icons/";
 
 $conf[Parameter::$DOWNLOAD_FOLDER_WEB]    = "{$webserver}/data/";
-// $conf[Parameter::$DOWNLOAD_FOLDER_REAL]   = "/climas/source/output/";
+$conf[Parameter::$DOWNLOAD_FOLDER_REAL]   = "/climas/source/output/";
 
 $conf[Parameter::$COMMAND_QUEUE_ID       ]= "climas";
 // $conf[Parameter::$COMMAND_QUEUE_LOG]      = "/home/TDH/apps/Gilbert/logs/queue.log";
