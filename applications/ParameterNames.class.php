@@ -31,6 +31,7 @@ class Parameter
     public static $ICONS_FOLDER         = "ICONS_FOLDER";
 
     public static $SOURCE_DATA_FOLDER   = "SOURCE_DATA_FOLDER";
+    public static $SOURCE_DATA_URL      = "SOURCE_DATA_URL";
     public static $SDM_FOLDER           = "SDM_FOLDER";
 
     public static $PathDelimiter      = "PathDelimiter";
