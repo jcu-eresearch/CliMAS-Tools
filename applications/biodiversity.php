@@ -51,7 +51,7 @@ if (array_key_exists('page', $_GET)) {
     <script type="text/javascript" src="HotSpots.js"></script>
     */
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder().'richness/' ,'mapfileRoot');
-
+        echo htmlutil::AsJavaScriptSimpleVariable(configuration::SourceDataUrl(),'SourceDataUrl');
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::ApplicationFolderWeb(),'ApplicationFolderWeb');
         echo htmlutil::AsJavaScriptSimpleVariable(configuration::Maxent_Species_Data_folder_web().'richness/' ,'richness_folder');
         echo htmlutil::AsJavaScriptArrayFromFile(configuration::SourceDataFolder()."clazz_list.txt",'availableTaxa',true);
