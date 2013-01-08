@@ -42,6 +42,11 @@ class configuration {
 
 
 
+    public static function ReportsUrl()  {
+        global $conf;
+        return $conf[Parameter::$REPORTS_URL];
+    }
+
     public static function ApplicationName()  {
         global $conf;
         return $conf[Parameter::$APPLICATION_NAME];

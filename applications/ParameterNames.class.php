@@ -5,6 +5,8 @@
 class Parameter
 {
 
+    public static $REPORTS_URL = "REPORTS_URL";
+
     public static $CONFIGURATION_SOURCE = "CONFIGURATION_SOURCE";
 
     public static $APPLICATION_NAME     = "APPLICATION_NAME";

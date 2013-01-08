@@ -5,6 +5,8 @@
  */
 $webserver = "http://localhost";
 
+$conf[Parameter::$REPORTS_URL]            = "{$webserver}/bifocal";
+
 $conf[Parameter::$TempFolder ]            = "/climas/tmp/";
 // $conf[Parameter::$TempFolderWeb]          = "{$webserver}/climas/tmp/";
 

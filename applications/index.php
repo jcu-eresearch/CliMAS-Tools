@@ -34,7 +34,7 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
             'tool index' => 'index.php',
             'Suitability' => 'SpeciesSuitability.php',
             'Biodiversity' => 'biodiversity.php',
-            'Reports' => '/climas/reports',
+            'Reports' => configuration::ReportsUrl(),
         ),
         'current' => 'index.php'
     );
@@ -64,12 +64,12 @@ $pagesubtitle = "Tools related to modelling climate change, climate suitability 
     </div>
 
     <div style="display: inline-block; vertical-align: top; width: 28%">
-        <h2><a href="/climas/reports">
+        <h2><a href="<?php configuration::ReportsUrl() ?>">
             CliMAS Reports
         </a></h2><p>
             Create regionally-focussed reports on the future of climate change and biodiversity.
         </p><p>
-            <a href="/climas/reports">go to tool &raquo;</a>
+            <a href="<?php configuration::ReportsUrl() ?>">go to tool &raquo;</a>
         </p>
     </div>
 
