@@ -121,7 +121,7 @@ $ ->
             prefix = '1990' if year is 'current'  # special case for "current" year
 
             # all paths start with this..
-            path = 'https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/'
+            path = window.SourceDataUrl
 
             if groupLevel is 'clazz' and clazz is 'all'
                 # special case for "all vertebrates"

@@ -84,7 +84,7 @@
         if (year === 'current') {
           prefix = '1990';
         }
-        path = 'https://eresearch.jcu.edu.au/tdh/datasets/Gilbert/source/';
+        path = window.SourceDataUrl;
         if (groupLevel === 'clazz' && clazz === 'all') {
           path += "biodiversity/" + prefix + "_vertebrates.zip";
         } else if (groupLevel === 'clazz') {
