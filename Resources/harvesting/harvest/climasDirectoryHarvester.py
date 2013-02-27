@@ -133,11 +133,11 @@ class IndexData:
         # override json contains a key "DATA_SUBSTITUTIONS", then we also substitute
         # stuff we find there.
 
-        # so: start with the directory name
+        # so: start with just wanting ${NAME_OF_FOLDER} replaced with the actual directory name
         dirName = data.get("harvest_dir_name")
-        replacements = {'NAME_OF_FOLDER': dirName}
+        replacements = { 'NAME_OF_FOLDER': dirName }
 
-        # is there a DATA_SUBSTITUTIONS key?  If so, add those keys in too.
+        # is there a DATA_SUBSTITUTIONS key?  If so, add those in.
         additionalReplacements = data.get("DATA_SUBSTITUTIONS")
         if additionalReplacements:
             replacements.update(additionalReplacements)
@@ -154,11 +154,13 @@ class IndexData:
         # method, it already knows about the replacements var we
         # just made.
 
+        # dataBucket is the thing that has the data.  key is the
+        # name of the field you want to get.
         def getAndReplace(dataBucket, key):
-            temp = dataBucket.get(key)
-            if isinstance(key, str):
+            temp = dataBucket.get(key) # fetch the value
+            if isinstance(key, str):   # if it's a string, do our replacements
                 return Template(temp).safe_substitute(replacements)
-            else:
+            else:                      # not a string, then just hand it back
                 return temp
         # END OF FANCY PART -------------------------------------
 
