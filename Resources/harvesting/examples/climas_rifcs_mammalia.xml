@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<registryObjects xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ands.org.au/standards/rif-cs/registryObjects" xsi:schemaLocation="http://ands.org.au/standards/rif-cs/registryObjects http://services.ands.org.au/documentation/rifcs/1.2.0/schema/registryObjects.xsd">
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/collection/92f6c30a-c4e7-419a-8f33-99f47dff96e2</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <collection dateAccessioned="2012-11-05T02:30:06.432040" dateModified="2012-11-09T04:01:45.359907" type="dataset">
+        <identifier type="local">92f6c30a-c4e7-419a-8f33-99f47dff96e2</identifier>
+        <name type="primary">
+            <namePart type="">Mammalia - current and future species richness models for Australian vertebrates</namePart>
+        </name>
+        <location>
+            <address>
+                <physical type="streetAddress">
+                    <addressPart type="addressLine">TDH</addressPart>
+                </physical>
+            </address>
+        </location>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>Jeremy.Vanderwal@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+        <location>
+            <address>
+                <physical type="streetAddress">
+                    <addressPart type="addressLine">A/Prof Jeremy VanDerWal &#13;</addressPart>
+                    <addressPart type="addressLine">Centre for Tropical Biodiversity &amp; Climate Change &#13;</addressPart>
+                    <addressPart type="addressLine">James Cook University &#13;</addressPart>
+                    <addressPart type="addressLine">Building 145, ATSIP &#13;</addressPart>
+                    <addressPart type="addressLine">James Cook Drive &#13;</addressPart>
+                    <addressPart type="addressLine">Townsville, QLD 4811 &#13;</addressPart>
+                    <addressPart type="addressLine">Australia &#13;</addressPart>
+                    <addressPart type="addressLine">Tel: +61 7 4781 5570</addressPart>
+                </physical>
+            </address>
+        </location>
+        <location>
+            <address>
+                <electronic type="url">
+                    <value>https://eresearch.jcu.edu.au/tdh/data/92f6c30a-c4e7-419a-8f33-99f47dff96e2</value>
+                </electronic>
+            </address>
+        </location>
+        <relatedObject>
+            <key>jcu.edu.au/tdh/party/pntTFUBOCyzpSfZAsbzK</key>
+            <relation type="isManagedBy"/>
+        </relatedObject>
+        <subject type="anzsrc-for">060208</subject>
+        <subject type="local">Spatial Data / Analysis</subject>
+        <subject type="local">Climate Change</subject>
+        <subject type="local">Spatial Analysis</subject>
+        <subject type="local">Geographic Information System(s) (GIS)</subject>
+        <subject type="local">species distribution</subject>
+        <description type="brief">This dataset consists of current and future species richness models generated using 4 Representative Concentration Pathways (RCPs) carbon emission scenarios, the median of 18 global climate models (GCMs), and 8 time steps between 2015 and 2085, for Australian vertebrates from the class Mammalia.</description>
+        <description type="full">Sourcing occurrence data:&#13;
+
+        Observation records were filtered from the Atlas of Living Australia's (ALA) database based on ALA's 'assertions', expert-derived range polygons and expert opinion, and those observations inappropriate for modelling were excluded. Only species with &gt;10 unique spatiotemporal records were used for modelling. &#13;
+
+        &#13;
+
+        Sourcing and generating current and future climate data:&#13;
+
+        Current climate was sourced as monthly precipitation and temperature minima and maxima from 1975 until 2005 at a 0.05° grid scale from the Australian Water Availability Project (AWAP - http://www.bom.gov.au/jsp/awap/) (Jones et al 2007, Grant et al 2008). &#13;
+
+        &#13;
+
+        Future climate projections were sourced through a collaboration with Drs Rachel Warren and Jeff Price, Tyndall Centre, University of East Anglia, UK. This data is available on http://climascope.wwfus.org. Although new GCM runs for RCPs have not been fully completed, several research groups have implemented methods to utilize knowledge gained from SRES predictions to recreate predictions for the new RCPs using AR4 GCMs (e.g., Meinshausen, Smith et al. 2011; Rogelj, Meinshausen et al. 2012). The methods used to generate the GCM predictions for the RCP emission scenarios are defined at http://climascope.wwfus.org and in associated publications (Mitchell and Jones 2005; Warren, de la Nava Santos et al. 2008; Meinshausen, Raper et al. 2011). This data was downscaled to 0.05 degrees (~5km resolution) using a cubic spline of the anomalies; these anomalies were applied to a current climate baseline of 1976 to 2005 – climate of 1990 – generated from aggregating monthly data from Australia Water Availability Project (AWAP; http://www.bom.gov.au/jsp/awap/). These monthly temperature and precipitation values user used to create 19 standard bioclimatic variables. These bioclimatic variables are listed at http://www.worldclim.org/bioclim. All downscaling and bioclimatic variable creation was done using the climates package (VanDerWal, Beaumont et al. 2011) in R (http://www.r-project.org/). &#13;
+
+        &#13;
+
+        Species Distribution Models (SDMs):&#13;
+
+        Used in the modelling were annual mean temperature, temperature seasonality, max and min monthly temperature, annual precipitation, precipitation seasonality, and precipitation of the wettest and driest quarters for current and all RCP scenarios (RCP3PD, RCP45, RCP6, RCP85) at 8 time steps between 2015 and 2085. &#13;
+
+        &#13;
+
+        Species distribution models were run using the presence-only modelling program Maxent (Phillips et al 2006). Maxent uses species presence records to statistically relate species occurrence to environmental variables on the principle of maximum entropy. All default settings were used except for background point allocation. We used a target group background (Phillips &amp; Dudik 2008) to remove any spatial or temporal sampling bias in the modelling exercise.&#13;
+
+        &#13;
+
+        Species Richness:&#13;
+
+        The median SDM across 18 GCMs was generated for each of the four RCPs for the specified taxon.  This was completed for all Australian vertebrates, and their contributing classes, families and genera.&#13;
+
+        &#13;
+
+        Suitability for each species within a taxon was clipped at the threshold to produce binary 'suitable' or 'unsuitable' maps, and these were summed together to generate species richness maps for each taxon.</description>
+        <description type="note">These species richness models are displayed on the CliMAS Biodiversity website at http://tropicaldatahub.org/goto/climas/biodiversity&#13;
+
+        &#13;
+
+        The dataset is a tarred, zipped file (.tar.gz), less than 1GB in size and contains 9 ASCII grid files: &#13;
+
+        * 1 current richness map &#13;
+
+        * 32 median future richness maps - 8 time step maps (averaged across all 18 GCMs) for each RCP &#13;
+
+    </description>
+    <description type="accessRights">Open Access
+
+    . If the data is not available via the provided link, please contact             an associated party (preferrably the Manager as specified) for access.</description>
+    <description type="rights">Licensing: Creative Commons - Attribution alone (by)</description>
+    <description type="note">
+
+        Coinvestigators:
+
+        None
+
+        Related JCU Research Themes:
+
+        Tropical Ecosystems, Conservation and Climate Change
+
+            </description>
+        <coverage>
+            <temporal>
+                <date dateFormat="W3CDTF" type="dateFrom">2012-09-01</date>
+            </temporal>
+            <temporal>
+                <date dateFormat="W3CDTF" type="dateTo">2012-11-01</date>
+            </temporal>
+            <spatial type="text">Continental Australia</spatial>
+            <spatial type="kmlPolyCoords">112.343852765,-18.1786430542 133.964946511,-9.13617124379 146.972759009,-10.1759013267 156.640727757,-28.6437509656 148.730571509,-46.097166817 131.504009012,-36.0592354641 111.816509015,-37.4673701954 112.343852765,-18.1786430542</spatial>
+        </coverage>
+        <relatedInfo>
+            <identifier type="doi">10.1016/j.ecolmodel.2005.03.026</identifier>
+            <title>Maximum entropy modeling of species geographic distributions</title>
+        </relatedInfo>
+        <relatedInfo>
+            <identifier type="uri">http://www.cs.princeton.edu/~schapire/maxent/</identifier>
+            <notes>Maxent software and further information</notes>
+        </relatedInfo>
+        <relatedInfo>
+            <identifier type="uri">http://bie.ala.org.au/species/MAMMALIA</identifier>
+            <notes>ALA data record</notes>
+        </relatedInfo>
+        <relatedInfo>
+            <identifier type="uri">https://eresearch.jcu.edu.au/tdh/data/633b4ccd-2e78-459d-963c-e43d3c8a5ca1</identifier>
+            <notes>Metadata for future climate layers</notes>
+        </relatedInfo>
+        <relatedInfo>
+            <identifier type="uri">http://tropicaldatahub.org/goto/climas/biodiversity</identifier>
+            <notes>CliMAS Biodiversity tool - website for visualising projected species richness maps based on climate suitability data</notes>
+        </relatedInfo>
+        <relatedInfo>
+            <identifier type="uri">http://researchdata.ands.org.au/tropical-data-hub-identification-and-visualisation-of-biodiversity-hot-spots</identifier>
+            <notes>Identification and visualisation of biodiversity hot spots Service Metadata Record</notes>
+        </relatedInfo>
+        <relatedInfo>
+            <identifier type="uri">http://creativecommons.org/licenses/by/3.0/au/</identifier>
+            <notes>Creative Commons Attribution 3.0 Australia License</notes>
+        </relatedInfo>
+    </collection>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/cIDRsqsuPgiDDOPFKryp</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">cIDRsqsuPgiDDOPFKryp</identifier>
+        <name type="primary">
+            <namePart type="given">Stephen</namePart>
+            <namePart type="family">Williams</namePart>
+            <namePart type="title">Prof</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>stephen.williams@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/kBglxvPuBTqSwPyZZBsK</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">kBglxvPuBTqSwPyZZBsK</identifier>
+        <name type="primary">
+            <namePart type="given">Michael</namePart>
+            <namePart type="family">Bird</namePart>
+            <namePart type="title">Prof</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>michael.bird@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/JywslJdKThkwxRYUTwBs</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">JywslJdKThkwxRYUTwBs</identifier>
+        <name type="primary">
+            <namePart type="given">Jonathan</namePart>
+            <namePart type="family">Nott</namePart>
+            <namePart type="title">Prof</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>jonathan.nott@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/xDRDaVatBmbMOanqLzjb</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">xDRDaVatBmbMOanqLzjb</identifier>
+        <name type="primary">
+            <namePart type="given">Carl</namePart>
+            <namePart type="family">Spandler</namePart>
+            <namePart type="title">Dr</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>carl.spandler@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/oSxwRKhZnfDAkxzfvIpF</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">oSxwRKhZnfDAkxzfvIpF</identifier>
+        <name type="primary">
+            <namePart type="given">Nick</namePart>
+            <namePart type="family">Oliver</namePart>
+            <namePart type="title">Prof</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>nick.oliver@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/PkuNjipvnUneUdyzZsuS</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">PkuNjipvnUneUdyzZsuS</identifier>
+        <name type="primary">
+            <namePart type="given">Paul</namePart>
+            <namePart type="family">Nelson</namePart>
+            <namePart type="title">Dr</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>paul.nelson@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/NiKlHwdUnHNQpmDTcpoW</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">NiKlHwdUnHNQpmDTcpoW</identifier>
+        <name type="primary">
+            <namePart type="given">Patrick</namePart>
+            <namePart type="family">Williams</namePart>
+            <namePart type="title">Dr</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>patrick.williams@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/MmtuVbsWEdIxYEUkTDJR</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">MmtuVbsWEdIxYEUkTDJR</identifier>
+        <name type="primary">
+            <namePart type="given">Christopher</namePart>
+            <namePart type="family">Johnson</namePart>
+            <namePart type="title">Prof</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>christopher.johnson@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/sGlSecaAhzzgJWLLNPNK</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">sGlSecaAhzzgJWLLNPNK</identifier>
+        <name type="primary">
+            <namePart type="given">Steve</namePart>
+            <namePart type="family">Turton</namePart>
+            <namePart type="title">Prof</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>steve.turton@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/UneCmRkXsGMqUiidRIxs</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">UneCmRkXsGMqUiidRIxs</identifier>
+        <name type="primary">
+            <namePart type="given">Andrew</namePart>
+            <namePart type="family">Krockenberger</namePart>
+            <namePart type="title">Aprof</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>andrew.krockenberger@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/CtzlgBPWOZyQpNONFbig</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">CtzlgBPWOZyQpNONFbig</identifier>
+        <name type="primary">
+            <namePart type="given">Sara</namePart>
+            <namePart type="family">Bell</namePart>
+            <namePart type="title">Ms</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>sara.bell@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/pntTFUBOCyzpSfZAsbzK</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">pntTFUBOCyzpSfZAsbzK</identifier>
+        <name type="primary">
+            <namePart type="given">Jeremy</namePart>
+            <namePart type="family">Vanderwal</namePart>
+            <namePart type="title">Dr</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>jeremy.vanderwal@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/JqaqlQwdxGirpeoyKBBf</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">JqaqlQwdxGirpeoyKBBf</identifier>
+        <name type="primary">
+            <namePart type="given">Nigel</namePart>
+            <namePart type="family">Stork</namePart>
+            <namePart type="title">Prof</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>nigel.stork@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/JqYrCNOdrAGGKOcXGvWK</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">JqYrCNOdrAGGKOcXGvWK</identifier>
+        <name type="primary">
+            <namePart type="given">Tony</namePart>
+            <namePart type="family">Kemp</namePart>
+            <namePart type="title">Dr</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>tony.kemp@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+<registryObject group="James Cook University">
+    <key>jcu.edu.au/tdh/party/zdhDjjORrmILKkXrqEoQ</key>
+    <originatingSource>http://www.jcu.edu.au/tdh/</originatingSource>
+    <party type="person">
+        <identifier type="local">zdhDjjORrmILKkXrqEoQ</identifier>
+        <name type="primary">
+            <namePart type="given">Sarah</namePart>
+            <namePart type="family">Tweed</namePart>
+            <namePart type="title">Dr</namePart>
+        </name>
+        <location>
+            <address>
+                <electronic type="email">
+                    <value>sarah.tweed@jcu.edu.au</value>
+                </electronic>
+            </address>
+        </location>
+    </party>
+</registryObject>
+</registryObjects>
