@@ -1,0 +1,40 @@
+{
+    "harvester": {
+        "type": "directory",
+        "metadata": {
+            "suitability": [
+                {
+                    "replacements": [
+                        { "NAME_OF_SPECIES": "emus" },
+                        { "NAME_OF_SPECIES": "emus" },
+                        { "NAME_OF_SPECIES": "emus" }
+                    ]
+                    "species_name": "Emu (Dromaius novaehollandiae)",
+                    "data_source_website": [
+                        {
+                            "notes": "ALA - Species page for Emu (Dromaius novaehollandiae)",
+                            "identifier": {
+                                "type": "uri",
+                                "value": "http:\/\/bie.ala.org.au\/species\/Dromaius+novaehollandiae"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "occurrences": [
+                {
+                    "species_name": "Emu (Dromaius novaehollandiae)",
+                    "data_source_website": [
+                        {
+                            "notes": "ALA - Species page for Emu (Dromaius novaehollandiae)",
+                            "identifier": {
+                                "type": "uri",
+                                "value": "http:\/\/bie.ala.org.au\/species\/Dromaius+novaehollandiae"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

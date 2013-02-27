@@ -1,0 +1,25 @@
+In Emu observation records RIF-CS:
+- FIXED there is a location > address > physical.streetAddress > addressPart > (a url to the data) ...this looks fixed now, is it fixed in the edgar default json?
+
+In Edgar default JSON:
+- WONTFIX there's keywords ("geographic information system", "spatial data", "spatial analysis", "climate change", "GIS") but the species name isn't a keyword.  Maybe it should be?
+- TODO:ADD-TO-CLIMAS there's an "additionalIdentifier" in both suitability and occurrences, that is set to: "jcu.edu.au/tdh/collection/%NAME_OF_FOLDER%/occurrences", that I can't see in the Emu RIF-CS. ...I've left this out of the climas suitability default.
+- TODO:FIX the dataLocation seems to point at .../suitability (e.g.
+https://eresearch.jcu.edu.au/tdh/datasets/Edgar/Australian%20Magpie%20(Cracticus%20tibicen)/suitability
+)..but it should point at .../projected-distributions (and the same wrong path is in the citations > url tag)
+- TODO:FIX we cite climascope.wwwfus.org which is a dead link, it should now be climascope.tyndall.ac.uk ...I've changed the link in the climas json
+
+
+In Koala example RIF-CS:
+- TODO:CHECK-DIVERSITY-IS-1990-NOT-1900 koala sample coverage appears to be 1 August 2012 to 1 November 2012 ...I've used 1900 - 2085 in my suitability default JSON.
+- WONTFIX Jeremy's address is still at CTBCC (including the ATSIP building name).  Maybe that's okay?  Maybe we should drop the building designation and just say CTBCC at JCU? ...for now I've used the address as given.
+- WONTFIX there's keywords in collection > subject.local tags, similar to the Edgar keywords, but the species name isn't in as a keyword.
+
+In the sample collection records:
+- TODO:PASTE-IN the brief description says what the data actually is (as in, it names the species or taxon or whatever).  The "full" description doesn't actually name the species etc.. it's more "additional description" than full description.  Is that okay?
+
+In the new climas-suitability-default.json:
+- TODO:CREATE-RECORDS-AND-LINK I included relatedCollection references to the umbrella collection record for CliMAS Suitability, CliMAS Biodiversity and CliMAS Reports umbrella collections, but none of them have record IDs afaict, so they need editing later.  Similarly there is an incomplete relatedService reference for the CliMAS Suitability service.
+- TODO:DATA-DIR-NEEDS-CLEANING-UP I've used the tdh/datasets/Gilbert/ path for the dataLocation, we might want to rename it from Gilbert to CliMAS.
+- WONTFIX the dataLocation goes all the way to the zip file; Edgar stops at the directory.
+
