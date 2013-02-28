@@ -5,9 +5,8 @@
             "climas_reports": [
                 {
                     "DATA_SUBSTITUTIONS": {
-                        "NAME_OF_TAXON": "Mammalia",
-                        "ALA_TAXON_URL": "http:\/\/bie.ala.org.au\/species\/Mammalia",
-                        "DATA_LOCATION": "http:\/\/eresearch.jcu.edu.au\/tdh\/datasets\/Gilbert\/source\/ByClazz\/MAMMALIA\/biodiversity\/"
+                        "REGION_NAME": "Australian Alps bioregion",
+                        "DATA_LOCATION": "https:\/\/eresearch.jcu.edu.au\/tdh\/datasets\/Gilbert\/bifocal\/regions\/IBRA_Australian_Alps\/IBRA_Australian_Alps.zip"
                     }
                 }
             ]

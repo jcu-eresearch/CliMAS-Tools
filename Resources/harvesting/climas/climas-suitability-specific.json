@@ -7,8 +7,7 @@
                     "DATA_SUBSTITUTIONS": {
                         "SPECIES_LONG_NAME": "Koala (Phascolarctos cinereus)",
                         "ALA_SPECIES_URL": "http:\/\/bie.ala.org.au\/species\/Phascolarctos+cinereus"
-                    },
-                    "species_name": "Koala (Phascolarctos cinereus)"
+                    }
                 }
             ]
         }

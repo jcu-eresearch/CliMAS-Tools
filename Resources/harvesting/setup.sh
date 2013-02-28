@@ -46,6 +46,8 @@ echo ""
 echo "*** harvesting: finally, actually harvest.."
 
 ./tf_harvest.sh directoryHarvest-climas-suitability
+./tf_harvest.sh directoryHarvest-climas-biodiversity
+./tf_harvest.sh directoryHarvest-climas-reports
 popd
 
 echo ""
