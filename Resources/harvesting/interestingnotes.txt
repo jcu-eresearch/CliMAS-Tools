@@ -1,14 +1,6 @@
 
 -- just stuff still todo --
 
-In Edgar default JSON:
-- TODO:ADD-TO-CLIMAS
-there's an "additionalIdentifier" in both suitability and occurrences, that is set to: "jcu.edu.au/tdh/collection/%NAME_OF_FOLDER%/occurrences", that I can't see in the Emu RIF-CS. ...I've left this out of the climas suitability default.
-
-In the sample collection records:
-- TODO:PASTE-IN
-the brief description says what the data actually is (as in, it names the species or taxon or whatever).  The "full" description doesn't actually name the species etc.. it's more "additional description" than full description.  Is that okay?
-
 In the new climas-suitability-default.json:
 - TODO:CREATE-RECORDS-AND-LINK
 I included relatedCollection references to the umbrella collection record for CliMAS Suitability, CliMAS Biodiversity and CliMAS Reports umbrella collections, but none of them have record IDs afaict, so they need editing later.  Similarly there is an incomplete relatedService reference for the CliMAS Suitability service.
@@ -25,7 +17,7 @@ In Emu observation records RIF-CS:
 
 In Edgar default JSON:
 - WONTFIX there's keywords ("geographic information system", "spatial data", "spatial analysis", "climate change", "GIS") but the species name isn't a keyword.  Maybe it should be?
-- TODO:ADD-TO-CLIMAS there's an "additionalIdentifier" in both suitability and occurrences, that is set to: "jcu.edu.au/tdh/collection/%NAME_OF_FOLDER%/occurrences", that I can't see in the Emu RIF-CS. ...I've left this out of the climas suitability default.
+- FIXED there's an "additionalIdentifier" in both suitability and occurrences, that is set to: "jcu.edu.au/tdh/collection/%NAME_OF_FOLDER%/occurrences", that I can't see in the Emu RIF-CS. ...I've left this out of the climas suitability default.
 - FIXEDBYJAY the dataLocation seems to point at .../suitability (e.g.
 https://eresearch.jcu.edu.au/tdh/datasets/Edgar/Australian%20Magpie%20(Cracticus%20tibicen)/suitability
 )..but it should point at .../projected-distributions (and the same wrong path is in the citations > url tag)
@@ -38,7 +30,7 @@ In Koala example RIF-CS:
 - WONTFIX there's keywords in collection > subject.local tags, similar to the Edgar keywords, but the species name isn't in as a keyword.
 
 In the sample collection records:
-- TODO:PASTE-IN the brief description says what the data actually is (as in, it names the species or taxon or whatever).  The "full" description doesn't actually name the species etc.. it's more "additional description" than full description.  Is that okay?
+- FIXED the brief description says what the data actually is (as in, it names the species or taxon or whatever).  The "full" description doesn't actually name the species etc.. it's more "additional description" than full description.  Is that okay?
 
 In the new climas-suitability-default.json:
 - TODO:CREATE-RECORDS-AND-LINK I included relatedCollection references to the umbrella collection record for CliMAS Suitability, CliMAS Biodiversity and CliMAS Reports umbrella collections, but none of them have record IDs afaict, so they need editing later.  Similarly there is an incomplete relatedService reference for the CliMAS Suitability service.
