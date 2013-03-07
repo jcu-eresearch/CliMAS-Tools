@@ -199,7 +199,7 @@ foreach ($species_list as $species_name => $species_data) {
     // drop a metadata JSON file into the homebase.
     $fullname = $species_data['species'];
     if (count($species_data['common_names']) > 0) {
-        $fullname = $species_data['common_names'][0] . ' (' . $fullname . ')';
+        $fullname = array_keys($species_data['common_names'])[0] . ' (' . $fullname . ')';
     }
     $metadata_override = array(
         "harvester" => array(
