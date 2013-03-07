@@ -213,8 +213,7 @@ foreach ($species_list as $species_name => $species_data) {
                             "ALA_SPECIES_URL" => "http://bie.ala.org.au/species/" . str_replace(' ', '+', $species_data['species'])
     )   )   )   )   )   );
 
-    $species_list[$species_name] = $species_data;
-    write_file($homebase . '/climas-suitability-specific.json', json_encode($metadata_override));
+    write_file($homebase . '/climas-suitability-metadata-override.json', json_encode($metadata_override));
 
     // discover species id from the occur.csv in the homebase.
     $species_id = exec("head -n2 '{$homebase}/occur.csv' | tail -n1 | cut -d, -s -f1");
@@ -227,8 +226,8 @@ foreach ($species_list as $species_name => $species_data) {
     // ln($data_root . 'species/' . $species_id, $data_root . 'species/' . $species_data['name']);
     ln($data_root . 'species/' . $species_id, '../' . $species_data['name']);
 
-    // link /ByClazz/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
-    $clazzpath = $data_root . 'ByClazz/' . $species_data['clazz'];
+    // link /ByClass/{classname}/ByID/{id} and .../ByName/{sp} back to homebase
+    $clazzpath = $data_root . 'ByClass/' . $species_data['clazz'];
     safemkdir($clazzpath . '/ByID');
     safemkdir($clazzpath . '/ByName');
     ln("{$clazzpath}/ByID/{$species_data['id']}",     '../../../' . $rel_homebase);
@@ -289,10 +288,25 @@ $biodiversity_dir = $data_root . 'biodiversity/';
 safemkdir($biodiversity_dir);
 write_file($biodiversity_dir . 'all_vertebrates.csv', implode("\n", $spp_list));
 
+// drop a metadata JSON file for vertebrates...
+$metadata_override = array(
+    "harvester" => array(
+        "type" => "directory",
+        "metadata" => array(
+            "climas_biodiversity" => array(
+                array(
+                    "DATA_SUBSTITUTIONS" => array(
+                        "NAME_OF_TAXON" => "Terrestrial Vertebrates",
+                        "ALA_TAXON_URL" => "http:\/\/bie.ala.org.au\/species\/Vertebrata",
+                        "DATA_LOCATION" => "http:\/\/eresearch.jcu.edu.au\/tdh\/datasets\/CliMAS\/biodiversity\/"
+)   )   )   )   )   );
+
+write_file($biodiversity_dir . 'climas-biodiversity-override-metadata.json', json_encode($metadata_override));
+
 // Do the other three groups next - - - - - - - - - - - - - -
 
 $grouplist = array();
-$grouplist[] = 'Clazz';
+$grouplist[] = 'Class';
 $grouplist[] = 'Family';
 $grouplist[] = 'Genus';
 
@@ -323,6 +337,21 @@ foreach ($grouplist as $grouptype) {
             $biodiversity_dir = $taxa_dir . '/biodiversity/';
             safemkdir($biodiversity_dir);
             write_file($biodiversity_dir . "/all_{$groupname}.csv", implode("\n", $spp_list));
+
+            // drop a metadata JSON file for this taxon...
+            $metadata_override = array(
+                "harvester" => array(
+                    "type" => "directory",
+                    "metadata" => array(
+                        "climas_biodiversity" => array(
+                            array(
+                                "DATA_SUBSTITUTIONS" => array(
+                                    "NAME_OF_TAXON" => $groupname,
+                                    "ALA_TAXON_URL" => "http:\/\/bie.ala.org.au\/species\/" . $groupname,
+                                    "DATA_LOCATION" => str_replace('/', '\/', "{$web_dir}/{$groupname}/ByName/")
+            )   )   )   )   )   );
+
+            write_file($biodiversity_dir . 'climas-biodiversity-override-metadata.json', json_encode($metadata_override));
         }
     }
 
