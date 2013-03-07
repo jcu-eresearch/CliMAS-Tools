@@ -348,7 +348,7 @@ foreach ($grouplist as $grouptype) {
                                 "DATA_SUBSTITUTIONS" => array(
                                     "NAME_OF_TAXON" => $groupname,
                                     "ALA_TAXON_URL" => "http:\/\/bie.ala.org.au\/species\/" . $groupname,
-                                    "DATA_LOCATION" => str_replace('/', '\/', "{$web_dir}/{$groupname}/ByName/")
+                                    "DATA_LOCATION" => "{$web_dir}/{$groupname}/ByName/"
             )   )   )   )   )   );
 
             write_file($biodiversity_dir . 'climas-biodiversity-override-metadata.json', json_encode($metadata_override));
