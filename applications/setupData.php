@@ -173,6 +173,8 @@ foreach ($species_list as $species_name => $species_data) {
     }
 
     // first make a home base dir at .../species/{Species_name}/
+    // the home base is a REAL dir with some real files and some symlinks.
+    // everywhere else we want to see species info will just symlink back to the home base.
 
     // homebase path relative to $data_root
     $rel_homebase = 'species/' . $species_data['name'];
@@ -193,6 +195,25 @@ foreach ($species_list as $species_name => $species_data) {
     // ErrorMessage::Progress(':');
 
     // now there's a home base.
+
+    // drop a metadata JSON file into the homebase.
+    $fullname = $species_data[$species];
+    if ($species_data['common_names'].count() > 0) {
+        $fullname = $species_data['common_names'][0] . ' (' . $fullname . ')';
+    }
+    $metadata_ocverride = array(
+        "harvester" => array(
+            "type" => "directory",
+            "metadata" => array(
+                "climas_suitability": array(
+                    array(
+                        "DATA_SUBSTITUTIONS" => array(
+                            "SPECIES_LONG_NAME" => $fullname,
+                            "ALA_SPECIES_URL" => "http:\/\/bie.ala.org.au\/species\/" . str_replace(' ', '+', $species_data['species'])
+    )   )   )   )   )   );
+
+    $species_list[$species_name] = $species_data;
+    write_file($homebase . '/climas-suitability-specific.json', json_encode($metadata_override));
 
     // discover species id from the occur.csv in the homebase.
     $species_id = exec("head -n2 '{$homebase}/occur.csv' | tail -n1 | cut -d, -s -f1");
@@ -267,7 +288,7 @@ $biodiversity_dir = $data_root . 'biodiversity/';
 safemkdir($biodiversity_dir);
 write_file($biodiversity_dir . 'all_vertebrates.csv', implode("\n", $spp_list));
 
-// Do the other three groups next - - - - - - - - - - - - - - 
+// Do the other three groups next - - - - - - - - - - - - - -
 
 $grouplist = array();
 $grouplist[] = 'Clazz';
@@ -375,7 +396,7 @@ if (array_key_exists('vertebrates', $taxalist)) {
 
 ErrorMessage::Progress();
 
-// Do the other three groups next - - - - - - - - - - - - - - 
+// Do the other three groups next - - - - - - - - - - - - - -
 
 foreach ($grouplist as $grouptype) {
 
@@ -683,7 +704,7 @@ function fetchIfRequired($filename, $url) {
         }
 
         if ($content === false) {
-            ErrorMessage::EndProgress();            
+            ErrorMessage::EndProgress();
             ErrorMessage::Marker("Having trouble getting data from ALA at URL " . $url);
             ErrorMessage::Marker("Here's what happens when I try:");
             $content = file_get_contents($url);
