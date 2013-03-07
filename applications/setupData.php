@@ -205,7 +205,7 @@ foreach ($species_list as $species_name => $species_data) {
         "harvester" => array(
             "type" => "directory",
             "metadata" => array(
-                "climas_suitability": array(
+                "climas_suitability" => array(
                     array(
                         "DATA_SUBSTITUTIONS" => array(
                             "SPECIES_LONG_NAME" => $fullname,
