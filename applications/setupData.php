@@ -210,11 +210,11 @@ foreach ($species_list as $species_name => $species_data) {
                     array(
                         "DATA_SUBSTITUTIONS" => array(
                             "SPECIES_LONG_NAME" => $fullname,
-                            "ALA_SPECIES_URL" => "http:\/\/bie.ala.org.au\/species\/" . str_replace(' ', '+', $species_data['species'])
+                            "ALA_SPECIES_URL" => "http://bie.ala.org.au/species/" . str_replace(' ', '+', $species_data['species'])
     )   )   )   )   )   );
 
     $species_list[$species_name] = $species_data;
-    write_file($homebase . '/climas-suitability-specific.json', json_encode($metadata_override));
+    write_file($homebase . '/climas-suitability-specific.json', json_encode($metadata_override, JSON_PRETTY_PRINT));
 
     // discover species id from the occur.csv in the homebase.
     $species_id = exec("head -n2 '{$homebase}/occur.csv' | tail -n1 | cut -d, -s -f1");
