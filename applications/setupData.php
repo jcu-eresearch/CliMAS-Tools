@@ -347,7 +347,7 @@ foreach ($grouplist as $grouptype) {
                             array(
                                 "DATA_SUBSTITUTIONS" => array(
                                     "NAME_OF_TAXON" => $groupname,
-                                    "ALA_TAXON_URL" => "http:\/\/bie.ala.org.au\/species\/" . $groupname,
+                                    "ALA_TAXON_URL" => "http://bie.ala.org.au/species/" . $groupname,
                                     "DATA_LOCATION" => "{$web_dir}/{$groupname}/ByName/"
             )   )   )   )   )   );
 
