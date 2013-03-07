@@ -214,7 +214,7 @@ foreach ($species_list as $species_name => $species_data) {
     )   )   )   )   )   );
 
     $species_list[$species_name] = $species_data;
-    write_file($homebase . '/climas-suitability-specific.json', json_encode($metadata_override, JSON_PRETTY_PRINT));
+    write_file($homebase . '/climas-suitability-specific.json', json_encode($metadata_override));
 
     // discover species id from the occur.csv in the homebase.
     $species_id = exec("head -n2 '{$homebase}/occur.csv' | tail -n1 | cut -d, -s -f1");
