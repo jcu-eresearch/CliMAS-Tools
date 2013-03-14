@@ -12,8 +12,8 @@
             "cacheId": "config-caching"
         },
         "default-files": {
-            "default-metadata-filename" : "climas-reports-default.json",
-            "override-metadata-filename": "climas-reports-specific.json"
+            "default-metadata-filename" : "climas-reports-metadata-default.json",
+            "override-metadata-filename": "climas-reports-metadata-override.json"
         },
         "metadata-types": [
             {"type" : "climas_reports"}

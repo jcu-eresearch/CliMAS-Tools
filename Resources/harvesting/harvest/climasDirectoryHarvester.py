@@ -187,11 +187,12 @@ class IndexData:
         spatialCoverage = data.get("spatialCoverage")
         for i in range(len(spatialCoverage)):
             location = spatialCoverage[i]
-            if  location["type"] == "text":
+            if location["type"] == "text":
                 tfpackageData["dc:coverage.vivo:GeographicLocation." + str(i + 1) + ".dc:type"] = location["type"]
-                if  (location["value"].startswith("POLYGON")):
-                    tfpackageData["dc:coverage.vivo:GeographicLocation." + str(i + 1) + ".redbox:wktRaw"] = location["value"]
-                tfpackageData["dc:coverage.vivo:GeographicLocation." + str(i + 1) + ".rdf:PlainLiteral"] = location["value"]
+                location_value = getAndReplace(location, "value")
+                if location_value.startswith("POLYGON"):
+                    tfpackageData["dc:coverage.vivo:GeographicLocation." + str(i + 1) + ".redbox:wktRaw"] = location_value
+                tfpackageData["dc:coverage.vivo:GeographicLocation." + str(i + 1) + ".rdf:PlainLiteral"] = location_value
 
         ###Processing the 'description' metadata.
         #Reading the file here, so we only do it once.

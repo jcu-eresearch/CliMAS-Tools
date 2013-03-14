@@ -12,8 +12,8 @@
             "cacheId": "config-caching"
         },
         "default-files": {
-            "default-metadata-filename" : "climas-biodiversity-default.json",
-            "override-metadata-filename": "climas-biodiversity-specific.json"
+            "default-metadata-filename" : "climas-biodiversity-metadata-default.json",
+            "override-metadata-filename": "climas-biodiversity-metadata-override.json"
         },
         "metadata-types": [
             {"type" : "climas_biodiversity"}

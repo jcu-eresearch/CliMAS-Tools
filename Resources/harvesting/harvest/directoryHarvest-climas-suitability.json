@@ -12,8 +12,8 @@
             "cacheId": "config-caching"
         },
         "default-files": {
-            "default-metadata-filename" : "climas-suitability-default.json",
-            "override-metadata-filename": "climas-suitability-specific.json"
+            "default-metadata-filename" : "climas-suitability-metadata-default.json",
+            "override-metadata-filename": "climas-suitability-metadata-override.json"
         },
         "metadata-types": [
             {"type" : "climas_suitability"}

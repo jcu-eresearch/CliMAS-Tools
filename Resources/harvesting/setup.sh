@@ -26,7 +26,7 @@ mkdir $DEPLOY/home/data/CliMAS
 cp -r $HERE/climas/*default.json $DEPLOY/home/data/CliMAS/
 
 mkdir $DEPLOY/home/data/CliMAS/test
-cp -r $HERE/climas/*specific.json $DEPLOY/home/data/CliMAS/test
+cp -r $HERE/climas/*override.json $DEPLOY/home/data/CliMAS/test
 
 echo ""
 echo "*** harvesting: first start the server.."

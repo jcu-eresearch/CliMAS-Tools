@@ -1,16 +1,19 @@
 
--- just stuff still todo --
+---- just stuff still to do ----
+
+- TODO polys still need correct info in reports json
+- 
 
 In the new climas-suitability-default.json:
-- TODO:CREATE-RECORDS-AND-LINK
-I included relatedCollection references to the umbrella collection record for CliMAS Suitability, CliMAS Biodiversity and CliMAS Reports umbrella collections, but none of them have record IDs afaict, so they need editing later.  Similarly there is an incomplete relatedService reference for the CliMAS Suitability service.
+
+- TODO:CREATE RECORDS IN ERESEARCH.JCU../researchdata/ to get an ID -- this is required even if we have to change IDs later, so we can do test harvesting.
+relatedCollection references to the umbrella collection records are required, which need IDs.
 
 - TODO:DATA-DIR-NEEDS-CLEANING-UP
 I've used the tdh/datasets/Gilbert/ path for the dataLocation, we might want to rename it from Gilbert to CliMAS.
 
 
-
--- original --
+---- original ----
 
 In Emu observation records RIF-CS:
 - FIXED there is a location > address > physical.streetAddress > addressPart > (a url to the data) ...this looks fixed now, is it fixed in the edgar default json?
