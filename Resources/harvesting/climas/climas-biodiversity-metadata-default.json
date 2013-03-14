@@ -17,7 +17,7 @@
                         },
                         {
                             "type": "note",
-                            "value": "<p>These species distribution models can be found on the CliMAS Biodiversity tool at<a href=\"http:\/\/tropicaldatahub.org\/goto\/climas\/biodiversity\">http:\/\/tropicaldatahub.org\/goto\/climas\/biodiversity<\/a><\/p><p>The dataset is a tarred, zipped file (.tar.gz), less than 1GB in size and contains 9 ASCII grid files:<\/p><ul><li>1 current richness map<\/li><li>32 median future richness maps - 8 time step maps (averaged across all 18 GCMs) for each RCP<\/li><\/ul>"
+                            "value": "<p>These species distribution models can be found on the CliMAS Biodiversity tool at<a href=\"http:\/\/tropicaldatahub.org\/goto\/climas\/biodiversity\">http:\/\/tropicaldatahub.org\/goto\/climas\/biodiversity<\/a><\/p><p>The dataset contains 33 zipped files - one for current, and 8 time steps for each of the 4 RCPs. Each file is less than 1GB in size and contains a gzipped ascii grid file of median richness for that RCP/timestep and a .csv of contributing species.<\/li><\/ul>"
                         }
                     ],
                     "accessRights": "Open Access. If the data is not available via the provided link, please contact an associated party (preferably the Manager if specified) for access.",
