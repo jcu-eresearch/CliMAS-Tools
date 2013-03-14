@@ -159,9 +159,9 @@
                     ],
                     "relatedService": [
                         {
-                            "title": "TODO: LINK ONCE ENTRY EXISTS - CliMAS Biodiversity: Climate Change Impact on the Biodiversity of Australian Terrestrial Vertebrates",
+                            "title": "CliMAS Biodiversity: Biodiversity of Australian Terrestrial Vertebrates under climate change",
                             "relationship": "isProducedBy",
-                            "identifier": "jcu.edu.au\/tdh\/service\/service_identifier_goes_here"
+                            "identifier": "jcu.edu.au\/tdh\/service\/climas-biodiversity"
                         }
                     ],
                     "dataLocation": "${DATA_LOCATION}",

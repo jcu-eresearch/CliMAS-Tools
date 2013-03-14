@@ -38,8 +38,7 @@
                         },
                         {
                             "type": "text",
-                            "value": "POLYGON((144.497703748 -9.91029347568,133.0719225 -9.91029347568,121.646141252 -13.182069379,110.923485004 -21.2339713912,114.790672503 -38.3639598931,132.54457875 -35.2688432623,147.837547497 -46.5179669197,158.384422495 -24.1526559825,144.497703748 -9.91029347568))",
-                            "value": "TODO: LOL"
+                            "value": "${REGION_POLY}"
                         }
                     ],
                     "relatedPublication": [
@@ -141,7 +140,7 @@
                         {
                             "title": "TODO: LINK ONCE ENTRY EXISTS - Current and Future Biodiversity Models for Australian Terrestrial Vertebrates",
                             "relationship": "isDerivedFrom",
-                            "identifier": "jcu.edu.au\/tdh\/collection\/identifier_goes_here"
+                            "identifier": "jcu.edu.au\/tdh\/collection\/climas\/biodiversity"
                         },
                         {
                             "title": "TODO: LINK ONCE ENTRY EXISTS - Current and Future Distribution Models for Australian Terrestrial Vertebrates",
@@ -156,9 +155,9 @@
                     ],
                     "relatedService": [
                         {
-                            "title": "TODO: LINK ONCE ENTRY EXISTS - CliMAS Reports: Regional Reports On Climate Change And Its Impact on the Biodiversity of Australian Terrestrial Vertebrates",
+                            "title": "CliMAS Reports: Summarising climate and biodiversity projections at a regional level",
                             "relationship": "isProducedBy",
-                            "identifier": "jcu.edu.au\/tdh\/service\/service_identifier_goes_here"
+                            "identifier": "jcu.edu.au\/tdh\/service\/climas-reports"
                         }
                     ],
                     "dataLocation": "${DATA_LOCATION}",

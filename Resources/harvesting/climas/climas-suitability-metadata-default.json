@@ -145,23 +145,13 @@
                             "title": "All future climate layers for Australia",
                             "relationship": "isDerivedFrom",
                             "identifier": "jcu.edu.au\/tdh\/collection\/633b4ccd-2e78-459d-963c-e43d3c8a5ca1"
-                        },
-                        {
-                            "title": "TODO: LINK ONCE ENTRY EXISTS - Current and Future Biodiversity Models for Australian Terrestrial Vertebrates",
-                            "relationship": "hasDerivedCollection",
-                            "identifier": "jcu.edu.au\/tdh\/collection\/identifier_goes_here"
-                        },
-                        {
-                            "title": "TODO: LINK ONCE ENTRY EXISTS - Regional Reports on Climate and Biodiversity for Australian Terrestrial Vertebrates",
-                            "relationship": "hasDerivedCollection",
-                            "identifier": "jcu.edu.au\/tdh\/collection\/identifier_goes_here"
                         }
                     ],
                     "relatedService": [
                         {
-                            "title": "TODO: LINK ONCE ENTRY EXISTS - CliMAS Suitability: Climate Change Impact on the Distributions of Australian Terrestrial Vertebrates",
+                            "title": "CliMAS Suitability: Visualising climate space and distribution of Australian Terrestrial Vertebrates",
                             "relationship": "isProducedBy",
-                            "identifier": "jcu.edu.au\/tdh\/service\/service_identifier_goes_here"
+                            "identifier": "jcu.edu.au\/tdh\/service\/climas-suitability"
                         }
                     ],
                     "dataLocation": "http:\/\/eresearch.jcu.edu.au\/tdh\/datasets\/Gilbert\/source\/species\/${NAME_OF_FOLDER}\/species_data_${NAME_OF_FOLDER}.zip",
