@@ -1,8 +1,14 @@
 
 ---- just stuff still to do ----
 
-- TODO polys still need correct info in reports json
-- 
+rsync command to copy the regions subdirs, but only include the metadata override files.  Run this from the .../CliMAS/reports/ directory.
+
+    rsync -hav --filter '+ */' --filter '+ */climas-reports-metadata-override.json' --filter '- *' --dry-run regions/ metadata_regions
+
+
+rsync command to copy the species suitability subdirs, but only include the metadata override files.  Run this from the .../CliMAS/ directory.
+
+    rsync -hav --filter '+ *_*/' --filter '+ *_*/climas-suitability-metadata-override.json' --filter '- *' --dry-run species/ metadata_suitability
 
 In the new climas-suitability-default.json:
 

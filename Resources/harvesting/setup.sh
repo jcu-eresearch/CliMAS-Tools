@@ -23,10 +23,19 @@ echo "*** copying $HERE/climas/*.default.json into $DEPLOY/home/data/CliMAS and 
 
 rm -rf $DEPLOY/home/data/CliMAS
 mkdir $DEPLOY/home/data/CliMAS
-cp -r $HERE/climas/*default.json $DEPLOY/home/data/CliMAS/
 
-mkdir $DEPLOY/home/data/CliMAS/test
-cp -r $HERE/climas/*override.json $DEPLOY/home/data/CliMAS/test
+mkdir $DEPLOY/home/data/CliMAS/reports
+cp $HERE/climas/climas-reports-metadata-default.json $DEPLOY/home/data/CliMAS/reports/
+cp -r $HERE/climas/reports_overrides/* $DEPLOY/home/data/CliMAS/reports/
+
+mkdir $DEPLOY/home/data/CliMAS/biodiversity
+cp $HERE/climas/climas-biodiversity-metadata-default.json $DEPLOY/home/data/CliMAS/biodiversity/
+cp -r $HERE/climas/biodiversity_overrides/* $DEPLOY/home/data/CliMAS/biodiversity/
+
+mkdir $DEPLOY/home/data/CliMAS/suitability
+cp $HERE/climas/climas-suitability-metadata-default.json $DEPLOY/home/data/CliMAS/suitability/
+cp -r $HERE/climas/suitability_overrides/* $DEPLOY/home/data/CliMAS/suitability/
+
 
 echo ""
 echo "*** harvesting: first start the server.."

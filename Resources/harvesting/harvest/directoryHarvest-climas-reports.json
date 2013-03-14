@@ -3,7 +3,7 @@
         "type": "directory",
         "directory": {
             "targets": [ {
-                "baseDir": "${fascinator.home}/data/CliMAS",
+                "baseDir": "${fascinator.home}/data/CliMAS/reports",
                 "recordIDPrefix": "jcu.edu.au/tdh/collection/"
             } ]
         },
