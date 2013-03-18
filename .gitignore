@@ -1,5 +1,5 @@
 output
 applications/climas_config.cfg
-Resources/harvesting/climas/reports_overrides/*
-Resources/harvesting/climas/suitability_overrides/*
-Resources/harvesting/climas/biodiversity_overrides/*
+Resources/harvesting/climas/metadata_reports/*
+Resources/harvesting/climas/metadata_suitability/*
+Resources/harvesting/climas/metadata_biodiversity/*

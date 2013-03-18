@@ -1,14 +1,24 @@
 
 ---- just stuff still to do ----
 
-rsync command to copy the regions subdirs, but only include the metadata override files.  Run this from the .../CliMAS/reports/ directory.
+rsync command to copy the metadata override files and their apropriate parent directories.  Run this from the ...data/CliMAS/ directory.
 
-    rsync -hav --filter '+ */' --filter '+ */climas-reports-metadata-override.json' --filter '- *' --dry-run regions/ metadata_regions
+    rsync -hav --filter '+ */' --filter '+ */climas-reports-metadata-override.json' --filter '- *' reports/regions/ ../../apps/CliMAS/metadata_regions
+    rsync -hav --filter '+ *_*/' --filter '+ *_*/climas-suitability-metadata-override.json' --filter '- *' species/ ../../apps/CliMAS/metadata_suitability
+    mkdir -p ../../apps/CliMAS/metadata_biodiversity/vertebrates; cp biodiversity/climas-biodiversity-metadata-override.json ../../apps/CliMAS/metadata_biodiversity/vertebrates/
+    cd ByClass
+    find . -maxdepth 1 -mindepth 1 -print0 | xargs -0 -I TAXADIR sh -c '{ mkdir ../../../apps/CliMAS/metadata_biodiversity/TAXADIR; cp TAXADIR/biodiversity/climas-biodiversity-metadata-override.json ../../../apps/CliMAS/metadata_biodiversity/TAXADIR/; }'
+    cd ..
+    cd ByFamily
+    find . -maxdepth 1 -mindepth 1 -print0 | xargs -0 -I TAXADIR sh -c '{ mkdir ../../../apps/CliMAS/metadata_biodiversity/TAXADIR; cp TAXADIR/biodiversity/climas-biodiversity-metadata-override.json ../../../apps/CliMAS/metadata_biodiversity/TAXADIR/; }'
+    cd ..
+    cd ByGenus
+    find . -maxdepth 1 -mindepth 1 -print0 | xargs -0 -I TAXADIR sh -c '{ mkdir ../../../apps/CliMAS/metadata_biodiversity/TAXADIR; cp TAXADIR/biodiversity/climas-biodiversity-metadata-override.json ../../../apps/CliMAS/metadata_biodiversity/TAXADIR/; }'
+    cd ..
 
 
-rsync command to copy the species suitability subdirs, but only include the metadata override files.  Run this from the .../CliMAS/ directory.
 
-    rsync -hav --filter '+ *_*/' --filter '+ *_*/climas-suitability-metadata-override.json' --filter '- *' --dry-run species/ metadata_suitability
+
 
 In the new climas-suitability-default.json:
 

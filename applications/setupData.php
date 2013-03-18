@@ -301,7 +301,7 @@ $metadata_override = array(
                         "DATA_LOCATION" => "http:\/\/eresearch.jcu.edu.au\/tdh\/datasets\/CliMAS\/biodiversity\/"
 )   )   )   )   )   );
 
-write_file($biodiversity_dir . 'climas-biodiversity-override-metadata.json', json_encode($metadata_override));
+write_file($biodiversity_dir . 'climas-biodiversity-metadata-override.json', json_encode($metadata_override));
 
 // Do the other three groups next - - - - - - - - - - - - - -
 
