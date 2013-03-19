@@ -1,25 +1,6 @@
 
 ---- just stuff still to do ----
 
-rsync command to copy the metadata override files and their apropriate parent directories.  Run this from the ...data/CliMAS/ directory.
-
-    rsync -hav --filter '+ */' --filter '+ */climas-reports-metadata-override.json' --filter '- *' reports/regions/ ../../apps/CliMAS/metadata_regions
-    rsync -hav --filter '+ *_*/' --filter '+ *_*/climas-suitability-metadata-override.json' --filter '- *' species/ ../../apps/CliMAS/metadata_suitability
-    mkdir -p ../../apps/CliMAS/metadata_biodiversity/vertebrates; cp biodiversity/climas-biodiversity-metadata-override.json ../../apps/CliMAS/metadata_biodiversity/vertebrates/
-    cd ByClass
-    find . -maxdepth 1 -mindepth 1 -print0 | xargs -0 -I TAXADIR sh -c '{ mkdir ../../../apps/CliMAS/metadata_biodiversity/TAXADIR; cp TAXADIR/biodiversity/climas-biodiversity-metadata-override.json ../../../apps/CliMAS/metadata_biodiversity/TAXADIR/; }'
-    cd ..
-    cd ByFamily
-    find . -maxdepth 1 -mindepth 1 -print0 | xargs -0 -I TAXADIR sh -c '{ mkdir ../../../apps/CliMAS/metadata_biodiversity/TAXADIR; cp TAXADIR/biodiversity/climas-biodiversity-metadata-override.json ../../../apps/CliMAS/metadata_biodiversity/TAXADIR/; }'
-    cd ..
-    cd ByGenus
-    find . -maxdepth 1 -mindepth 1 -print0 | xargs -0 -I TAXADIR sh -c '{ mkdir ../../../apps/CliMAS/metadata_biodiversity/TAXADIR; cp TAXADIR/biodiversity/climas-biodiversity-metadata-override.json ../../../apps/CliMAS/metadata_biodiversity/TAXADIR/; }'
-    cd ..
-
-
-
-
-
 In the new climas-suitability-default.json:
 
 - TODO:CREATE RECORDS IN ERESEARCH.JCU../researchdata/ to get an ID -- this is required even if we have to change IDs later, so we can do test harvesting.

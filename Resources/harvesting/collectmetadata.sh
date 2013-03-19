@@ -17,7 +17,7 @@ mkdir metadata_reports
 popd
 
 # --- copy suitability data into place ------
-pushd /home/TDH/data/CliMAS
+pushd /home/TDH/data/CliMAS/
 #
 rsync -hav --filter '+ *_*/' \
            --filter '+ *_*/climas-suitability-metadata-override.json' \
@@ -27,7 +27,7 @@ rsync -hav --filter '+ *_*/' \
 popd
 
 # --- copy biodiversity data into place ------
-pushd /home/TDH/data/CliMAS
+pushd /home/TDH/data/CliMAS/
 mkdir /home/TDH/apps/CliMAS/metadata_biodiversity/vertebrates
 cp biodiversity/climas-biodiversity-metadata-override.json /home/TDH/apps/CliMAS/metadata_biodiversity/vertebrates/
 cd ByClass
