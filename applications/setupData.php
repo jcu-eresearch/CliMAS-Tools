@@ -351,7 +351,7 @@ foreach ($grouplist as $grouptype) {
                                     "DATA_LOCATION" => "{$web_dir}/{$groupname}/ByName/"
             )   )   )   )   )   );
 
-            write_file($biodiversity_dir . 'climas-biodiversity-override-metadata.json', json_encode($metadata_override));
+            write_file($biodiversity_dir . '/climas-biodiversity-metadata-override.json', json_encode($metadata_override));
         }
     }
 

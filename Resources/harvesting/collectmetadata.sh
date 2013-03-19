@@ -48,7 +48,7 @@ pushd /home/TDH/data/CliMAS
 rsync -hav --filter '+ */' \
            --filter '+ */climas-reports-metadata-override.json' \
            --filter '- *' \
-           reports/regions/ /home/TDH/apps/CliMAS/metadata_regions
+           reports/regions/ /home/TDH/apps/CliMAS/metadata_reports
 #
 popd
 
