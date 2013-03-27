@@ -3,11 +3,24 @@
 
 In the new climas-suitability-default.json:
 
-- TODO:CREATE RECORDS IN ERESEARCH.JCU../researchdata/ to get an ID -- this is required even if we have to change IDs later, so we can do test harvesting.
-relatedCollection references to the umbrella collection records are required, which need IDs.
+todo: test importing into eresearch.jcu.edu.au/researchdata
 
-- TODO:DATA-DIR-NEEDS-CLEANING-UP
-I've used the tdh/datasets/Gilbert/ path for the dataLocation, we might want to rename it from Gilbert to CliMAS.
+todo: test importing into research.jcu.edu.au/researchdata
+
+todo: remove the old climas data (Gilbert and bifocal)
+
+todo: remove the old web paths and redirect visitors to the new CliMAS paths
+
+
+note: these are the tags we use in our descriptions.  These should all work (or at least display correctly) in redbox:
+
+<p>paragraph..</p>
+<a href="some/url">some/url</a>
+<ul><li>list item..</li><li>another list item..</li></ul>
+&gt;
+&amp;
+&deg;
+&ndash;
 
 
 ---- original ----
