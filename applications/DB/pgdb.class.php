@@ -76,11 +76,11 @@ class PGDB extends Object {
         $export = "export ";
         
         $cmd  = "#!/bin/bash\n";
-        $cmd .= "{$export} PGHOST="    .$this->pghost."\n";
+        $cmd .= "{$export} PGHOST="    .escapeshellcmd($this->pghost)."\n";
         $cmd .= "{$export} PGPORT="    .$this->pgport."\n";
-        $cmd .= "{$export} PGDATABASE=".$this->pgdatabase."\n";
-        $cmd .= "{$export} PGUSER="    .$this->pguser."\n";
-        $cmd .= "{$export} PGPASSWORD=".$this->pgpassword."\n";
+        $cmd .= "{$export} PGDATABASE=".escapeshellcmd($this->pgdatabase)."\n";
+        $cmd .= "{$export} PGUSER="    .escapeshellcmd($this->pguser)."\n";
+        $cmd .= "{$export} PGPASSWORD=".escapeshellcmd($this->pgpassword)."\n";
         $cmd .= "psql -F'|' -L {$fn}  --no-align -c \"{$sql}\" ";
         
         if (!is_null($output_filename))
