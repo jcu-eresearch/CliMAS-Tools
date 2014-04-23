@@ -16,7 +16,7 @@ $(document).ready(function() {
     // add the map
     window.map = L.map('leafletmap').setView([-27, 135], 3);
 
-    L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
+    L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
       maxZoom: 18
     }).addTo(map);
 

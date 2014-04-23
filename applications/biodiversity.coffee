@@ -3,7 +3,6 @@
 # http://coffeescript.org/#installation
 #
 #
-#
 $ ->
 
     # monkey-patch a function into String to capitalise a word. We'll use this later.
@@ -117,7 +116,7 @@ $ ->
 
             # figure out the file name
 
-            prefix = "#{scenario}_#{year}"        # normal filename prefix 
+            prefix = "#{scenario}_#{year}"        # normal filename prefix
             prefix = '1990' if year is 'current'  # special case for "current" year
 
             # all paths start with this..
@@ -200,8 +199,9 @@ $ ->
                         }).setView([-27, 135], 4)
 
                         # 831e24daed21488e8205aa95e2a14787 is Daniel's CloudMade API key
-                        L.tileLayer('http://{s}.tile.cloudmade.com/831e24daed21488e8205aa95e2a14787/997/256/{z}/{x}/{y}.png', {
-                            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
+                        # (april 2014: switched to mapquest because cloudmade are shuttering their free tiles)
+                        L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
+                            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.mapquest.com/" target="_blank">MapQuest</a>'
                             maxZoom: 18
                         }).addTo map
 
